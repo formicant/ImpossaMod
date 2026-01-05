@@ -1,0 +1,65 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "dezog",
+      "request": "launch",
+      "name": "Internal Simulator",
+      "remoteType": "zsim",
+      "zsim": {
+        "visualMemory": true,
+        "memoryModel": "ZX128K",
+        "ulaScreen": "spectrum",
+        "zxBorderWidth": 20,
+        "vsyncInterrupt": true,
+        "zxKeyboard": "spectrum",
+        "zxBeeper": true
+      },
+      "sjasmplus": [
+        {
+          "path": "impossamole.sld"
+        }
+      ],
+      "history": {
+        "reverseDebugInstructionCount": 1000000,
+        "spotCount": 10,
+        "codeCoverageEnabled": true
+      },
+      "startAutomatically": false,
+      "commandsAfterLaunch": [
+        "-logpoint enable",
+        "-assertion enable",
+        "-wpmem enable",
+        "-rmv",
+        // "-mv BgBuffer.buffer 540"
+      ],
+      "disassemblerArgs": {
+        "esxdosRst": true
+      },
+      "rootFolder": "${workspaceFolder}",
+      // "topOfStack": "Stack.top",
+      "load": "impossamole.sna",
+      "smallValuesMaximum": 513,
+      "tmpDir": ".tmp"
+    },
+    
+    {
+      "type": "dezog",
+      "request": "launch",
+      "name": "Unit Tests",
+      "unitTests": true,
+      "remoteType": "zsim",
+      "disassemblerArgs": {
+        "esxdosRst": true
+      },
+      "sjasmplus": [
+        {
+          "path": "impossamole.sld",
+        }
+      ],
+      "rootFolder": "${workspaceFolder}",
+      "load": "impossamole.sna",
+    },
+
+  ]
+}

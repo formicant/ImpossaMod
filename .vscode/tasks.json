@@ -1,0 +1,52 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Build",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "dependsOn": ["CheckOrig"],
+      "type": "shell",
+      "command": "sjasmplus",
+      "args": [
+        "--syntax=b",
+        "--fullpath=rel",
+        "--outprefix=build/",
+        "--sld=build/impossamod.sld",
+        "src/_main.asm"
+      ]
+    },
+    {
+      "label": "CheckOrig",
+      "group": {
+        "kind": "test",
+        "isDefault": false
+      },
+      "dependsOn": ["BuildOrig"],
+      "type": "shell",
+      "command": "cmp",
+      "args": [
+        "-b",
+        "reference/original.tap",
+        "build/original.tap"
+      ]
+    },
+    {
+      "label": "BuildOrig",
+      "group": {
+        "kind": "build",
+        "isDefault": false
+      },
+      "type": "shell",
+      "command": "sjasmplus",
+      "args": [
+        "--syntax=b",
+        "--fullpath=rel",
+        "--outprefix=build/",
+        "src/orig/_main.asm"
+      ]
+    }
+  ]
+}
