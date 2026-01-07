@@ -5,7 +5,6 @@ c_beb3      EQU #BEB3
 c_beb4      EQU #BEB4
 
 ; (Draw 8 objects?)
-
 ; Used by c_cc25 and c_cdae.
 c_c044:  ; #c044
         ld ix, c_beb4
@@ -24,7 +23,6 @@ c_c044:  ; #c044
         ret
 
 ; (Draw 8 objects?)
-
 ; Used by c_cdae.
 c_c060:  ; #c060
         ld ix, c_beb4
@@ -43,7 +41,6 @@ c_c060:  ; #c060
         ret
 
 ; (Drawing?)
-
 ; Used by c_c044.
 c_c07c:  ; #c07c
         ld l, (ix+0)
@@ -318,7 +315,6 @@ c_c07c:  ; #c07c
         ret
 
 ; (Preparing sprite drawing?)
-
 ; Used by c_c07c.
 c_c245:  ; #c245
         ld b, a
@@ -459,7 +455,6 @@ c_c245:  ; #c245
         ret
 
 ; (Sprite drawing?)
-
 ; Used by c_c07c.
 c_c314:  ; #c314
         ld a, (ix+0)
@@ -559,7 +554,6 @@ c_c314:  ; #c314
         ret
 
 ; (Preparing sprite drawing?)
-
 ; Used by c_c314.
 c_c3ac:  ; #c3ac
         ld b, a
@@ -745,7 +739,6 @@ c_c3ac:  ; #c3ac
         ret
 
 ; Tile drawing?
-
 ; Used by c_cdae.
 c_c4c0:  ; #c4c0
         exx
@@ -866,7 +859,6 @@ c_c4c0:  ; #c4c0
         jp .l_6
 
 ; Tile drawing?
-
 ; Used by c_cc25 and c_cdae.
 c_c561:  ; #c561
         ld bc, #18FF
@@ -1018,61 +1010,36 @@ c_c561:  ; #c561
         pop hl
         jp .l_1
 
-; Fill buffer at #6080 with 1408 ones
-
+; Fills buffer at #6080 with 1408 ones
 ; Used by c_cd9b.
 c_c636:  ; #c636
         di
         ld (#C65C), sp
         ld sp, #6600
         ld hl, #0101
-        ld b, #20
+        ld b, 32
 .l_0:
-        push hl
-        push hl
-        push hl
-        push hl
-        push hl
-        push hl
-        push hl
-        push hl
-        push hl
-        push hl
-        push hl
-        push hl
-        push hl
-        push hl
-        push hl
-        push hl
-        push hl
-        push hl
-        push hl
-        push hl
-        push hl
-        push hl
+    .22 push hl
         djnz .l_0
-        ld sp, #0000
+        ld sp, 0
         ei
         ret
 
-; Life indicator attrs
-c_c660:  ; #c660
-        db #42, #42, #42, #44, #44, #44, #44, #41
-        db #41, #41, #41, #41, #41, #41, #41, #41
-        db #41
+; Life indicator attributes (3 red, 4 green, 10 blue)
+lifeIndicatorAttrs:  ; #c660
+        dh 42 42 42 44 44 44 44 41 41 41 41 41 41 41 41 41 41
 
-; Copy life indicator attrs to the screen
-
+; Copies life indicator attributes to the screen
 ; Used by c_d04e.
-c_c671:  ; #c671
-        ld hl, c_c660
-        ld de, #580F
-        ld bc, #0011
+applyLifeIndicatorAttrs:  ; #c671
+        ld hl, lifeIndicatorAttrs
+        ld de, Screen.attrs + 15
+        ld bc, 17
         ldir
         ret
 
 
-; Print string
+; Prints string
 ;   `de`: string address
 ;   `h`: y, `l`: x
 ;   `c`: attribute
@@ -1162,154 +1129,164 @@ printString:  ; #c67d
 
 
 ; Attribute address of active menu item
-c_c6d3:  ; #c6d3
-        dw #592B
+activeMenuItemAttrAddr:  ; #c6d3
+        dw Screen.attrs.row9 + 11
 
 ; Game menu
 ; Used by c_cc25.
-c_c6d5:  ; #c6d5
+gameMenu:  ; #c6d5
         xor a
         call callPlayMenuMusic
+        
         call clearScreenPixels
-        ld a, #47
+        ld a, #47               ; bright white on black
         call fillScreenAttrs
-        ld a, #00
-        out (#FE), a
-        call c_c76f
-        call c_c7e1
-.l_0:
-        call c_bdfa
+        ld a, 0
+        out (#FE), a            ; set border black
+        
+        call printGameMenuText
+        call clampActiveMenuItemAttrs
+        
+.l_0:   ; menu loop
+        call c_bdfa             ; (get something from memory page 1)
         jr NZ, .l_1
         xor a
         call callPlayMenuMusic
 .l_1:
-        ld a, (c_c8f6)
+        ld a, (controlType)
         exa
-        ld bc, #F7FE
+        ld bc, #F7FE            ; keyboard half-row [1]..[5]
         in a, (c)
         and #1F
-        bit 0, a
+        bit 0, a                ; key [1] (keyboard)
         jr NZ, .l_2
         exa
         or a
         jr Z, .l_6
-        ld hl, #592B
-        xor a
+        ld hl, Screen.attrs.row9 + 11
+        xor a                   ; controlType: keyboard
         jr .l_5
 .l_2:
-        bit 1, a
+        bit 1, a                ; key [2] (kempston)
         jr NZ, .l_3
         exa
-        cp #01
+        cp 1
         jr Z, .l_6
-        ld hl, #594B
-        ld a, #01
+        ld hl, Screen.attrs.row10 + 11
+        ld a, 1                 ; controlType: kempston
         jr .l_5
 .l_3:
-        bit 2, a
+        bit 2, a                ; key [3] (cursor)
         jr NZ, .l_4
         exa
-        cp #02
+        cp 2
         jr Z, .l_6
-        ld hl, #596B
-        ld a, #02
+        ld hl, Screen.attrs.row11 + 11
+        ld a, 2                 ; controlType: cursor
         jr .l_5
 .l_4:
-        bit 3, a
+        bit 3, a                ; key [4] (interface 2)
         jr NZ, .l_6
         exa
-        cp #03
+        cp 3
         jr Z, .l_6
-        ld hl, #598B
-        ld a, #03
+        ld hl, Screen.attrs.row12 + 11
+        ld a, 3                 ; controlType: interface 2
 .l_5:
-        ld (c_c6d3), hl
-        ld (c_c8f6), a
-        call c_c76f
-        call c_c7e1
-.l_6:
-        ld hl, (c_c6d3)
-        ld b, #0C
+        ld (activeMenuItemAttrAddr), hl
+        ld (controlType), a
+        
+        call printGameMenuText
+        call clampActiveMenuItemAttrs
+        
+.l_6:   ; change active item's color
+        ld hl, (activeMenuItemAttrAddr)
+        ld b, 12
 .l_7:
         ld a, (hl)
-        inc a
+        inc a                   ; next ink color
         cp #48
-        jr C, .l_8
-        ld a, #41
+        jr C, .l_8              ; if greater than bright white
+        ld a, #41               ;   return to bright blue
 .l_8:
         ld (hl), a
         inc l
         djnz .l_7
-        ld bc, #0014
-        call delay
-        call c_c8d2
+        
+        ld bc, 20
+        call delay              ; delay ~20 ms
+        call checkStartKey
         jp NZ, .l_0
 .l_9:
-        call c_c8d2
+        call checkStartKey
         jr Z, .l_9
+        
         ld a, 1
         call callPlayMenuMusic
         ret
 
 ; Print game menu text
-
 ; Used by c_c6d5.
-c_c76f:  ; #c76f
+printGameMenuText:  ; #c76f
         ld hl, #040A
-        ld de, c_c7f2
-        ld c, #47
+        ld de, gameMenuText     ; 'impossamole'
+        ld c, #47               ; bright white
         call printString
         ld hl, #1605
-        inc de
-        ld c, #45
+        inc de                  ; '@ 1990 gremlin graphics'
+        ld c, #45               ; bright cyan
         call printString
         ld hl, #0809
-        inc de
-        ld c, #47
+        inc de                  ; '0 start game'
+        ld c, #47               ; bright white
         call printString
         ld hl, #0909
-        inc de
-        ld c, #46
+        inc de                  ; '1 keyboard'
+        ld c, #46               ; bright yellow
         call printString
         ld hl, #0A09
-        inc de
-        ld c, #43
+        inc de                  ; '2 kempston'
+        ld c, #43               ; bright magenta
         call printString
         ld hl, #0B09
-        inc de
-        ld c, #44
+        inc de                  ; '3 cursor'
+        ld c, #44               ; bright green
         call printString
         ld hl, #0C09
-        inc de
-        ld c, #45
+        inc de                  ; '4 interface 2'
+        ld c, #45               ; bright cyan
         call printString
         ld hl, #1305
-        inc de
-        ld c, #44
+        inc de                  ; 'written by core design'
+        ld c, #44               ; bright green
         call printString
-        ld hl, #5929
-        ld b, #05
+        
+        ; make digits (0..4) white
+        ld hl, Screen.attrs.row9 + 9
+        ld b, 5
 .l_0:
-        ld (hl), #47
-        ld de, #0020
+        ld (hl), #47            ; bright white
+        ld de, 32
         add hl, de
         djnz .l_0
+        
+        ; print last score
         ld hl, #0F07
-        ld de, #C85F
-        ld c, #43
+        ld de, textLastScore
+        ld c, #43               ; bright magenta
         call printString
         ld hl, #0F12
-        ld (#CFCB), hl
+        ld (c_cf85.yx), hl
         call c_cf85.l_4
         ld hl, #0000
-        ld (#CFCB), hl
+        ld (c_cf85.yx), hl
         ret
 
-; Clamp attributes of active menu item?
-
+; Checks attributes of the active menu item
+; and sets them to bright blue if greater than bright white
 ; Used by c_c6d5.
-c_c7e1:  ; #c7e1
-        ld hl, (c_c6d3)
+clampActiveMenuItemAttrs:  ; #c7e1
+        ld hl, (activeMenuItemAttrAddr)
         ld b, #0C
         ld a, (hl)
         cp #48
@@ -1321,8 +1298,7 @@ c_c7e1:  ; #c7e1
         djnz .l_0
         ret
 
-; Game menu text
-c_c7f2:  ; #c7f2
+gameMenuText:  ; #c7f2
         db "IMPOSSAMOLE"C
         db "@ 1990 GREMLIN GRAPHICS"C
         db "0 START GAME"C
@@ -1331,6 +1307,8 @@ c_c7f2:  ; #c7f2
         db "3 CURSOR"C
         db "4 INTERFACE 2"C
         db "WRITTEN BY CORE DESIGN"C
+
+textLastScore:
         db "LAST SCORE"C
 
 
@@ -1395,183 +1373,188 @@ rollConveyorTiles:  ; #c884
         rlc (hl)
         ret
 
-; Detect pressing [C]
 
+; Sets flag Z if [C] key is pressed
 ; Used by c_cd5c.
-c_c8c2:  ; #c8c2
-        ld bc, #FEFE
+checkCheatKey:  ; #c8c2
+        ld bc, #FEFE            ; keyboard half-row [cs]..[V]
         in a, (c)
-        bit 3, a
+        bit 3, a                ; key [C]
         ret
 
-; Detect pressing [Q]
-
+; Sets flag Z if [Q] key is pressed
 ; Used by c_cc25.
-c_c8ca:  ; #c8ca
-        ld bc, #FBFE
+checkQuitKey:  ; #c8ca
+        ld bc, #FBFE            ; keyboard half-row [Q]..[T]
         in a, (c)
-        bit 0, a
+        bit 0, a                ; key [Q]
         ret
 
-; Detect pressing [0]
-
+; Sets flag Z if [0] key is pressed
 ; Used by c_c6d5.
-c_c8d2:  ; #c8d2
-        ld bc, #EFFE
+checkStartKey:  ; #c8d2
+        ld bc, #EFFE            ; keyboard half-row [0]..[6]
         in a, (c)
-        bit 0, a
+        bit 0, a                ; key [0]
         ret
 
-; Detect pressing [H]
-
+; Sets flag Z if [H] key is pressed
 ; Used by c_cd5c.
-c_c8da:  ; #c8da
-        ld bc, #BFFE
+checkPauseKey:  ; #c8da
+        ld bc, #BFFE            ; keyboard half-row [en]..[H]
         in a, (c)
-        bit 4, a
+        bit 4, a                ; key [H]
         ret
 
-; Detect pressing [Space]
-
+; Sets flag Z if [space] is pressed
 ; Used by c_d4e5.
-c_c8e2:  ; #c8e2
-        ld bc, #7FFE
+checkSmartKey:  ; #c8e2
+        ld bc, #7FFE            ; keyboard half-row [sp]..[B]
         in a, (c)
-        bit 0, a
+        bit 0, a                ; key [sp]
         ret
 
-; Wait until all keys released
-c_c8ea:  ; #c8ea
-        ld bc, #00FE
+; Waits until all keys released
+waitKeyRelease:  ; #c8ea
+        ld bc, #00FE            ; all keyboard half-rows together
         in a, (c)
         and #1F
         xor #1F
-        jr NZ, c_c8ea
+        jr NZ, waitKeyRelease
         ret
 
-; Keyboard vars
-c_c8f6:  ; #c8f6
-        db #00                ; control type
-        db #00                ; control key state
+; Control vars
+controlType:    ; #c8f6
+        db 0    ; 0: keyboard, 1: kempston, 2: cursor, 3: interface2
+controlState:   ; #c8f7
+        db 0    ; bit 0: right, bit 1: left, bit 2: down, bit 3: up, bit 4: fire
 
-; Get control key state
-
-; Used by c_bed4.
+; Gets control key state
+; Used in interrupts
 pollControlKeys:  ; #c8f8
         push hl
-        ld hl, #C8F7
-        ld (hl), #00
-        ld a, (c_c8f6)
+        ld hl, controlState
+        ld (hl), 0
+        
+        ld a, (controlType)
         or a
-        jr NZ, .l_5
-        ld bc, #DFFE
+        jr NZ, .notKeyboard
+        
+.keyboard:
+        ld bc, #DFFE            ; keyboard half-row [P]..[Y]
         in a, (c)
-        bit 1, a
+        bit 1, a                ; key [O]
         jr NZ, .l_0
-        set 3, (hl)
+        set 3, (hl)             ; up
         jr .l_1
 .l_0:
-        ld bc, #BFFE
+        ld bc, #BFFE            ; keyboard half-row [en]..[H]
         in a, (c)
-        bit 2, a
+        bit 2, a                ; key [K]
         jr NZ, .l_1
-        set 2, (hl)
+        set 2, (hl)             ; down
 .l_1:
-        ld bc, #FEFE
+        ld bc, #FEFE            ; keyboard half-row [cs]..[V]
         in a, (c)
-        bit 1, a
+        bit 1, a                ; key [Z]
         jr NZ, .l_2
-        set 1, (hl)
+        set 1, (hl)             ; left
         jr .l_3
 .l_2:
-        ld bc, #FEFE
+        ld bc, #FEFE            ; keyboard half-row [cs]..[V]
         in a, (c)
-        bit 2, a
+        bit 2, a                ; key [X]
         jr NZ, .l_3
-        set 0, (hl)
+        set 0, (hl)             ; right
 .l_3:
-        ld bc, #EFFE
+        ld bc, #EFFE            ; keyboard half-row [0]..[6]
         in a, (c)
-        bit 0, a
+        bit 0, a                ; key [0]
         jr NZ, .l_4
-        set 4, (hl)
+        set 4, (hl)             ; fire
 .l_4:
         pop hl
         ret
-.l_5:
+        
+.notKeyboard:
         dec a
-        jr NZ, .l_6
-        in a, (#1F)
-        and #1F
+        jr NZ, .notKempston
+        
+.kempston:
+        in a, (#1F)             ; kempston port
+        and #1F                 ; bits 0..4
         ld (hl), a
         pop hl
         ret
-.l_6:
+        
+.notKempston:
         dec a
-        jr NZ, .l_12
-        ld bc, #EFFE
+        jr NZ, .interface2
+        
+.cursor:
+        ld bc, #EFFE            ; keyboard half-row [0]..[6]
         in a, (c)
-        bit 0, a
+        bit 0, a                ; key [0]
         jr NZ, .l_7
-        set 4, (hl)
+        set 4, (hl)             ; fire
 .l_7:
-        bit 2, a
+        bit 2, a                ; key [8]
         jr NZ, .l_8
-        set 0, (hl)
+        set 0, (hl)             ; right
 .l_8:
-        bit 3, a
+        bit 3, a                ; key [7]
         jr NZ, .l_9
-        set 3, (hl)
+        set 3, (hl)             ; up
         jr .l_10
 .l_9:
-        bit 4, a
+        bit 4, a                ; key [6]
         jr NZ, .l_10
-        set 2, (hl)
+        set 2, (hl)             ; down
 .l_10:
         bit 0, (hl)
         jr NZ, .l_11
-        ld bc, #F7FE
+        ld bc, #F7FE            ; keyboard half-row [1]..[5]
         in a, (c)
-        bit 4, a
+        bit 4, a                ; key [5]
         jr NZ, .l_11
-        set 1, (hl)
+        set 1, (hl)             ; left
 .l_11:
         pop hl
         ret
-.l_12:
-        ld bc, #EFFE
+        
+.interface2:
+        ld bc, #EFFE            ; keyboard half-row [0]..[6]
         in a, (c)
         and #1F
-        bit 0, a
+        bit 0, a                ; key [0]
         jr NZ, .l_13
-        set 4, (hl)
+        set 4, (hl)             ; fire
 .l_13:
-        bit 4, a
+        bit 4, a                ; key [6]
         jr NZ, .l_14
-        set 1, (hl)
+        set 1, (hl)             ; left
 .l_14:
-        bit 3, a
+        bit 3, a                ; key [7]
         jr NZ, .l_15
-        set 0, (hl)
+        set 0, (hl)             ; right
 .l_15:
-        bit 1, a
+        bit 1, a                ; key [9]
         jr NZ, .l_16
-        set 3, (hl)
+        set 3, (hl)             ; up
         jr .l_17
 .l_16:
-        bit 2, a
+        bit 2, a                ; key [8]
         jr NZ, .l_17
-        set 2, (hl)
+        set 2, (hl)             ; down
 .l_17:
         pop hl
         ret
 
-; "FOUND"
-c_c9a7:  ; #c9a7
+
+textFound:  ; #c9a7
         db "FOUND"C
 
 ; Load level from tape
-
 ; Used by c_d62c.
 c_c9ac:  ; #c9ac
         di
@@ -1586,7 +1569,7 @@ c_c9ac:  ; #c9ac
 .l_0:
         call clearScreenPixels
         ld hl, #0C09
-        ld de, c_c9a7
+        ld de, textFound
         ld c, #47
         call printString
         ld a, (Level.start)
@@ -1615,7 +1598,6 @@ c_c9ac:  ; #c9ac
         ret
 
 ; Load block from tape
-
 ; Used by c_c9ac.
 c_c9fb:  ; #c9fb
         inc d
@@ -1670,7 +1652,6 @@ c_c9fb:  ; #c9fb
         jr c_ca69
 
 ; (some tape loading subroutine?)
-
 ; Used by c_ca69.
 c_ca4a:  ; #ca4a
         exa
@@ -1699,7 +1680,6 @@ c_ca4a:  ; #ca4a
         ld b, #B2
 
 ; (some tape loading subroutine?)
-
 ; Used by c_c9fb.
 c_ca69:  ; #ca69
         ld l, #01
@@ -1722,7 +1702,6 @@ c_ca69:  ; #ca69
         ret
 
 ; (some tape loading subroutine?)
-
 ; Used by c_c9fb and c_ca69.
 c_ca84:  ; #ca84
         call .l_0

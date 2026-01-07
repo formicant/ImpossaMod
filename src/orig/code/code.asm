@@ -2,7 +2,7 @@
 
 
 ; Entry point
-c_cc25:  ; #cc25
+entryPoint:  ; #cc25
         di
         ld a, #FF
         ld (#FE8A), a
@@ -23,21 +23,21 @@ c_cc25:  ; #cc25
     EDUP
         ld (hl), c
         djnz .l_0
-        jp .l_1
+        jp gameStart
 
-; This entry point is used by c_d6c0.
-.l_1:
-        call c_c6d5
+gameStart:  ; #cc5a
+        call gameMenu
         call c_d133
 .l_2:
-        call c_d553
+        call levelSelectionMenu
         call clearScreenPixels
         ld a, #47
         call fillScreenAttrs
         call c_d29a
         call c_e5f2
         call c_d1c1
-.l_3:
+        
+.gameLoop:
         ld a, (#FE57)
         or a
         jr Z, .l_5
@@ -49,9 +49,10 @@ c_cc25:  ; #cc25
         jr NZ, .l_5
         add ix, de
         djnz .l_4
-        ld bc, #1388
+        ld bc, 5000
         call delay
         jp .l_2
+        
 .l_5:
         call c_d4e5
         call c_d4cd
@@ -71,12 +72,15 @@ c_cc25:  ; #cc25
         call c_d278
         call rollConveyorTiles
         call c_c044
-        ld c, #03
-        call #FF21
+        
+        ld c, 3
+        call waitFrames
+        
         call c_c561
         ld a, (#FE05)
         or a
         jr Z, .l_6
+        
         xor a
         ld (#FE05), a
         ld ix, c_beb4
@@ -84,9 +88,10 @@ c_cc25:  ; #cc25
         call c_cdae
         call c_f6e7
 .l_6:
-        call c_cd5c
-        call c_c8ca
-        jp Z, .l_1
+        call pauseGameIfPauseKeyPressed
+        call checkQuitKey
+        jp Z, gameStart
+        
         ld a, (#FE1F)
         or a
         jr Z, .l_8
@@ -102,9 +107,9 @@ c_cc25:  ; #cc25
         jr .l_8
 .l_7:
         call showGameOver
-        jp .l_1
+        jp gameStart
 .l_8:
-        jp .l_3
+        jp .gameLoop
 
 
 textGameOver:  ; #cd19
@@ -120,12 +125,12 @@ showGameOver:  ; #cd22
         ld c, #46
         call printString
 .l_0:
-        ld a, (#C8F7)
+        ld a, (controlState)
         bit 4, a
         jr NZ, .l_0
         ld bc, #7530
 .l_1:
-        ld a, (#C8F7)
+        ld a, (controlState)
         bit 4, a
         jr NZ, .l_3
         exx
@@ -146,22 +151,22 @@ textPaused:  ; #cd52
 
 ; Pause the game
 ; Used by c_cc25.
-c_cd5c:  ; #cd5c
-        call c_c8da
+pauseGameIfPauseKeyPressed:  ; #cd5c
+        call checkPauseKey
         ret NZ
 .l_0:
-        call c_c8da
+        call checkPauseKey
         jr Z, .l_0
         ld hl, #1700
         ld de, textPaused
         ld c, #47
         call printString
 .l_1:
-        call c_c8da
+        call checkPauseKey
         jr NZ, .l_1
-        call c_c8c2
+        call checkCheatKey
         jr NZ, .l_2
-        ld a, (#C8F7)
+        ld a, (controlState)
         bit 3, a
         jr Z, .l_2
         ld a, #22
@@ -169,7 +174,7 @@ c_cd5c:  ; #cd5c
         ld a, #32
         call c_d09a
 .l_2:
-        call c_c8da
+        call checkPauseKey
         jr Z, .l_2
         ld hl, #6528
         ld b, #0A
@@ -180,7 +185,6 @@ c_cd5c:  ; #cd5c
         ret
 
 ; ?
-
 ; Used by c_d1c1, c_e60a, c_e920 and c_e9b1.
 c_cd9b:  ; #cd9b
         ld (#FE01), hl
@@ -192,7 +196,6 @@ c_cd9b:  ; #cd9b
         jp c_cecc
 
 ; (Advance in map?)
-
 ; Used by c_cc25.
 c_cdae:  ; #cdae
         ld hl, #6080
@@ -241,7 +244,6 @@ c_cdae:  ; #cdae
         jp c_cf85.l_0
 
 ; ?
-
 ; Used by c_cdae.
 c_ce23:  ; #ce23
         ld de, #FFFD
@@ -282,49 +284,13 @@ c_ce23:  ; #ce23
         jp .l_2
 
 ; (Screen scrolling?)
-
 ; Used by c_cdae.
 c_ce57:  ; #ce57
         ld de, #5BB0
         ld hl, #5BB8
         ld a, #18
 .l_0:
-        ldi
-        ldi
-        ldi
-        ldi
-        ldi
-        ldi
-        ldi
-        ldi
-        ldi
-        ldi
-        ldi
-        ldi
-        ldi
-        ldi
-        ldi
-        ldi
-        ldi
-        ldi
-        ldi
-        ldi
-        ldi
-        ldi
-        ldi
-        ldi
-        ldi
-        ldi
-        ldi
-        ldi
-        ldi
-        ldi
-        ldi
-        ldi
-        ldi
-        ldi
-        ldi
-        ldi
+    .36 ldi
         ld bc, #0008
         add hl, bc
         ex de, hl
@@ -335,7 +301,6 @@ c_ce57:  ; #ce57
         ret
 
 ; (Locate place in level map?)
-
 ; Used by c_cdae.
 c_ceb2:  ; #ceb2
         ld hl, (#FE01)
@@ -353,7 +318,6 @@ c_ceb2:  ; #ceb2
         jp c_cecc.l_0
 
 ; Copy level map segment to #5BB4 buffer
-
 ; Used by c_cd9b.
 c_cecc:  ; #cecc
         ld hl, (#FE01)
@@ -409,7 +373,6 @@ c_cecc:  ; #cecc
         jp c_d213
 
 ; ?
-
 ; Used by c_cdae.
 c_cf17:  ; #cf17
         ld b, #08
@@ -445,7 +408,11 @@ c_cf51:  ; #cf51
 
 ; Score ()
 c_cf57:  ; #cf57
-        db #00, #00, #00, #00, #00, #00
+        db #00, #00, #00, #00, #00
+
+; (?)
+c_cf5c:
+        db #00
 
 ; (Scores table (decimal)?)
 c_cf5d:  ; #cf5d
@@ -456,7 +423,6 @@ c_cf5d:  ; #cf5d
         db #02, #00, #00, #02, #00, #00, #00, #00
 
 ; Add score?
-
 ; Used by c_e4fc and c_e6e1.
 c_cf85:  ; #cf85
         or a
@@ -475,13 +441,13 @@ c_cf85:  ; #cf85
         jr .l_0
 ; This entry point is used by c_cdae and c_ec00.
 .l_0:
-        ld hl, #CF5C
+        ld hl, c_cf5c
         or a
-        ld b, #05
+        ld b, 5
 .l_1:
         ld a, (de)
         adc a, (hl)
-        cp #0A
+        cp 10
         jp NC, .l_6
         or a
 .l_2:
@@ -490,8 +456,8 @@ c_cf85:  ; #cf85
         dec de
         djnz .l_1
         ld a, (hl)
-        adc a, #00
-        cp #0A
+        adc a, 0
+        cp 10
         jp C, .l_3
         xor a
 .l_3:
@@ -500,10 +466,10 @@ c_cf85:  ; #cf85
 .l_4:
         ld hl, c_cf57
         ld de, c_cf51
-        ld b, #06
+        ld b, 6
 .l_5:
         ld a, (hl)
-        add a, #30
+        add a, '0'
         ld (de), a
         inc hl
         inc de
@@ -511,9 +477,9 @@ c_cf85:  ; #cf85
         dec de
         ex de, hl
         set 7, (hl)
-        ld hl, #0000
+.yx+*   ld hl, -0               ; `h`: y coord, `l`: x coord
         ld de, c_cf51
-        ld c, #47
+        ld c, #47               ; bright white
         jp printString
 .l_6:
         sub #0A
@@ -521,7 +487,6 @@ c_cf85:  ; #cf85
         jp .l_2
 
 ; Clear score at #CF57?
-
 ; Used by c_d133.
 c_cfdb:  ; #cfdb
         ld hl, c_cf57
@@ -533,7 +498,6 @@ c_cfdb:  ; #cfdb
         ret
 
 ; Print coins in the panel
-
 ; Used by c_d1c1, c_e6e1 and c_e9b1.
 c_cfe6:  ; #cfe6
         ld a, (#FE06)
@@ -581,7 +545,6 @@ c_d023:  ; #d023
         db "///"C
 
 ; Print soup cans in the panel
-
 ; Used by c_d1c1, c_e6e1 and c_e9b1.
 c_d026:  ; #d026
         ld a, (#FE0A)
@@ -605,7 +568,6 @@ c_d03d:  ; #d03d
         db #2C
 
 ; Print energy in the panel
-
 ; Used by c_d09a, c_d0af, c_d1c1, c_e9b1 and c_f618.
 c_d04e:  ; #d04e
         ld hl, #FE0D
@@ -654,11 +616,10 @@ c_d04e:  ; #d04e
         ld hl, #000F
         ld de, #FE0D
         call printString
-        call c_c671
+        call applyLifeIndicatorAttrs
         ret
 
 ; Add energy
-
 ; Used by c_cc25, c_cd5c, c_e6e1 and c_e9b1.
 c_d09a:  ; #d09a
         exa
@@ -676,7 +637,6 @@ c_d09a:  ; #d09a
         jp c_d04e
 
 ; Decrement energy
-
 ; Used by c_d709 and c_e6e1.
 c_d0af:  ; #d0af
         ld a, (ix+14)
@@ -800,7 +760,6 @@ c_d133:  ; #d133
         ret
 
 ; (Copies something to #BEB4)
-
 ; Used by c_d1c1.
 c_d153:  ; #d153
         ld ix, c_beb4
@@ -964,7 +923,6 @@ c_d213:  ; #d213
         ret
 
 ; (Fill something with ones?)
-
 ; Used by c_cc25.
 c_d278:  ; #d278
         ld de, #0580
@@ -987,7 +945,6 @@ c_d278:  ; #d278
         jp .l_0
 
 ; Clear 400-byte buffer at #BEB4?
-
 ; Used by c_cc25.
 c_d29a:  ; #d29a
         ld hl, #0000
@@ -1009,7 +966,6 @@ c_d29a:  ; #d29a
         ret
 
 ; (Some game logic?)
-
 ; Used by c_ec00.
 c_d2b3:  ; #d2b3
         bit 1, (iy+5)
@@ -1042,7 +998,6 @@ c_d2b3:  ; #d2b3
         ret
 
 ; (Some game logic?)
-
 ; Used by c_cc25.
 c_d308:  ; #d308
         ld ix, c_beb4
@@ -1135,7 +1090,6 @@ c_d308:  ; #d308
         ret
 
 ; (Some game logic?)
-
 ; Used by c_d308.
 c_d3bb:  ; #d3bb
         bit 0, (iy+5)
@@ -1179,7 +1133,6 @@ c_d3bb:  ; #d3bb
         ret
 
 ; ?
-
 ; Used by c_ef72 and c_f37e.
 c_d407:  ; #d407
         ld hl, #0160
@@ -1217,7 +1170,6 @@ c_d407:  ; #d407
         ret
 
 ; Subtracts constants from some object properies?
-
 ; Used by c_ec00 and c_ed08.
 c_d443:  ; #d443
         ld l, (ix+0)
@@ -1233,7 +1185,6 @@ c_d443:  ; #d443
         ret
 
 ; ?
-
 ; Used by c_dce1, c_dd09, c_dd46, c_dd73, c_df85, c_f1d7, c_f2e7 and
 ; c_f618.
 c_d460:  ; #d460
@@ -1301,7 +1252,6 @@ c_d460:  ; #d460
         ret
 
 ; (Set some object properties?)
-
 ; Used by c_cc25.
 c_d4cd:  ; #d4cd
         ld ix, #BEE6
@@ -1317,10 +1267,9 @@ c_d4cd:  ; #d4cd
         ret
 
 ; Handle Smart
-
 ; Used by c_cc25.
 c_d4e5:  ; #d4e5
-        call c_c8e2
+        call checkSmartKey
         ret NZ
         ld a, (#FE21)
         or a
@@ -1363,9 +1312,8 @@ c_d52b:  ; #d52b
         db "BERMUDA "C
 
 ; Level selection menu
-
 ; Used by c_cc25.
-c_d553:  ; #d553
+levelSelectionMenu:  ; #d553
         call clearScreenPixels
         ld a, #47
         call fillScreenAttrs
@@ -1381,7 +1329,7 @@ c_d553:  ; #d553
         inc hl
         djnz .l_0
         cp #05
-        jp Z, c_d6c0
+        jp Z, gameEnd
         cp #04
         jr NZ, .l_3
         ld de, #D54B
@@ -1391,16 +1339,16 @@ c_d553:  ; #d553
         ld a, #04
         ld (#FE1E), a
 .l_1:
-        ld a, (#C8F7)
+        ld a, (controlState)
         bit 4, a
         jr NZ, .l_1
 .l_2:
-        ld a, (#C8F7)
+        ld a, (controlState)
         bit 4, a
         jr Z, .l_2
         jp .l_7
 .l_3:
-        ld a, (#C8F7)
+        ld a, (controlState)
         ld c, a
         ld a, (#FE1E)
         bit 2, c
@@ -1439,12 +1387,12 @@ c_d553:  ; #d553
         call printString
         ld bc, #00FA
         call delay
-        ld a, (#C8F7)
+        ld a, (controlState)
         bit 4, a
         jr Z, .l_3
 .l_7:
         call c_d62c
-        jp NC, c_d553
+        jp NC, levelSelectionMenu
         ld a, #00
         out (#FE), a
         call clearScreenPixels
@@ -1453,7 +1401,7 @@ c_d553:  ; #d553
         ld c, #47
         call printString
 .l_8:
-        ld a, (#C8F7)
+        ld a, (controlState)
         bit 4, a
         jr Z, .l_8
         ret
@@ -1466,7 +1414,6 @@ c_d606:  ; #d606
         db " LOADING"C
 
 ; Load level if needed
-
 ; Used by c_d553.
 c_d62c:  ; #d62c
         ld a, (#FE8A)
@@ -1502,25 +1449,24 @@ c_d62c:  ; #d62c
         ld c, #47
         call printString
 .l_2:
-        ld a, (#C8F7)
+        ld a, (controlState)
         bit 4, a
         jr Z, .l_2
         pop af
         ret
 
-; Epilogue text
-c_d679:  ; #d679
+; Game epilogue text
+epilogueText:  ; #d679
         db "  GOOD WORK MONTY"C
         db "THE FIVE SCROLLS ARE"C
         db "SAFE  YOU HAVE SAVED"C
         db "    OUR PLANET"C
 
 ; Game end
-
 ; Used by c_d553.
-c_d6c0:  ; #d6c0
+gameEnd:  ; #d6c0
         ld hl, #0806
-        ld de, c_d679
+        ld de, epilogueText
         ld c, #42
         ld b, #04
 .l_0:
@@ -1537,11 +1483,11 @@ c_d6c0:  ; #d6c0
         ld bc, #7530
         call delay
 .l_1:
-        ld a, (#C8F7)
+        ld a, (controlState)
         or a
         jr Z, .l_1
         pop hl
-        jp c_cc25.l_1
+        jp gameStart
 
 ; (Some call table)
 c_d6e7:  ; #d6e7
@@ -1558,7 +1504,6 @@ c_d6f1:  ; #d6f1
         db #02, #02, #04, #07, #07, #08, #08, #7F
 
 ; (Some game logic, calls from call table #D6E7?)
-
 ; Used by c_cc25.
 c_d709:  ; #d709
         ld ix, c_beb4
@@ -1611,7 +1556,7 @@ c_d709:  ; #d709
         call c_d0af
         ld a, #02
         ld (#FE28), a
-        ld a, (#C8F7)
+        ld a, (controlState)
         and #03
         jp Z, .l_2
         ld b, a
@@ -1668,7 +1613,7 @@ c_d709:  ; #d709
 
 ; (Some game logic from call table #D6E7?)
 c_d7f6:  ; #d7f6
-        ld a, (#C8F7)
+        ld a, (controlState)
         bit 3, a
         jr Z, .l_0
         ld a, (#FE33)
@@ -1686,7 +1631,7 @@ c_d7f6:  ; #d7f6
         cp #02
         jp Z, .l_12
 .l_1:
-        ld a, (#C8F7)
+        ld a, (controlState)
         bit 1, a
         jp NZ, .l_7
         bit 0, a
@@ -1773,7 +1718,7 @@ c_d7f6:  ; #d7f6
         res 0, (ix+24)
         ld a, #02
         ld (#FE28), a
-        ld a, (#C8F7)
+        ld a, (controlState)
         and #03
         jp Z, .l_10
         ld b, a
@@ -1832,7 +1777,7 @@ c_d94c:  ; #d94c
         cp #02
         jp C, .l_13
 .l_0:
-        ld a, (#C8F7)
+        ld a, (controlState)
         bit 3, a
         jp NZ, .l_11
         bit 2, a
@@ -1872,7 +1817,7 @@ c_d94c:  ; #d94c
         and #01
         ld (#FE42), a
 .l_4:
-        ld a, (#C8F7)
+        ld a, (controlState)
         bit 1, a
         jp Z, .l_11
         jr .l_9
@@ -1905,7 +1850,7 @@ c_d94c:  ; #d94c
         and #01
         ld (#FE42), a
 .l_8:
-        ld a, (#C8F7)
+        ld a, (controlState)
         bit 0, a
         jp Z, .l_11
 .l_9:
@@ -1950,7 +1895,7 @@ c_d94c:  ; #d94c
         ld (#FE28), a
         xor a
         ld (#FE41), a
-        ld a, (#C8F7)
+        ld a, (controlState)
         and #03
         jp Z, .l_14
         ld b, a
@@ -1972,7 +1917,6 @@ c_d94c:  ; #d94c
         jp c_db4e
 
 ; (Some game logic from call table #D6E7?)
-
 ; Used by c_d7f6.
 c_da95:  ; #da95
         ld hl, #974A
@@ -1983,7 +1927,7 @@ c_da95:  ; #da95
 .l_0:
         ld (ix+3), l
         ld (ix+4), h
-        ld a, (#C8F7)
+        ld a, (controlState)
         bit 3, a
         jr Z, .l_1
         ld a, (#FE33)
@@ -2061,10 +2005,9 @@ c_da95:  ; #da95
         ret
 
 ; (Some game logic from call table #D6E7?)
-
 ; Used by c_d94c.
 c_db4e:  ; #db4e
-        ld a, (#C8F7)
+        ld a, (controlState)
         bit 3, a
         jr Z, .l_0
         ld a, (#FE33)
@@ -2121,7 +2064,7 @@ c_db4e:  ; #db4e
         call c_eaee
         cp #02
         jp NC, c_d94c.l_11
-        ld a, (#C8F7)
+        ld a, (controlState)
         bit 1, a
         jr NZ, .l_3
         bit 0, a
@@ -2140,10 +2083,9 @@ c_db4e:  ; #db4e
         ret
 
 ; (Some game logic from call table #D6E7?)
-
 ; Used by c_d7f6.
 c_dbfc:  ; #dbfc
-        ld a, (#C8F7)
+        ld a, (controlState)
         bit 3, a
         jr Z, .l_1
         ld a, (#FE33)
@@ -2169,7 +2111,7 @@ c_dbfc:  ; #dbfc
         add a, #FE
         ld (ix+2), a
 .l_1:
-        ld a, (#C8F7)
+        ld a, (controlState)
         bit 2, a
         jr Z, .l_3
         ld a, (#FE33)
@@ -2198,7 +2140,7 @@ c_dbfc:  ; #dbfc
         cp #02
         jp NC, c_d94c.l_11
 .l_4:
-        ld a, (#C8F7)
+        ld a, (controlState)
         bit 1, a
         jr Z, .l_6
         ld a, (#FE33)
@@ -2217,7 +2159,7 @@ c_dbfc:  ; #dbfc
         add a, #FE
         ld (ix+0), a
 .l_6:
-        ld a, (#C8F7)
+        ld a, (controlState)
         bit 0, a
         jr Z, .l_8
         ld a, (#FE33)
@@ -2239,7 +2181,6 @@ c_dbfc:  ; #dbfc
         ret
 
 ; ?
-
 ; Used by c_dbfc.
 c_dcce:  ; #dcce
         ld a, (#FE42)
@@ -2253,7 +2194,6 @@ c_dcce:  ; #dcce
         ret
 
 ; ?
-
 ; Used by c_dbfc.
 c_dce1:  ; #dce1
         ld a, (ix+0)
@@ -2274,7 +2214,6 @@ c_dce1:  ; #dce1
         ret
 
 ; ?
-
 ; Used by c_da95 and c_db4e.
 c_dd09:  ; #dd09
         ld a, (ix+0)
@@ -2304,7 +2243,6 @@ c_dd09:  ; #dd09
         ret
 
 ; ?
-
 ; Used by c_da95 and c_dbfc.
 c_dd46:  ; #dd46
         ld a, (ix+0)
@@ -2328,7 +2266,6 @@ c_dd46:  ; #dd46
         ret
 
 ; ?
-
 ; Used by c_d709.
 c_dd73:  ; #dd73
         ld a, (ix+0)
@@ -2420,7 +2357,6 @@ c_dd73:  ; #dd73
         ret
 
 ; (Checks something?)
-
 ; Used by c_d308, c_d709, c_d7f6, c_d94c, c_da95, c_db4e and c_dbfc.
 c_de37:  ; #de37
         ld l, (ix+0)
@@ -2480,7 +2416,6 @@ c_de37:  ; #de37
         ret
 
 ; (Checks something?)
-
 ; Used by c_d308, c_d709, c_d7f6, c_d94c, c_da95, c_db4e and c_dbfc.
 c_deb1:  ; #deb1
         ld l, (ix+0)
@@ -2555,7 +2490,6 @@ c_df2b:  ; #df2b
         db #08, #08
 
 ; (Some logic for enemies?)
-
 ; Used by c_cc25.
 c_df85:  ; #df85
         ld a, (#FE45)
@@ -2587,7 +2521,7 @@ c_df85:  ; #df85
         ld a, (#FE28)
         cp #03
         ret NC
-        ld a, (#C8F7)
+        ld a, (controlState)
         bit 4, a
         ret Z
         ld ix, c_beb4
@@ -2965,7 +2899,6 @@ c_e308:  ; #e308
         db #00, #06, #07, #05
 
 ; (Some logic for enemies?)
-
 ; Used by c_df85.
 c_e31c:  ; #e31c
         ld a, (c_e308)
@@ -3091,7 +3024,6 @@ c_e401:  ; #e401
         db #C0, #99, #3E, #9A, #BC, #9A, #C0, #99
 
 ; (Some game logic with weapons?)
-
 ; Used by c_d709.
 c_e419:  ; #e419
         ld a, (#FE45)
@@ -3147,7 +3079,6 @@ c_e419:  ; #e419
         ret
 
 ; (Some sprite drawing logic?)
-
 ; Used by c_c07c, c_c245, c_c314 and c_c3ac.
 c_e47a:  ; #e47a
         ld l, (ix+3)
@@ -3223,7 +3154,6 @@ c_e4ee:  ; #e4ee
         dw #A1AE
 
 ; Get cloud sprite phase address
-
 ; Used by c_e47a.
 c_e4fc:  ; #e4fc
         set 5, (ix+5)
@@ -3251,7 +3181,6 @@ c_e4fc:  ; #e4fc
         ret
 
 ; (Some game logic?)
-
 ; Used by c_e47a.
 c_e52d:  ; #e52d
         ld a, (ix+18)
@@ -3275,7 +3204,6 @@ c_e52d:  ; #e52d
         ret
 
 ; (Get Mole sprite address?)
-
 ; Used by c_e47a.
 c_e54f:  ; #e54f
         bit 5, (ix+5)
@@ -3288,7 +3216,6 @@ c_e54f:  ; #e54f
         ret
 
 ; (Modifies some object properties?)
-
 ; Used by c_e47a.
 c_e566:  ; #e566
         ld a, (ix+5)
@@ -3297,7 +3224,6 @@ c_e566:  ; #e566
         ret
 
 ; (Modifies some object properties?)
-
 ; Used by c_cc25.
 c_e56f:  ; #e56f
         ld ix, #BEE6
@@ -3312,7 +3238,6 @@ c_e56f:  ; #e56f
         ret
 
 ; (Modifies some object properties?)
-
 ; Used by c_e56f.
 c_e582:  ; #e582
         bit 0, (ix+5)
@@ -3365,7 +3290,6 @@ c_e582:  ; #e582
         ret
 
 ; (Init some objects at #BEE6)
-
 ; Used by c_cc25, c_e60a, c_e920 and c_e9b1.
 c_e5f2:  ; #e5f2
         push ix
@@ -3382,7 +3306,6 @@ c_e5f2:  ; #e5f2
         ret
 
 ; ?
-
 ; Used by c_cc25.
 c_e60a:  ; #e60a
         ld ix, c_beb4
@@ -3492,7 +3415,6 @@ c_e60a:  ; #e60a
         ret
 
 ; (Checks some object properties?)
-
 ; Used by c_f564 and c_f74a.
 c_e6c2:  ; #e6c2
         push de
@@ -3520,7 +3442,6 @@ c_e6df:  ; #e6df
         dw #0000
 
 ; (Process collision?)
-
 ; Used by c_cc25.
 c_e6e1:  ; #e6e1
         ld a, (#FE46)
@@ -3627,7 +3548,7 @@ c_e6e1:  ; #e6e1
 .l_10:
         cp #0A
         jr NC, .l_11
-        ld a, (#C8F7)
+        ld a, (controlState)
         bit 2, a
         ret Z
         ld (iy+5), #00
@@ -3669,7 +3590,6 @@ c_e6e1:  ; #e6e1
         jp c_d0af
 
 ; (Checks some object properties?)
-
 ; Used by c_e6e1, c_e9b1, c_eb19 and c_f618.
 c_e80a:  ; #e80a
         bit 0, (iy+5)
@@ -3778,7 +3698,6 @@ c_e910:  ; #e910
         db "   TOO MUCH     "C
 
 ; (Init something?)
-
 ; Used by c_cc25.
 c_e920:  ; #e920
         ld a, (#FE46)
@@ -3848,7 +3767,6 @@ c_e920:  ; #e920
         ret
 
 ; Shop logic
-
 ; Used by c_cc25.
 c_e9b1:  ; #e9b1
         ld a, (#FE46)
@@ -3899,7 +3817,7 @@ c_e9b1:  ; #e9b1
         ld c, #47
         call c_cfe6.l_0
 .l_2:
-        ld a, (#C8F7)
+        ld a, (controlState)
         bit 4, a
         ret Z
         ld a, (#FE48)
@@ -3949,7 +3867,7 @@ c_e9b1:  ; #e9b1
         ld c, #47
         call printString
 .l_4:
-        ld a, (#C8F7)
+        ld a, (controlState)
         bit 4, a
         jr NZ, .l_4
         ret
@@ -4004,7 +3922,6 @@ c_e9b1:  ; #e9b1
         ret
 
 ; (Init ix+0, 1, 2 from (hl)?)
-
 ; Used by c_e920 and c_e9b1.
 c_eace:  ; #eace
         ld ix, c_beb4
@@ -4029,7 +3946,6 @@ c_eace:  ; #eace
         ret
 
 ; Get tile type without bit 7
-
 ; Used by c_d709, c_d7f6, c_d94c, c_da95, c_db4e, c_dbfc, c_de37,
 ; c_deb1, c_df85, c_f1d7, c_f2e7 and c_f618.
 c_eaee:  ; #eaee
@@ -4047,7 +3963,6 @@ c_eaf7:  ; #eaf7
         db #18
 
 ; Check enemies for damaging?
-
 ; Used by c_df85.
 c_eb00:  ; #eb00
         ld ix, #BEE6
@@ -4065,7 +3980,6 @@ c_eb00:  ; #eb00
         ret
 
 ; Logic for damaging enemies?
-
 ; Used by c_eb00.
 c_eb19:  ; #eb19
         ld a, (iy+8)
@@ -4186,7 +4100,6 @@ c_ebf4:  ; #ebf4
         db #FD, #FE, #FD, #FC
 
 ; Damage/kill enemy?
-
 ; Used by c_eb19.
 c_ec00:  ; #ec00
         ld a, (iy+7)
@@ -4307,7 +4220,6 @@ c_ec00:  ; #ec00
         jr .l_2
 
 ; (Modifies some object properties?)
-
 ; Used by c_cc25.
 c_ecee:  ; #ecee
         ld ix, #BF18
@@ -4325,7 +4237,6 @@ c_ecee:  ; #ecee
         ret
 
 ; (Modifies some object properties?)
-
 ; Used by c_ecee.
 c_ed08:  ; #ed08
         bit 0, (ix+5)
@@ -4407,7 +4318,6 @@ c_ed08:  ; #ed08
         ret
 
 ; (Modifies some object properties?)
-
 ; Used by c_f564.
 c_edc0:  ; #edc0
         ld (ix+29), a
@@ -4502,7 +4412,6 @@ c_edc0:  ; #edc0
         ret
 
 ; (Modifies some object properties?)
-
 ; Used by c_f618.
 c_ee93:  ; #ee93
         ld a, (ix+7)
@@ -4599,7 +4508,6 @@ c_ee93:  ; #ee93
         ret
 
 ; (Some game logic?)
-
 ; Used by c_ed08.
 c_ef72:  ; #ef72
         ld a, (ix+22)
@@ -4776,7 +4684,6 @@ c_ef72:  ; #ef72
         ret
 
 ; (Some game logic?)
-
 ; Used by c_ed08.
 c_f0f3:  ; #f0f3
         ld (ix+19), #02
@@ -4878,7 +4785,6 @@ c_f0f3:  ; #f0f3
         jp c_ef72.l_23
 
 ; (Modifies some object properties?)
-
 ; Used by c_ed08, c_ef72, c_f0f3 and c_f518.
 c_f1d7:  ; #f1d7
         bit 1, (ix+5)
@@ -5007,7 +4913,6 @@ c_f2d1:  ; #f2d1
         db #04, #04, #04, #04, #04, #04
 
 ; (Modifies some object properties?)
-
 ; Used by c_ed08.
 c_f2e7:  ; #f2e7
         ld a, (ix+19)
@@ -5090,7 +4995,6 @@ c_f373:  ; #f373
         db #01, #09, #05
 
 ; (Moves object along trajectory?)
-
 ; Used by c_ed08.
 c_f37e:  ; #f37e
         bit 5, (ix+5)
@@ -5238,7 +5142,6 @@ c_f37e:  ; #f37e
         ret
 
 ; (Modifies some object properties?)
-
 ; Used by c_ecee.
 c_f488:  ; #f488
         ld a, (ix+27)
@@ -5286,7 +5189,6 @@ c_f488:  ; #f488
         ret
 
 ; (Modifies some object properties?)
-
 ; Used by c_ed08.
 c_f4e9:  ; #f4e9
         ld a, (ix+8)
@@ -5310,7 +5212,6 @@ c_f506:  ; #f506
         db #06, #7F
 
 ; (Modifies some object properties?)
-
 ; Used by c_ed08.
 c_f518:  ; #f518
         ld a, (ix+15)
@@ -5342,7 +5243,6 @@ c_f518:  ; #f518
         jp c_ef72.l_23
 
 ; Decrements some counter at #FE51
-
 ; Used by c_cc25.
 c_f553:  ; #f553
         ld a, (#FE51)
@@ -5357,7 +5257,6 @@ c_f553:  ; #f553
         ret
 
 ; (Modifies some object properties?)
-
 ; Used by c_ed08.
 c_f564:  ; #f564
         ld a, (#FE51)
@@ -5436,7 +5335,6 @@ c_f564:  ; #f564
         ret
 
 ; (Modifies some object properties?)
-
 ; Used by c_ed08.
 c_f618:  ; #f618
         ld a, (ix+49)
@@ -5482,7 +5380,6 @@ c_f618:  ; #f618
         ret
 
 ; (Some game logic?)
-
 ; Used by c_ef72.
 c_f670:  ; #f670
         bit 5, (ix+24)
@@ -5504,7 +5401,6 @@ c_f670:  ; #f670
         ret
 
 ; (Some game logic?)
-
 ; Used by c_ef72.
 c_f697:  ; #f697
         bit 1, (ix+24)
@@ -5528,7 +5424,6 @@ c_f6b5:  ; #f6b5
         db #00, #31, #5F, #88, #BC
 
 ; Get objects from the object table
-
 ; Used by c_cd9b and c_e920.
 c_f6ba:  ; #f6ba
         ld bc, #8600
@@ -5562,7 +5457,6 @@ c_f6ba:  ; #f6ba
         jr c_f6e7.l_3
 
 ; Get next objects from the object table
-
 ; Used by c_cc25.
 c_f6e7:  ; #f6e7
         ld bc, (#FE52)
@@ -5624,7 +5518,6 @@ c_f6e7:  ; #f6e7
         ret
 
 ; Initialize object from the object type
-
 ; Used by c_f6ba and c_f6e7.
 c_f74a:  ; #f74a
         call c_e6c2
@@ -5847,7 +5740,6 @@ c_f74a:  ; #f74a
         ret
 
 ; Boss logic switch by level
-
 ; Used by c_cc25.
 c_f8cb:  ; #f8cb
         ld a, (#FE54)
@@ -5871,7 +5763,6 @@ c_f8ec:  ; #f8ec
         db #98, #AB, #D8, #AB, #98, #4B, #D8, #4B
 
 ; Klondike boss logic
-
 ; Used by c_f8cb.
 c_f8f4:  ; #f8f4
         ld a, (#FE54)
@@ -5960,7 +5851,6 @@ c_f99e:  ; #f99e
         db #18, #00, #00, #15, #18, #15
 
 ; Orient boss logic
-
 ; Used by c_f8cb.
 c_f9a4:  ; #f9a4
         ld a, (#FE54)
@@ -6053,7 +5943,6 @@ c_fa61:  ; #fa61
         db #E4, #7B, #44, #7B
 
 ; Amazon boss logic
-
 ; Used by c_f8cb.
 c_fa65:  ; #fa65
         ld a, (#FE54)
@@ -6107,7 +5996,6 @@ c_fa65:  ; #fa65
         jp c_f8f4.l_4
 
 ; Iceland boss logic
-
 ; Used by c_f8cb.
 c_fad3:  ; #fad3
         ld a, (#FE54)
@@ -6160,7 +6048,6 @@ c_fad3:  ; #fad3
         ret
 
 ; Bermuda boss logic
-
 ; Used by c_f8cb.
 c_fb45:  ; #fb45
         ld a, (#FE54)
@@ -6211,7 +6098,6 @@ c_fb45:  ; #fb45
         ret
 
 ; (Some boss logic?)
-
 ; Used by c_f9a4 and c_fad3.
 c_fbb9:  ; #fbb9
         push ix
@@ -6228,7 +6114,6 @@ c_fbb9:  ; #fbb9
         ret
 
 ; (Some boss logic?)
-
 ; Used by c_f9a4.
 c_fbd2:  ; #fbd2
         push ix
@@ -6246,7 +6131,6 @@ c_fbd2:  ; #fbd2
         ret
 
 ; (Some boss logic?)
-
 ; Used by c_fbd2.
 c_fbf9:  ; #fbf9
         ld l, (ix+3)

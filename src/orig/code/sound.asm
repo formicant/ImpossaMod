@@ -31,11 +31,12 @@ c_bdfa:  ; #bdfa
         ld a, (is48k)
         and a
         ret NZ
+        
         di
-        ld a, #01
+        ld a, 1
         ld bc, #7FFD
         out (c), a
-        ld a, (#C9FA)
+        ld a, (p_c9fa)
         ld e, a
         xor a
         ld bc, #7FFD
@@ -53,6 +54,7 @@ callAyProcedure:  ; #be15
         ld a, (is48k)
         and a
         ret NZ
+        
         di
         ld a, #01
         ld bc, #7FFD
