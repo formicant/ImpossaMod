@@ -312,7 +312,7 @@ c_ceb2:  ; #ceb2
         sra h
         rr l
         add hl, de
-        ld de, #8A00
+        ld de, Level.blockMap
         add hl, de
         ld de, #5BD4
         ld b, #02
@@ -327,7 +327,7 @@ c_cecc:  ; #cecc
         sra h
         rr l
         add hl, de
-        ld de, #8A00
+        ld de, Level.blockMap
         add hl, de
         ld de, #5BB4
         ld b, #0A
@@ -345,7 +345,7 @@ c_cecc:  ; #cecc
         add hl, hl
         add hl, hl
         add hl, hl
-        ld bc, #7600
+        ld bc, Level.tileBlocks
         add hl, bc
         ld a, #04
 .l_2:
@@ -783,11 +783,11 @@ c_d153:  ; #d153
         add a, a
         add a, #28
         ld (ix+2), a
-        ld hl, #94D4
+        ld hl, cS.heroStands
         ld a, (#FE3C)
         cp #02
         jr C, .l_0
-        ld hl, #99C0
+        ld hl, cS.armedHeroStands
 .l_0:
         ld (ix+3), l
         ld (ix+4), h
@@ -982,7 +982,7 @@ c_d2b3:  ; #d2b3
         add a, #04
         ld (iy+2), a
 .l_0:
-        ld hl, #A12E
+        ld hl, cS.coin
         ld (iy+3), l
         ld (iy+4), h
         ld (iy+7), #00
@@ -1042,11 +1042,11 @@ c_d308:  ; #d308
         res 0, (ix+24)
         ret
 .l_4:
-        ld hl, #94D4
+        ld hl, cS.heroStands
         ld a, (#FE3C)
         cp #02
         jr C, .l_5
-        ld hl, #99C0
+        ld hl, cS.armedHeroStands
 .l_5:
         ld (ix+3), l
         ld (ix+4), h
@@ -1571,11 +1571,11 @@ c_d709:  ; #d709
         ld (#FE27), a
         xor a
         ld (#FE41), a
-        ld hl, #974A
+        ld hl, cS.heroJumps
         ld a, (#FE3C)
         cp #02
         jr C, .l_3
-        ld hl, #9BB8
+        ld hl, cS.armedHeroJumps
 .l_3:
         ld (ix+3), l
         ld (ix+4), h
@@ -1681,11 +1681,11 @@ c_d7f6:  ; #d7f6
         add a, #02
         ld (ix+0), a
 .l_5:
-        ld hl, #93D8
+        ld hl, cS.heroWalks
         ld a, (#FE3C)
         cp #02
         jr C, .l_6
-        ld hl, #98C4
+        ld hl, cS.armedHeroWalks
 .l_6:
         ld (ix+3), l
         ld (ix+4), h
@@ -1733,11 +1733,11 @@ c_d7f6:  ; #d7f6
         ld (#FE27), a
         xor a
         ld (#FE41), a
-        ld hl, #974A
+        ld hl, cS.heroJumps
         ld a, (#FE3C)
         cp #02
         jr C, .l_11
-        ld hl, #9BB8
+        ld hl, cS.armedHeroJumps
 .l_11:
         ld (ix+3), l
         ld (ix+4), h
@@ -1753,11 +1753,11 @@ c_d7f6:  ; #d7f6
         ld (#FE28), a
         xor a
         ld (#FE3E), a
-        ld hl, #964E
+        ld hl, cS.heroClimbs
         ld a, (#FE3C)
         cp #02
         jr C, .l_13
-        ld hl, #9B3A
+        ld hl, cS.armedHeroClimbs
 .l_13:
         ld (ix+3), l
         ld (ix+4), h
@@ -1879,11 +1879,11 @@ c_d94c:  ; #d94c
         or #03
         ld (ix+2), a
         ld (ix+19), #00
-        ld hl, #94D4
+        ld hl, cS.heroStands
         ld a, (#FE3C)
         cp #02
         jr C, .l_12
-        ld hl, #99C0
+        ld hl, cS.armedHeroStands
 .l_12:
         ld (ix+3), l
         ld (ix+4), h
@@ -1907,11 +1907,11 @@ c_d94c:  ; #d94c
         ld a, #02
         ld (ix+19), a
 .l_14:
-        ld hl, #97C8
+        ld hl, cS.heroFlies
         ld a, (#FE3C)
         cp #02
         jr C, .l_15
-        ld hl, #9C36
+        ld hl, cS.armedHeroFlies
 .l_15:
         ld (ix+3), l
         ld (ix+4), h
@@ -1920,11 +1920,11 @@ c_d94c:  ; #d94c
 ; (Some game logic from call table #D6E7?)
 ; Used by c_d7f6.
 c_da95:  ; #da95
-        ld hl, #974A
+        ld hl, cS.heroJumps
         ld a, (#FE3C)
         cp #02
         jr C, .l_0
-        ld hl, #9BB8
+        ld hl, cS.armedHeroJumps
 .l_0:
         ld (ix+3), l
         ld (ix+4), h
@@ -2532,7 +2532,7 @@ c_df85:  ; #df85
         jp NZ, .l_3
         ld a, #04
         call playSound
-        ld hl, #96CC
+        ld hl, cS.heroKicks
         ld (ix+3), l
         ld (ix+4), h
         ld (iy+5), #02
@@ -2574,10 +2574,10 @@ c_df85:  ; #df85
         jp NZ, .l_5
         ld a, #04
         call playSound
-        ld hl, #9846
+        ld hl, cS.heroThrows
         ld (ix+3), l
         ld (ix+4), h
-        ld hl, #9FAE
+        ld hl, cS.shatterbomb
         ld (iy+3), l
         ld (iy+4), h
         ld (iy+5), #01
@@ -2726,7 +2726,7 @@ c_df85:  ; #df85
         or a
         jr Z, .l_10
         dec (hl)
-        ld hl, #96CC
+        ld hl, cS.heroKicks
         ld (ix+3), l
         ld (ix+4), h
         ret
@@ -2734,7 +2734,7 @@ c_df85:  ; #df85
         ld a, (#FE28)
         or a
         jr NZ, .l_11
-        ld hl, #94D4
+        ld hl, cS.heroStands
         ld (ix+3), l
         ld (ix+4), h
 .l_11:
@@ -2753,7 +2753,7 @@ c_df85:  ; #df85
         dec (hl)
         push ix
         ld ix, c_beb4
-        ld hl, #9846
+        ld hl, cS.heroThrows
         ld (ix+3), l
         ld (ix+4), h
         pop ix
@@ -3032,7 +3032,7 @@ c_e419:  ; #e419
         jr Z, .l_1
         dec a
         ld (#FE45), a
-        ld de, #9DB0
+        ld de, cS.heroSmallWalks
         ld a, (#FE41)
         or a
         jr Z, .l_0
@@ -3040,7 +3040,7 @@ c_e419:  ; #e419
         ld a, (ix+6)
         and #02
         jr NZ, .l_0
-        ld de, #9D32
+        ld de, cS.heroSmallStands
 .l_0:
         ld (ix+3), e
         ld (ix+4), d
@@ -3146,13 +3146,13 @@ c_e47a:  ; #e47a
 
 ; Cloud sprite phase addresses
 c_e4ee:  ; #e4ee
-        dw #A1AE
-        dw #A22C
-        dw #A2AA
-        dw #A328
-        dw #A2AA
-        dw #A22C
-        dw #A1AE
+        dw cS.explosion0
+        dw cS.explosion1
+        dw cS.explosion2
+        dw cS.explosion3
+        dw cS.explosion2
+        dw cS.explosion1
+        dw cS.explosion0
 
 ; Get cloud sprite phase address
 ; Used by c_e47a.
@@ -3210,7 +3210,7 @@ c_e54f:  ; #e54f
         bit 5, (ix+5)
         ret NZ
         ld (ix+9), #47
-        ld hl, #9CB4
+        ld hl, cS.shopMole
         ld (ix+3), l
         ld (ix+4), h
         ld (ix+8), #09
@@ -3331,7 +3331,7 @@ c_e60a:  ; #e60a
         exa
         ld (ix+2), #0C
 .l_2:
-        ld de, #B282
+        ld de, Level.transitTable
         ld l, (ix+0)
         ld h, (ix+1)
         ld bc, #FFEA
@@ -3752,7 +3752,7 @@ c_e920:  ; #e920
         ld a, (iy+2)
         add a, #0B
         ld (ix+2), a
-        ld hl, #9CB4
+        ld hl, cS.shopMole
         ld (ix+3), l
         ld (ix+4), h
         ld (ix+9), #47
@@ -4312,7 +4312,7 @@ c_ed08:  ; #ed08
         ld a, (ix+8)
         cp #6E
         ret NZ
-        ld hl, #A918
+        ld hl, #A918            ; TODO: suspicious addr!
         ld (ix+3), l
         ld (ix+4), h
         ld (ix+7), #00
@@ -5007,7 +5007,7 @@ c_f37e:  ; #f37e
         add a, a
         ld l, a
         ld h, #00
-        ld de, #B373
+        ld de, Level.trajVelTable
         add hl, de
         ld e, (hl)
         inc hl
@@ -5016,7 +5016,7 @@ c_f37e:  ; #f37e
         add a, a
         ld l, a
         ld h, #00
-        ld bc, #B395
+        ld bc, Level.trajDirTable
         add hl, bc
         ld c, (hl)
         inc hl
@@ -5275,7 +5275,7 @@ c_f564:  ; #f564
         pop iy
         pop ix
         ret NC
-        ld hl, #9EEE
+        ld hl, cS.powerBullet
         ld (iy+3), l
         ld (iy+4), h
         ld (iy+7), #00
@@ -5427,7 +5427,7 @@ c_f6b5:  ; #f6b5
 ; Get objects from the object table
 ; Used by c_cd9b and c_e920.
 c_f6ba:  ; #f6ba
-        ld bc, #8600
+        ld bc, Level.objectTable
 .l_0:
         ld de, (#FE01)
         ld a, (bc)
@@ -5570,7 +5570,7 @@ c_f74a:  ; #f74a
         push hl
         exx
         pop hl
-        ld de, #B3B7
+        ld de, Level.objectTypes
         add hl, de
         ld (ix+6), #00
         ld (ix+48), #00

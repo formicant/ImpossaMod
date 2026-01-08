@@ -4,7 +4,7 @@
 ; Definitions
     INCLUDE "macros.inc"
     INCLUDE "orig/basic.inc"
-    INCLUDE "orig/level.inc"
+    INCLUDE "level.inc"
     INCLUDE "orig/ay.inc"
 
 ; Loading screen
