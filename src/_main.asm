@@ -36,10 +36,15 @@ codeStart:
     INCLUDE "orig/code/init_interrupts.asm"
     INCLUDE "orig/code/interrupt.asm"
     ORG #C044
-    INCLUDE "orig/code/code_1.asm"
+    INCLUDE "orig/code/drawing.asm"
+    INCLUDE "orig/code/game_menu.asm"
+    INCLUDE "orig/code/utils.asm"
+    INCLUDE "orig/code/controls.asm"
+    INCLUDE "orig/code/level_loading.asm"
     ORG #CAA5
     INCLUDE "orig/data/font.asm"
     ORG #CC25
+    INCLUDE "orig/code/entry_point.asm"
     INCLUDE "orig/code/code.asm"
 
 

@@ -36,10 +36,15 @@ codeStart:
     INCLUDE "code/init_interrupts.asm"
     INCLUDE "code/interrupt.asm"
     ORG #C044
-    INCLUDE "code/code_1.asm"
+    INCLUDE "code/drawing.asm"
+    INCLUDE "code/game_menu.asm"
+    INCLUDE "code/utils.asm"
+    INCLUDE "code/controls.asm"
+    INCLUDE "code/level_loading.asm"
     ORG #CAA5
     INCLUDE "data/font.asm"
     ORG #CC25
+    INCLUDE "code/entry_point.asm"
     INCLUDE "code/code.asm"
 
 ; Save game
