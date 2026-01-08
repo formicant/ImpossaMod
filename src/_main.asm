@@ -2,6 +2,7 @@
     DEVICE ZXSPECTRUM128
 
 ; Definitions
+    INCLUDE "macros.inc"
     INCLUDE "orig/basic.inc"
     INCLUDE "orig/level.inc"
     INCLUDE "orig/ay.inc"
@@ -15,37 +16,40 @@
     INCLUDE "basic_loader.asm"
 
 ; Code
-    ORG #5E00
-codeStart:
-    INCLUDE "orig/code/detect_model.asm"
-
     ORG #5E80
+codeStart:
     INCLUDE "orig/code/ay_sound.asm"
 
-    ORG Level.start
+    _NEXT_ORG Level.start
     INCLUDE "orig/data/0_klondike/map.asm"
     INCLUDE "orig/data/common_sprites.asm"
     INCLUDE "orig/data/0_klondike/sprites.asm"
     INCLUDE "orig/data/0_klondike/transits.asm"
-    ORG Level.trajVelTable
+    _NEXT_ORG Level.trajVelTable
     INCLUDE "orig/data/0_klondike/types_traj.asm"
 
-    ORG #BDDF
+    _NEXT_ORG #BDDF
     INCLUDE "orig/code/sound.asm"
-    ORG #BEB4
-    INCLUDE "orig/code/init_interrupts.asm"
-    INCLUDE "orig/code/interrupt.asm"
-    ORG #C044
+    ; empty space
+    _NEXT_ORG #C044
     INCLUDE "orig/code/drawing.asm"
     INCLUDE "orig/code/game_menu.asm"
     INCLUDE "orig/code/utils.asm"
     INCLUDE "orig/code/controls.asm"
     INCLUDE "orig/code/level_loading.asm"
-    ORG #CAA5
+    _NEXT_ORG #CAA5
     INCLUDE "orig/data/font.asm"
-    ORG #CC25
-    INCLUDE "orig/code/entry_point.asm"
+    _NEXT_ORG #CC25
     INCLUDE "orig/code/code.asm"
+    _NEXT_ORG #FC12
+    INCLUDE "init_interrupts.asm"
+    INCLUDE "detect_model.asm"
+    _NEXT_ORG #FD00
+    INCLUDE "interrupt_table.asm"
+    _NEXT_ORG #FEFE
+    INCLUDE "interrupt.asm"
+
+codeLength = $ - codeStart
 
 
     SAVESNA "impossamod.sna", #CC25
@@ -54,9 +58,13 @@ codeStart:
     EMPTYTAP "impossamod.tap"
     SAVETAP "impossamod.tap", BASIC, "ImpossaMod", Basic.start, Basic.length, 1
     SAVETAP "impossamod.tap", CODE, "screen", Screen.start, Screen.length
-    SAVETAP "impossamod.tap", CODE, "impossamod", codeStart, #9F00
+    SAVETAP "impossamod.tap", CODE, "impossamod", codeStart, codeLength
 
 ; Save levels
     ORG 0
     INCLUDE "orig/data/headers.asm"
+
+; Save level 0 Klondike
+    SAVETAP "impossamod.tap", HEADLESS, Headers.level0, 1, #80
+    SAVETAP "impossamod.tap", HEADLESS, Level.start, Level.length
 

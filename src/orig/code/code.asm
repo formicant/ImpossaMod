@@ -1,6 +1,30 @@
     MODULE Code
 
 
+; Entry point
+entryPoint:  ; #cc25
+        di
+        ld a, #FF
+        ld (#FE8A), a
+        ld sp, 0
+        call initInterrupts
+        call detectSpectrumModel
+        
+        ; init mirroring table
+        ld b, 0
+        ld h, #6A
+.l_0:
+        ld l, b
+        ld a, b
+        ld c, 0
+    DUP 8
+        rla
+        rr c
+    EDUP
+        ld (hl), c
+        djnz .l_0
+        jp gameStart
+
 gameStart:  ; #cc5a
         call gameMenu
         call c_d133
@@ -181,22 +205,22 @@ c_cdae:  ; #cdae
         ldir
         call c_c060
         call c_ce23
-        ld c, #03
-        call #FF21
+        ld c, 3
+        call waitFrames
         ld hl, #5BE0
         exx
         ld hl, #5BE2
         ld de, #6162
         call c_c4c0
-        ld c, #01
-        call #FF21
+        ld c, 1
+        call waitFrames
         ld hl, #5BE2
         exx
         ld hl, #5BE6
         ld de, #6166
         call c_c4c0
-        ld c, #05
-        call #FF21
+        ld c, 5
+        call waitFrames
         ld hl, #5BE6
         exx
         ld hl, #5BE8

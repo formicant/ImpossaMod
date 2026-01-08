@@ -44,7 +44,6 @@ codeStart:
     ORG #CAA5
     INCLUDE "data/font.asm"
     ORG #CC25
-    INCLUDE "code/entry_point.asm"
     INCLUDE "code/code.asm"
 
 ; Save game
