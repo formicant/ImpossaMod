@@ -23,11 +23,12 @@ entryPoint:  ; #cc25
     EDUP
         ld (hl), c
         djnz .l_0
+        
         jp gameStart
 
 gameStart:  ; #cc5a
         call gameMenu
-        call c_d133
+        call clearGameState
 .l_2:
         call levelSelectionMenu
         call clearScreenPixels
@@ -742,7 +743,7 @@ incrementLongFrameCounter:  ; #d121
 
 ; Clears something before the game
 ; Used by c_cc25.
-c_d133:  ; #d133
+clearGameState:  ; #d133
         ld hl, #FE01
         ld de, #FE02
         ld bc, #0088

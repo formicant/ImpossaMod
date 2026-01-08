@@ -30,7 +30,7 @@ codeStart:
 
     _NEXT_ORG #BDDF
     INCLUDE "orig/code/sound.asm"
-    ; empty space
+    ; empty space, 401 bytes
     _NEXT_ORG #C044
     INCLUDE "orig/code/drawing.asm"
     INCLUDE "orig/code/game_menu.asm"
@@ -39,13 +39,12 @@ codeStart:
     INCLUDE "orig/code/level_loading.asm"
     _NEXT_ORG #CAA5
     INCLUDE "orig/data/font.asm"
-    _NEXT_ORG #CC25
     INCLUDE "orig/code/code.asm"
     _NEXT_ORG #FC12
-    INCLUDE "init_interrupts.asm"
-    INCLUDE "detect_model.asm"
+    ; empty space, 238 bytes
     _NEXT_ORG #FD00
     INCLUDE "interrupt_table.asm"
+    INCLUDE "disposable.asm"
     _NEXT_ORG #FEFE
     INCLUDE "interrupt.asm"
 
