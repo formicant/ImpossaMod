@@ -25,12 +25,12 @@ codeStart:
     INCLUDE "orig/data/0_klondike/transits.asm"
     ORG Level.trajVelTable
     INCLUDE "orig/data/0_klondike/traj_table.asm"
-    INCLUDE "orig/data/common_object_types.asm"
+    INCLUDE "orig/data/object_types.asm"
     INCLUDE "orig/data/0_klondike/object_types.asm"
     INCLUDE "orig/data/0_klondike/trajectories.asm"
 
     ORG Level.end
-    INCLUDE "orig/data/common_sprites.asm"
+    INCLUDE "orig/data/sprites.asm"
 
     _NEXT_ORG #BDDF
     INCLUDE "orig/code/sound.asm"

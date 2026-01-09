@@ -15,7 +15,7 @@ transitTable    EQU #B282
 
 trajVelTable    EQU #B373
 trajDirTable    EQU #B395
-objectTypes     EQU #B3B7
+
 levObjectTypes  EQU #B4BB
 
 end             EQU #BDDF

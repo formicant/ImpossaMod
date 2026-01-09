@@ -26,12 +26,12 @@ codeStart:
     INCLUDE "data/0_klondike/tiles.asm"
     INCLUDE "data/0_klondike/object_table.asm"
     INCLUDE "data/0_klondike/block_map.asm"
-    INCLUDE "data/common_sprites.asm"
+    INCLUDE "data/sprites.asm"
     INCLUDE "data/0_klondike/sprites.asm"
     INCLUDE "data/0_klondike/transits.asm"
     ORG Level.trajVelTable
     INCLUDE "data/0_klondike/traj_table.asm"
-    INCLUDE "data/common_object_types.asm"
+    INCLUDE "data/object_types.asm"
     INCLUDE "data/0_klondike/object_types.asm"
     INCLUDE "data/0_klondike/trajectories.asm"
 

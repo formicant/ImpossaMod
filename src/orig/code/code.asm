@@ -5569,7 +5569,7 @@ c_f74a:  ; #f74a
         push hl
         exx
         pop hl
-        ld de, Level.objectTypes
+        ld de, Common.objectTypes
         add hl, de
         ld (ix+6), #00
         ld (ix+48), #00
