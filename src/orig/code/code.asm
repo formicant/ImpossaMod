@@ -1137,12 +1137,12 @@ c_d3bb:  ; #d3bb
 ; Used by c_ef72 and c_f37e.
 c_d407:  ; #d407
         ld hl, #0160
-        ld (#D43B), hl
+        ld (.de), hl
         jr .l_1
 ; This entry point is used by c_df85 and c_f618.
 .l_0:
         ld hl, #0120
-        ld (#D43B), hl
+        ld (.de), hl
 .l_1:
         ld a, (ix+2)
         cp #E0
@@ -1162,7 +1162,7 @@ c_d407:  ; #d407
         sbc hl, de
         pop hl
         jr C, .l_2
-        ld de, #0120
+.de+*   ld de, #0120
         xor a
         sbc hl, de
         ret C
@@ -1214,7 +1214,7 @@ c_d460:  ; #d460
         add hl, hl
         add hl, bc
         add hl, de
-        ld (#D4C3), hl
+        ld (.hl), hl
         ld l, (ix+0)
         ld h, (ix+1)
         ld a, (ix+8)
@@ -1244,7 +1244,7 @@ c_d460:  ; #d460
         srl h
         rr l
         ex de, hl
-        ld hl, #0000
+.hl+*   ld hl, -0
         add hl, de
         ld de, #5B00
         add hl, de
@@ -1301,15 +1301,16 @@ c_d4e5:  ; #d4e5
         ret
 
 ; "SELECT  LEVEL"
-c_d51e:  ; #d51e
+textSelectLevel:  ; #d51e
         db "SELECT  LEVEL"C
 
 ; Level names
-c_d52b:  ; #d52b
+levelNames:  ; #d52b
         db "KLONDIKE"C
         db " ORIENT "C
         db " AMAZON "C
         db "ICELAND "C
+.bermuda
         db "BERMUDA "C
 
 ; Level selection menu
@@ -1319,7 +1320,7 @@ levelSelectionMenu:  ; #d553
         ld a, #47
         call fillScreenAttrs
         ld hl, #0809
-        ld de, c_d51e
+        ld de, textSelectLevel
         ld c, #46
         call printString
         ld hl, #FE22
@@ -1333,7 +1334,7 @@ levelSelectionMenu:  ; #d553
         jp Z, gameEnd
         cp #04
         jr NZ, .l_3
-        ld de, #D54B
+        ld de, levelNames.bermuda
         ld hl, #0B0C
         ld c, #47
         call printString
@@ -1380,7 +1381,7 @@ levelSelectionMenu:  ; #d553
         add a, a
         ld l, a
         ld h, #00
-        ld de, c_d52b
+        ld de, levelNames
         add hl, de
         ex de, hl
         ld hl, #0B0C
@@ -1398,7 +1399,7 @@ levelSelectionMenu:  ; #d553
         out (#FE), a
         call clearScreenPixels
         ld hl, #0E0B
-        ld de, #D610
+        ld de, textPressFire
         ld c, #47
         call printString
 .l_8:
@@ -1408,10 +1409,13 @@ levelSelectionMenu:  ; #d553
         ret
 
 ; Tape messages
-c_d606:  ; #d606
+textLoadError:  ; #d606
         db "LOAD ERROR"C
+textPressFire:  ; #d610
         db "PRESS FIRE"C
+textStartTape:  ; #d61A
         db "START TAPE"C
+textLoading:  ; #d624
         db " LOADING"C
 
 ; Load level if needed
@@ -1426,7 +1430,7 @@ c_d62c:  ; #d62c
         ret
 .l_0:
         call clearScreenPixels
-        ld de, #D61A
+        ld de, textStartTape
         ld hl, #0C0B
         ld c, #47
         call printString
@@ -1442,7 +1446,7 @@ c_d62c:  ; #d62c
         ld (#FE8A), a
         call clearScreenPixels
         ld hl, #0C0B
-        ld de, c_d606
+        ld de, textLoadError
         ld c, #46
         call printString
         inc de
@@ -1518,8 +1522,8 @@ c_d709:  ; #d709
         ld e, (hl)
         inc hl
         ld d, (hl)
-        ld (#D723), de
-        call #0000
+        ld (.call), de
+.call+* call -0
         ld a, (#FE28)
         cp #02
         jp NC, .l_4
@@ -2497,10 +2501,11 @@ explosionBubbles:  ; #df5f
         dw cS.explosion3
         dw cS.explosion4
 
-bulletTable:  ; #df67            w   h
+lazerBulletTable:  ; #df67            w   h
         dw cS.lazerBullet1 : db 16,  7, 8
         dw cS.lazerBullet2 : db 16, 11, 6
         dw cS.lazerBullet3 : db 16, 15, 4
+powerBulletTable:  ; #df76
         dw cS.powerBullet1 : db  4,  4, 9
         dw cS.powerBullet2 : db  4, 16, 4
         dw cS.powerBullet3 : db  8,  8, 8
@@ -2637,7 +2642,7 @@ c_df85:  ; #df85
         add a, l
         ld l, a
         ld h, #00
-        ld de, #DF76
+        ld de, powerBulletTable
         add hl, de
         ld c, (hl)
         inc hl
@@ -2691,7 +2696,7 @@ c_df85:  ; #df85
         add a, l
         ld l, a
         ld h, #00
-        ld de, bulletTable
+        ld de, lazerBulletTable
         add hl, de
         ld c, (hl)
         inc hl
@@ -2830,9 +2835,9 @@ c_df85:  ; #df85
         set 1, (ix+5)
         ld a, (#FE0A)
         dec a
-        ld (#E26E), a
+        ld (.l), a
 .l_16:
-        ld l, #00
+.l+*    ld l, #00
         ld h, #00
         add hl, hl
         add hl, hl
@@ -2910,9 +2915,11 @@ c_df85:  ; #df85
 
 ; (Some data on enemies?)
 c_e308:  ; #e308
-        db #00, #01, #05, #04, #06, #02, #0A, #08
-        db #09, #00, #00, #04, #00, #02, #01, #03
-        db #00, #06, #07, #05
+        db 0
+c_e309:  ; #e309
+        db 1, 5, 4, 6, 2, 10, 8, 9
+c_e311:  ; #e311
+        db 0, 0, 4, 0, 2, 1, 3, 0, 6, 7, 5
 
 ; (Some logic for enemies?)
 ; Used by c_df85.
@@ -2958,7 +2965,7 @@ c_e31c:  ; #e31c
         ld a, (ix+21)
         ld l, a
         ld h, #00
-        ld de, #E311
+        ld de, c_e311
         add hl, de
         ld b, (hl)
         ld (ix+21), #00
@@ -3004,7 +3011,7 @@ c_e31c:  ; #e31c
         ld a, (ix+21)
         ld l, a
         ld h, #00
-        ld de, #E311
+        ld de, c_e311
         add hl, de
         ld c, (hl)
         ld a, b
@@ -3024,7 +3031,7 @@ c_e31c:  ; #e31c
         and #07
         ld l, a
         ld h, #00
-        ld de, #E309
+        ld de, c_e309
         add hl, de
         ld a, (hl)
         ld (ix+21), a
@@ -3373,7 +3380,7 @@ c_e60a:  ; #e60a
         rr l
         sra h
         rr l
-        ld (#E66F), hl
+        ld (.hl), hl
 .l_3:
         exa
         ld c, a
@@ -3388,7 +3395,7 @@ c_e60a:  ; #e60a
         ld a, (de)
         ld b, a
         xor a
-        ld hl, #0000
+.hl+*   ld hl, -0
         sbc hl, bc
         jr Z, .l_5
         dec de

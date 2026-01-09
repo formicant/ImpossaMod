@@ -28,7 +28,7 @@ c_c9ac:  ; #c9ac
         add a, a
         ld l, a
         ld h, #00
-        ld de, c_d52b
+        ld de, levelNames
         add hl, de
         ex de, hl
         ld hl, #0C0F
