@@ -1,8 +1,6 @@
     MODULE Lev0Klondike
 
 
-    DISP #6C00
-
 ; #6C00
 tilePixels:
         dh 00 00 00 00 00 00 00 00  ; tile #00 (bg space)
@@ -1096,8 +1094,6 @@ blockMap:
         dh 05 19 14 14 14 08    ;██        𜷡█;
         dh 01 05 19 14 14 08    ;██      𜷡███;
         dh 01 01 07 14 14 08    ;██     ▐████;
-
-    ENT
 
 
     ENDMODULE

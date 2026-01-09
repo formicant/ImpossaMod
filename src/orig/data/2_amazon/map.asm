@@ -1,8 +1,6 @@
     MODULE Lev2Amazon
 
 
-    DISP #6C00
-
 ; #6C00
 tilePixels:
         dh 00 00 00 00 00 00 00 00  ; tile #00 (bg space)
@@ -1096,8 +1094,6 @@ blockMap:
         dh 3B 9D 48 3E 44 4B    ;██      ████;
         dh 39 3A 43 40 40 4B    ;██      ████;
         dh 27 27 39 39 39 27    ;████████████;
-
-    ENT
 
 
     ENDMODULE

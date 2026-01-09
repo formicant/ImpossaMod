@@ -2,8 +2,6 @@
     MODULE Lev4Bermuda
 
 
-    DISP #6C00
-
 ; #6C00
 tilePixels:
         dh 00 00 00 00 00 00 00 00 ; tile #00 (bg space)
@@ -1143,8 +1141,6 @@ blockMap:
         dh 91 00 1B A6 A4 26    ;██▀▀▀▜      ;
         dh 91 8F 8F 8F 98 26    ;██          ;
         dh 01 30 30 30 30 01    ;████████████;
-
-    ENT
 
 
     ENDMODULE

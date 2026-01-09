@@ -22,11 +22,12 @@ codeStart:
 
     _NEXT_ORG Level.start
     INCLUDE "orig/data/0_klondike/map.asm"
-    INCLUDE "orig/data/common_sprites.asm"
     INCLUDE "orig/data/0_klondike/sprites.asm"
     INCLUDE "orig/data/0_klondike/transits.asm"
     _NEXT_ORG Level.trajVelTable
     INCLUDE "orig/data/0_klondike/types_traj.asm"
+    _NEXT_ORG Level.end
+    INCLUDE "orig/data/common_sprites.asm"
 
     _NEXT_ORG #BDDF
     INCLUDE "orig/code/sound.asm"
@@ -50,6 +51,8 @@ codeStart:
 
 codeLength = $ - codeStart
 
+    ORG #CC27
+        db 0
 
     SAVESNA "impossamod.sna", #CC25
 
@@ -59,11 +62,11 @@ codeLength = $ - codeStart
     SAVETAP "impossamod.tap", CODE, "screen", Screen.start, Screen.length
     SAVETAP "impossamod.tap", CODE, "impossamod", codeStart, codeLength
 
-; Save levels
-    ORG 0
-    INCLUDE "orig/data/headers.asm"
+; ; Save levels
+;     ORG 0
+;     INCLUDE "orig/data/headers.asm"
 
-; Save level 0 Klondike
-    SAVETAP "impossamod.tap", HEADLESS, Headers.level0, 1, #80
-    SAVETAP "impossamod.tap", HEADLESS, Level.start, Level.length
+; ; Save level 0 Klondike
+;     SAVETAP "impossamod.tap", HEADLESS, Headers.level0, 1, #80
+;     SAVETAP "impossamod.tap", HEADLESS, Level.start, Level.length
 

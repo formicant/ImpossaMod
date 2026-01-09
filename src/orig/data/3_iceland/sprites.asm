@@ -2,8 +2,6 @@
     MODULE Lev3Iceland
 
 
-    DISP #A59E
-
 ; #A59E
 sprites:
 lS:
@@ -333,8 +331,6 @@ lS:
 
 ; #B282
 transitTable:
-
-    ENT
 
 
     ENDMODULE

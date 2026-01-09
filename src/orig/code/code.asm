@@ -1681,11 +1681,11 @@ c_d7f6:  ; #d7f6
         add a, #02
         ld (ix+0), a
 .l_5:
-        ld hl, cS.heroWalks
+        ld hl, cS.heroWalks1
         ld a, (#FE3C)
         cp #02
         jr C, .l_6
-        ld hl, cS.armedHeroWalks
+        ld hl, cS.armedHeroWalks1
 .l_6:
         ld (ix+3), l
         ld (ix+4), h
@@ -1907,11 +1907,11 @@ c_d94c:  ; #d94c
         ld a, #02
         ld (ix+19), a
 .l_14:
-        ld hl, cS.heroFlies
+        ld hl, cS.heroFalls
         ld a, (#FE3C)
         cp #02
         jr C, .l_15
-        ld hl, cS.armedHeroFlies
+        ld hl, cS.armedHeroFalls
 .l_15:
         ld (ix+3), l
         ld (ix+4), h
@@ -2479,16 +2479,31 @@ c_deb1:  ; #deb1
 c_df2b:  ; #df2b
         db #FC, #FE, #FF, #FF, #00, #01, #01, #01
         db #01, #02, #03, #04, #06, #07, #08, #0A
-        db #0B, #0C, #0E, #0F, #10, #80, #A6, #A3
-        db #24, #A4, #A2, #A4, #00, #01, #00, #FF
-        db #00, #00, #00, #00, #00, #01, #02, #01
-        db #00, #FF, #00, #00, #00, #01, #02, #03
-        db #02, #01, #00, #FF, #AE, #A1, #2C, #A2
-        db #AA, #A2, #28, #A3, #2E, #9E, #10, #07
-        db #08, #6E, #9E, #10, #0B, #06, #AE, #9E
-        db #10, #0F, #04, #EE, #9E, #04, #04, #09
-        db #2E, #9F, #04, #10, #04, #6E, #9F, #08
-        db #08, #08
+        db #0B, #0C, #0E, #0F, #10, #80
+
+kickBubbles:  ; #df41
+        dw cS.kickBubble1
+        dw cS.kickBubble2
+        dw cS.kickBubble3
+
+c_df47:  ; #df47
+        db 0, 1, 0, -1
+        db 0, 0, 0, 0, 0, 1, 2, 1, 0, -1
+        db 0, 0, 0, 1, 2, 3, 2, 1, 0, -1
+
+explosionBubbles:  ; #df5f
+        dw cS.explosion1
+        dw cS.explosion2
+        dw cS.explosion3
+        dw cS.explosion4
+
+bulletTable:  ; #df67            w   h
+        dw cS.lazerBullet1 : db 16,  7, 8
+        dw cS.lazerBullet2 : db 16, 11, 6
+        dw cS.lazerBullet3 : db 16, 15, 4
+        dw cS.powerBullet1 : db  4,  4, 9
+        dw cS.powerBullet2 : db  4, 16, 4
+        dw cS.powerBullet3 : db  8,  8, 8
 
 ; (Some logic for enemies?)
 ; Used by c_cc25.
@@ -2557,7 +2572,7 @@ c_df85:  ; #df85
         add a, a
         ld l, a
         ld h, #00
-        ld de, #DF41
+        ld de, kickBubbles
         add hl, de
         ld a, (hl)
         ld (iy+3), a
@@ -2676,7 +2691,7 @@ c_df85:  ; #df85
         add a, l
         ld l, a
         ld h, #00
-        ld de, #DF67
+        ld de, bulletTable
         add hl, de
         ld c, (hl)
         inc hl
@@ -2822,7 +2837,7 @@ c_df85:  ; #df85
         add hl, hl
         add hl, hl
         add hl, hl
-        ld de, #DF47
+        ld de, c_df47
         add hl, de
         ex de, hl
         ld a, (#FE40)
@@ -2841,7 +2856,7 @@ c_df85:  ; #df85
         ld l, a
         ld h, #00
         add hl, hl
-        ld de, #DF5F
+        ld de, explosionBubbles
         add hl, de
         ld a, (hl)
         inc hl
@@ -3019,10 +3034,20 @@ c_e31c:  ; #e31c
         ret
 
 ; (Some data on weapons?)
-c_e401:  ; #e401
-        db #D8, #93, #56, #94, #D4, #94, #52, #95
-        db #D0, #95, #D4, #94, #C4, #98, #42, #99
-        db #C0, #99, #3E, #9A, #BC, #9A, #C0, #99
+heroWalkPhases:  ; #e401
+        dw cS.heroWalks1
+        dw cS.heroWalks2
+        dw cS.heroStands
+        dw cS.heroWalks3
+        dw cS.heroWalks4
+        dw cS.heroStands
+.armed:
+        dw cS.armedHeroWalks1
+        dw cS.armedHeroWalks2
+        dw cS.armedHeroStands
+        dw cS.armedHeroWalks3
+        dw cS.armedHeroWalks4
+        dw cS.armedHeroStands
 
 ; (Some game logic with weapons?)
 ; Used by c_d709.
@@ -3065,11 +3090,11 @@ c_e419:  ; #e419
         add a, a
         ld l, a
         ld h, #00
-        ld de, c_e401
+        ld de, heroWalkPhases
         ld a, (#FE3C)
         cp #02
         jr C, .l_3
-        ld de, #E40D
+        ld de, heroWalkPhases.armed
 .l_3:
         add hl, de
         ld e, (hl)
@@ -3146,13 +3171,13 @@ c_e47a:  ; #e47a
 
 ; Cloud sprite phase addresses
 c_e4ee:  ; #e4ee
-        dw cS.explosion0
         dw cS.explosion1
         dw cS.explosion2
         dw cS.explosion3
+        dw cS.explosion4
+        dw cS.explosion3
         dw cS.explosion2
         dw cS.explosion1
-        dw cS.explosion0
 
 ; Get cloud sprite phase address
 ; Used by c_e47a.
@@ -3646,41 +3671,15 @@ c_e80a:  ; #e80a
 
 ; (Some table, 5 levels * 6 words)
 c_e85f:  ; #e85f
-        dw #0668
-        dw #0668
-        dw #0404
-        dw #03AC
-        dw #0414
-        dw #0102
-        dw #0668
-        dw #0688
-        dw #0405
-        dw #02B4
-        dw #0378
-        dw #0405
-        dw #0668
-        dw #0688
-        dw #0405
-        dw #04D8
-        dw #04F8
-        dw #020B
-        dw #066C
-        dw #068C
-        dw #0403
-        dw #04F8
-        dw #0530
-        dw #0402
-        dw #066C
-        dw #068C
-        dw #0405
-        dw #0580
-        dw #0640
-        dw #0304
+.lev0:  dw #0668, #0668, #0404, #03AC, #0414, #0102
+.lev1:  dw #0668, #0688, #0405, #02B4, #0378, #0405
+.lev2:  dw #0668, #0688, #0405, #04D8, #04F8, #020B
+.lev3:  dw #066C, #068C, #0403, #04F8, #0530, #0402
+.lev4:  dw #066C, #068C, #0405, #0580, #0640, #0304
 
 ; Item prices in the shop
 c_e89b:  ; #e89b
-        db #7D, #96, #AF, #FA, #4B, #01, #C8, #64
-        db #00
+        db 125, 150, 175, 250, 75, 1, 200, 100, 0
 
 ; Item names in the shop
 c_e8a4:  ; #e8a4
@@ -5275,7 +5274,7 @@ c_f564:  ; #f564
         pop iy
         pop ix
         ret NC
-        ld hl, cS.powerBullet
+        ld hl, cS.powerBullet1
         ld (iy+3), l
         ld (iy+4), h
         ld (iy+7), #00

@@ -1,8 +1,6 @@
     MODULE Lev1Orient
 
 
-    DISP #6C00
-
 ; #6C00
 tilePixels:
         dh 00 00 00 00 00 00 00 00  ; tile #00 (bg space)
@@ -1060,8 +1058,6 @@ blockMap:
         dh 3F 00 36 33 34 24    ;██     ▐  ██;
         dh 1F 4F 00 00 00 24    ;██      ████;
         dh 1F 1F 21 21 21 1F    ;████████████;
-
-    ENT
 
 
     ENDMODULE

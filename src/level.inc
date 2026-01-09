@@ -10,14 +10,14 @@ tileBlocks      EQU #7600
 objectTable     EQU #8600
 blockMap        EQU #8A00
 
-sprites         EQU #A59E
-transitTable    EQU #B282
+sprites         EQU #A59E - #11C6
+transitTable    EQU #B282 - #11C6
 
-trajVelTable    EQU #B373
-trajDirTable    EQU #B395
-objectTypes     EQU #B3B7
+trajVelTable    EQU #B373 - #11C6
+trajDirTable    EQU #B395 - #11C6
+objectTypes     EQU #B3B7 - #11C6
 
-end             EQU #BDDF
+end             EQU #BDDF - #11C6
 length          EQU end - start
 
     ENDMODULE
