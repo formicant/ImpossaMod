@@ -47,18 +47,18 @@ c_c07c:  ; #c07c
         ld h, (ix+1)
         bit 1, (ix+5)
         jr NZ, .l_0
-        ld bc, #FFF0
+        ld bc, -16
         add hl, bc
         ret NC
-        ld bc, #FEF0
+        ld bc, -272
         add hl, bc
         ret C
         jr .l_1
 .l_0:
-        ld bc, #FFF8
+        ld bc, -8
         add hl, bc
         ret NC
-        ld bc, #FEE8
+        ld bc, -280
         add hl, bc
         ret C
 .l_1:

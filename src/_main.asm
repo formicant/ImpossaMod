@@ -1,5 +1,7 @@
     SLDOPT COMMENT WPMEM, LOGPOINT, ASSERTION
     DEVICE ZXSPECTRUM128
+    
+    DEFINE _MOD
 
 ; Definitions
     INCLUDE "macros.inc"

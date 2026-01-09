@@ -189,7 +189,7 @@ pauseGameIfPauseKeyPressed:  ; #cd5c
 ; Used by c_d1c1, c_e60a, c_e920 and c_e9b1.
 c_cd9b:  ; #cd9b
         ld (#FE01), hl
-        ld hl, #FFE0
+        ld hl, -32
         add hl, de
         ld (#FE03), hl
         call c_f6ba
@@ -247,7 +247,7 @@ c_cdae:  ; #cdae
 ; ?
 ; Used by c_cdae.
 c_ce23:  ; #ce23
-        ld de, #FFFD
+        ld de, -3
         ld hl, #615C
         ld c, #04
         xor a
@@ -381,7 +381,7 @@ c_cf17:  ; #cf17
 .l_0:
         ld l, (ix+0)
         ld h, (ix+1)
-        ld de, #FFC0
+        ld de, -64
         add hl, de
         bit 7, h
         jr Z, .l_1
@@ -1175,7 +1175,7 @@ c_d407:  ; #d407
 c_d443:  ; #d443
         ld l, (ix+0)
         ld h, (ix+1)
-        ld de, #FFFC
+        ld de, -4
         add hl, de
         ld (ix+0), l
         ld (ix+1), h
@@ -1590,7 +1590,7 @@ c_d709:  ; #d709
         jr C, .l_5
         ld l, (ix+0)
         ld h, (ix+1)
-        ld de, #FF38
+        ld de, -200
         add hl, de
         jr NC, .l_5
         ld a, #FF
@@ -2362,7 +2362,7 @@ c_dd73:  ; #dd73
 c_de37:  ; #de37
         ld l, (ix+0)
         ld h, (ix+1)
-        ld de, #FFE0
+        ld de, -32
         add hl, de
         jr NC, .l_2
         ld a, (#FE28)
@@ -2421,7 +2421,7 @@ c_de37:  ; #de37
 c_deb1:  ; #deb1
         ld l, (ix+0)
         ld h, (ix+1)
-        ld de, #FF04
+        ld de, -252
         add hl, de
         jr C, .l_2
         ld a, (#FE28)
@@ -2560,7 +2560,7 @@ c_df85:  ; #df85
         ld de, #0010
         bit 0, (ix+21)
         jr NZ, .l_2
-        ld de, #FFF0
+        ld de, -16
 .l_2:
         add hl, de
         ld (iy+0), l
@@ -2605,7 +2605,7 @@ c_df85:  ; #df85
         ld de, #0008
         bit 0, (ix+21)
         jr NZ, .l_4
-        ld de, #FFFA
+        ld de, -6
 .l_4:
         add hl, de
         ld (iy+0), l
@@ -2659,7 +2659,7 @@ c_df85:  ; #df85
         ld de, #0018
         bit 0, (ix+21)
         jr NZ, .l_6
-        ld de, #FFF0
+        ld de, -16
 .l_6:
         add hl, de
         ld (iy+0), l
@@ -2713,7 +2713,7 @@ c_df85:  ; #df85
         ld de, #0010
         bit 0, (ix+21)
         jr NZ, .l_8
-        ld de, #FFFA
+        ld de, -6
 .l_8:
         add hl, de
         ld (iy+0), l
@@ -3359,7 +3359,7 @@ c_e60a:  ; #e60a
         ld de, Level.transitTable
         ld l, (ix+0)
         ld h, (ix+1)
-        ld bc, #FFEA
+        ld bc, -22
         add hl, bc
         sra h
         rr l
@@ -3420,7 +3420,7 @@ c_e60a:  ; #e60a
         add a, #20
         ld (ix+0), a
         ld (ix+1), #00
-        ld de, #FFFC
+        ld de, -4
         add hl, de
         ld e, (hl)
         inc hl
@@ -5817,7 +5817,7 @@ c_f8f4:  ; #f8f4
         cp #41
         jr NZ, .l_2
         ld ix, #BF7C
-        ld hl, #B17C
+        ld hl, Lev0Klondike.lS.bossAnt2
         ld (ix+3), l
         ld (ix+4), h
         ld a, #FF
