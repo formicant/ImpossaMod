@@ -48,4 +48,11 @@ shortFrameCounter:
         db -0
 
 
+; AY stub
+playAySound:
+playMenuMusic:
+aySoundFrame:
+p_c9fa:
+        ret
+
     ENDMODULE

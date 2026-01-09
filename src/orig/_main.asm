@@ -23,12 +23,17 @@ codeStart:
     INCLUDE "code/ay_sound.asm"
 
     ORG Level.start
-    INCLUDE "data/0_klondike/map.asm"
+    INCLUDE "data/0_klondike/tiles.asm"
+    INCLUDE "data/0_klondike/object_table.asm"
+    INCLUDE "data/0_klondike/block_map.asm"
     INCLUDE "data/common_sprites.asm"
     INCLUDE "data/0_klondike/sprites.asm"
     INCLUDE "data/0_klondike/transits.asm"
     ORG Level.trajVelTable
-    INCLUDE "data/0_klondike/types_traj.asm"
+    INCLUDE "data/0_klondike/traj_table.asm"
+    INCLUDE "data/common_object_types.asm"
+    INCLUDE "data/0_klondike/object_types.asm"
+    INCLUDE "data/0_klondike/trajectories.asm"
 
     ORG #BDDF
     INCLUDE "code/sound.asm"

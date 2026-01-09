@@ -16,17 +16,20 @@
     INCLUDE "basic_loader.asm"
 
 ; Code
-    ORG #5E80
+    ORG Level.start
 codeStart:
-    INCLUDE "orig/code/ay_sound.asm"
-
-    _NEXT_ORG Level.start
-    INCLUDE "orig/data/0_klondike/map.asm"
+    INCLUDE "orig/data/0_klondike/tiles.asm"
+    INCLUDE "orig/data/0_klondike/object_table.asm"
+    INCLUDE "orig/data/0_klondike/block_map.asm"
     INCLUDE "orig/data/0_klondike/sprites.asm"
     INCLUDE "orig/data/0_klondike/transits.asm"
-    _NEXT_ORG Level.trajVelTable
-    INCLUDE "orig/data/0_klondike/types_traj.asm"
-    _NEXT_ORG Level.end
+    ORG Level.trajVelTable
+    INCLUDE "orig/data/0_klondike/traj_table.asm"
+    INCLUDE "orig/data/common_object_types.asm"
+    INCLUDE "orig/data/0_klondike/object_types.asm"
+    INCLUDE "orig/data/0_klondike/trajectories.asm"
+
+    ORG Level.end
     INCLUDE "orig/data/common_sprites.asm"
 
     _NEXT_ORG #BDDF
