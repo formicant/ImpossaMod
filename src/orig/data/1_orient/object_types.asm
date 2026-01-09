@@ -1,45 +1,9 @@
     MODULE Lev1Orient
 
 
-; #B373
-trajVelTable:
-        dw trajectories.vel0    ; #B935
-        dw trajectories.vel1    ; #B933
-        dw trajectories.vel2    ; #B937
-        dw trajectories.vel3    ; #B980
-        dw trajectories.vel4    ; #B9BB
-        dw trajectories.vel5    ; #B9BB
-        dw trajectories.vel6    ; #B9F2
-        dw trajectories.vel7    ; #BA0B
-        dw trajectories.vel8    ; #BA3E
-        block 16, #FF           ; padding
-
-; #B395
-trajDirTable:
-        dw trajectories.dir0    ; #B936
-        dw trajectories.dir1    ; #B934
-        dw trajectories.dir2    ; #B95C
-        dw trajectories.dir3    ; #B99E
-        dw trajectories.dir4    ; #B9CE
-        dw trajectories.dir5    ; #B9E0
-        dw trajectories.dir6    ; #B9FF
-        dw trajectories.dir7    ; #BA25
-        dw trajectories.dir8    ; #BA4B
-        block 16, #FF           ; padding
-
-; #B3B7
-objectTypes:
+; #B4BB
+levObjectTypes:
         ;  sprite address       attr 3  4  w  h  7  8  9 10  ot 12 tr 14 15 16 mr 18 19 20 21 22  23  24 25
-        dw cS.powerBullet1 : db #47, 0, 1,16,16,-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0,  0,  0, 0 ; #9EEE
-        dw cS.shatterbomb  : db #45, 0, 1,16,16,-2, 0, 0, 8, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  0,  0, 0 ; #9FAE
-        dw cS.powerGun     : db #47, 0, 1,16,16,-2, 0, 0, 8, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  0,  0, 0 ; #9FEE
-        dw cS.lazerGun     : db #45, 0, 1,16,16,-2, 0, 0, 8, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  0,  0, 0 ; #A02E
-        dw cS.soupCan      : db #46, 0, 1,16,16,-2, 0, 0, 8, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  0,  0, 0 ; #A06E
-        dw cS.slimyWorms   : db #47, 0, 1,16,16,-2, 0, 0, 8, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  0,  0, 0 ; #A0AE
-        dw cS.coin         : db #46, 0, 1,16,16,-2, 0, 0, 8, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  0,  0, 0 ; #A12E
-        dw cS.pintaADay    : db #47, 0, 1,16,16,-2, 0, 0, 8, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  0,  0, 0 ; #A0EE
-        dw cS.diary        : db #43, 0, 1,16,16,-2, 0, 0, 8, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  0,  0, 0 ; #A16E
-        dw cS.burrow       : db #42,-3,35,24,21,-2, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,12, 10, 48,42 ; #A520
         dw lS.cup          : db #45, 0, 1,16,16,-2, 0, 3, 8,10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  0,  0, 0 ; #A59E
         dw lS.figurine     : db #46, 0, 1,16,16,-2, 0, 4, 8,11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  0,  0, 0 ; #A5DE
         dw lS.umbrella     : db #45, 0, 1,16,16,-2, 0, 5, 8,12, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  0,  0, 0 ; #A61E
@@ -84,41 +48,6 @@ objectTypes:
         dw lS.bossDragon0  : db #44, 0, 3,24,21, 0, 0, 0, 0,95, 0, 0, 0, 0, 0, 2, 2, 6, 0, 3, 0,  0,  0, 0 ; #B07C
         dw lS.bossDragon3  : db #44, 0, 3,24,21, 0, 0, 0, 0,96, 0, 0, 0, 0, 0, 2, 2, 6, 0, 3, 0,  0,  0, 0 ; #B1F6
         dw lS.bossDragon2  : db #44, 0, 3,24,21, 0, 0, 0, 0,97, 0, 0, 0, 0, 0, 2, 2, 6, 0, 3, 0,  0,  0, 0 ; #B178
-
-trajectories:
-.vel1:  db  0
-.dir1:  db  0
-.vel0:  db  0
-.dir0:  db  2
-.vel2:
-        db  1, 1, 1, 1, 2, 2, 2, 3, 3, 3, 3, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 3, 3, 3, 3, 2, 2, 2
-        db  1, 1, 1, 1,-2
-.dir2:
-        db  4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8
-        db  8, 8, 8, 8
-.vel3:
-        db  0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 2, 2, 2, 1, 1, 1, 1,-2
-.dir3:
-        db  2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1
-.vel4:
-.vel5:
-        db  1, 1, 1, 1, 2, 2, 2, 3, 3, 3, 3, 2, 2, 2, 1, 1, 1, 1,-4
-.dir4:
-        db  4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4
-.dir5:
-        db  2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2
-.vel6:
-        db  1, 1, 1, 2, 2, 3, 3, 2, 2, 1, 1, 1,-4
-.dir6:
-        db  2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2
-.vel7:
-        db  0, 0, 0, 0, 0, 2, 2, 2, 3, 3, 4, 3, 3, 2, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0,-2
-.dir7:
-        db  0, 0, 0, 0, 0, 5, 5, 4, 4, 4, 4, 4, 4, 4, 6, 6, 6, 6, 0, 0, 0, 0, 0, 0, 0
-.vel8:
-        db  3, 2, 2, 1, 1, 1, 1, 1, 1, 2, 3, 4,-1
-.dir8:
-        db  1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2
 
 
     ENDMODULE

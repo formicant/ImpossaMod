@@ -16,6 +16,7 @@ transitTable    EQU #B282 - #11C6
 trajVelTable    EQU #B373 - #11C6
 trajDirTable    EQU #B395 - #11C6
 objectTypes     EQU #B3B7 - #11C6
+levObjectTypes  EQU #B4BB - #11C6
 
 end             EQU #BDDF - #11C6
 length          EQU end - start

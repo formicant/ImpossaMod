@@ -1,7 +1,7 @@
     MODULE Lev1Orient
 
 
-; #B282 passageTable:
+; #B282 transitTable:
 ;       isDown fromX toLeft toRight toX
         db 0 : dw  65, 109, 119 : db 4
         db 1 : dw 114,  64, 108 : db 3

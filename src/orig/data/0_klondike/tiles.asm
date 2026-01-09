@@ -474,6 +474,7 @@ tileBlocks:
         dh DB DD DC DD 00 00 00 00 00 00 00 00 00 00 00 00  ; block #AB
         dh 9D 4F 50 A2 9E 53 54 A3 9F 57 58 A4 A0 5B 5C A5  ; block #AC
         dh DD DD DC DD 00 00 00 00 00 00 00 00 00 00 00 00  ; block #AD
+.end:
         block 1312, 0           ; padding
 
 

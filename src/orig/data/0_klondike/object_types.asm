@@ -2,7 +2,7 @@
 
 
 ; #B4BB
-levelObjectTypes:
+levObjectTypes:
 ;          addr                 attr 3  4  w  h  7  8  9 10  ot 12 tr 14 15 16 mr 18 19 20 21 22  23  24 25
         dw lS.gem          : db #43, 0, 1,16,16,-2, 0, 3, 8,10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  0,  0, 0 ; #A59E
         dw lS.gold         : db #46, 0, 1,16,16,-2, 0, 4, 8,11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  0,  0, 0 ; #A5DE

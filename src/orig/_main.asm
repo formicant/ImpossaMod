@@ -72,11 +72,16 @@ codeStart:
 
 ; Save level 1 Orient
     ORG Level.start
-    INCLUDE "data/1_orient/map.asm"
+    INCLUDE "data/1_orient/tiles.asm"
+    INCLUDE "data/1_orient/object_table.asm"
+    INCLUDE "data/1_orient/block_map.asm"
     ORG Level.sprites
     INCLUDE "data/1_orient/sprites.asm"
     INCLUDE "data/1_orient/transits.asm"
-    INCLUDE "data/1_orient/types_traj.asm"
+    INCLUDE "data/1_orient/traj_table.asm"
+    ORG Level.levObjectTypes
+    INCLUDE "data/1_orient/object_types.asm"
+    INCLUDE "data/1_orient/trajectories.asm"
         block Level.end - $                 ; cleanup
 
     SAVETAP "original.tap", HEADLESS, Headers.level1, 1, #80
@@ -84,13 +89,18 @@ codeStart:
 
 ; Save level 2 Amazon
     ORG Level.start
-    INCLUDE "data/2_amazon/map.asm"
+    INCLUDE "data/2_amazon/tiles.asm"
+    INCLUDE "data/2_amazon/object_table.asm"
+    INCLUDE "data/2_amazon/block_map.asm"
     ORG Level.sprites
     INCLUDE "data/2_amazon/sprites.asm"
     INCLUDE "data/2_amazon/transits.asm"
     ; junk from 1_orient here
     ORG Level.trajVelTable
-    INCLUDE "data/2_amazon/types_traj.asm"
+    INCLUDE "data/2_amazon/traj_table.asm"
+    ORG Level.levObjectTypes
+    INCLUDE "data/2_amazon/object_types.asm"
+    INCLUDE "data/2_amazon/trajectories.asm"
         dh 9E 47 00 01 10 10 FF             ; junk
         block 13 : db 1                     ; junk
         block Level.end - $                 ; cleanup
@@ -100,29 +110,41 @@ codeStart:
 
 ; Save level 3 Iceland
     ORG Level.start
-    INCLUDE "data/3_iceland/map.asm"
+    INCLUDE "data/3_iceland/tiles.asm"
+    INCLUDE "data/3_iceland/object_table.asm"
+    INCLUDE "data/3_iceland/block_map.asm"
     ORG Level.sprites
     INCLUDE "data/3_iceland/sprites.asm"
     INCLUDE "data/0_klondike/transits.asm"  ; junk from 0_klondike
-        block Level.end - $                 ; cleanup
+        block Level.trajVelTable - $        ; cleanup
     ORG Level.transitTable
     INCLUDE "data/3_iceland/transits.asm"
     ORG Level.trajVelTable
-    INCLUDE "data/3_iceland/types_traj.asm"
+    INCLUDE "data/3_iceland/traj_table.asm"
+    ORG Level.levObjectTypes
+    INCLUDE "data/3_iceland/object_types.asm"
+    INCLUDE "data/3_iceland/trajectories.asm"
 
     SAVETAP "original.tap", HEADLESS, Headers.level3, 1, #80
     SAVETAP "original.tap", HEADLESS, Level.start, Level.length
 
 ; Save level 4 Bermuda
     ORG Level.start
-    INCLUDE "data/4_bermuda/map.asm"
+    INCLUDE "data/4_bermuda/tiles.asm"
+    INCLUDE "data/4_bermuda/object_table.asm"
+    INCLUDE "data/4_bermuda/block_map.asm"
     ORG Level.sprites
     INCLUDE "data/4_bermuda/sprites.asm"
-        block Level.end - $                 ; cleanup
+        block Level.trajVelTable - $        ; cleanup
     ORG Level.transitTable
     INCLUDE "data/4_bermuda/transits.asm"
     ORG Level.trajVelTable
-    INCLUDE "data/4_bermuda/types_traj.asm"
+    INCLUDE "data/4_bermuda/traj_table.asm"
+    ORG Common.objectTypes + 10
+        db 8    ; overridden property (TODO: is it significant?)
+    ORG Level.levObjectTypes
+    INCLUDE "data/4_bermuda/object_types.asm"
+    INCLUDE "data/4_bermuda/trajectories.asm"
 
     SAVETAP "original.tap", HEADLESS, Headers.level4, 1, #80
     SAVETAP "original.tap", HEADLESS, Level.start, Level.length
