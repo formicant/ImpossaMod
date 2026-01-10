@@ -171,7 +171,7 @@ pauseGameIfPauseKeyPressed:  ; #cd5c
         bit 3, a
         jr Z, .l_2
         ld a, #22
-        ld (State.s_0C), a
+        ld (State.maxEnergy), a
         ld a, #32
         call c_d09a
 .l_2:
@@ -188,7 +188,7 @@ pauseGameIfPauseKeyPressed:  ; #cd5c
 ; ?
 ; Used by c_d1c1, c_e60a, c_e920 and c_e9b1.
 c_cd9b:  ; #cd9b
-        ld (State.s_01), hl
+        ld (State.screenX), hl
         ld hl, -32
         add hl, de
         ld (State.s_03), hl
@@ -228,10 +228,10 @@ c_cdae:  ; #cdae
         ld de, #6168
         call c_c4c0
         call c_cf17
-        ld hl, (State.s_01)
+        ld hl, (State.screenX)
         ld de, #0008
         add hl, de
-        ld (State.s_01), hl
+        ld (State.screenX), hl
         call c_ce57
         call c_ceb2
         ld hl, #6080
@@ -304,7 +304,7 @@ c_ce57:  ; #ce57
 ; (Locate place in level map?)
 ; Used by c_cdae.
 c_ceb2:  ; #ceb2
-        ld hl, (State.s_01)
+        ld hl, (State.screenX)
         ld de, #0020
         add hl, de
         ld e, l
@@ -321,7 +321,7 @@ c_ceb2:  ; #ceb2
 ; Copy level map segment to #5BB4 buffer
 ; Used by c_cd9b.
 c_cecc:  ; #cecc
-        ld hl, (State.s_01)
+        ld hl, (State.screenX)
         ld e, l
         ld d, h
         sra h
@@ -505,7 +505,7 @@ c_cfdb:  ; #cfdb
 ; Print coins in the panel
 ; Used by c_d1c1, c_e6e1 and c_e9b1.
 c_cfe6:  ; #cfe6
-        ld a, (State.s_06)
+        ld a, (State.coins)
         ld hl, #000B
         ld c, #46
         jp .l_0
@@ -526,15 +526,15 @@ c_cfe6:  ; #cfe6
         add a, #0A
         dec b
         add a, #B0
-        ld (State.s_09), a
+        ld (State.coinDigits + 2), a
         ld a, b
         add a, #30
-        ld (State.s_08), a
+        ld (State.coinDigits + 1), a
         ld a, c
         add a, #30
-        ld (State.s_07), a
+        ld (State.coinDigits + 0), a
         pop bc
-        ld de, State.s_07
+        ld de, State.coinDigits
         jp printString
 
 ; 1 soup can
@@ -552,7 +552,7 @@ c_d023:  ; #d023
 ; Print soup cans in the panel
 ; Used by c_d1c1, c_e6e1 and c_e9b1.
 c_d026:  ; #d026
-        ld a, (State.s_0A)
+        ld a, (State.soupCans)
         dec a
         ld l, a
         add a, a
@@ -575,7 +575,7 @@ c_d03d:  ; #d03d
 ; Print energy in the panel
 ; Used by c_d09a, c_d0af, c_d1c1, c_e9b1 and c_f618.
 c_d04e:  ; #d04e
-        ld hl, State.s_0D
+        ld hl, State.energyText
         push hl
         ld b, #11
 .l_0:
@@ -584,7 +584,7 @@ c_d04e:  ; #d04e
         djnz .l_0
         pop hl
         ld de, c_d03d
-        ld a, (State.s_0B)
+        ld a, (State.energy)
         ld c, a
         cp #02
         jr C, .l_2
@@ -604,9 +604,9 @@ c_d04e:  ; #d04e
         ld (hl), a
         inc hl
 .l_3:
-        ld a, (State.s_0B)
+        ld a, (State.energy)
         ld b, a
-        ld a, (State.s_0C)
+        ld a, (State.maxEnergy)
         sub b
         srl a
         jr Z, .l_5
@@ -616,10 +616,10 @@ c_d04e:  ; #d04e
         inc hl
         djnz .l_4
 .l_5:
-        ld hl, State.s_0D + 16
+        ld hl, State.energyText + 16
         set 7, (hl)
         ld hl, #000F
-        ld de, State.s_0D
+        ld de, State.energyText
         call printString
         call applyLifeIndicatorAttrs
         ret
@@ -628,17 +628,17 @@ c_d04e:  ; #d04e
 ; Used by c_cc25, c_cd5c, c_e6e1 and c_e9b1.
 c_d09a:  ; #d09a
         exa
-        ld a, (State.s_0C)
+        ld a, (State.maxEnergy)
         ld b, a
         exa
         ld c, a
-        ld a, (State.s_0B)
+        ld a, (State.energy)
         add a, c
         cp b
         jr C, .l_0
         ld a, b
 .l_0:
-        ld (State.s_0B), a
+        ld (State.energy), a
         jp c_d04e
 
 ; Decrement energy
@@ -647,14 +647,14 @@ c_d0af:  ; #d0af
         ld a, (ix+14)
         or a
         ret NZ
-        ld a, (State.s_0B)
+        ld a, (State.energy)
         sub #01
         jr NC, .l_0
         ld a, #FF
         ld (State.s_1F), a
         xor a
 .l_0:
-        ld (State.s_0B), a
+        ld (State.energy), a
         ld (ix+14), #07
         ld a, #0C
         call playSound
@@ -755,11 +755,11 @@ clearGameState:  ; #d133
         ldir
         
         ld a, 18
-        ld (State.s_0C), a
+        ld (State.maxEnergy), a
         
         call c_cfdb
         ld b, 5
-        ld hl, State.s_22
+        ld hl, State.levelsDone
 .l_0:
         ld (hl), 0
         inc hl
@@ -790,8 +790,8 @@ c_d153:  ; #d153
         add a, #28
         ld (ix+2), a
         ld hl, cS.heroStands
-        ld a, (State.s_3C)
-        cp #02
+        ld a, (State.weapon)
+        cp 2
         jr C, .l_0
         ld hl, cS.armedHeroStands
 .l_0:
@@ -829,12 +829,12 @@ conveyorTileIndices:  ; #d1bf
 ; Used by c_cc25.
 c_d1c1:  ; #d1c1
         ld a, #01
-        ld (State.s_0A), a
-        ld a, (State.s_0C)
-        ld (State.s_0B), a
+        ld (State.soupCans), a
+        ld a, (State.maxEnergy)
+        ld (State.energy), a
         xor a
-        ld (State.s_06), a
-        ld (State.s_3C), a
+        ld (State.coins), a
+        ld (State.weapon), a
         call c_cfe6
         call c_cf85.l_4
         call c_d04e
@@ -844,8 +844,8 @@ c_d1c1:  ; #d1c1
         ld (State.s_46), a
         ld (State.s_57), a
         inc a
-        ld (State.s_21), a
-        ld a, (State.s_1E)
+        ld (State.hasSmart), a
+        ld a, (State.level)
         add a, a
         add a, a
         ld l, a
@@ -1049,8 +1049,8 @@ c_d308:  ; #d308
         ret
 .l_4:
         ld hl, cS.heroStands
-        ld a, (State.s_3C)
-        cp #02
+        ld a, (State.weapon)
+        cp 2
         jr C, .l_5
         ld hl, cS.armedHeroStands
 .l_5:
@@ -1278,7 +1278,7 @@ c_d4cd:  ; #d4cd
 c_d4e5:  ; #d4e5
         call checkSmartKey
         ret NZ
-        ld a, (State.s_21)
+        ld a, (State.hasSmart)
         or a
         ret Z
         ld a, (State.s_54)
@@ -1303,7 +1303,7 @@ c_d4e5:  ; #d4e5
         pop bc
         djnz .l_0
         xor a
-        ld (State.s_21), a
+        ld (State.hasSmart), a
         ret
 
 ; "SELECT  LEVEL"
@@ -1329,23 +1329,23 @@ levelSelectionMenu:  ; #d553
         ld de, textSelectLevel
         ld c, #46
         call printString
-        ld hl, State.s_22
+        ld hl, State.levelsDone
         ld b, #05
         xor a
 .l_0:
         add a, (hl)
         inc hl
         djnz .l_0
-        cp #05
+        cp 5
         jp Z, gameEnd
-        cp #04
+        cp 4
         jr NZ, .l_3
         ld de, levelNames.bermuda
         ld hl, #0B0C
         ld c, #47
         call printString
         ld a, #04
-        ld (State.s_1E), a
+        ld (State.level), a
 .l_1:
         ld a, (controlState)
         bit 4, a
@@ -1358,7 +1358,7 @@ levelSelectionMenu:  ; #d553
 .l_3:
         ld a, (controlState)
         ld c, a
-        ld a, (State.s_1E)
+        ld a, (State.level)
         bit 2, c
         jr Z, .l_4
         dec a
@@ -1369,19 +1369,19 @@ levelSelectionMenu:  ; #d553
         inc a
 .l_5:
         and #03
-        ld (State.s_1E), a
+        ld (State.level), a
         ld l, a
         ld h, #00
-        ld de, State.s_22
+        ld de, State.levelsDone
         add hl, de
         ld a, (hl)
         or a
         jr Z, .l_6
-        ld a, (State.s_1E)
+        ld a, (State.level)
         inc a
         jr .l_5
 .l_6:
-        ld a, (State.s_1E)
+        ld a, (State.level)
         add a, a
         add a, a
         add a, a
@@ -1429,7 +1429,7 @@ textLoading:  ; #d624
 c_d62c:  ; #d62c
         ld a, (State.loadedLevel)
         ld b, a
-        ld a, (State.s_1E)
+        ld a, (State.level)
         cp b
         jr NZ, .l_0
         scf
@@ -1442,7 +1442,7 @@ c_d62c:  ; #d62c
         call printString
         call c_c9ac
         jr NC, .l_1
-        ld a, (State.s_1E)
+        ld a, (State.level)
         ld (State.loadedLevel), a
         scf
         ret
@@ -1582,8 +1582,8 @@ c_d709:  ; #d709
         xor a
         ld (State.s_41), a
         ld hl, cS.heroJumps
-        ld a, (State.s_3C)
-        cp #02
+        ld a, (State.weapon)
+        cp 2
         jr C, .l_3
         ld hl, cS.armedHeroJumps
 .l_3:
@@ -1592,7 +1592,7 @@ c_d709:  ; #d709
 .l_4:
         xor a
         ld (State.s_05), a
-        ld de, (State.s_01)
+        ld de, (State.screenX)
         ld hl, (State.s_03)
         xor a
         sbc hl, de
@@ -1692,8 +1692,8 @@ c_d7f6:  ; #d7f6
         ld (ix+0), a
 .l_5:
         ld hl, cS.heroWalks1
-        ld a, (State.s_3C)
-        cp #02
+        ld a, (State.weapon)
+        cp 2
         jr C, .l_6
         ld hl, cS.armedHeroWalks1
 .l_6:
@@ -1744,8 +1744,8 @@ c_d7f6:  ; #d7f6
         xor a
         ld (State.s_41), a
         ld hl, cS.heroJumps
-        ld a, (State.s_3C)
-        cp #02
+        ld a, (State.weapon)
+        cp 2
         jr C, .l_11
         ld hl, cS.armedHeroJumps
 .l_11:
@@ -1764,8 +1764,8 @@ c_d7f6:  ; #d7f6
         xor a
         ld (State.s_3E), a
         ld hl, cS.heroClimbs
-        ld a, (State.s_3C)
-        cp #02
+        ld a, (State.weapon)
+        cp 2
         jr C, .l_13
         ld hl, cS.armedHeroClimbs
 .l_13:
@@ -1890,8 +1890,8 @@ c_d94c:  ; #d94c
         ld (ix+2), a
         ld (ix+19), #00
         ld hl, cS.heroStands
-        ld a, (State.s_3C)
-        cp #02
+        ld a, (State.weapon)
+        cp 2
         jr C, .l_12
         ld hl, cS.armedHeroStands
 .l_12:
@@ -1918,8 +1918,8 @@ c_d94c:  ; #d94c
         ld (ix+19), a
 .l_14:
         ld hl, cS.heroFalls
-        ld a, (State.s_3C)
-        cp #02
+        ld a, (State.weapon)
+        cp 2
         jr C, .l_15
         ld hl, cS.armedHeroFalls
 .l_15:
@@ -1931,8 +1931,8 @@ c_d94c:  ; #d94c
 ; Used by c_d7f6.
 c_da95:  ; #da95
         ld hl, cS.heroJumps
-        ld a, (State.s_3C)
-        cp #02
+        ld a, (State.weapon)
+        cp 2
         jr C, .l_0
         ld hl, cS.armedHeroJumps
 .l_0:
@@ -2525,7 +2525,7 @@ c_df85:  ; #df85
         ld a, (State.s_46)
         or a
         ret NZ
-        ld a, (State.s_3C)
+        ld a, (State.weapon)
         or a
         jr Z, .l_1
         ld hl, (State.s_3A)
@@ -2536,7 +2536,7 @@ c_df85:  ; #df85
         or a
         jr NZ, .l_1
         xor a
-        ld (State.s_3C), a
+        ld (State.weapon), a
         ret
 .l_0:
         dec hl
@@ -2553,7 +2553,7 @@ c_df85:  ; #df85
         ret Z
         ld ix, c_beb4
         ld iy, #BEE6
-        ld a, (State.s_3C)
+        ld a, (State.weapon)
         or a
         jp NZ, .l_3
         ld a, #04
@@ -2578,7 +2578,7 @@ c_df85:  ; #df85
         ld (iy+1), h
         ld a, (ix+2)
         ld (iy+2), a
-        ld a, (State.s_0A)
+        ld a, (State.soupCans)
         dec a
         add a, a
         ld l, a
@@ -2640,7 +2640,7 @@ c_df85:  ; #df85
         jp NZ, .l_7
         ld a, #0A
         call playSound
-        ld a, (State.s_0A)
+        ld a, (State.soupCans)
         dec a
         ld l, a
         add a, a
@@ -2694,7 +2694,7 @@ c_df85:  ; #df85
 .l_7:
         ld a, #08
         call playSound
-        ld a, (State.s_0A)
+        ld a, (State.soupCans)
         dec a
         ld l, a
         add a, a
@@ -2839,7 +2839,7 @@ c_df85:  ; #df85
         ld (State.s_40), a
         ld (ix+21), a
         set 1, (ix+5)
-        ld a, (State.s_0A)
+        ld a, (State.soupCans)
         dec a
         ld (.l), a
 .l_16:
@@ -2914,7 +2914,7 @@ c_df85:  ; #df85
         ld a, (State.s_3D)
         cp #03
         ret NZ
-        ld a, (State.s_0A)
+        ld a, (State.soupCans)
         cp #03
         jr Z, c_e31c
         ret
@@ -3104,8 +3104,8 @@ c_e419:  ; #e419
         ld l, a
         ld h, #00
         ld de, heroWalkPhases
-        ld a, (State.s_3C)
-        cp #02
+        ld a, (State.weapon)
+        cp 2
         jr C, .l_3
         ld de, heroWalkPhases.armed
 .l_3:
@@ -3380,7 +3380,7 @@ c_e60a:  ; #e60a
         rr l
         sra h
         rr l
-        ld bc, (State.s_01)
+        ld bc, (State.screenX)
         add hl, bc
         sra h
         rr l
@@ -3526,7 +3526,7 @@ c_e6e1:  ; #e6e1
         or a
         ret NZ
         exa
-        ld (State.s_3C), a
+        ld (State.weapon), a
         ld hl, #02EE
         ld (State.s_3A), hl
         ld (iy+5), #00
@@ -3542,11 +3542,11 @@ c_e6e1:  ; #e6e1
 .l_3:
         cp #04
         jr NZ, .l_5
-        ld a, (State.s_0A)
+        ld a, (State.soupCans)
         cp #03
         jr Z, .l_4
         inc a
-        ld (State.s_0A), a
+        ld (State.soupCans), a
 .l_4:
         ld (iy+5), #00
         jp c_d026
@@ -3560,21 +3560,21 @@ c_e6e1:  ; #e6e1
         cp #06
         jr NZ, .l_7
         ld (iy+5), #00
-        ld a, (State.s_06)
+        ld a, (State.coins)
         add a, #19
-        ld (State.s_06), a
+        ld (State.coins), a
         jp c_cfe6
 .l_7:
         cp #07
         jr NZ, .l_9
         ld (iy+5), #00
-        ld a, (State.s_0C)
+        ld a, (State.maxEnergy)
         add a, #04
         cp #22
         jr C, .l_8
         ld a, #22
 .l_8:
-        ld (State.s_0C), a
+        ld (State.maxEnergy), a
         ld a, #04
         jp c_d09a
 .l_9:
@@ -3717,7 +3717,7 @@ c_e920:  ; #e920
         bit 7, a
         ret Z
         call c_e5f2
-        ld a, (State.s_1E)
+        ld a, (State.level)
         add a, a
         add a, a
         ld l, a
@@ -3802,7 +3802,7 @@ c_e9b1:  ; #e9b1
         or a
         ret Z
         dec a
-        ld (State.s_47), a
+        ld (State.shopItem), a
         ld l, a
         ld h, #00
         add hl, hl
@@ -3817,13 +3817,13 @@ c_e9b1:  ; #e9b1
         ld c, #47
         ld hl, #000F
         call printString
-        ld a, (State.s_47)
+        ld a, (State.shopItem)
         ld l, a
         ld h, #00
         ld de, c_e89b
         add hl, de
         ld a, (hl)
-        ld (State.s_48), a
+        ld (State.shopPrice), a
         or a
         jr Z, .l_2
         ld hl, #001C
@@ -3833,11 +3833,11 @@ c_e9b1:  ; #e9b1
         ld a, (controlState)
         bit 4, a
         ret Z
-        ld a, (State.s_48)
+        ld a, (State.shopPrice)
         or a
         jr NZ, .l_3
         call c_e5f2
-        ld a, (State.s_1E)
+        ld a, (State.level)
         add a, a
         add a, a
         ld l, a
@@ -3870,9 +3870,9 @@ c_e9b1:  ; #e9b1
         ld (State.s_28), a
         jp c_d04e
 .l_3:
-        ld a, (State.s_48)
+        ld a, (State.shopPrice)
         ld b, a
-        ld a, (State.s_06)
+        ld a, (State.coins)
         sub b
         jr NC, .l_5
         ld hl, #000F
@@ -3885,25 +3885,25 @@ c_e9b1:  ; #e9b1
         jr NZ, .l_4
         ret
 .l_5:
-        ld (State.s_06), a
+        ld (State.coins), a
         call c_cfe6
         ld (iy+5), #00
-        ld a, (State.s_47)
+        ld a, (State.shopItem)
         inc a
         cp #04
         jr NC, .l_6
-        ld (State.s_3C), a
+        ld (State.weapon), a
         ld hl, #02EE
         ld (State.s_3A), hl
         ret
 .l_6:
         cp #04
         jr NZ, .l_8
-        ld a, (State.s_0A)
+        ld a, (State.soupCans)
         cp #03
         jr Z, .l_7
         inc a
-        ld (State.s_0A), a
+        ld (State.soupCans), a
 .l_7:
         ld (iy+5), #00
         jp c_d026
@@ -3917,13 +3917,13 @@ c_e9b1:  ; #e9b1
         cp #07
         jr NZ, .l_11
         ld (iy+5), #00
-        ld a, (State.s_0C)
+        ld a, (State.maxEnergy)
         add a, #04
         cp #22
         jr C, .l_10
         ld a, #22
 .l_10:
-        ld (State.s_0C), a
+        ld (State.maxEnergy), a
         ld a, #04
         jp c_d09a
 .l_11:
@@ -4006,7 +4006,7 @@ c_eb19:  ; #eb19
         ld a, (iy+14)
         or a
         jp NZ, c_ec00.l_3
-        ld a, (State.s_3C)
+        ld a, (State.weapon)
         or a
         jr NZ, .l_1
         ld a, (iy+7)
@@ -4015,7 +4015,7 @@ c_eb19:  ; #eb19
         res 0, (ix+5)
         ret
 .l_0:
-        ld a, (State.s_0A)
+        ld a, (State.soupCans)
         dec a
         ld l, a
         add a, a
@@ -4070,7 +4070,7 @@ c_eb19:  ; #eb19
         exa
         ret
 .l_2:
-        ld a, (State.s_0A)
+        ld a, (State.soupCans)
         dec a
         ld l, a
         add a, a
@@ -4121,7 +4121,7 @@ c_ec00:  ; #ec00
         ld a, (iy+12)
         cp #FF
         jr Z, .l_3
-        ld a, (State.s_3C)
+        ld a, (State.weapon)
         ld l, a
         add a, a
         add a, l
@@ -4129,7 +4129,7 @@ c_ec00:  ; #ec00
         ld h, #00
         ld de, c_ebf4
         add hl, de
-        ld a, (State.s_0A)
+        ld a, (State.soupCans)
         dec a
         ld e, a
         ld d, #00
@@ -4222,8 +4222,8 @@ c_ec00:  ; #ec00
         ld (State.s_57), a
         ld de, c_cf84
         call c_cf85.l_0
-        ld a, (State.s_1E)
-        ld hl, State.s_22
+        ld a, (State.level)
+        ld hl, State.levelsDone
         ld e, a
         ld d, #00
         add hl, de
@@ -4963,7 +4963,7 @@ c_f2e7:  ; #f2e7
         inc (ix+6)
         call c_d460
         ld c, #BD
-        ld a, (State.s_1E)
+        ld a, (State.level)
         cp #03
         jr NZ, .l_3
         dec c
@@ -5361,18 +5361,18 @@ c_f618:  ; #f618
         ld a, (iy+14)
         or a
         ret NZ
-        ld a, (State.s_0B)
+        ld a, (State.energy)
         sub b
         jr NC, .l_0
         ld a, #FF
         ld (State.s_1F), a
         xor a
 .l_0:
-        ld (State.s_0B), a
+        ld (State.energy), a
         ld (iy+14), #07
         jp c_d04e
 .l_1:
-        ld a, (State.s_1E)
+        ld a, (State.level)
         or a
         jr NZ, .l_2
         ld a, (State.s_54)
@@ -5441,7 +5441,7 @@ c_f6b5:  ; #f6b5
 c_f6ba:  ; #f6ba
         ld bc, Level.objectTable
 .l_0:
-        ld de, (State.s_01)
+        ld de, (State.screenX)
         ld a, (bc)
         ld h, a
         inc bc
@@ -5474,7 +5474,7 @@ c_f6ba:  ; #f6ba
 c_f6e7:  ; #f6e7
         ld bc, (State.s_52)
 .l_0:
-        ld de, (State.s_01)
+        ld de, (State.screenX)
         ld a, (bc)
         ld h, a
         inc bc
@@ -5553,7 +5553,7 @@ c_f74a:  ; #f74a
         cp #0A
         jr C, .l_0
         exa
-        ld a, (State.s_1E)
+        ld a, (State.level)
         ld l, a
         ld h, #00
         ld de, c_f6b5
@@ -5738,7 +5738,7 @@ c_f74a:  ; #f74a
         jr Z, .l_10
         ret
 .l_9:
-        ld hl, (State.s_01)
+        ld hl, (State.screenX)
         ld de, #05D4
         xor a
         sbc hl, de
@@ -5758,7 +5758,7 @@ c_f8cb:  ; #f8cb
         ld a, (State.s_54)
         or a
         ret Z
-        ld a, (State.s_1E)
+        ld a, (State.level)
         or a
         jp Z, c_f8f4
         cp #01
