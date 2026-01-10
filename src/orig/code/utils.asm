@@ -27,7 +27,7 @@ fillScreenAttrs:  ; #c877
 ; of the conveyor tiles in opposite directions
 ; Used by c_cc25.
 rollConveyorTiles:  ; #c884
-        ld a, (#FE1E)
+        ld a, (State.s_1E)
         cp #02
         ret Z
         cp #03

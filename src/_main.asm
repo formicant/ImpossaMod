@@ -50,9 +50,14 @@ codeStart:
     ; empty space, 238 bytes
     _NEXT_ORG #FD00
     INCLUDE "interrupt_table.asm"
+    ORG #FE01
+    INCLUDE "orig/state.asm"
+    ORG #FE01
     INCLUDE "disposable.asm"
     _NEXT_ORG #FEFE
     INCLUDE "interrupt.asm"
+
+
 
 codeLength = $ - codeStart
 

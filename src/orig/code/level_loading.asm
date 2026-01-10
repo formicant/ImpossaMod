@@ -36,7 +36,7 @@ c_c9ac:  ; #c9ac
         call printString
         ld a, (Level.start)
         ld b, a
-        ld a, (#FE1E)
+        ld a, (State.s_1E)
         cp b
         jr NZ, c_c9ac
         ld ix, Level.start

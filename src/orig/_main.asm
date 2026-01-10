@@ -50,6 +50,9 @@ codeStart:
     INCLUDE "data/font.asm"
     ORG #CC25
     INCLUDE "code/code.asm"
+    
+    ORG #FE01
+    INCLUDE "state.asm"
 
 ; Save game
     EMPTYTAP "original.tap"

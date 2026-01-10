@@ -5,7 +5,7 @@
 entryPoint:  ; #cc25
         di
         ld a, #FF
-        ld (#FE8A), a
+        ld (State.loadedLevel), a
         ld sp, 0
         call initInterrupts
         call detectSpectrumModel
@@ -39,7 +39,7 @@ gameStart:  ; #cc5a
         call c_d1c1
         
 .gameLoop:
-        ld a, (#FE57)
+        ld a, (State.s_57)
         or a
         jr Z, .l_5
         ld ix, #BEE6
@@ -78,12 +78,12 @@ gameStart:  ; #cc5a
         call waitFrames
         
         call c_c561
-        ld a, (#FE05)
+        ld a, (State.s_05)
         or a
         jr Z, .l_6
         
         xor a
-        ld (#FE05), a
+        ld (State.s_05), a
         ld ix, c_beb4
         set 0, (ix+5)
         call c_cdae
@@ -93,16 +93,16 @@ gameStart:  ; #cc5a
         call checkQuitKey
         jp Z, gameStart
         
-        ld a, (#FE1F)
+        ld a, (State.s_1F)
         or a
         jr Z, .l_8
         xor a
-        ld (#FE1F), a
-        ld a, (#FE20)
+        ld (State.s_1F), a
+        ld a, (State.s_20)
         or a
         jr Z, .l_7
         xor a
-        ld (#FE20), a
+        ld (State.s_20), a
         ld a, #32
         call c_d09a
         jr .l_8
@@ -171,7 +171,7 @@ pauseGameIfPauseKeyPressed:  ; #cd5c
         bit 3, a
         jr Z, .l_2
         ld a, #22
-        ld (#FE0C), a
+        ld (State.s_0C), a
         ld a, #32
         call c_d09a
 .l_2:
@@ -188,10 +188,10 @@ pauseGameIfPauseKeyPressed:  ; #cd5c
 ; ?
 ; Used by c_d1c1, c_e60a, c_e920 and c_e9b1.
 c_cd9b:  ; #cd9b
-        ld (#FE01), hl
+        ld (State.s_01), hl
         ld hl, -32
         add hl, de
-        ld (#FE03), hl
+        ld (State.s_03), hl
         call c_f6ba
         call c_c636
         jp c_cecc
@@ -228,10 +228,10 @@ c_cdae:  ; #cdae
         ld de, #6168
         call c_c4c0
         call c_cf17
-        ld hl, (#FE01)
+        ld hl, (State.s_01)
         ld de, #0008
         add hl, de
-        ld (#FE01), hl
+        ld (State.s_01), hl
         call c_ce57
         call c_ceb2
         ld hl, #6080
@@ -304,7 +304,7 @@ c_ce57:  ; #ce57
 ; (Locate place in level map?)
 ; Used by c_cdae.
 c_ceb2:  ; #ceb2
-        ld hl, (#FE01)
+        ld hl, (State.s_01)
         ld de, #0020
         add hl, de
         ld e, l
@@ -321,7 +321,7 @@ c_ceb2:  ; #ceb2
 ; Copy level map segment to #5BB4 buffer
 ; Used by c_cd9b.
 c_cecc:  ; #cecc
-        ld hl, (#FE01)
+        ld hl, (State.s_01)
         ld e, l
         ld d, h
         sra h
@@ -505,7 +505,7 @@ c_cfdb:  ; #cfdb
 ; Print coins in the panel
 ; Used by c_d1c1, c_e6e1 and c_e9b1.
 c_cfe6:  ; #cfe6
-        ld a, (#FE06)
+        ld a, (State.s_06)
         ld hl, #000B
         ld c, #46
         jp .l_0
@@ -526,15 +526,15 @@ c_cfe6:  ; #cfe6
         add a, #0A
         dec b
         add a, #B0
-        ld (#FE09), a
+        ld (State.s_09), a
         ld a, b
         add a, #30
-        ld (#FE08), a
+        ld (State.s_08), a
         ld a, c
         add a, #30
-        ld (#FE07), a
+        ld (State.s_07), a
         pop bc
-        ld de, #FE07
+        ld de, State.s_07
         jp printString
 
 ; 1 soup can
@@ -552,7 +552,7 @@ c_d023:  ; #d023
 ; Print soup cans in the panel
 ; Used by c_d1c1, c_e6e1 and c_e9b1.
 c_d026:  ; #d026
-        ld a, (#FE0A)
+        ld a, (State.s_0A)
         dec a
         ld l, a
         add a, a
@@ -575,7 +575,7 @@ c_d03d:  ; #d03d
 ; Print energy in the panel
 ; Used by c_d09a, c_d0af, c_d1c1, c_e9b1 and c_f618.
 c_d04e:  ; #d04e
-        ld hl, #FE0D
+        ld hl, State.s_0D
         push hl
         ld b, #11
 .l_0:
@@ -584,7 +584,7 @@ c_d04e:  ; #d04e
         djnz .l_0
         pop hl
         ld de, c_d03d
-        ld a, (#FE0B)
+        ld a, (State.s_0B)
         ld c, a
         cp #02
         jr C, .l_2
@@ -604,9 +604,9 @@ c_d04e:  ; #d04e
         ld (hl), a
         inc hl
 .l_3:
-        ld a, (#FE0B)
+        ld a, (State.s_0B)
         ld b, a
-        ld a, (#FE0C)
+        ld a, (State.s_0C)
         sub b
         srl a
         jr Z, .l_5
@@ -616,10 +616,10 @@ c_d04e:  ; #d04e
         inc hl
         djnz .l_4
 .l_5:
-        ld hl, #FE1D
+        ld hl, State.s_0D + 16
         set 7, (hl)
         ld hl, #000F
-        ld de, #FE0D
+        ld de, State.s_0D
         call printString
         call applyLifeIndicatorAttrs
         ret
@@ -628,17 +628,17 @@ c_d04e:  ; #d04e
 ; Used by c_cc25, c_cd5c, c_e6e1 and c_e9b1.
 c_d09a:  ; #d09a
         exa
-        ld a, (#FE0C)
+        ld a, (State.s_0C)
         ld b, a
         exa
         ld c, a
-        ld a, (#FE0B)
+        ld a, (State.s_0B)
         add a, c
         cp b
         jr C, .l_0
         ld a, b
 .l_0:
-        ld (#FE0B), a
+        ld (State.s_0B), a
         jp c_d04e
 
 ; Decrement energy
@@ -647,14 +647,14 @@ c_d0af:  ; #d0af
         ld a, (ix+14)
         or a
         ret NZ
-        ld a, (#FE0B)
+        ld a, (State.s_0B)
         sub #01
         jr NC, .l_0
         ld a, #FF
-        ld (#FE1F), a
+        ld (State.s_1F), a
         xor a
 .l_0:
-        ld (#FE0B), a
+        ld (State.s_0B), a
         ld (ix+14), #07
         ld a, #0C
         call playSound
@@ -748,18 +748,20 @@ incrementLongFrameCounter:  ; #d121
 ; Clears something before the game
 ; Used by c_cc25.
 clearGameState:  ; #d133
-        ld hl, #FE01
-        ld de, #FE02
-        ld bc, #0088
-        ld (hl), #00
+        ld hl, State.start
+        ld de, State.start + 1
+        ld bc, State.length - 1
+        ld (hl), 0
         ldir
-        ld a, #12
-        ld (#FE0C), a
+        
+        ld a, 18
+        ld (State.s_0C), a
+        
         call c_cfdb
-        ld b, #05
-        ld hl, #FE22
+        ld b, 5
+        ld hl, State.s_22
 .l_0:
-        ld (hl), #00
+        ld (hl), 0
         inc hl
         djnz .l_0
         ret
@@ -788,7 +790,7 @@ c_d153:  ; #d153
         add a, #28
         ld (ix+2), a
         ld hl, cS.heroStands
-        ld a, (#FE3C)
+        ld a, (State.s_3C)
         cp #02
         jr C, .l_0
         ld hl, cS.armedHeroStands
@@ -803,8 +805,8 @@ c_d153:  ; #d153
         ld (ix+9), #47
         ld (ix+8), #FF
         xor a
-        ld (#FE28), a
-        ld (#FE41), a
+        ld (State.s_28), a
+        ld (State.s_41), a
         ret
 
 
@@ -827,23 +829,23 @@ conveyorTileIndices:  ; #d1bf
 ; Used by c_cc25.
 c_d1c1:  ; #d1c1
         ld a, #01
-        ld (#FE0A), a
-        ld a, (#FE0C)
-        ld (#FE0B), a
+        ld (State.s_0A), a
+        ld a, (State.s_0C)
+        ld (State.s_0B), a
         xor a
-        ld (#FE06), a
-        ld (#FE3C), a
+        ld (State.s_06), a
+        ld (State.s_3C), a
         call c_cfe6
         call c_cf85.l_4
         call c_d04e
         call c_d026
         xor a
-        ld (#FE54), a
-        ld (#FE46), a
-        ld (#FE57), a
+        ld (State.s_54), a
+        ld (State.s_46), a
+        ld (State.s_57), a
         inc a
-        ld (#FE21), a
-        ld a, (#FE1E)
+        ld (State.s_21), a
+        ld a, (State.s_1E)
         add a, a
         add a, a
         ld l, a
@@ -879,7 +881,7 @@ c_d213:  ; #d213
         ld (#5FD1), a
         ld hl, #5BDF
         ld de, (conveyorTileIndices)
-        ld ix, #FE5A
+        ld ix, State.s_5A
 .l_0:
         inc hl
         ld a, (hl)
@@ -931,7 +933,7 @@ c_d213:  ; #d213
 ; Used by c_cc25.
 c_d278:  ; #d278
         ld de, #0580
-        ld ix, #FE5A
+        ld ix, State.s_5A
 .l_0:
         ld l, (ix+0)
         ld h, (ix+1)
@@ -1008,12 +1010,12 @@ c_d308:  ; #d308
         ld ix, c_beb4
         bit 0, (ix+24)
         jp NZ, .l_3
-        ld a, (#FE28)
+        ld a, (State.s_28)
         cp #03
         jr Z, .l_0
         cp #02
         ret NZ
-        ld a, (#FE37)
+        ld a, (State.s_37)
         or a
         ret M
 .l_0:
@@ -1028,8 +1030,8 @@ c_d308:  ; #d308
         ret
 .l_2:
         xor a
-        ld (#FE28), a
-        ld (#FE41), a
+        ld (State.s_28), a
+        ld (State.s_41), a
         ld (ix+19), #00
         set 0, (ix+24)
         push iy
@@ -1047,7 +1049,7 @@ c_d308:  ; #d308
         ret
 .l_4:
         ld hl, cS.heroStands
-        ld a, (#FE3C)
+        ld a, (State.s_3C)
         cp #02
         jr C, .l_5
         ld hl, cS.armedHeroStands
@@ -1276,10 +1278,10 @@ c_d4cd:  ; #d4cd
 c_d4e5:  ; #d4e5
         call checkSmartKey
         ret NZ
-        ld a, (#FE21)
+        ld a, (State.s_21)
         or a
         ret Z
-        ld a, (#FE54)
+        ld a, (State.s_54)
         or a
         ret NZ
         ld iy, #BF18
@@ -1301,7 +1303,7 @@ c_d4e5:  ; #d4e5
         pop bc
         djnz .l_0
         xor a
-        ld (#FE21), a
+        ld (State.s_21), a
         ret
 
 ; "SELECT  LEVEL"
@@ -1327,7 +1329,7 @@ levelSelectionMenu:  ; #d553
         ld de, textSelectLevel
         ld c, #46
         call printString
-        ld hl, #FE22
+        ld hl, State.s_22
         ld b, #05
         xor a
 .l_0:
@@ -1343,7 +1345,7 @@ levelSelectionMenu:  ; #d553
         ld c, #47
         call printString
         ld a, #04
-        ld (#FE1E), a
+        ld (State.s_1E), a
 .l_1:
         ld a, (controlState)
         bit 4, a
@@ -1356,7 +1358,7 @@ levelSelectionMenu:  ; #d553
 .l_3:
         ld a, (controlState)
         ld c, a
-        ld a, (#FE1E)
+        ld a, (State.s_1E)
         bit 2, c
         jr Z, .l_4
         dec a
@@ -1367,19 +1369,19 @@ levelSelectionMenu:  ; #d553
         inc a
 .l_5:
         and #03
-        ld (#FE1E), a
+        ld (State.s_1E), a
         ld l, a
         ld h, #00
-        ld de, #FE22
+        ld de, State.s_22
         add hl, de
         ld a, (hl)
         or a
         jr Z, .l_6
-        ld a, (#FE1E)
+        ld a, (State.s_1E)
         inc a
         jr .l_5
 .l_6:
-        ld a, (#FE1E)
+        ld a, (State.s_1E)
         add a, a
         add a, a
         add a, a
@@ -1425,9 +1427,9 @@ textLoading:  ; #d624
 ; Load level if needed
 ; Used by c_d553.
 c_d62c:  ; #d62c
-        ld a, (#FE8A)
+        ld a, (State.loadedLevel)
         ld b, a
-        ld a, (#FE1E)
+        ld a, (State.s_1E)
         cp b
         jr NZ, .l_0
         scf
@@ -1440,14 +1442,14 @@ c_d62c:  ; #d62c
         call printString
         call c_c9ac
         jr NC, .l_1
-        ld a, (#FE1E)
-        ld (#FE8A), a
+        ld a, (State.s_1E)
+        ld (State.loadedLevel), a
         scf
         ret
 .l_1:
         push af
         ld a, #FF
-        ld (#FE8A), a
+        ld (State.loadedLevel), a
         call clearScreenPixels
         ld hl, #0C0B
         ld de, textLoadError
@@ -1517,7 +1519,7 @@ c_d6f1:  ; #d6f1
 c_d709:  ; #d709
         ld ix, c_beb4
         call c_dd73
-        ld a, (#FE28)
+        ld a, (State.s_28)
         add a, a
         ld l, a
         ld h, #00
@@ -1528,43 +1530,43 @@ c_d709:  ; #d709
         ld d, (hl)
         ld (.call), de
 .call+* call -0
-        ld a, (#FE28)
+        ld a, (State.s_28)
         cp #02
         jp NC, .l_4
-        ld a, (#FE39)
+        ld a, (State.s_39)
         or a
         jr Z, .l_0
         dec a
-        ld (#FE39), a
-        ld a, (#FE38)
+        ld (State.s_39), a
+        ld a, (State.s_38)
         cp #01
         jp NZ, .l_7
         jp .l_6
 .l_0:
-        ld a, (#FE31)
+        ld a, (State.s_31)
         call c_eaee
         cp #05
         jp Z, .l_6
         cp #06
         jp Z, .l_7
-        ld a, (#FE32)
+        ld a, (State.s_32)
         call c_eaee
         cp #05
         jp Z, .l_6
         cp #06
         jp Z, .l_7
-        ld a, (#FE31)
+        ld a, (State.s_31)
         call c_eaee
         cp #09
         jr Z, .l_1
-        ld a, (#FE32)
+        ld a, (State.s_32)
         call c_eaee
         cp #09
         jr NZ, .l_4
 .l_1:
         call c_d0af
         ld a, #02
-        ld (#FE28), a
+        ld (State.s_28), a
         ld a, (controlState)
         and #03
         jp Z, .l_2
@@ -1576,11 +1578,11 @@ c_d709:  ; #d709
         ld (ix+19), #02
 .l_2:
         ld a, #03
-        ld (#FE27), a
+        ld (State.s_27), a
         xor a
-        ld (#FE41), a
+        ld (State.s_41), a
         ld hl, cS.heroJumps
-        ld a, (#FE3C)
+        ld a, (State.s_3C)
         cp #02
         jr C, .l_3
         ld hl, cS.armedHeroJumps
@@ -1589,9 +1591,9 @@ c_d709:  ; #d709
         ld (ix+4), h
 .l_4:
         xor a
-        ld (#FE05), a
-        ld de, (#FE01)
-        ld hl, (#FE03)
+        ld (State.s_05), a
+        ld de, (State.s_01)
+        ld hl, (State.s_03)
         xor a
         sbc hl, de
         jr Z, .l_5
@@ -1602,7 +1604,7 @@ c_d709:  ; #d709
         add hl, de
         jr NC, .l_5
         ld a, #FF
-        ld (#FE05), a
+        ld (State.s_05), a
 .l_5:
         jp c_e419
 .l_6:
@@ -1625,7 +1627,7 @@ c_d7f6:  ; #d7f6
         ld a, (controlState)
         bit 3, a
         jr Z, .l_0
-        ld a, (#FE33)
+        ld a, (State.s_33)
         call c_eaee
         cp #01
         jp Z, .l_12
@@ -1635,7 +1637,7 @@ c_d7f6:  ; #d7f6
 .l_0:
         bit 2, a
         jr Z, .l_1
-        ld a, (#FE34)
+        ld a, (State.s_34)
         call c_eaee
         cp #02
         jp Z, .l_12
@@ -1647,28 +1649,28 @@ c_d7f6:  ; #d7f6
         jp NZ, .l_8
         bit 0, (ix+24)
         ret NZ
-        ld a, (#FE31)
+        ld a, (State.s_31)
         call c_eaee
         cp #02
         jr NC, .l_2
-        ld a, (#FE32)
+        ld a, (State.s_32)
         call c_eaee
         cp #02
         jp C, c_d94c.l_13
 .l_2:
-        ld a, (#FE31)
+        ld a, (State.s_31)
         call c_eaee
         cp #07
         jr Z, .l_3
-        ld a, (#FE32)
+        ld a, (State.s_32)
         call c_eaee
         cp #07
         jr Z, .l_3
-        ld a, (#FE31)
+        ld a, (State.s_31)
         call c_eaee
         cp #05
         ret NC
-        ld a, (#FE32)
+        ld a, (State.s_32)
         call c_eaee
         cp #05
         jp C, c_d94c.l_11
@@ -1690,7 +1692,7 @@ c_d7f6:  ; #d7f6
         ld (ix+0), a
 .l_5:
         ld hl, cS.heroWalks1
-        ld a, (#FE3C)
+        ld a, (State.s_3C)
         cp #02
         jr C, .l_6
         ld hl, cS.armedHeroWalks1
@@ -1700,33 +1702,33 @@ c_d7f6:  ; #d7f6
         ret
 .l_7:
         ld a, #01
-        ld (#FE28), a
+        ld (State.s_28), a
         ld a, #02
-        ld (#FE41), a
+        ld (State.s_41), a
         xor a
-        ld (#FE42), a
+        ld (State.s_42), a
         ld (ix+6), a
         set 1, (ix+21)
         res 0, (ix+21)
         ret
 .l_8:
         ld a, #01
-        ld (#FE28), a
+        ld (State.s_28), a
         ld a, #02
-        ld (#FE41), a
+        ld (State.s_41), a
         xor a
-        ld (#FE42), a
+        ld (State.s_42), a
         ld (ix+6), a
         set 0, (ix+21)
         res 1, (ix+21)
         ret
 .l_9:
-        ld a, (#FE45)
+        ld a, (State.s_45)
         or a
         ret NZ
         res 0, (ix+24)
         ld a, #02
-        ld (#FE28), a
+        ld (State.s_28), a
         ld a, (controlState)
         and #03
         jp Z, .l_10
@@ -1738,11 +1740,11 @@ c_d7f6:  ; #d7f6
         ld (ix+19), #02
 .l_10:
         ld a, #03
-        ld (#FE27), a
+        ld (State.s_27), a
         xor a
-        ld (#FE41), a
+        ld (State.s_41), a
         ld hl, cS.heroJumps
-        ld a, (#FE3C)
+        ld a, (State.s_3C)
         cp #02
         jr C, .l_11
         ld hl, cS.armedHeroJumps
@@ -1754,15 +1756,15 @@ c_d7f6:  ; #d7f6
         jp c_da95
 ; This entry point is used by c_d94c, c_da95 and c_db4e.
 .l_12:
-        ld a, (#FE45)
+        ld a, (State.s_45)
         or a
         ret NZ
         ld a, #04
-        ld (#FE28), a
+        ld (State.s_28), a
         xor a
-        ld (#FE3E), a
+        ld (State.s_3E), a
         ld hl, cS.heroClimbs
-        ld a, (#FE3C)
+        ld a, (State.s_3C)
         cp #02
         jr C, .l_13
         ld hl, cS.armedHeroClimbs
@@ -1770,18 +1772,18 @@ c_d7f6:  ; #d7f6
         ld (ix+3), l
         ld (ix+4), h
         xor a
-        ld (#FE41), a
+        ld (State.s_41), a
         jp c_dbfc
 
 ; (Some game logic from call table #D6E7?)
 c_d94c:  ; #d94c
         bit 0, (ix+24)
         jr NZ, .l_0
-        ld a, (#FE31)
+        ld a, (State.s_31)
         call c_eaee
         cp #02
         jr NC, .l_0
-        ld a, (#FE32)
+        ld a, (State.s_32)
         call c_eaee
         cp #02
         jp C, .l_13
@@ -1791,7 +1793,7 @@ c_d94c:  ; #d94c
         jp NZ, .l_11
         bit 2, a
         jr Z, .l_1
-        ld a, (#FE34)
+        ld a, (State.s_34)
         call c_eaee
         cp #02
         jp Z, c_d7f6.l_12
@@ -1801,11 +1803,11 @@ c_d94c:  ; #d94c
         call c_de37
         or a
         jp NZ, .l_11
-        ld a, (#FE31)
+        ld a, (State.s_31)
         call c_eaee
         cp #08
         jr Z, .l_2
-        ld a, (#FE32)
+        ld a, (State.s_32)
         call c_eaee
         cp #08
         jr NZ, .l_3
@@ -1814,17 +1816,17 @@ c_d94c:  ; #d94c
         add a, #FF
         ld (ix+0), a
         ld a, #04
-        ld (#FE41), a
+        ld (State.s_41), a
         jr .l_4
 .l_3:
         ld a, (ix+0)
         add a, #FE
         ld (ix+0), a
         ld a, #02
-        ld (#FE41), a
-        ld a, (#FE42)
+        ld (State.s_41), a
+        ld a, (State.s_42)
         and #01
-        ld (#FE42), a
+        ld (State.s_42), a
 .l_4:
         ld a, (controlState)
         bit 1, a
@@ -1834,11 +1836,11 @@ c_d94c:  ; #d94c
         call c_deb1
         or a
         jp NZ, .l_11
-        ld a, (#FE31)
+        ld a, (State.s_31)
         call c_eaee
         cp #08
         jr Z, .l_6
-        ld a, (#FE32)
+        ld a, (State.s_32)
         call c_eaee
         cp #08
         jr NZ, .l_7
@@ -1847,48 +1849,48 @@ c_d94c:  ; #d94c
         add a, #01
         ld (ix+0), a
         ld a, #04
-        ld (#FE41), a
+        ld (State.s_41), a
         jr .l_8
 .l_7:
         ld a, (ix+0)
         add a, #02
         ld (ix+0), a
         ld a, #02
-        ld (#FE41), a
-        ld a, (#FE42)
+        ld (State.s_41), a
+        ld a, (State.s_42)
         and #01
-        ld (#FE42), a
+        ld (State.s_42), a
 .l_8:
         ld a, (controlState)
         bit 0, a
         jp Z, .l_11
 .l_9:
-        ld a, (#FE31)
+        ld a, (State.s_31)
         call c_eaee
         cp #07
         jr Z, .l_10
-        ld a, (#FE32)
+        ld a, (State.s_32)
         call c_eaee
         cp #07
         ret NZ
 .l_10:
         ld a, #01
-        ld (#FE41), a
+        ld (State.s_41), a
         xor a
-        ld (#FE42), a
+        ld (State.s_42), a
         ret
 ; This entry point is used by c_d7f6, c_da95, c_db4e and c_dbfc.
 .l_11:
         xor a
-        ld (#FE28), a
-        ld (#FE41), a
+        ld (State.s_28), a
+        ld (State.s_41), a
         ld a, (ix+2)
         and #F8
         or #03
         ld (ix+2), a
         ld (ix+19), #00
         ld hl, cS.heroStands
-        ld a, (#FE3C)
+        ld a, (State.s_3C)
         cp #02
         jr C, .l_12
         ld hl, cS.armedHeroStands
@@ -1899,11 +1901,11 @@ c_d94c:  ; #d94c
 ; This entry point is used by c_d7f6, c_da95, c_dbfc and c_e6e1.
 .l_13:
         xor a
-        ld (#FE45), a
+        ld (State.s_45), a
         ld a, #03
-        ld (#FE28), a
+        ld (State.s_28), a
         xor a
-        ld (#FE41), a
+        ld (State.s_41), a
         ld a, (controlState)
         and #03
         jp Z, .l_14
@@ -1916,7 +1918,7 @@ c_d94c:  ; #d94c
         ld (ix+19), a
 .l_14:
         ld hl, cS.heroFalls
-        ld a, (#FE3C)
+        ld a, (State.s_3C)
         cp #02
         jr C, .l_15
         ld hl, cS.armedHeroFalls
@@ -1929,7 +1931,7 @@ c_d94c:  ; #d94c
 ; Used by c_d7f6.
 c_da95:  ; #da95
         ld hl, cS.heroJumps
-        ld a, (#FE3C)
+        ld a, (State.s_3C)
         cp #02
         jr C, .l_0
         ld hl, cS.armedHeroJumps
@@ -1939,7 +1941,7 @@ c_da95:  ; #da95
         ld a, (controlState)
         bit 3, a
         jr Z, .l_1
-        ld a, (#FE33)
+        ld a, (State.s_33)
         call c_eaee
         cp #01
         jp Z, c_d7f6.l_12
@@ -1967,40 +1969,40 @@ c_da95:  ; #da95
         add a, (ix+0)
         ld (ix+0), a
 .l_3:
-        ld a, (#FE27)
+        ld a, (State.s_27)
         ld e, a
         ld d, #00
         ld hl, c_d6f1
         add hl, de
         ld a, (hl)
-        ld (#FE37), a
+        ld (State.s_37), a
         cp #7F
         jp Z, c_d94c.l_13
         add a, (ix+2)
         ld (ix+2), a
         ld a, (hl)
-        ld hl, #FE27
+        ld hl, State.s_27
         inc (hl)
         or a
         jp P, .l_4
         exa
         call c_dd46
-        ld a, (#FE35)
+        ld a, (State.s_35)
         call c_eaee
         cp #04
         jr NC, .l_5
-        ld a, (#FE36)
+        ld a, (State.s_36)
         call c_eaee
         cp #04
         jr NC, .l_5
         ret
 .l_4:
         call c_dd09
-        ld a, (#FE31)
+        ld a, (State.s_31)
         call c_eaee
         cp #02
         jp NC, c_d94c.l_11
-        ld a, (#FE32)
+        ld a, (State.s_32)
         call c_eaee
         cp #02
         jp NC, c_d94c.l_11
@@ -2019,7 +2021,7 @@ c_db4e:  ; #db4e
         ld a, (controlState)
         bit 3, a
         jr Z, .l_0
-        ld a, (#FE33)
+        ld a, (State.s_33)
         call c_eaee
         cp #01
         jp Z, c_d7f6.l_12
@@ -2065,11 +2067,11 @@ c_db4e:  ; #db4e
         ld (ix+0), l
         ld (ix+1), h
         exx
-        ld a, (#FE31)
+        ld a, (State.s_31)
         call c_eaee
         cp #02
         jp NC, c_d94c.l_11
-        ld a, (#FE32)
+        ld a, (State.s_32)
         call c_eaee
         cp #02
         jp NC, c_d94c.l_11
@@ -2097,21 +2099,21 @@ c_dbfc:  ; #dbfc
         ld a, (controlState)
         bit 3, a
         jr Z, .l_1
-        ld a, (#FE33)
+        ld a, (State.s_33)
         call c_eaee
         or a
         jr NZ, .l_0
-        ld a, (#FE34)
+        ld a, (State.s_34)
         call c_eaee
         or a
         jp Z, c_d94c.l_13
 .l_0:
         call c_dd46
-        ld a, (#FE35)
+        ld a, (State.s_35)
         call c_eaee
         cp #04
         jr NC, .l_1
-        ld a, (#FE36)
+        ld a, (State.s_36)
         call c_eaee
         cp #04
         jr NC, .l_1
@@ -2123,11 +2125,11 @@ c_dbfc:  ; #dbfc
         ld a, (controlState)
         bit 2, a
         jr Z, .l_3
-        ld a, (#FE33)
+        ld a, (State.s_33)
         call c_eaee
         or a
         jr NZ, .l_2
-        ld a, (#FE34)
+        ld a, (State.s_34)
         call c_eaee
         or a
         jp Z, c_d94c.l_13
@@ -2144,7 +2146,7 @@ c_dbfc:  ; #dbfc
         cp #03
         jr NZ, .l_4
         call c_dce1
-        ld a, (#FE34)
+        ld a, (State.s_34)
         call c_eaee
         cp #02
         jp NC, c_d94c.l_11
@@ -2152,11 +2154,11 @@ c_dbfc:  ; #dbfc
         ld a, (controlState)
         bit 1, a
         jr Z, .l_6
-        ld a, (#FE33)
+        ld a, (State.s_33)
         call c_eaee
         or a
         jr NZ, .l_5
-        ld a, (#FE34)
+        ld a, (State.s_34)
         call c_eaee
         or a
         jp Z, c_d94c.l_13
@@ -2171,11 +2173,11 @@ c_dbfc:  ; #dbfc
         ld a, (controlState)
         bit 0, a
         jr Z, .l_8
-        ld a, (#FE33)
+        ld a, (State.s_33)
         call c_eaee
         or a
         jr NZ, .l_7
-        ld a, (#FE34)
+        ld a, (State.s_34)
         call c_eaee
         or a
         jp Z, c_d94c.l_13
@@ -2192,10 +2194,10 @@ c_dbfc:  ; #dbfc
 ; ?
 ; Used by c_dbfc.
 c_dcce:  ; #dcce
-        ld a, (#FE42)
+        ld a, (State.s_42)
         inc a
         and #03
-        ld (#FE42), a
+        ld (State.s_42), a
         ret NZ
         ld a, (ix+21)
         xor #03
@@ -2213,7 +2215,7 @@ c_dce1:  ; #dce1
         ld (ix+2), a
         call c_d460
         ld a, (hl)
-        ld (#FE34), a
+        ld (State.s_34), a
         ld a, (ix+0)
         add a, #F4
         ld (ix+0), a
@@ -2236,10 +2238,10 @@ c_dd09:  ; #dd09
         ld (ix+2), a
         call c_d460
         ld a, (hl)
-        ld (#FE31), a
+        ld (State.s_31), a
         inc hl
         ld a, (hl)
-        ld (#FE32), a
+        ld (State.s_32), a
         ld a, (ix+0)
         add a, #FA
         ld (ix+0), a
@@ -2262,10 +2264,10 @@ c_dd46:  ; #dd46
         ld (ix+2), a
         call c_d460
         ld a, (hl)
-        ld (#FE35), a
+        ld (State.s_35), a
         inc hl
         ld a, (hl)
-        ld (#FE36), a
+        ld (State.s_36), a
         ld a, (ix+0)
         add a, #FA
         ld (ix+0), a
@@ -2286,16 +2288,16 @@ c_dd73:  ; #dd73
         call c_d460
         ld bc, #002C
         ld a, (hl)
-        ld (#FE29), a
+        ld (State.s_29), a
         add hl, bc
         ld a, (hl)
-        ld (#FE2A), a
+        ld (State.s_2A), a
         add hl, bc
         ld a, (hl)
-        ld (#FE2B), a
+        ld (State.s_2B), a
         add hl, bc
         ld a, (hl)
-        ld (#FE2C), a
+        ld (State.s_2C), a
         ld a, (ix+0)
         add a, #0C
         ld (ix+0), a
@@ -2305,16 +2307,16 @@ c_dd73:  ; #dd73
         call c_d460
         ld bc, #002C
         ld a, (hl)
-        ld (#FE2D), a
+        ld (State.s_2D), a
         add hl, bc
         ld a, (hl)
-        ld (#FE2E), a
+        ld (State.s_2E), a
         add hl, bc
         ld a, (hl)
-        ld (#FE2F), a
+        ld (State.s_2F), a
         add hl, bc
         ld a, (hl)
-        ld (#FE30), a
+        ld (State.s_30), a
         ld a, (ix+0)
         add a, #F6
         ld (ix+0), a
@@ -2326,10 +2328,10 @@ c_dd73:  ; #dd73
         ld (ix+2), a
         call c_d460
         ld a, (hl)
-        ld (#FE31), a
+        ld (State.s_31), a
         inc hl
         ld a, (hl)
-        ld (#FE32), a
+        ld (State.s_32), a
         ld a, (ix+0)
         add a, #06
         ld (ix+0), a
@@ -2341,10 +2343,10 @@ c_dd73:  ; #dd73
         ld (ix+2), a
         call c_d460
         ld a, (hl)
-        ld (#FE33), a
+        ld (State.s_33), a
         add hl, bc
         ld a, (hl)
-        ld (#FE34), a
+        ld (State.s_34), a
         ld a, (ix+0)
         add a, #F4
         ld (ix+0), a
@@ -2359,8 +2361,8 @@ c_dd73:  ; #dd73
         cp #03
         jr NZ, .l_0
         xor a
-        ld (#FE2C), a
-        ld (#FE30), a
+        ld (State.s_2C), a
+        ld (State.s_30), a
         ret
 .l_0:
         ret
@@ -2373,46 +2375,46 @@ c_de37:  ; #de37
         ld de, -32
         add hl, de
         jr NC, .l_2
-        ld a, (#FE28)
+        ld a, (State.s_28)
         cp #04
         jr NZ, .l_0
-        ld a, (#FE29)
+        ld a, (State.s_29)
         call c_eaee
         cp #03
         jr NC, .l_2
-        ld a, (#FE2A)
+        ld a, (State.s_2A)
         call c_eaee
         cp #03
         jr NC, .l_2
-        ld a, (#FE2B)
+        ld a, (State.s_2B)
         call c_eaee
         cp #03
         jr NC, .l_2
-        ld a, (#FE2C)
+        ld a, (State.s_2C)
         call c_eaee
         cp #03
         jr NC, .l_2
         jp .l_1
 .l_0:
-        ld a, (#FE29)
+        ld a, (State.s_29)
         call c_eaee
         cp #04
         jr NC, .l_2
-        ld a, (#FE2A)
+        ld a, (State.s_2A)
         call c_eaee
         cp #04
         jr NC, .l_2
-        ld a, (#FE2B)
+        ld a, (State.s_2B)
         call c_eaee
         cp #04
         jr NC, .l_2
-        ld a, (#FE28)
+        ld a, (State.s_28)
         cp #02
         jr NZ, .l_1
-        ld a, (#FE37)
+        ld a, (State.s_37)
         or a
         jp M, .l_1
-        ld a, (#FE30)
+        ld a, (State.s_30)
         call c_eaee
         cp #04
         jr NC, .l_2
@@ -2432,46 +2434,46 @@ c_deb1:  ; #deb1
         ld de, -252
         add hl, de
         jr C, .l_2
-        ld a, (#FE28)
+        ld a, (State.s_28)
         cp #04
         jr NZ, .l_0
-        ld a, (#FE2D)
+        ld a, (State.s_2D)
         call c_eaee
         cp #03
         jr NC, .l_2
-        ld a, (#FE2E)
+        ld a, (State.s_2E)
         call c_eaee
         cp #03
         jr NC, .l_2
-        ld a, (#FE2F)
+        ld a, (State.s_2F)
         call c_eaee
         cp #03
         jr NC, .l_2
-        ld a, (#FE30)
+        ld a, (State.s_30)
         call c_eaee
         cp #03
         jr NC, .l_2
         jp .l_1
 .l_0:
-        ld a, (#FE2D)
+        ld a, (State.s_2D)
         call c_eaee
         cp #04
         jr NC, .l_2
-        ld a, (#FE2E)
+        ld a, (State.s_2E)
         call c_eaee
         cp #04
         jr NC, .l_2
-        ld a, (#FE2F)
+        ld a, (State.s_2F)
         call c_eaee
         cp #04
         jr NC, .l_2
-        ld a, (#FE28)
+        ld a, (State.s_28)
         cp #02
         jr NZ, .l_1
-        ld a, (#FE37)
+        ld a, (State.s_37)
         or a
         jp M, .l_1
-        ld a, (#FE30)
+        ld a, (State.s_30)
         call c_eaee
         cp #04
         jr NC, .l_2
@@ -2517,33 +2519,33 @@ powerBulletTable:  ; #df76
 ; (Some logic for enemies?)
 ; Used by c_cc25.
 c_df85:  ; #df85
-        ld a, (#FE45)
+        ld a, (State.s_45)
         or a
         ret NZ
-        ld a, (#FE46)
+        ld a, (State.s_46)
         or a
         ret NZ
-        ld a, (#FE3C)
+        ld a, (State.s_3C)
         or a
         jr Z, .l_1
-        ld hl, (#FE3A)
+        ld hl, (State.s_3A)
         ld a, h
         or l
         jr NZ, .l_0
-        ld a, (#FE3D)
+        ld a, (State.s_3D)
         or a
         jr NZ, .l_1
         xor a
-        ld (#FE3C), a
+        ld (State.s_3C), a
         ret
 .l_0:
         dec hl
-        ld (#FE3A), hl
+        ld (State.s_3A), hl
 .l_1:
-        ld a, (#FE3D)
+        ld a, (State.s_3D)
         or a
         jp NZ, .l_9
-        ld a, (#FE28)
+        ld a, (State.s_28)
         cp #03
         ret NC
         ld a, (controlState)
@@ -2551,7 +2553,7 @@ c_df85:  ; #df85
         ret Z
         ld ix, c_beb4
         ld iy, #BEE6
-        ld a, (#FE3C)
+        ld a, (State.s_3C)
         or a
         jp NZ, .l_3
         ld a, #04
@@ -2576,7 +2578,7 @@ c_df85:  ; #df85
         ld (iy+1), h
         ld a, (ix+2)
         ld (iy+2), a
-        ld a, (#FE0A)
+        ld a, (State.s_0A)
         dec a
         add a, a
         ld l, a
@@ -2589,9 +2591,9 @@ c_df85:  ; #df85
         ld a, (hl)
         ld (iy+4), a
         ld a, #01
-        ld (#FE3D), a
+        ld (State.s_3D), a
         ld a, #03
-        ld (#FE3E), a
+        ld (State.s_3E), a
         jp c_eb00
 .l_3:
         cp #01
@@ -2627,18 +2629,18 @@ c_df85:  ; #df85
         and #03
         ld (iy+21), a
         xor a
-        ld (#FE3F), a
+        ld (State.s_3F), a
         ld a, #02
-        ld (#FE3D), a
+        ld (State.s_3D), a
         ld a, #03
-        ld (#FE3E), a
+        ld (State.s_3E), a
         jp c_eb00
 .l_5:
         cp #02
         jp NZ, .l_7
         ld a, #0A
         call playSound
-        ld a, (#FE0A)
+        ld a, (State.s_0A)
         dec a
         ld l, a
         add a, a
@@ -2681,18 +2683,18 @@ c_df85:  ; #df85
         ld a, (ix+21)
         and #03
         ld (iy+21), a
-        ld (#FE38), a
+        ld (State.s_38), a
         ld a, #03
-        ld (#FE3D), a
+        ld (State.s_3D), a
         ld a, #01
         ld (c_e308), a
         ld a, #04
-        ld (#FE39), a
+        ld (State.s_39), a
         jp c_eb00
 .l_7:
         ld a, #08
         call playSound
-        ld a, (#FE0A)
+        ld a, (State.s_0A)
         dec a
         ld l, a
         add a, a
@@ -2734,18 +2736,18 @@ c_df85:  ; #df85
         ld a, (ix+21)
         and #03
         ld (iy+21), a
-        ld (#FE38), a
+        ld (State.s_38), a
         ld a, #04
-        ld (#FE3D), a
+        ld (State.s_3D), a
         ld a, #04
-        ld (#FE39), a
+        ld (State.s_39), a
         jp c_eb00
 .l_9:
         ld ix, #BEE6
         cp #01
         jr NZ, .l_12
         ld ix, c_beb4
-        ld hl, #FE3E
+        ld hl, State.s_3E
         ld a, (hl)
         or a
         jr Z, .l_10
@@ -2755,7 +2757,7 @@ c_df85:  ; #df85
         ld (ix+4), h
         ret
 .l_10:
-        ld a, (#FE28)
+        ld a, (State.s_28)
         or a
         jr NZ, .l_11
         ld hl, cS.heroStands
@@ -2763,14 +2765,14 @@ c_df85:  ; #df85
         ld (ix+4), h
 .l_11:
         xor a
-        ld (#FE3D), a
+        ld (State.s_3D), a
         ld ix, #BEE6
         ld (ix+5), a
         ret
 .l_12:
         cp #02
         jp NZ, .l_19
-        ld hl, #FE3E
+        ld hl, State.s_3E
         ld a, (hl)
         or a
         jr Z, .l_13
@@ -2782,12 +2784,12 @@ c_df85:  ; #df85
         ld (ix+4), h
         pop ix
 .l_13:
-        ld a, (#FE40)
+        ld a, (State.s_40)
         or a
         jp NZ, .l_16
         call c_eb00
         jr NC, .l_15
-        ld a, (#FE3F)
+        ld a, (State.s_3F)
         ld l, a
         ld h, #00
         ld de, c_df2b
@@ -2795,7 +2797,7 @@ c_df85:  ; #df85
         ld a, (hl)
         cp #80
         jr Z, .l_14
-        ld hl, #FE3F
+        ld hl, State.s_3F
         inc (hl)
         ld (ix+20), a
 .l_14:
@@ -2834,10 +2836,10 @@ c_df85:  ; #df85
         add a, #F8
         ld (ix+2), a
         xor a
-        ld (#FE40), a
+        ld (State.s_40), a
         ld (ix+21), a
         set 1, (ix+5)
-        ld a, (#FE0A)
+        ld a, (State.s_0A)
         dec a
         ld (.l), a
 .l_16:
@@ -2849,9 +2851,9 @@ c_df85:  ; #df85
         ld de, c_df47
         add hl, de
         ex de, hl
-        ld a, (#FE40)
+        ld a, (State.s_40)
         inc a
-        ld (#FE40), a
+        ld (State.s_40), a
         srl a
         jr Z, .l_17
         dec a
@@ -2877,8 +2879,8 @@ c_df85:  ; #df85
 .l_18:
         xor a
         ld (ix+5), a
-        ld (#FE3D), a
-        ld (#FE40), a
+        ld (State.s_3D), a
+        ld (State.s_40), a
         ld (c_e308), a
         ret
 .l_19:
@@ -2909,10 +2911,10 @@ c_df85:  ; #df85
         jp NC, .l_18
         call c_eb00
         jr NC, .l_18
-        ld a, (#FE3D)
+        ld a, (State.s_3D)
         cp #03
         ret NZ
-        ld a, (#FE0A)
+        ld a, (State.s_0A)
         cp #03
         jr Z, c_e31c
         ret
@@ -3063,13 +3065,13 @@ heroWalkPhases:  ; #e401
 ; (Some game logic with weapons?)
 ; Used by c_d709.
 c_e419:  ; #e419
-        ld a, (#FE45)
+        ld a, (State.s_45)
         or a
         jr Z, .l_1
         dec a
-        ld (#FE45), a
+        ld (State.s_45), a
         ld de, cS.heroSmallWalks
-        ld a, (#FE41)
+        ld a, (State.s_41)
         or a
         jr Z, .l_0
         inc (ix+6)
@@ -3082,12 +3084,12 @@ c_e419:  ; #e419
         ld (ix+4), d
         ret
 .l_1:
-        ld a, (#FE41)
+        ld a, (State.s_41)
         or a
         ret Z
-        ld hl, #FE42
+        ld hl, State.s_42
         inc (hl)
-        ld a, (#FE41)
+        ld a, (State.s_41)
         cp (hl)
         ret NZ
         ld (hl), #00
@@ -3102,7 +3104,7 @@ c_e419:  ; #e419
         ld l, a
         ld h, #00
         ld de, heroWalkPhases
-        ld a, (#FE3C)
+        ld a, (State.s_3C)
         cp #02
         jr C, .l_3
         ld de, heroWalkPhases.armed
@@ -3346,10 +3348,10 @@ c_e5f2:  ; #e5f2
 ; Used by c_cc25.
 c_e60a:  ; #e60a
         ld ix, c_beb4
-        ld a, (#FE27)
-        ld (#FE44), a
+        ld a, (State.s_27)
+        ld (State.s_44), a
         ld a, (ix+2)
-        ld (#FE43), a
+        ld (State.s_43), a
         cp #0B
         jp C, .l_0
         cp #E0
@@ -3360,7 +3362,7 @@ c_e60a:  ; #e60a
         exa
         ld (ix+2), #E0
         xor a
-        ld (#FE27), a
+        ld (State.s_27), a
         jr .l_2
 .l_1:
         ld a, #01
@@ -3378,7 +3380,7 @@ c_e60a:  ; #e60a
         rr l
         sra h
         rr l
-        ld bc, (#FE01)
+        ld bc, (State.s_01)
         add hl, bc
         sra h
         rr l
@@ -3411,14 +3413,14 @@ c_e60a:  ; #e60a
         ld a, (de)
         or a
         jp P, .l_3
-        ld a, (#FE43)
+        ld a, (State.s_43)
         ld (ix+2), a
-        ld a, (#FE44)
-        ld (#FE27), a
+        ld a, (State.s_44)
+        ld (State.s_27), a
         ret
 .l_5:
         ld a, #3C
-        ld (#FE51), a
+        ld (State.s_51), a
         call c_e5f2
         ld hl, #0005
         add hl, de
@@ -3481,7 +3483,7 @@ c_e6df:  ; #e6df
 ; (Process collision?)
 ; Used by c_cc25.
 c_e6e1:  ; #e6e1
-        ld a, (#FE46)
+        ld a, (State.s_46)
         or a
         ret NZ
         ld ix, c_beb4
@@ -3520,13 +3522,13 @@ c_e6e1:  ; #e6e1
         cp #04
         jr NC, .l_2
         exa
-        ld a, (#FE3D)
+        ld a, (State.s_3D)
         or a
         ret NZ
         exa
-        ld (#FE3C), a
+        ld (State.s_3C), a
         ld hl, #02EE
-        ld (#FE3A), hl
+        ld (State.s_3A), hl
         ld (iy+5), #00
         ld a, #0D
         jp playSound
@@ -3540,11 +3542,11 @@ c_e6e1:  ; #e6e1
 .l_3:
         cp #04
         jr NZ, .l_5
-        ld a, (#FE0A)
+        ld a, (State.s_0A)
         cp #03
         jr Z, .l_4
         inc a
-        ld (#FE0A), a
+        ld (State.s_0A), a
 .l_4:
         ld (iy+5), #00
         jp c_d026
@@ -3558,21 +3560,21 @@ c_e6e1:  ; #e6e1
         cp #06
         jr NZ, .l_7
         ld (iy+5), #00
-        ld a, (#FE06)
+        ld a, (State.s_06)
         add a, #19
-        ld (#FE06), a
+        ld (State.s_06), a
         jp c_cfe6
 .l_7:
         cp #07
         jr NZ, .l_9
         ld (iy+5), #00
-        ld a, (#FE0C)
+        ld a, (State.s_0C)
         add a, #04
         cp #22
         jr C, .l_8
         ld a, #22
 .l_8:
-        ld (#FE0C), a
+        ld (State.s_0C), a
         ld a, #04
         jp c_d09a
 .l_9:
@@ -3580,7 +3582,7 @@ c_e6e1:  ; #e6e1
         jr NZ, .l_10
         ld (iy+5), #00
         ld a, #FF
-        ld (#FE20), a
+        ld (State.s_20), a
         ret
 .l_10:
         cp #0A
@@ -3590,7 +3592,7 @@ c_e6e1:  ; #e6e1
         ret Z
         ld (iy+5), #00
         ld a, #FF
-        ld (#FE46), a
+        ld (State.s_46), a
         ret
 .l_11:
         ld (iy+5), #00
@@ -3601,20 +3603,20 @@ c_e6e1:  ; #e6e1
         jr NZ, .l_14
         bit 3, (iy+21)
         ret NZ
-        ld a, (#FE45)
+        ld a, (State.s_45)
         or a
         ret NZ
-        ld a, (#FE28)
+        ld a, (State.s_28)
         cp #02
         jr C, .l_13
         ret NZ
         call c_d94c.l_13
-        ld a, (#FE28)
+        ld a, (State.s_28)
         or a
         ret NZ
 .l_13:
         ld a, #32
-        ld (#FE45), a
+        ld (State.s_45), a
 .l_14:
         ld a, (iy+7)
         cp #FF
@@ -3711,11 +3713,11 @@ c_e910:  ; #e910
 ; (Init something?)
 ; Used by c_cc25.
 c_e920:  ; #e920
-        ld a, (#FE46)
+        ld a, (State.s_46)
         bit 7, a
         ret Z
         call c_e5f2
-        ld a, (#FE1E)
+        ld a, (State.s_1E)
         add a, a
         add a, a
         ld l, a
@@ -3742,7 +3744,7 @@ c_e920:  ; #e920
         pop hl
         call c_cd9b
         ld a, #7F
-        ld (#FE46), a
+        ld (State.s_46), a
         call c_f6ba
         ld ix, #BF18
         ld b, #06
@@ -3780,7 +3782,7 @@ c_e920:  ; #e920
 ; Shop logic
 ; Used by c_cc25.
 c_e9b1:  ; #e9b1
-        ld a, (#FE46)
+        ld a, (State.s_46)
         cp #7F
         ret NZ
         ld ix, c_beb4
@@ -3800,7 +3802,7 @@ c_e9b1:  ; #e9b1
         or a
         ret Z
         dec a
-        ld (#FE47), a
+        ld (State.s_47), a
         ld l, a
         ld h, #00
         add hl, hl
@@ -3815,13 +3817,13 @@ c_e9b1:  ; #e9b1
         ld c, #47
         ld hl, #000F
         call printString
-        ld a, (#FE47)
+        ld a, (State.s_47)
         ld l, a
         ld h, #00
         ld de, c_e89b
         add hl, de
         ld a, (hl)
-        ld (#FE48), a
+        ld (State.s_48), a
         or a
         jr Z, .l_2
         ld hl, #001C
@@ -3831,11 +3833,11 @@ c_e9b1:  ; #e9b1
         ld a, (controlState)
         bit 4, a
         ret Z
-        ld a, (#FE48)
+        ld a, (State.s_48)
         or a
         jr NZ, .l_3
         call c_e5f2
-        ld a, (#FE1E)
+        ld a, (State.s_1E)
         add a, a
         add a, a
         ld l, a
@@ -3864,13 +3866,13 @@ c_e9b1:  ; #e9b1
         pop hl
         call c_cd9b
         xor a
-        ld (#FE46), a
-        ld (#FE28), a
+        ld (State.s_46), a
+        ld (State.s_28), a
         jp c_d04e
 .l_3:
-        ld a, (#FE48)
+        ld a, (State.s_48)
         ld b, a
-        ld a, (#FE06)
+        ld a, (State.s_06)
         sub b
         jr NC, .l_5
         ld hl, #000F
@@ -3883,25 +3885,25 @@ c_e9b1:  ; #e9b1
         jr NZ, .l_4
         ret
 .l_5:
-        ld (#FE06), a
+        ld (State.s_06), a
         call c_cfe6
         ld (iy+5), #00
-        ld a, (#FE47)
+        ld a, (State.s_47)
         inc a
         cp #04
         jr NC, .l_6
-        ld (#FE3C), a
+        ld (State.s_3C), a
         ld hl, #02EE
-        ld (#FE3A), hl
+        ld (State.s_3A), hl
         ret
 .l_6:
         cp #04
         jr NZ, .l_8
-        ld a, (#FE0A)
+        ld a, (State.s_0A)
         cp #03
         jr Z, .l_7
         inc a
-        ld (#FE0A), a
+        ld (State.s_0A), a
 .l_7:
         ld (iy+5), #00
         jp c_d026
@@ -3915,13 +3917,13 @@ c_e9b1:  ; #e9b1
         cp #07
         jr NZ, .l_11
         ld (iy+5), #00
-        ld a, (#FE0C)
+        ld a, (State.s_0C)
         add a, #04
         cp #22
         jr C, .l_10
         ld a, #22
 .l_10:
-        ld (#FE0C), a
+        ld (State.s_0C), a
         ld a, #04
         jp c_d09a
 .l_11:
@@ -3929,7 +3931,7 @@ c_e9b1:  ; #e9b1
         ret NZ
         ld (iy+5), #00
         ld a, #FF
-        ld (#FE20), a
+        ld (State.s_20), a
         ret
 
 ; (Init ix+0, 1, 2 from (hl)?)
@@ -4004,7 +4006,7 @@ c_eb19:  ; #eb19
         ld a, (iy+14)
         or a
         jp NZ, c_ec00.l_3
-        ld a, (#FE3C)
+        ld a, (State.s_3C)
         or a
         jr NZ, .l_1
         ld a, (iy+7)
@@ -4013,7 +4015,7 @@ c_eb19:  ; #eb19
         res 0, (ix+5)
         ret
 .l_0:
-        ld a, (#FE0A)
+        ld a, (State.s_0A)
         dec a
         ld l, a
         add a, a
@@ -4068,7 +4070,7 @@ c_eb19:  ; #eb19
         exa
         ret
 .l_2:
-        ld a, (#FE0A)
+        ld a, (State.s_0A)
         dec a
         ld l, a
         add a, a
@@ -4119,7 +4121,7 @@ c_ec00:  ; #ec00
         ld a, (iy+12)
         cp #FF
         jr Z, .l_3
-        ld a, (#FE3C)
+        ld a, (State.s_3C)
         ld l, a
         add a, a
         add a, l
@@ -4127,14 +4129,14 @@ c_ec00:  ; #ec00
         ld h, #00
         ld de, c_ebf4
         add hl, de
-        ld a, (#FE0A)
+        ld a, (State.s_0A)
         dec a
         ld e, a
         ld d, #00
         add hl, de
         ld a, (hl)
         ld b, a
-        ld a, (#FE54)
+        ld a, (State.s_54)
         or a
         jr NZ, .l_4
         ld a, b
@@ -4173,13 +4175,13 @@ c_ec00:  ; #ec00
         scf
         ret
 .l_4:
-        ld a, (#FE56)
+        ld a, (State.s_56)
         or a
         jr NZ, .l_2
-        ld a, (#FE55)
+        ld a, (State.s_55)
         add a, b
         jr NC, .l_7
-        ld (#FE55), a
+        ld (State.s_55), a
         ld a, #03
         call playSound
         push ix
@@ -4217,11 +4219,11 @@ c_ec00:  ; #ec00
         pop de
         pop ix
         ld a, #FF
-        ld (#FE57), a
+        ld (State.s_57), a
         ld de, c_cf84
         call c_cf85.l_0
-        ld a, (#FE1E)
-        ld hl, #FE22
+        ld a, (State.s_1E)
+        ld hl, State.s_22
         ld e, a
         ld d, #00
         add hl, de
@@ -4293,7 +4295,7 @@ c_ed08:  ; #ed08
         cp #FF
         ret NZ
         call c_f1d7
-        ld a, (#FE4A)
+        ld a, (State.s_4A)
         cp #02
         ret C
         bit 1, (ix+5)
@@ -4314,7 +4316,7 @@ c_ed08:  ; #ed08
         jp playSound
 .l_5:
         call c_f1d7
-        ld a, (#FE4A)
+        ld a, (State.s_4A)
         cp #04
         ret C
         ld (ix+23), #00
@@ -4535,20 +4537,20 @@ c_ef72:  ; #ef72
         call c_f670
         call c_f697
         call c_f1d7
-        ld a, (#FE4C)
+        ld a, (State.s_4C)
         bit 0, (ix+21)
         jr NZ, .l_1
-        ld a, (#FE4B)
+        ld a, (State.s_4B)
 .l_1:
         cp #04
         jr NC, .l_3
         ld a, (ix+8)
         cp #82
         jr Z, .l_4
-        ld a, (#FE4E)
+        ld a, (State.s_4E)
         bit 0, (ix+21)
         jr NZ, .l_2
-        ld a, (#FE4D)
+        ld a, (State.s_4D)
 .l_2:
         or a
         jr NZ, .l_4
@@ -4583,10 +4585,10 @@ c_ef72:  ; #ef72
         jr NZ, .l_9
         call c_f670
         call c_f697
-        ld a, (#FE4C)
+        ld a, (State.s_4C)
         bit 0, (ix+21)
         jr NZ, .l_7
-        ld a, (#FE4B)
+        ld a, (State.s_4B)
 .l_7:
         cp #04
         jr C, .l_8
@@ -4594,7 +4596,7 @@ c_ef72:  ; #ef72
         xor #03
         ld (ix+21), a
 .l_8:
-        ld a, (#FE4A)
+        ld a, (State.s_4A)
         cp #02
         jp NC, .l_23
         set 7, (ix+24)
@@ -4602,7 +4604,7 @@ c_ef72:  ; #ef72
         set 2, (ix+21)
         jp .l_23
 .l_9:
-        ld a, (#FE4A)
+        ld a, (State.s_4A)
         cp #02
         jp C, .l_23
         res 7, (ix+24)
@@ -4631,14 +4633,14 @@ c_ef72:  ; #ef72
         call c_f1d7
         bit 0, (ix+21)
         jr Z, .l_13
-        ld a, (#FE4C)
+        ld a, (State.s_4C)
         cp #02
         jr NC, .l_14
         jr .l_15
 .l_13:
         bit 1, (ix+21)
         jr Z, .l_15
-        ld a, (#FE4B)
+        ld a, (State.s_4B)
         cp #02
         jr C, .l_15
 .l_14:
@@ -4648,14 +4650,14 @@ c_ef72:  ; #ef72
 .l_15:
         bit 2, (ix+21)
         jr Z, .l_16
-        ld a, (#FE4A)
+        ld a, (State.s_4A)
         cp #02
         jr NC, .l_17
         jr .l_18
 .l_16:
         bit 3, (ix+21)
         jr Z, .l_18
-        ld a, (#FE49)
+        ld a, (State.s_49)
         cp #02
         jr C, .l_18
 .l_17:
@@ -4767,28 +4769,28 @@ c_f0f3:  ; #f0f3
         call c_f1d7
         bit 0, (ix+21)
         jr Z, .l_6
-        ld a, (#FE4C)
+        ld a, (State.s_4C)
         cp #04
         jr C, .l_6
         set 2, (ix+5)
 .l_6:
         bit 1, (ix+21)
         jr Z, .l_7
-        ld a, (#FE4B)
+        ld a, (State.s_4B)
         cp #04
         jr C, .l_7
         set 2, (ix+5)
 .l_7:
         bit 2, (ix+21)
         jr Z, .l_8
-        ld a, (#FE4A)
+        ld a, (State.s_4A)
         cp #03
         jr C, .l_8
         set 3, (ix+5)
 .l_8:
         bit 3, (ix+21)
         jr Z, .l_9
-        ld a, (#FE49)
+        ld a, (State.s_49)
         cp #03
         jr C, .l_9
         set 3, (ix+5)
@@ -4809,12 +4811,12 @@ c_f1d7:  ; #f1d7
         call c_d460
         ld a, (hl)
         call c_eaee
-        ld (#FE49), a
+        ld (State.s_49), a
         ld de, #0058
         add hl, de
         ld a, (hl)
         call c_eaee
-        ld (#FE4A), a
+        ld (State.s_4A), a
         ld a, (ix+0)
         add a, #F8
         ld (ix+0), a
@@ -4826,22 +4828,22 @@ c_f1d7:  ; #f1d7
         add hl, de
         ld a, (hl)
         call c_eaee
-        ld (#FE4B), a
+        ld (State.s_4B), a
         inc hl
         inc hl
         ld a, (hl)
         call c_eaee
-        ld (#FE4C), a
+        ld (State.s_4C), a
         ld de, #002A
         add hl, de
         ld a, (hl)
         call c_eaee
-        ld (#FE4D), a
+        ld (State.s_4D), a
         inc hl
         inc hl
         ld a, (hl)
         call c_eaee
-        ld (#FE4E), a
+        ld (State.s_4E), a
         ret
 .l_0:
         ld a, (ix+0)
@@ -4863,12 +4865,12 @@ c_f1d7:  ; #f1d7
 .l_1:
         ld a, (hl)
         call c_eaee
-        ld (#FE49), a
+        ld (State.s_49), a
         ld de, #0084
         add hl, de
         ld a, (hl)
         call c_eaee
-        ld (#FE4A), a
+        ld (State.s_4A), a
         inc hl
         bit 1, (ix+21)
         jr NZ, .l_2
@@ -4877,9 +4879,9 @@ c_f1d7:  ; #f1d7
         ld a, (hl)
         call c_eaee
         ld c, a
-        ld a, (#FE4A)
+        ld a, (State.s_4A)
         or c
-        ld (#FE4A), a
+        ld (State.s_4A), a
         call c_d460
         ld a, (ix+8)
         cp #82
@@ -4889,13 +4891,13 @@ c_f1d7:  ; #f1d7
 .l_3:
         ld a, (hl)
         call c_eaee
-        ld (#FE4B), a
+        ld (State.s_4B), a
         inc hl
         inc hl
         inc hl
         ld a, (hl)
         call c_eaee
-        ld (#FE4C), a
+        ld (State.s_4C), a
         ld de, #0029
         ld a, (ix+8)
         cp #11
@@ -4908,13 +4910,13 @@ c_f1d7:  ; #f1d7
         add hl, de
         ld a, (hl)
         call c_eaee
-        ld (#FE4D), a
+        ld (State.s_4D), a
         inc hl
         inc hl
         inc hl
         ld a, (hl)
         call c_eaee
-        ld (#FE4E), a
+        ld (State.s_4E), a
         ret
 
 ; Data block at F2D1
@@ -4961,7 +4963,7 @@ c_f2e7:  ; #f2e7
         inc (ix+6)
         call c_d460
         ld c, #BD
-        ld a, (#FE1E)
+        ld a, (State.s_1E)
         cp #03
         jr NZ, .l_3
         dec c
@@ -5011,8 +5013,8 @@ c_f37e:  ; #f37e
         bit 5, (ix+5)
         ret NZ
         xor a
-        ld (#FE4F), a
-        ld (#FE50), a
+        ld (State.s_4F), a
+        ld (State.s_50), a
         ld a, (ix+15)
         add a, a
         ld l, a
@@ -5040,13 +5042,13 @@ c_f37e:  ; #f37e
         jr NZ, .l_1
         dec hl
         ld a, (hl)
-        ld (#FE4F), a
+        ld (State.s_4F), a
         ld l, (ix+16)
         ld h, #00
         add hl, bc
         dec hl
         ld a, (hl)
-        ld (#FE50), a
+        ld (State.s_50), a
         dec (ix+16)
         jr .l_5
 .l_1:
@@ -5066,14 +5068,14 @@ c_f37e:  ; #f37e
         dec (ix+16)
         jr .l_0
 .l_4:
-        ld (#FE4F), a
+        ld (State.s_4F), a
         ld l, (ix+16)
         ld h, #00
         add hl, bc
         ld a, (hl)
-        ld (#FE50), a
+        ld (State.s_50), a
 .l_5:
-        ld a, (#FE50)
+        ld a, (State.s_50)
         ld l, a
         ld h, #00
         ld de, c_f373
@@ -5097,7 +5099,7 @@ c_f37e:  ; #f37e
         ld c, a
 .l_8:
         ld (ix+18), c
-        ld a, (#FE4F)
+        ld a, (State.s_4F)
         bit 0, (ix+24)
         jr Z, .l_9
         ld (ix+19), a
@@ -5242,7 +5244,7 @@ c_f518:  ; #f518
         cp #7F
         jr NZ, .l_1
         call c_f1d7
-        ld a, (#FE4A)
+        ld a, (State.s_4A)
         cp #04
         jr C, .l_1
         ld a, (ix+2)
@@ -5253,24 +5255,24 @@ c_f518:  ; #f518
         inc (ix+15)
         jp c_ef72.l_23
 
-; Decrements some counter at #FE51
+; Decrements some counter at State.s_51
 ; Used by c_cc25.
 c_f553:  ; #f553
-        ld a, (#FE51)
+        ld a, (State.s_51)
         or a
         jr Z, .l_0
         dec a
-        ld (#FE51), a
+        ld (State.s_51), a
         ret
 .l_0:
         ld a, #3C
-        ld (#FE51), a
+        ld (State.s_51), a
         ret
 
 ; (Modifies some object properties?)
 ; Used by c_ed08.
 c_f564:  ; #f564
-        ld a, (#FE51)
+        ld a, (State.s_51)
         or a
         ret NZ
         ld a, (ix+23)
@@ -5359,21 +5361,21 @@ c_f618:  ; #f618
         ld a, (iy+14)
         or a
         ret NZ
-        ld a, (#FE0B)
+        ld a, (State.s_0B)
         sub b
         jr NC, .l_0
         ld a, #FF
-        ld (#FE1F), a
+        ld (State.s_1F), a
         xor a
 .l_0:
-        ld (#FE0B), a
+        ld (State.s_0B), a
         ld (iy+14), #07
         jp c_d04e
 .l_1:
-        ld a, (#FE1E)
+        ld a, (State.s_1E)
         or a
         jr NZ, .l_2
-        ld a, (#FE54)
+        ld a, (State.s_54)
         or a
         jr NZ, .l_3
 .l_2:
@@ -5439,7 +5441,7 @@ c_f6b5:  ; #f6b5
 c_f6ba:  ; #f6ba
         ld bc, Level.objectTable
 .l_0:
-        ld de, (#FE01)
+        ld de, (State.s_01)
         ld a, (bc)
         ld h, a
         inc bc
@@ -5464,15 +5466,15 @@ c_f6ba:  ; #f6ba
 .l_2:
         dec bc
         dec bc
-        ld (#FE52), bc
+        ld (State.s_52), bc
         jr c_f6e7.l_3
 
 ; Get next objects from the object table
 ; Used by c_cc25.
 c_f6e7:  ; #f6e7
-        ld bc, (#FE52)
+        ld bc, (State.s_52)
 .l_0:
-        ld de, (#FE01)
+        ld de, (State.s_01)
         ld a, (bc)
         ld h, a
         inc bc
@@ -5501,7 +5503,7 @@ c_f6e7:  ; #f6e7
 .l_2:
         dec bc
         dec bc
-        ld (#FE52), bc
+        ld (State.s_52), bc
 ; This entry point is used by c_f6ba.
 .l_3:
         ld ix, #BF18
@@ -5551,7 +5553,7 @@ c_f74a:  ; #f74a
         cp #0A
         jr C, .l_0
         exa
-        ld a, (#FE1E)
+        ld a, (State.s_1E)
         ld l, a
         ld h, #00
         ld de, c_f6b5
@@ -5627,7 +5629,7 @@ c_f74a:  ; #f74a
         ld (ix+8), a
         or a
         jr NZ, .l_3
-        ld a, (#FE46)
+        ld a, (State.s_46)
         cp #7F
         jr NZ, .l_3
         ld (ix+5), #00
@@ -5720,7 +5722,7 @@ c_f74a:  ; #f74a
         ld (ix+5), #00
         ret
 .l_8:
-        ld a, (#FE54)
+        ld a, (State.s_54)
         or a
         ret NZ
         ld a, (ix+8)
@@ -5736,7 +5738,7 @@ c_f74a:  ; #f74a
         jr Z, .l_10
         ret
 .l_9:
-        ld hl, (#FE01)
+        ld hl, (State.s_01)
         ld de, #05D4
         xor a
         sbc hl, de
@@ -5745,18 +5747,18 @@ c_f74a:  ; #f74a
         ret
 .l_10:
         ld a, #01
-        ld (#FE54), a
+        ld (State.s_54), a
         ld a, #3C
-        ld (#FE55), a
+        ld (State.s_55), a
         ret
 
 ; Boss logic switch by level
 ; Used by c_cc25.
 c_f8cb:  ; #f8cb
-        ld a, (#FE54)
+        ld a, (State.s_54)
         or a
         ret Z
-        ld a, (#FE1E)
+        ld a, (State.s_1E)
         or a
         jp Z, c_f8f4
         cp #01
@@ -5776,10 +5778,10 @@ c_f8ec:  ; #f8ec
 ; Klondike boss logic
 ; Used by c_f8cb.
 c_f8f4:  ; #f8f4
-        ld a, (#FE54)
+        ld a, (State.s_54)
         cp #01
         jr NZ, .l_1
-        ld a, (#FE57)
+        ld a, (State.s_57)
         or a
         ret NZ
         ld ix, #BF18
@@ -5815,14 +5817,14 @@ c_f8f4:  ; #f8f4
         add ix, de
         djnz .l_0
         ld a, #02
-        ld (#FE54), a
+        ld (State.s_54), a
         xor a
-        ld (#FE56), a
+        ld (State.s_56), a
         ld a, #FF
-        ld (#FE51), a
+        ld (State.s_51), a
         ret
 .l_1:
-        ld hl, #FE54
+        ld hl, State.s_54
         inc (hl)
         ld a, (hl)
         cp #41
@@ -5832,15 +5834,15 @@ c_f8f4:  ; #f8f4
         ld (ix+3), l
         ld (ix+4), h
         ld a, #FF
-        ld (#FE56), a
+        ld (State.s_56), a
         ld a, #02
-        ld (#FE51), a
+        ld (State.s_51), a
         ret
 .l_2:
         cp #69
         jr NZ, .l_3
         ld a, #01
-        ld (#FE51), a
+        ld (State.s_51), a
         ret
 .l_3:
         cp #96
@@ -5854,7 +5856,7 @@ c_f8f4:  ; #f8f4
         ld (ix+5), #00
         djnz .l_5
         ld a, #01
-        ld (#FE54), a
+        ld (State.s_54), a
         ret
 
 ; Orient boss data
@@ -5864,10 +5866,10 @@ c_f99e:  ; #f99e
 ; Orient boss logic
 ; Used by c_f8cb.
 c_f9a4:  ; #f9a4
-        ld a, (#FE54)
+        ld a, (State.s_54)
         cp #01
         jr NZ, .l_1
-        ld a, (#FE57)
+        ld a, (State.s_57)
         or a
         ret NZ
         ld ix, #BF18
@@ -5906,11 +5908,11 @@ c_f9a4:  ; #f9a4
         pop bc
         djnz .l_0
         ld a, #02
-        ld (#FE54), a
+        ld (State.s_54), a
         xor a
-        ld (#FE56), a
+        ld (State.s_56), a
         ld a, #3C
-        ld (#FE51), a
+        ld (State.s_51), a
         ret
 .l_1:
         ld ix, #BF18
@@ -5956,10 +5958,10 @@ c_fa61:  ; #fa61
 ; Amazon boss logic
 ; Used by c_f8cb.
 c_fa65:  ; #fa65
-        ld a, (#FE54)
+        ld a, (State.s_54)
         cp #01
         jr NZ, .l_0
-        ld a, (#FE57)
+        ld a, (State.s_57)
         or a
         ret NZ
         ld ix, #BF18
@@ -5988,31 +5990,31 @@ c_fa65:  ; #fa65
         add a, #18
         ld (iy+2), a
         ld a, #02
-        ld (#FE54), a
+        ld (State.s_54), a
         xor a
-        ld (#FE56), a
+        ld (State.s_56), a
         ld a, #3C
-        ld (#FE51), a
+        ld (State.s_51), a
         ret
 .l_0:
-        ld a, (#FE58)
+        ld a, (State.s_58)
         or a
         jr Z, .l_1
         dec a
-        ld (#FE58), a
+        ld (State.s_58), a
         ret
 .l_1:
         ld a, #50
-        ld (#FE58), a
+        ld (State.s_58), a
         jp c_f8f4.l_4
 
 ; Iceland boss logic
 ; Used by c_f8cb.
 c_fad3:  ; #fad3
-        ld a, (#FE54)
+        ld a, (State.s_54)
         cp #01
         jr NZ, .l_0
-        ld a, (#FE57)
+        ld a, (State.s_57)
         or a
         ret NZ
         ld ix, #BF18
@@ -6032,11 +6034,11 @@ c_fad3:  ; #fad3
         add a, (ix+2)
         ld (iy+2), a
         ld a, #02
-        ld (#FE54), a
+        ld (State.s_54), a
         xor a
-        ld (#FE56), a
+        ld (State.s_56), a
         ld a, #3C
-        ld (#FE51), a
+        ld (State.s_51), a
         ret
 .l_0:
         ld ix, #BF18
@@ -6061,10 +6063,10 @@ c_fad3:  ; #fad3
 ; Bermuda boss logic
 ; Used by c_f8cb.
 c_fb45:  ; #fb45
-        ld a, (#FE54)
+        ld a, (State.s_54)
         cp #01
         jr NZ, .l_0
-        ld a, (#FE57)
+        ld a, (State.s_57)
         or a
         ret NZ
         ld ix, #BF18
@@ -6082,19 +6084,19 @@ c_fb45:  ; #fb45
         ld (ix+2), #92
         ld (iy+2), #A7
         ld a, #02
-        ld (#FE54), a
+        ld (State.s_54), a
         xor a
-        ld (#FE56), a
+        ld (State.s_56), a
         ld a, #C8
-        ld (#FE51), a
+        ld (State.s_51), a
         ret
 .l_0:
         ld ix, #BF18
         ld iy, #BF4A
-        ld a, (#FE59)
+        ld a, (State.s_59)
         inc a
         and #07
-        ld (#FE59), a
+        ld (State.s_59), a
         cp #04
         jr Z, .l_1
         cp #05
