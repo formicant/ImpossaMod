@@ -8,7 +8,7 @@ detectSpectrumModel:  ; #5e00
         ld a, (#C000)
         ld e, a
         ld bc, #7FFD
-        ld a, #01
+        ld a, 1
         out (c), a
         ld a, e
         inc a

@@ -83,7 +83,7 @@ c_c9fb:  ; #c9fb
         ld a, #C6
         cp b
         jr NC, .l_1
-        inc h                   ; () #CA2D
+        inc h
         jr NZ, .l_3
 .l_4:
         ld b, #C9

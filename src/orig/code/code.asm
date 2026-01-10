@@ -241,7 +241,7 @@ c_cdae:  ; #cdae
         ldir
         call c_c044
         call c_c561
-        ld de, #CF61
+        ld de, c_cf61
         jp c_cf85.l_0
 
 ; ?
@@ -417,11 +417,15 @@ c_cf5c:
 
 ; (Scores table (decimal)?)
 c_cf5d:  ; #cf5d
-        db #00, #00, #00, #06, #03, #00, #00, #01
+        db #00, #00, #00, #06
+c_cf61:  ; #cf61
+        db #03, #00, #00, #01
         db #00, #00, #00, #00, #02, #00, #00, #00
         db #00, #04, #00, #00, #00, #00, #08, #00
         db #00, #00, #01, #06, #00, #00, #00, #03
-        db #02, #00, #00, #02, #00, #00, #00, #00
+        db #02, #00, #00, #02, #00, #00, #00
+c_cf84:  ; #cf84
+        db #00
 
 ; Add score?
 ; Used by c_e4fc and c_e6e1.
@@ -4214,7 +4218,7 @@ c_ec00:  ; #ec00
         pop ix
         ld a, #FF
         ld (#FE57), a
-        ld de, #CF84
+        ld de, c_cf84
         call c_cf85.l_0
         ld a, (#FE1E)
         ld hl, #FE22

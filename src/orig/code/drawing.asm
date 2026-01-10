@@ -151,7 +151,7 @@ c_c07c:  ; #c07c
         push de
         push bc
         ld a, (ix+9)
-        ld (#C153), a
+        ld (.a), a
         exx
         ld a, (c_beb3)
         ld l, a
@@ -168,7 +168,7 @@ c_c07c:  ; #c07c
         exx
         and #38
         ld c, a
-        ld a, #00
+.a+*    ld a, -0
         and #47
         or c
         ld (hl), a
@@ -230,18 +230,9 @@ c_c07c:  ; #c07c
         ld h, #00
         ld bc, Level.start
 .l_16:
-        add hl, hl
-        add hl, hl
-        add hl, hl
+    .3  add hl, hl
         add hl, bc
-        ldi
-        ldi
-        ldi
-        ldi
-        ldi
-        ldi
-        ldi
-        ldi
+    .8  ldi
 .l_17:
         pop hl
         ld bc, #002C
@@ -258,14 +249,14 @@ c_c07c:  ; #c07c
         ld a, (ix+0)
         and #07
         jr NZ, c_c245
-        ld hl, #0000
-        ld (#C21D), hl
+        ld hl, #0000            ; `nop : nop`
+        ld (.jr), hl
         bit 1, (ix+21)
         jr NZ, .l_18
         bit 6, (ix+5)
         jr NZ, .l_18
-        ld hl, #0A18
-        ld (#C21D), hl
+        ld hl, #0A18            ; `jr .l_21`
+        ld (.jr), hl
 .l_18:
         ld c, #18
         ld a, (ix+2)
@@ -274,11 +265,11 @@ c_c07c:  ; #c07c
         ld c, #10
 .l_19:
         ld a, c
-        ld (#C233), a
-        ld (#C238), a
+        ld (.iy1), a
+        ld (.iy2), a
         call c_e47a
         di
-        ld (#C241), sp
+        ld (.sp), sp
         ld sp, hl
         ld h, #6A
         ld a, #10
@@ -286,7 +277,7 @@ c_c07c:  ; #c07c
         exa
         pop de
         pop bc
-        jr .l_21
+.jr:    jr .l_21
         ld a, e
         ld l, d
         ld e, (hl)
@@ -302,15 +293,15 @@ c_c07c:  ; #c07c
         and d
         or b
         ld (iy+0), a
-        ld a, (iy+0)
+.iy1+2  ld a, (iy-0)
         and e
         or c
-        ld (iy+0), a
+.iy2+2  ld (iy-0), a
         inc iy
         exa
         dec a
         jp NZ, .l_20
-        ld sp, #0000
+.sp+*   ld sp, -0
         ei
         ret
 
@@ -318,19 +309,17 @@ c_c07c:  ; #c07c
 ; Used by c_c07c.
 c_c245:  ; #c245
         ld b, a
-        add a, a
-        add a, a
-        add a, a
+    .3  add a, a
         add a, b
-        ld (#C2A4), a
-        ld hl, #0000
-        ld (#C28E), hl
+        ld (.jr2), a
+        ld hl, #0000            ; `nop : nop`
+        ld (.jr1), hl
         bit 1, (ix+21)
         jr NZ, .l_0
         bit 6, (ix+5)
         jr NZ, .l_0
-        ld hl, #0F18
-        ld (#C28E), hl
+        ld hl, #0F18            ; `jr .l_3`
+        ld (.jr1), hl
 .l_0:
         ld c, #18
         ld a, (ix+2)
@@ -339,21 +328,21 @@ c_c245:  ; #c245
         ld c, #10
 .l_1:
         ld a, c
-        ld (#C2FA), a
-        ld (#C2FF), a
+        ld (.iy1), a
+        ld (.iy2), a
         add a, a
-        ld (#C302), a
-        ld (#C307), a
+        ld (.iy3), a
+        ld (.iy4), a
         call c_e47a
         di
-        ld (#C310), sp
+        ld (.sp), sp
         ld sp, hl
         ld h, #6A
         ld ixh, #10
 .l_2:
         pop de
         pop hl
-        jr .l_3
+.jr1:   jr .l_3
         ld b, h
         ld c, l
         ld h, #6A
@@ -373,16 +362,9 @@ c_c245:  ; #c245
         exa
         xor a
 .l_4:
-        jr .l_4
-        nop
-        nop
-        nop
-        nop
-        nop
-        nop
-        nop
-        nop
-        nop
+.jr2+1  jr .l_4
+    .9  nop
+    DUP 7
         exa
         sll e
         rl d
@@ -390,48 +372,7 @@ c_c245:  ; #c245
         exa
         add hl, hl
         rla
-        exa
-        sll e
-        rl d
-        rla
-        exa
-        add hl, hl
-        rla
-        exa
-        sll e
-        rl d
-        rla
-        exa
-        add hl, hl
-        rla
-        exa
-        sll e
-        rl d
-        rla
-        exa
-        add hl, hl
-        rla
-        exa
-        sll e
-        rl d
-        rla
-        exa
-        add hl, hl
-        rla
-        exa
-        sll e
-        rl d
-        rla
-        exa
-        add hl, hl
-        rla
-        exa
-        sll e
-        rl d
-        rla
-        exa
-        add hl, hl
-        rla
+    EDUP
         ld b, (iy+0)
         exa
         and b
@@ -439,18 +380,18 @@ c_c245:  ; #c245
         exa
         or b
         ld (iy+0), a
-        ld a, (iy+0)
+.iy1+2  ld a, (iy-0)
         and d
         or h
-        ld (iy+0), a
-        ld a, (iy+0)
+.iy2+2  ld (iy-0), a
+.iy3+2  ld a, (iy-0)
         and e
         or l
-        ld (iy+0), a
+.iy4+2  ld (iy-0), a
         inc iy
         dec ixh
         jp NZ, .l_2
-        ld sp, #0000
+.sp+*   ld sp, -0
         ei
         ret
 
@@ -460,14 +401,14 @@ c_c314:  ; #c314
         ld a, (ix+0)
         and #07
         jp NZ, c_c3ac
-        ld hl, #0000
+        ld hl, #0000            ; `nop : nop`
         bit 1, (ix+21)
         jr NZ, .l_0
         bit 6, (ix+5)
         jr NZ, .l_0
-        ld hl, #2718
+        ld hl, #2718            ; `jr .l_3`
 .l_0:
-        ld (#C35F), hl
+        ld (.jr), hl
         ld c, #20
         ld a, (ix+2)
         and #07
@@ -476,14 +417,14 @@ c_c314:  ; #c314
         ld c, #18
 .l_1:
         ld a, c
-        ld (#C392), a
-        ld (#C397), a
+        ld (.iy1), a
+        ld (.iy2), a
         add a, a
-        ld (#C39A), a
-        ld (#C39F), a
+        ld (.iy3), a
+        ld (.iy4), a
         call c_e47a
         di
-        ld (#C3A8), sp
+        ld (.sp), sp
         ld sp, hl
         exx
         ld h, #6A
@@ -493,7 +434,7 @@ c_c314:  ; #c314
         pop de
         pop bc
         pop hl
-        jr .l_3
+.jr:    jr .l_3
         ld a, d
         exa
         ld a, h
@@ -538,18 +479,18 @@ c_c314:  ; #c314
         and c
         or b
         ld (iy+0), a
-        ld a, (iy+0)
+.iy1+2  ld a, (iy-0)
         and d
         or h
-        ld (iy+0), a
-        ld a, (iy+0)
+.iy2+2  ld (iy-0), a
+.iy3+2  ld a, (iy-0)
         and e
         or l
-        ld (iy+0), a
+.iy4+2  ld (iy-0), a
         inc iy
         dec ixh
         jp NZ, .l_2
-        ld sp, #0000
+.sp+*   ld sp, -0
         ei
         ret
 
@@ -565,15 +506,15 @@ c_c3ac:  ; #c3ac
         ld a, c
         add a, a
         add a, b
-        ld (#C421), a
-        ld hl, #0000
-        ld (#C405), hl
+        ld (.jr2), a
+        ld hl, #0000            ; `nop : nop`
+        ld (.jr1), hl
         bit 1, (ix+21)
         jr NZ, .l_0
         bit 6, (ix+5)
         jr NZ, .l_0
-        ld hl, #1418
-        ld (#C405), hl
+        ld hl, #1418            ; `jr .l_3`
+        ld (.jr1), hl
 .l_0:
         ld c, #20
         ld a, (ix+2)
@@ -583,17 +524,17 @@ c_c3ac:  ; #c3ac
         ld c, #18
 .l_1:
         ld a, c
-        ld (#C49B), a
-        ld (#C4A0), a
+        ld (.iy1), a
+        ld (.iy2), a
         add a, a
-        ld (#C4A7), a
-        ld (#C4AB), a
+        ld (.iy3), a
+        ld (.iy4), a
         add a, c
-        ld (#C4AF), a
-        ld (#C4B3), a
+        ld (.iy5), a
+        ld (.iy6), a
         call c_e47a
         di
-        ld (#C4BC), sp
+        ld (.sp), sp
         ld sp, hl
         ld ixh, #15
 .l_2:
@@ -604,7 +545,7 @@ c_c3ac:  ; #c3ac
         pop hl
         ld e, a
         exx
-        jr .l_3
+.jr1:   jr .l_3
         ld h, #6A
         ld a, (hl)
         ld l, d
@@ -628,20 +569,9 @@ c_c3ac:  ; #c3ac
         exx
         ld d, #00
 .l_4:
-        jr .l_4
-        nop
-        nop
-        nop
-        nop
-        nop
-        nop
-        nop
-        nop
-        nop
-        nop
-        nop
-        nop
-        nop
+.jr2+1  jr .l_4
+    .13 nop
+    DUP 7
         exx
         sll e
         rl d
@@ -651,60 +581,7 @@ c_c3ac:  ; #c3ac
         ex de, hl
         adc hl, hl
         ex de, hl
-        exx
-        sll e
-        rl d
-        adc hl, hl
-        exx
-        add hl, hl
-        ex de, hl
-        adc hl, hl
-        ex de, hl
-        exx
-        sll e
-        rl d
-        adc hl, hl
-        exx
-        add hl, hl
-        ex de, hl
-        adc hl, hl
-        ex de, hl
-        exx
-        sll e
-        rl d
-        adc hl, hl
-        exx
-        add hl, hl
-        ex de, hl
-        adc hl, hl
-        ex de, hl
-        exx
-        sll e
-        rl d
-        adc hl, hl
-        exx
-        add hl, hl
-        ex de, hl
-        adc hl, hl
-        ex de, hl
-        exx
-        sll e
-        rl d
-        adc hl, hl
-        exx
-        add hl, hl
-        ex de, hl
-        adc hl, hl
-        ex de, hl
-        exx
-        sll e
-        rl d
-        adc hl, hl
-        exx
-        add hl, hl
-        ex de, hl
-        adc hl, hl
-        ex de, hl
+    EDUP
         ld a, e
         exa
         ld a, d
@@ -716,25 +593,25 @@ c_c3ac:  ; #c3ac
         ld (iy+0), a
         exa
         ld b, a
-        ld a, (iy+0)
+.iy1+2  ld a, (iy-0)
         and l
         or b
-        ld (iy+0), a
+.iy2+2  ld (iy-0), a
         ld a, e
         exa
         ld a, d
         exx
-        and (iy+0)
+.iy3+2  and (iy-0)
         or h
-        ld (iy+0), a
+.iy4+2  ld (iy-0), a
         exa
-        and (iy+0)
+.iy5+2  and (iy-0)
         or l
-        ld (iy+0), a
+.iy6+2  ld (iy-0), a
         inc iy
         dec ixh
         jp NZ, .l_2
-        ld sp, #0000
+.sp+*   ld sp, -0
         ei
         ret
 
@@ -1014,14 +891,14 @@ c_c561:  ; #c561
 ; Used by c_cd9b.
 c_c636:  ; #c636
         di
-        ld (#C65C), sp
+        ld (.sp), sp
         ld sp, #6600
         ld hl, #0101
         ld b, 32
 .l_0:
     .22 push hl
         djnz .l_0
-        ld sp, 0
+.sp+*   ld sp, -0
         ei
         ret
 
