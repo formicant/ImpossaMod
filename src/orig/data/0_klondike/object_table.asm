@@ -194,7 +194,6 @@ objectTable:
         db #06, #7D,  8, #07    ; x=1661 pintaADay
         db #06, #81, 20, #05    ; x=1665 slimyWorms
         db #7F, #FF             ; stop mark
-        block 266, #00          ; padding
 
 
     ENDMODULE

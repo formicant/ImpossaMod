@@ -30,6 +30,7 @@ codeStart:
     INCLUDE "data/0_klondike/block_map.asm"
     INCLUDE "data/sprites.asm"
     INCLUDE "data/0_klondike/sprites.asm"
+    ORG Level.transitTable
     INCLUDE "data/0_klondike/transits.asm"
     ORG Level.trajVelTable
     INCLUDE "data/0_klondike/traj_table.asm"
@@ -78,7 +79,7 @@ codeStart:
 ; Save level 1 Orient
     ORG Level.start
     INCLUDE "data/1_orient/tiles.asm"
-        block Level.objectTable - $
+        block Level.objectTable - $         ; cleanup
     ORG Level.objectTable
     INCLUDE "data/1_orient/object_table.asm"
         block Level.blockMap - $            ; cleanup
@@ -86,6 +87,8 @@ codeStart:
     INCLUDE "data/1_orient/block_map.asm"
     ORG Level.sprites
     INCLUDE "data/1_orient/sprites.asm"
+        block Level.transitTable - $        ; cleanup
+    ORG Level.transitTable
     INCLUDE "data/1_orient/transits.asm"
     INCLUDE "data/1_orient/traj_table.asm"
     ORG Level.levObjectTypes
@@ -99,14 +102,14 @@ codeStart:
 ; Save level 2 Amazon
     ORG Level.start
     INCLUDE "data/2_amazon/tiles.asm"
-        block Level.objectTable - $
     ORG Level.objectTable
     INCLUDE "data/2_amazon/object_table.asm"
-        block Level.blockMap - $            ; cleanup
     ORG Level.blockMap
     INCLUDE "data/2_amazon/block_map.asm"
     ORG Level.sprites
     INCLUDE "data/2_amazon/sprites.asm"
+        block Level.transitTable - $        ; cleanup
+    ORG Level.transitTable
     INCLUDE "data/2_amazon/transits.asm"
     ; junk from 1_orient here
     ORG Level.trajVelTable
@@ -124,7 +127,7 @@ codeStart:
 ; Save level 3 Iceland
     ORG Level.start
     INCLUDE "data/3_iceland/tiles.asm"
-        block Level.objectTable - $
+        block Level.objectTable - $         ; cleanup
     ORG Level.objectTable
     INCLUDE "data/3_iceland/object_table.asm"
         block Level.blockMap - $            ; cleanup
@@ -132,6 +135,7 @@ codeStart:
     INCLUDE "data/3_iceland/block_map.asm"
     ORG Level.sprites
     INCLUDE "data/3_iceland/sprites.asm"
+    ORG Level.transitTable
     INCLUDE "data/0_klondike/transits.asm"  ; junk from 0_klondike
         block Level.trajVelTable - $        ; cleanup
     ORG Level.transitTable
@@ -148,15 +152,12 @@ codeStart:
 ; Save level 4 Bermuda
     ORG Level.start
     INCLUDE "data/4_bermuda/tiles.asm"
-        block Level.objectTable - $
     ORG Level.objectTable
     INCLUDE "data/4_bermuda/object_table.asm"
-        block Level.blockMap - $            ; cleanup
     ORG Level.blockMap
     INCLUDE "data/4_bermuda/block_map.asm"
     ORG Level.sprites
     INCLUDE "data/4_bermuda/sprites.asm"
-        block Level.trajVelTable - $        ; cleanup
     ORG Level.transitTable
     INCLUDE "data/4_bermuda/transits.asm"
     ORG Level.trajVelTable
