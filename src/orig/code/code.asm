@@ -502,40 +502,42 @@ c_cfdb:  ; #cfdb
         djnz .l_0
         ret
 
+
 ; Print coins in the panel
 ; Used by c_d1c1, c_e6e1 and c_e9b1.
-c_cfe6:  ; #cfe6
+printCoinCount:  ; #cfe6
         ld a, (State.coins)
-        ld hl, #000B
-        ld c, #46
-        jp .l_0
-; This entry point is used by c_e9b1.
-.l_0:
+        ld hl, #000B            ; y: 0, x: 12
+        ld c, #46               ; bright yellow
+        jp printNumber
+
+printNumber:
         push bc
-        ld bc, #0000
-.l_1:
-        sub #64
+        ld bc, 0
+.hundreds:
+        sub 100
         inc c
-        jr NC, .l_1
-        add a, #64
+        jr NC, .hundreds
+        add a, 100
         dec c
-.l_2:
-        sub #0A
+.tens:
+        sub 10
         inc b
-        jr NC, .l_2
-        add a, #0A
+        jr NC, .tens
+        add a, 10
         dec b
-        add a, #B0
+        add a, '0'|#80
         ld (State.coinDigits + 2), a
         ld a, b
-        add a, #30
+        add a, '0'
         ld (State.coinDigits + 1), a
         ld a, c
-        add a, #30
+        add a, '0'
         ld (State.coinDigits + 0), a
         pop bc
         ld de, State.coinDigits
         jp printString
+
 
 ; 1 soup can
 c_d01d:  ; #d01d
@@ -835,7 +837,7 @@ c_d1c1:  ; #d1c1
         xor a
         ld (State.coins), a
         ld (State.weapon), a
-        call c_cfe6
+        call printCoinCount
         call c_cf85.l_4
         call c_d04e
         call c_d026
@@ -3563,7 +3565,7 @@ c_e6e1:  ; #e6e1
         ld a, (State.coins)
         add a, #19
         ld (State.coins), a
-        jp c_cfe6
+        jp printCoinCount
 .l_7:
         cp #07
         jr NZ, .l_9
@@ -3826,9 +3828,9 @@ c_e9b1:  ; #e9b1
         ld (State.shopPrice), a
         or a
         jr Z, .l_2
-        ld hl, #001C
-        ld c, #47
-        call c_cfe6.l_0
+        ld hl, #001C            ; y: 0, x: 28
+        ld c, #47               ; bright white
+        call printNumber
 .l_2:
         ld a, (controlState)
         bit 4, a
@@ -3886,7 +3888,7 @@ c_e9b1:  ; #e9b1
         ret
 .l_5:
         ld (State.coins), a
-        call c_cfe6
+        call printCoinCount
         ld (iy+5), #00
         ld a, (State.shopItem)
         inc a
