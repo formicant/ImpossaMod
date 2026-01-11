@@ -1,6 +1,7 @@
     MODULE Lev3Iceland
 
 
+; #8600
 objectTable:
         ;  x (b-end)  y  type
         db #00, #1D, 19, #A2    ; x=29 snowOwl
@@ -184,7 +185,6 @@ objectTable:
         db #06, #7D, 12, #07    ; x=1661 pintaADay
         db #06, #83, 20, #02    ; x=1667 powerGun
         db #7F, #FF             ; stop mark
-        block 302, #00          ; padding
 
 
     ENDMODULE

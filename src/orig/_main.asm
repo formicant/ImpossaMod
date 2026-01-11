@@ -25,6 +25,7 @@ codeStart:
     ORG Level.start
     INCLUDE "data/0_klondike/tiles.asm"
     INCLUDE "data/0_klondike/object_table.asm"
+    ORG Level.blockMap
     INCLUDE "data/0_klondike/block_map.asm"
     INCLUDE "data/sprites.asm"
     INCLUDE "data/0_klondike/sprites.asm"
@@ -77,6 +78,8 @@ codeStart:
     ORG Level.start
     INCLUDE "data/1_orient/tiles.asm"
     INCLUDE "data/1_orient/object_table.asm"
+        block Level.blockMap - $            ; cleanup
+    ORG Level.blockMap
     INCLUDE "data/1_orient/block_map.asm"
     ORG Level.sprites
     INCLUDE "data/1_orient/sprites.asm"
@@ -94,6 +97,8 @@ codeStart:
     ORG Level.start
     INCLUDE "data/2_amazon/tiles.asm"
     INCLUDE "data/2_amazon/object_table.asm"
+        block Level.blockMap - $            ; cleanup
+    ORG Level.blockMap
     INCLUDE "data/2_amazon/block_map.asm"
     ORG Level.sprites
     INCLUDE "data/2_amazon/sprites.asm"
@@ -115,6 +120,8 @@ codeStart:
     ORG Level.start
     INCLUDE "data/3_iceland/tiles.asm"
     INCLUDE "data/3_iceland/object_table.asm"
+        block Level.blockMap - $            ; cleanup
+    ORG Level.blockMap
     INCLUDE "data/3_iceland/block_map.asm"
     ORG Level.sprites
     INCLUDE "data/3_iceland/sprites.asm"
@@ -135,6 +142,8 @@ codeStart:
     ORG Level.start
     INCLUDE "data/4_bermuda/tiles.asm"
     INCLUDE "data/4_bermuda/object_table.asm"
+        block Level.blockMap - $            ; cleanup
+    ORG Level.blockMap
     INCLUDE "data/4_bermuda/block_map.asm"
     ORG Level.sprites
     INCLUDE "data/4_bermuda/sprites.asm"

@@ -1,6 +1,7 @@
     MODULE Lev1Orient
 
 
+; #8600
 objectTable:
         ;  x (b-end)  y  type
         db #00, #1C, 12, #41    ; x=28 panda
@@ -184,7 +185,6 @@ objectTable:
         db #06, #80, 20, #00    ; x=1664 shopMole
         db #06, #82,  8, #01    ; x=1666 shatterbomb
         db #7F, #FF             ; stop mark
-        block 302, #00          ; padding
 
 
     ENDMODULE

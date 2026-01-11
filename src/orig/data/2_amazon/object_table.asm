@@ -1,6 +1,7 @@
     MODULE Lev2Amazon
 
 
+; #8600
 objectTable:
         ;  x (b-end)  y  type
         db #00, #05, 12, #7E    ; x=5 snake
@@ -196,7 +197,6 @@ objectTable:
         db #06, #78, 12, #07    ; x=1656 pintaADay
         db #06, #80, 20, #00    ; x=1664 shopMole
         db #7F, #FF             ; stop mark
-        block 254, #00          ; padding
 
 
     ENDMODULE

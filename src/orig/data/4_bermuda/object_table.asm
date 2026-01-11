@@ -1,6 +1,7 @@
     MODULE Lev4Bermuda
 
 
+; #8600
 objectTable:
         ;  x (b-end)  y  type
         db #00, #02, 16, #C7    ; x=2 nose
@@ -203,7 +204,6 @@ objectTable:
         db #06, #81, 12, #05    ; x=1665 slimyWorms
         db #06, #84, 20, #00    ; x=1668 shopMole
         db #7F, #FF             ; stop mark
-        block 226, #00          ; padding
 
 
     ENDMODULE
