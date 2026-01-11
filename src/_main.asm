@@ -18,20 +18,26 @@
     INCLUDE "basic_loader.asm"
 
 ; Code
-    ORG Level.start
+    ORG #6BFC   ; #BEFC
 codeStart:
-    INCLUDE "orig/data/0_klondike/tiles.asm"
-    INCLUDE "orig/data/0_klondike/object_table.asm"
-    INCLUDE "orig/data/0_klondike/block_map.asm"
-    INCLUDE "orig/data/0_klondike/sprites.asm"
-    INCLUDE "orig/data/0_klondike/transits.asm"
-    ORG Level.trajVelTable
-    INCLUDE "orig/data/0_klondike/traj_table.asm"
     INCLUDE "orig/data/object_types.asm"
+    _NEXT_ORG Level.levObjectTypes
     INCLUDE "orig/data/0_klondike/object_types.asm"
+    _NEXT_ORG Level.objectTable
+    INCLUDE "orig/data/0_klondike/object_table.asm"
+    _NEXT_ORG Level.tilePixels
+    INCLUDE "orig/data/0_klondike/tiles.asm"
     INCLUDE "orig/data/0_klondike/trajectories.asm"
+    _NEXT_ORG Level.trajVelTable
+    INCLUDE "orig/data/0_klondike/traj_table.asm"
+    _NEXT_ORG Level.blockMap
+    INCLUDE "orig/data/0_klondike/block_map.asm"
+    _NEXT_ORG Level.transitTable
+    INCLUDE "orig/data/0_klondike/transits.asm"
+        block 3
+    INCLUDE "orig/data/0_klondike/sprites.asm"
 
-    ORG Level.end
+    _NEXT_ORG #A7E4
     INCLUDE "orig/data/sprites.asm"
 
     _NEXT_ORG #BDDF

@@ -1,24 +1,22 @@
 ; Level data addresses
     MODULE Level
 
-start           EQU #6C00
 
-tilePixels      EQU #6C00
-tileAttrs       EQU #7400
-tileTypes       EQU #7500
-tileBlocks      EQU #7600
-objectTable     EQU #8600
-blockMap        EQU #8A00
+start           EQU #6D00   ; #C000
 
-sprites         EQU #A59E - #11C6
-transitTable    EQU #B282 - #11C6
+levObjectTypes  EQU #6D00   ; #C000
+objectTable     EQU #71E0   ; #C4E0
 
-trajVelTable    EQU #B373 - #11C6
-trajDirTable    EQU #B395 - #11C6
+tilePixels      EQU #7500   ; #C800
+tileAttrs       EQU #7D00   ; #D000
+tileTypes       EQU #7E00   ; #D100
+tileBlocks      EQU #7F00   ; #D200
 
-levObjectTypes  EQU #B4BB - #11C6
+trajVelTable    EQU #8FFA   ; #E2FA
+trajDirTable    EQU #901C   ; #E31C
 
-end             EQU #BDDF - #11C6
-length          EQU end - start
+blockMap        EQU #9040   ; #E340
+transitTable    EQU #9A18   ; #ED18
+
 
     ENDMODULE

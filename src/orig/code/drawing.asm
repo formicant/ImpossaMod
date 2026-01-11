@@ -216,7 +216,7 @@ c_c07c:  ; #c07c
         inc a
         ld (c_beb3), a
         ld l, c
-        ld h, #00
+        ld h, 0
         ld bc, #6600
         jp .l_16
 .l_15:
@@ -227,8 +227,8 @@ c_c07c:  ; #c07c
         ld bc, #FA80
         add hl, bc
         ld l, (hl)
-        ld h, #00
-        ld bc, Level.start
+        ld h, 0
+        ld bc, Level.tilePixels
 .l_16:
     .3  add hl, hl
         add hl, bc
@@ -807,7 +807,7 @@ c_c561:  ; #c561
         add hl, hl
         add hl, hl
         add hl, hl
-        ld bc, Level.start
+        ld bc, Level.tilePixels
         add hl, bc
     DUP 7
         ldi
