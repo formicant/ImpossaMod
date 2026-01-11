@@ -163,18 +163,18 @@ c_c07c:  ; #c07c
 .l_11:
         ld a, (hl)
         ld e, a
-        ld d, #74
+        ld d, high(Level.tileAttrs)
         ld a, (de)
         exx
-        and #38
+        and #38                 ; paper
         ld c, a
 .a+*    ld a, -0
-        and #47
+        and #47                 ; bright and ink
         or c
         ld (hl), a
         inc l
         exx
-        ld de, #002C
+        ld de, 44
         add hl, de
         dec c
         jr NZ, .l_11
@@ -192,7 +192,7 @@ c_c07c:  ; #c07c
         push bc
         push hl
         ld c, (hl)
-        ld b, #75
+        ld b, high(Level.tileTypes)
         ld a, (bc)
         and a
         jp P, .l_14
@@ -679,39 +679,21 @@ c_c4c0:  ; #c4c0
 .l_5:
         push hl
         ld l, a
-        ld h, #74
+        ld h, high(Level.tileAttrs)
         ld a, (hl)
         ld (ix+0), a
-        ld h, #00
-        add hl, hl
-        add hl, hl
-        add hl, hl
+        ld h, 0
+    .3  add hl, hl
         ld a, h
-        add #6C
+        add high(Level.tilePixels)
         ld h, a
 .l_6:
         push de
+    DUP 7
         ldi
         dec de
         inc d
-        ldi
-        dec de
-        inc d
-        ldi
-        dec de
-        inc d
-        ldi
-        dec de
-        inc d
-        ldi
-        dec de
-        inc d
-        ldi
-        dec de
-        inc d
-        ldi
-        dec de
-        inc d
+    EDUP
         ldi
         pop de
         pop hl
@@ -727,10 +709,8 @@ c_c4c0:  ; #c4c0
         exx
         push hl
         ld l, a
-        ld h, #00
-        add hl, hl
-        add hl, hl
-        add hl, hl
+        ld h, 0
+    .3  add hl, hl
         ld bc, #6608
         add hl, bc
         jp .l_6
@@ -790,27 +770,11 @@ c_c561:  ; #c561
         add hl, hl
         ld bc, #65F0
         add hl, bc
+    DUP 7
         ldi
         dec de
         inc d
-        ldi
-        dec de
-        inc d
-        ldi
-        dec de
-        inc d
-        ldi
-        dec de
-        inc d
-        ldi
-        dec de
-        inc d
-        ldi
-        dec de
-        inc d
-        ldi
-        dec de
-        inc d
+    EDUP
         ldi
         pop hl
         pop de
@@ -823,9 +787,7 @@ c_c561:  ; #c561
         exa
         ld a, d
         and #18
-        rrca
-        rrca
-        rrca
+    .3  rrca
         add #58
         ld d, a
         exa
@@ -841,46 +803,28 @@ c_c561:  ; #c561
         ld a, (hl)
         ld l, a
         exa
-        ld h, #00
+        ld h, 0
         add hl, hl
         add hl, hl
         add hl, hl
         ld bc, Level.start
         add hl, bc
+    DUP 7
         ldi
         dec de
         inc d
-        ldi
-        dec de
-        inc d
-        ldi
-        dec de
-        inc d
-        ldi
-        dec de
-        inc d
-        ldi
-        dec de
-        inc d
-        ldi
-        dec de
-        inc d
-        ldi
-        dec de
-        inc d
+    EDUP
         ldi
         pop de
         push de
         ld a, d
         and #18
-        rrca
-        rrca
-        rrca
-        add #58
+    .3  rrca
+        add high(Screen.attrs)
         ld d, a
         exa
         ld l, a
-        ld h, #74
+        ld h, high(Level.tileAttrs)
         ld a, (hl)
         ld (de), a
         pop de
