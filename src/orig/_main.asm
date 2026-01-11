@@ -24,6 +24,7 @@ codeStart:
 
     ORG Level.start
     INCLUDE "data/0_klondike/tiles.asm"
+    ORG Level.objectTable
     INCLUDE "data/0_klondike/object_table.asm"
     ORG Level.blockMap
     INCLUDE "data/0_klondike/block_map.asm"
@@ -77,6 +78,8 @@ codeStart:
 ; Save level 1 Orient
     ORG Level.start
     INCLUDE "data/1_orient/tiles.asm"
+        block Level.objectTable - $
+    ORG Level.objectTable
     INCLUDE "data/1_orient/object_table.asm"
         block Level.blockMap - $            ; cleanup
     ORG Level.blockMap
@@ -96,6 +99,8 @@ codeStart:
 ; Save level 2 Amazon
     ORG Level.start
     INCLUDE "data/2_amazon/tiles.asm"
+        block Level.objectTable - $
+    ORG Level.objectTable
     INCLUDE "data/2_amazon/object_table.asm"
         block Level.blockMap - $            ; cleanup
     ORG Level.blockMap
@@ -119,6 +124,8 @@ codeStart:
 ; Save level 3 Iceland
     ORG Level.start
     INCLUDE "data/3_iceland/tiles.asm"
+        block Level.objectTable - $
+    ORG Level.objectTable
     INCLUDE "data/3_iceland/object_table.asm"
         block Level.blockMap - $            ; cleanup
     ORG Level.blockMap
@@ -141,6 +148,8 @@ codeStart:
 ; Save level 4 Bermuda
     ORG Level.start
     INCLUDE "data/4_bermuda/tiles.asm"
+        block Level.objectTable - $
+    ORG Level.objectTable
     INCLUDE "data/4_bermuda/object_table.asm"
         block Level.blockMap - $            ; cleanup
     ORG Level.blockMap

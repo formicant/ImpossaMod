@@ -474,7 +474,6 @@ tileBlocks:
         dh 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ; block #AB
         dh 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ; block #AC
 .end:
-        block 1328, 0           ; padding
 
 
     ENDMODULE

@@ -450,7 +450,6 @@ tileBlocks:
         dh EE EF EE EF F0 F1 F0 F1 EE EF EE EF F0 F1 F0 F1  ; block #93
         dh 84 85 86 87 7D 89 8A D9 7E FC FD DA 7F 79 7A DB  ; block #94
 .end:
-        block 1712, 0           ; padding
 
 
     ENDMODULE

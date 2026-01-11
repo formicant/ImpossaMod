@@ -458,7 +458,6 @@ tileBlocks:
         dh 00 00 00 00 00 00 00 00 00 00 00 F4 00 00 00 F6 ; block #9B
         dh 00 00 00 00 00 00 00 00 F5 00 00 00 F7 00 00 00 ; block #9C
 .end:
-        block 1584, #00         ; padding
 
 
     ENDMODULE

@@ -513,7 +513,6 @@ tileBlocks:
         dh E4 6E 6E 6E E5 6F 7A 7A E5 6F 7A 7A E4 6E 6E 6E ; block #D2
         dh 6E 6E 6E E4 7A 7A 7A E5 7A 7A 7A E5 6E 6E 6E E4 ; block #D3
 .end:
-        block 704, #00          ; padding
 
 
     ENDMODULE
