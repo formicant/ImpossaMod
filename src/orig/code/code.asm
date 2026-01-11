@@ -433,9 +433,9 @@ c_cf85:  ; #cf85
         or a
         ret Z
         ld l, a
-        add a, a
-        add a, a
-        add a, l
+        add a
+        add a
+        add l
         ld l, a
         ld h, #00
         ld de, c_cf5d
@@ -474,7 +474,7 @@ c_cf85:  ; #cf85
         ld b, 6
 .l_5:
         ld a, (hl)
-        add a, '0'
+        add '0'
         ld (de), a
         inc hl
         inc de
@@ -518,21 +518,21 @@ printNumber:
         sub 100
         inc c
         jr NC, .hundreds
-        add a, 100
+        add 100
         dec c
 .tens:
         sub 10
         inc b
         jr NC, .tens
-        add a, 10
+        add 10
         dec b
-        add a, '0'|#80
+        add '0'|#80
         ld (State.coinDigits + 2), a
         ld a, b
-        add a, '0'
+        add '0'
         ld (State.coinDigits + 1), a
         ld a, c
-        add a, '0'
+        add '0'
         ld (State.coinDigits + 0), a
         pop bc
         ld de, State.coinDigits
@@ -557,8 +557,8 @@ c_d026:  ; #d026
         ld a, (State.soupCans)
         dec a
         ld l, a
-        add a, a
-        add a, l
+        add a
+        add l
         ld l, a
         ld h, #00
         ld de, c_d01d
@@ -635,7 +635,7 @@ c_d09a:  ; #d09a
         exa
         ld c, a
         ld a, (State.energy)
-        add a, c
+        add c
         cp b
         jr C, .l_0
         ld a, b
@@ -784,12 +784,12 @@ c_d153:  ; #d153
         ld (ix+0), l
         ld (ix+1), h
         ld a, c
-        add a, a
-        add a, a
-        add a, a
-        add a, a
-        add a, a
-        add a, #28
+        add a
+        add a
+        add a
+        add a
+        add a
+        add #28
         ld (ix+2), a
         ld hl, cS.heroStands
         ld a, (State.weapon)
@@ -848,8 +848,8 @@ c_d1c1:  ; #d1c1
         inc a
         ld (State.hasSmart), a
         ld a, (State.level)
-        add a, a
-        add a, a
+        add a
+        add a
         ld l, a
         ld h, #00
         ld de, c_d1ab
@@ -987,7 +987,7 @@ c_d2b3:  ; #d2b3
         ld (iy+0), l
         ld (iy+1), h
         ld a, (iy+2)
-        add a, #04
+        add #04
         ld (iy+2), a
 .l_0:
         ld hl, cS.coin
@@ -1106,7 +1106,7 @@ c_d3bb:  ; #d3bb
         bit 0, (iy+24)
         ret Z
         ld a, (ix+2)
-        add a, (ix+11)
+        add (ix+11)
         sub (iy+2)
         jp P, .l_0
         neg
@@ -1156,7 +1156,7 @@ c_d407:  ; #d407
         cp #E0
         jr NC, .l_2
         ld c, (ix+11)
-        add a, c
+        add c
         cp #20
         jr C, .l_2
         ld l, (ix+0)
@@ -1188,7 +1188,7 @@ c_d443:  ; #d443
         ld (ix+0), l
         ld (ix+1), h
         ld a, #FE
-        add a, (ix+2)
+        add (ix+2)
         ld (ix+2), a
         set 1, (ix+5)
         ret
@@ -1335,7 +1335,7 @@ levelSelectionMenu:  ; #d553
         ld b, #05
         xor a
 .l_0:
-        add a, (hl)
+        add (hl)
         inc hl
         djnz .l_0
         cp 5
@@ -1384,9 +1384,9 @@ levelSelectionMenu:  ; #d553
         jr .l_5
 .l_6:
         ld a, (State.level)
-        add a, a
-        add a, a
-        add a, a
+        add a
+        add a
+        add a
         ld l, a
         ld h, #00
         ld de, levelNames
@@ -1522,7 +1522,7 @@ c_d709:  ; #d709
         ld ix, c_beb4
         call c_dd73
         ld a, (State.s_28)
-        add a, a
+        add a
         ld l, a
         ld h, #00
         ld de, c_d6e7
@@ -1613,14 +1613,14 @@ c_d709:  ; #d709
         call c_de37
         jr NZ, .l_4
         ld a, (ix+0)
-        add a, #FF
+        add #FF
         ld (ix+0), a
         jp .l_4
 .l_7:
         call c_deb1
         jr NZ, .l_4
         ld a, (ix+0)
-        add a, #01
+        add #01
         ld (ix+0), a
         jp .l_4
 
@@ -1683,14 +1683,14 @@ c_d7f6:  ; #d7f6
         call c_de37
         jp NZ, c_d94c.l_11
         ld a, (ix+0)
-        add a, #FE
+        add #FE
         ld (ix+0), a
         jp .l_5
 .l_4:
         call c_deb1
         jp NZ, c_d94c.l_11
         ld a, (ix+0)
-        add a, #02
+        add #02
         ld (ix+0), a
 .l_5:
         ld hl, cS.heroWalks1
@@ -1815,14 +1815,14 @@ c_d94c:  ; #d94c
         jr NZ, .l_3
 .l_2:
         ld a, (ix+0)
-        add a, #FF
+        add #FF
         ld (ix+0), a
         ld a, #04
         ld (State.s_41), a
         jr .l_4
 .l_3:
         ld a, (ix+0)
-        add a, #FE
+        add #FE
         ld (ix+0), a
         ld a, #02
         ld (State.s_41), a
@@ -1848,14 +1848,14 @@ c_d94c:  ; #d94c
         jr NZ, .l_7
 .l_6:
         ld a, (ix+0)
-        add a, #01
+        add #01
         ld (ix+0), a
         ld a, #04
         ld (State.s_41), a
         jr .l_8
 .l_7:
         ld a, (ix+0)
-        add a, #02
+        add #02
         ld (ix+0), a
         ld a, #02
         ld (State.s_41), a
@@ -1960,7 +1960,7 @@ c_da95:  ; #da95
         jr NZ, .l_3
         ld a, (ix+19)
         neg
-        add a, (ix+0)
+        add (ix+0)
         ld (ix+0), a
         jr .l_3
 .l_2:
@@ -1968,7 +1968,7 @@ c_da95:  ; #da95
         or a
         jr NZ, .l_3
         ld a, (ix+19)
-        add a, (ix+0)
+        add (ix+0)
         ld (ix+0), a
 .l_3:
         ld a, (State.s_27)
@@ -1980,7 +1980,7 @@ c_da95:  ; #da95
         ld (State.s_37), a
         cp #7F
         jp Z, c_d94c.l_13
-        add a, (ix+2)
+        add (ix+2)
         ld (ix+2), a
         ld a, (hl)
         ld hl, State.s_27
@@ -2012,7 +2012,7 @@ c_da95:  ; #da95
 .l_5:
         exa
         neg
-        add a, (ix+2)
+        add (ix+2)
         and #F8
         ld (ix+2), a
         ret
@@ -2043,7 +2043,7 @@ c_db4e:  ; #db4e
         jr NZ, .l_2
         ld a, (ix+19)
         neg
-        add a, (ix+0)
+        add (ix+0)
         ld (ix+0), a
         jr .l_2
 .l_1:
@@ -2051,7 +2051,7 @@ c_db4e:  ; #db4e
         or a
         jr NZ, .l_2
         ld a, (ix+19)
-        add a, (ix+0)
+        add (ix+0)
         ld (ix+0), a
 .l_2:
         exx
@@ -2062,7 +2062,7 @@ c_db4e:  ; #db4e
         ld (ix+0), l
         ld (ix+1), h
         ld a, (ix+2)
-        add a, #04
+        add #04
         ld (ix+2), a
         call c_dd09
         exx
@@ -2121,7 +2121,7 @@ c_dbfc:  ; #dbfc
         jr NC, .l_1
         call c_dcce
         ld a, (ix+2)
-        add a, #FE
+        add #FE
         ld (ix+2), a
 .l_1:
         ld a, (controlState)
@@ -2138,7 +2138,7 @@ c_dbfc:  ; #dbfc
 .l_2:
         call c_dcce
         ld a, (ix+2)
-        add a, #02
+        add #02
         ld (ix+2), a
 .l_3:
         ld a, (ix+2)
@@ -2169,7 +2169,7 @@ c_dbfc:  ; #dbfc
         jr NZ, .l_6
         call c_dcce
         ld a, (ix+0)
-        add a, #FE
+        add #FE
         ld (ix+0), a
 .l_6:
         ld a, (controlState)
@@ -2188,7 +2188,7 @@ c_dbfc:  ; #dbfc
         jr NZ, .l_8
         call c_dcce
         ld a, (ix+0)
-        add a, #02
+        add #02
         ld (ix+0), a
 .l_8:
         ret
@@ -2210,19 +2210,19 @@ c_dcce:  ; #dcce
 ; Used by c_dbfc.
 c_dce1:  ; #dce1
         ld a, (ix+0)
-        add a, #0C
+        add #0C
         ld (ix+0), a
         ld a, (ix+2)
-        add a, #15
+        add #15
         ld (ix+2), a
         call c_d460
         ld a, (hl)
         ld (State.s_34), a
         ld a, (ix+0)
-        add a, #F4
+        add #F4
         ld (ix+0), a
         ld a, (ix+2)
-        add a, #EB
+        add #EB
         ld (ix+2), a
         ret
 
@@ -2230,13 +2230,13 @@ c_dce1:  ; #dce1
 ; Used by c_da95 and c_db4e.
 c_dd09:  ; #dd09
         ld a, (ix+0)
-        add a, #06
+        add #06
         ld (ix+0), a
         ld a, (ix+1)
         adc a, #00
         ld (ix+1), a
         ld a, (ix+2)
-        add a, #18
+        add #18
         ld (ix+2), a
         call c_d460
         ld a, (hl)
@@ -2245,13 +2245,13 @@ c_dd09:  ; #dd09
         ld a, (hl)
         ld (State.s_32), a
         ld a, (ix+0)
-        add a, #FA
+        add #FA
         ld (ix+0), a
         ld a, (ix+1)
         adc a, #FF
         ld (ix+1), a
         ld a, (ix+2)
-        add a, #E8
+        add #E8
         ld (ix+2), a
         ret
 
@@ -2259,10 +2259,10 @@ c_dd09:  ; #dd09
 ; Used by c_da95 and c_dbfc.
 c_dd46:  ; #dd46
         ld a, (ix+0)
-        add a, #06
+        add #06
         ld (ix+0), a
         ld a, (ix+2)
-        add a, #FF
+        add #FF
         ld (ix+2), a
         call c_d460
         ld a, (hl)
@@ -2271,10 +2271,10 @@ c_dd46:  ; #dd46
         ld a, (hl)
         ld (State.s_36), a
         ld a, (ix+0)
-        add a, #FA
+        add #FA
         ld (ix+0), a
         ld a, (ix+2)
-        add a, #01
+        add #01
         ld (ix+2), a
         ret
 
@@ -2282,7 +2282,7 @@ c_dd46:  ; #dd46
 ; Used by c_d709.
 c_dd73:  ; #dd73
         ld a, (ix+0)
-        add a, #04
+        add #04
         ld (ix+0), a
         ld a, (ix+1)
         adc a, #00
@@ -2301,7 +2301,7 @@ c_dd73:  ; #dd73
         ld a, (hl)
         ld (State.s_2C), a
         ld a, (ix+0)
-        add a, #0C
+        add #0C
         ld (ix+0), a
         ld a, (ix+1)
         adc a, #00
@@ -2320,13 +2320,13 @@ c_dd73:  ; #dd73
         ld a, (hl)
         ld (State.s_30), a
         ld a, (ix+0)
-        add a, #F6
+        add #F6
         ld (ix+0), a
         ld a, (ix+1)
         adc a, #FF
         ld (ix+1), a
         ld a, (ix+2)
-        add a, #15
+        add #15
         ld (ix+2), a
         call c_d460
         ld a, (hl)
@@ -2335,13 +2335,13 @@ c_dd73:  ; #dd73
         ld a, (hl)
         ld (State.s_32), a
         ld a, (ix+0)
-        add a, #06
+        add #06
         ld (ix+0), a
         ld a, (ix+1)
         adc a, #00
         ld (ix+1), a
         ld a, (ix+2)
-        add a, #F8
+        add #F8
         ld (ix+2), a
         call c_d460
         ld a, (hl)
@@ -2350,13 +2350,13 @@ c_dd73:  ; #dd73
         ld a, (hl)
         ld (State.s_34), a
         ld a, (ix+0)
-        add a, #F4
+        add #F4
         ld (ix+0), a
         ld a, (ix+1)
         adc a, #FF
         ld (ix+1), a
         ld a, (ix+2)
-        add a, #F3
+        add #F3
         ld (ix+2), a
         ld a, (ix+2)
         and #07
@@ -2582,7 +2582,7 @@ c_df85:  ; #df85
         ld (iy+2), a
         ld a, (State.soupCans)
         dec a
-        add a, a
+        add a
         ld l, a
         ld h, #00
         ld de, kickBubbles
@@ -2624,7 +2624,7 @@ c_df85:  ; #df85
         ld (iy+0), l
         ld (iy+1), h
         ld a, (ix+2)
-        add a, #FC
+        add #FC
         ld (iy+2), a
         ld (iy+19), #04
         ld a, (ix+21)
@@ -2645,9 +2645,9 @@ c_df85:  ; #df85
         ld a, (State.soupCans)
         dec a
         ld l, a
-        add a, a
-        add a, a
-        add a, l
+        add a
+        add a
+        add l
         ld l, a
         ld h, #00
         ld de, powerBulletTable
@@ -2665,7 +2665,7 @@ c_df85:  ; #df85
         ld (iy+11), a
         inc hl
         ld a, (hl)
-        add a, (ix+2)
+        add (ix+2)
         ld (iy+2), a
         ld l, (ix+0)
         ld h, (ix+1)
@@ -2699,9 +2699,9 @@ c_df85:  ; #df85
         ld a, (State.soupCans)
         dec a
         ld l, a
-        add a, a
-        add a, a
-        add a, l
+        add a
+        add a
+        add l
         ld l, a
         ld h, #00
         ld de, lazerBulletTable
@@ -2719,7 +2719,7 @@ c_df85:  ; #df85
         ld (iy+11), a
         inc hl
         ld a, (hl)
-        add a, (ix+2)
+        add (ix+2)
         ld (iy+2), a
         ld l, (ix+0)
         ld h, (ix+1)
@@ -2804,19 +2804,19 @@ c_df85:  ; #df85
         ld (ix+20), a
 .l_14:
         ld a, (ix+20)
-        add a, (ix+2)
+        add (ix+2)
         ld (ix+2), a
         call c_d407.l_0
         jp NC, .l_18
         ld a, (ix+0)
-        add a, #04
+        add #04
         ld (ix+0), a
         ld a, (ix+1)
         adc a, #00
         ld (ix+1), a
         call c_d460
         ld a, (ix+0)
-        add a, #FC
+        add #FC
         ld (ix+0), a
         ld a, (ix+1)
         adc a, #FF
@@ -2829,13 +2829,13 @@ c_df85:  ; #df85
         ld a, #06
         call playSound
         ld a, (ix+0)
-        add a, #FC
+        add #FC
         ld (ix+0), a
         ld a, (ix+1)
         adc a, #FF
         ld (ix+1), a
         ld a, (ix+2)
-        add a, #F8
+        add #F8
         ld (ix+2), a
         xor a
         ld (State.s_40), a
@@ -2889,23 +2889,23 @@ c_df85:  ; #df85
         call c_d407.l_0
         jr NC, .l_18
         ld a, (ix+0)
-        add a, #04
+        add #04
         ld (ix+0), a
         ld a, (ix+1)
         adc a, #00
         ld (ix+1), a
         ld a, (ix+2)
-        add a, #08
+        add #08
         ld (ix+2), a
         call c_d460
         ld a, (ix+0)
-        add a, #FC
+        add #FC
         ld (ix+0), a
         ld a, (ix+1)
         adc a, #FF
         ld (ix+1), a
         ld a, (ix+2)
-        add a, #F8
+        add #F8
         ld (ix+2), a
         ld a, (hl)
         call c_eaee
@@ -3035,7 +3035,7 @@ c_e31c:  ; #e31c
         jp C, .l_10
         neg
 .l_10:
-        add a, b
+        add b
         and #07
         ld l, a
         ld h, #00
@@ -3102,7 +3102,7 @@ c_e419:  ; #e419
         xor a
         ld (ix+6), a
 .l_2:
-        add a, a
+        add a
         ld l, a
         ld h, #00
         ld de, heroWalkPhases
@@ -3201,7 +3201,7 @@ c_e4fc:  ; #e4fc
         set 2, (ix+5)
         set 3, (ix+5)
         ld a, (ix+6)
-        add a, a
+        add a
         ld l, a
         ld h, #00
         ld de, c_e4ee
@@ -3319,14 +3319,14 @@ c_e582:  ; #e582
         jr Z, .l_2
         ld a, (ix+20)
         neg
-        add a, (ix+2)
+        add (ix+2)
         ld (ix+2), a
         ret
 .l_2:
         bit 2, (ix+21)
         ret Z
         ld a, (ix+20)
-        add a, (ix+2)
+        add (ix+2)
         ld (ix+2), a
         ret
 
@@ -3427,12 +3427,12 @@ c_e60a:  ; #e60a
         ld hl, #0005
         add hl, de
         ld a, (hl)
-        add a, a
-        add a, a
-        add a, a
-        add a, a
-        add a, a
-        add a, #20
+        add a
+        add a
+        add a
+        add a
+        add a
+        add #20
         ld (ix+0), a
         ld (ix+1), #00
         ld de, -4
@@ -3563,7 +3563,7 @@ c_e6e1:  ; #e6e1
         jr NZ, .l_7
         ld (iy+5), #00
         ld a, (State.coins)
-        add a, #19
+        add #19
         ld (State.coins), a
         jp printCoinCount
 .l_7:
@@ -3571,7 +3571,7 @@ c_e6e1:  ; #e6e1
         jr NZ, .l_9
         ld (iy+5), #00
         ld a, (State.maxEnergy)
-        add a, #04
+        add #04
         cp #22
         jr C, .l_8
         ld a, #22
@@ -3644,12 +3644,12 @@ c_e80a:  ; #e80a
         ld c, (iy+10)
         ld a, (ix+2)
         ld l, a
-        add a, d
+        add d
         ld h, (iy+2)
         cp h
         ret C
         ld a, h
-        add a, b
+        add b
         cp l
         ret C
         ld l, (ix+0)
@@ -3663,7 +3663,7 @@ c_e80a:  ; #e80a
         cp #0E
         jr NZ, .l_1
         ld a, e
-        add a, #06
+        add #06
         ld e, a
 .l_1:
         or a
@@ -3720,11 +3720,11 @@ c_e920:  ; #e920
         ret Z
         call c_e5f2
         ld a, (State.level)
-        add a, a
-        add a, a
+        add a
+        add a
         ld l, a
-        add a, a
-        add a, l
+        add a
+        add l
         ld l, a
         ld h, #00
         ld de, c_e85f
@@ -3760,11 +3760,11 @@ c_e920:  ; #e920
 .l_1:
         ld iy, c_beb4
         ld a, (iy+0)
-        add a, #20
+        add #20
         ld (ix+0), a
         ld (ix+1), #00
         ld a, (iy+2)
-        add a, #0B
+        add #0B
         ld (ix+2), a
         ld hl, cS.shopMole
         ld (ix+3), l
@@ -3840,11 +3840,11 @@ c_e9b1:  ; #e9b1
         jr NZ, .l_3
         call c_e5f2
         ld a, (State.level)
-        add a, a
-        add a, a
+        add a
+        add a
         ld l, a
-        add a, a
-        add a, l
+        add a
+        add l
         ld l, a
         ld h, #00
         ld de, c_e85f
@@ -3920,7 +3920,7 @@ c_e9b1:  ; #e9b1
         jr NZ, .l_11
         ld (iy+5), #00
         ld a, (State.maxEnergy)
-        add a, #04
+        add #04
         cp #22
         jr C, .l_10
         ld a, #22
@@ -3941,22 +3941,22 @@ c_e9b1:  ; #e9b1
 c_eace:  ; #eace
         ld ix, c_beb4
         ld a, (hl)
-        add a, a
-        add a, a
-        add a, a
-        add a, a
-        add a, a
-        add a, #20
+        add a
+        add a
+        add a
+        add a
+        add a
+        add #20
         ld (ix+0), a
         ld (ix+1), #00
         inc hl
         ld a, (hl)
-        add a, a
-        add a, a
-        add a, a
-        add a, a
-        add a, a
-        add a, #20
+        add a
+        add a
+        add a
+        add a
+        add a
+        add #20
         ld (ix+2), a
         ret
 
@@ -4020,8 +4020,8 @@ c_eb19:  ; #eb19
         ld a, (State.soupCans)
         dec a
         ld l, a
-        add a, a
-        add a, l
+        add a
+        add l
         ld l, a
         ld h, #00
         ld de, c_eaf7
@@ -4056,7 +4056,7 @@ c_eb19:  ; #eb19
         bit 1, (ix+5)
         jr NZ, .l_2
         ld a, (ix+0)
-        add a, #04
+        add #04
         ld (ix+0), a
         ld a, (ix+1)
         adc a, #00
@@ -4064,7 +4064,7 @@ c_eb19:  ; #eb19
         call c_e80a
         exa
         ld a, (ix+0)
-        add a, #FC
+        add #FC
         ld (ix+0), a
         ld a, (ix+1)
         adc a, #FF
@@ -4075,8 +4075,8 @@ c_eb19:  ; #eb19
         ld a, (State.soupCans)
         dec a
         ld l, a
-        add a, a
-        add a, l
+        add a
+        add l
         ld l, a
         ld h, #00
         ld de, c_eaf7
@@ -4125,8 +4125,8 @@ c_ec00:  ; #ec00
         jr Z, .l_3
         ld a, (State.weapon)
         ld l, a
-        add a, a
-        add a, l
+        add a
+        add l
         ld l, a
         ld h, #00
         ld de, c_ebf4
@@ -4142,7 +4142,7 @@ c_ec00:  ; #ec00
         or a
         jr NZ, .l_4
         ld a, b
-        add a, (iy+12)
+        add (iy+12)
         jr Z, .l_0
         jr NC, .l_0
         ld (iy+12), a
@@ -4181,7 +4181,7 @@ c_ec00:  ; #ec00
         or a
         jr NZ, .l_2
         ld a, (State.s_55)
-        add a, b
+        add b
         jr NC, .l_7
         ld (State.s_55), a
         ld a, #03
@@ -4359,7 +4359,7 @@ c_edc0:  ; #edc0
         ld a, (iy+11)
         srl a
         sub #03
-        add a, (iy+2)
+        add (iy+2)
         ld (ix+36), a
         ld (ix+37), #00
         pop hl
@@ -4750,12 +4750,12 @@ c_f0f3:  ; #f0f3
         ld a, (ix+2)
         ld c, (ix+11)
         srl c
-        add a, c
+        add c
         ld c, a
         ld a, (iy+2)
         ld b, (iy+11)
         srl b
-        add a, b
+        add b
         sub c
         set 2, (ix+21)
         res 3, (ix+21)
@@ -4805,7 +4805,7 @@ c_f1d7:  ; #f1d7
         bit 1, (ix+5)
         jr NZ, .l_0
         ld a, (ix+0)
-        add a, #08
+        add #08
         ld (ix+0), a
         ld a, (ix+1)
         adc a, #00
@@ -4820,7 +4820,7 @@ c_f1d7:  ; #f1d7
         call c_eaee
         ld (State.s_4A), a
         ld a, (ix+0)
-        add a, #F8
+        add #F8
         ld (ix+0), a
         ld a, (ix+1)
         adc a, #FF
@@ -4849,14 +4849,14 @@ c_f1d7:  ; #f1d7
         ret
 .l_0:
         ld a, (ix+0)
-        add a, #0C
+        add #0C
         ld (ix+0), a
         ld a, (ix+1)
         adc a, #00
         ld (ix+1), a
         call c_d460
         ld a, (ix+0)
-        add a, #F4
+        add #F4
         ld (ix+0), a
         ld a, (ix+1)
         adc a, #FF
@@ -5018,7 +5018,7 @@ c_f37e:  ; #f37e
         ld (State.s_4F), a
         ld (State.s_50), a
         ld a, (ix+15)
-        add a, a
+        add a
         ld l, a
         ld h, #00
         ld de, Level.trajVelTable
@@ -5027,7 +5027,7 @@ c_f37e:  ; #f37e
         inc hl
         ld d, (hl)
         ld a, (ix+15)
-        add a, a
+        add a
         ld l, a
         ld h, #00
         ld bc, Level.trajDirTable
@@ -5110,7 +5110,7 @@ c_f37e:  ; #f37e
         bit 2, c
         jr Z, .l_10
         ld a, (ix+2)
-        add a, b
+        add b
         ld (ix+2), a
         jr .l_11
 .l_10:
@@ -5165,13 +5165,13 @@ c_f488:  ; #f488
         ld iy, c_beb4
         ld a, (ix+26)
         neg
-        add a, (ix+2)
+        add (ix+2)
         ld c, a
-        add a, (ix+28)
+        add (ix+28)
         cp (iy+2)
         ret C
         ld a, (iy+2)
-        add a, (iy+11)
+        add (iy+11)
         cp c
         ret C
         ld l, (ix+0)
@@ -5240,7 +5240,7 @@ c_f518:  ; #f518
         dec (ix+15)
         ld a, #08
 .l_0:
-        add a, (ix+2)
+        add (ix+2)
         ld (ix+2), a
         ld a, (hl)
         cp #7F
@@ -5319,7 +5319,7 @@ c_f564:  ; #f564
         ld a, (ix+11)
         sub (iy+11)
         srl a
-        add a, (ix+2)
+        add (ix+2)
         ld (iy+2), a
         ld a, (iy+49)
         cp #01
@@ -5545,10 +5545,10 @@ c_f74a:  ; #f74a
         ld (ix+0), l
         ld (ix+1), h
         ld a, (bc)
-        add a, a
-        add a, a
-        add a, a
-        add a, #20
+        add a
+        add a
+        add a
+        add #20
         ld (ix+2), a
         inc bc
         ld a, (bc)
@@ -5714,7 +5714,7 @@ c_f74a:  ; #f74a
         cp #01
         jr NZ, .l_7
         ld a, (ix+2)
-        add a, #06
+        add #06
         ld (ix+2), a
         ret
 .l_7:
@@ -5800,7 +5800,7 @@ c_f8f4:  ; #f8f4
         call c_f74a.l_1
         call generateRandom
         and #03
-        add a, a
+        add a
         ld l, a
         ld h, #00
         ld de, c_f8ec
@@ -5903,7 +5903,7 @@ c_f9a4:  ; #f9a4
         ld (iy+1), h
         ld a, (de)
         inc de
-        add a, (ix+2)
+        add (ix+2)
         ld (iy+2), a
         ld bc, #0032
         add iy, bc
@@ -5974,7 +5974,7 @@ c_fa65:  ; #fa65
         call c_f74a.l_1
         call generateRandom
         and #01
-        add a, a
+        add a
         ld l, a
         ld h, #00
         ld de, c_fa61
@@ -5989,7 +5989,7 @@ c_fa65:  ; #fa65
         ld (ix+1), #00
         ld (iy+1), #00
         ld (ix+2), a
-        add a, #18
+        add #18
         ld (iy+2), a
         ld a, #02
         ld (State.s_54), a
@@ -6033,7 +6033,7 @@ c_fad3:  ; #fad3
         ld (iy+0), l
         ld (iy+1), h
         ld a, #13
-        add a, (ix+2)
+        add (ix+2)
         ld (iy+2), a
         ld a, #02
         ld (State.s_54), a

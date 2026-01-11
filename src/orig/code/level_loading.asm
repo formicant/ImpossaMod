@@ -23,9 +23,9 @@ c_c9ac:  ; #c9ac
         ld c, #47
         call printString
         ld a, (Level.start)
-        add a, a
-        add a, a
-        add a, a
+        add a
+        add a
+        add a
         ld l, a
         ld h, #00
         ld de, levelNames

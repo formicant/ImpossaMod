@@ -392,7 +392,7 @@ setAyValues:  ; #c83f
         ; regPeriodA
         ld c, AY.regPeriodA
         ld a, (ayChA + dPerL)
-        add a, (ix + 9)
+        add (ix + 9)
         bit 1, (ix + 17)
         jp Z, .l_0
         ld (p_c778), a
@@ -406,7 +406,7 @@ setAyValues:  ; #c83f
         ; regPeriodB
         inc c
         ld a, (ayChB + dPerL)
-        add a, (ix + dChB + 9)
+        add (ix + dChB + 9)
         bit 1, (ix + dChB + 17)
         jp Z, .l_1
         ld (p_c778), a
@@ -420,7 +420,7 @@ setAyValues:  ; #c83f
         ; regPeriodC
         inc c
         ld a, (ayChC + dPerL)
-        add a, (ix + dChC + 9)
+        add (ix + dChC + 9)
         bit 1, (ix + dChC + 17)
         jp Z, .l_2
         ld (p_c778), a
@@ -487,7 +487,7 @@ p_c8fb:  ; #c8fb
 
 p_c92d:  ; #c92d
         ld a, (ix + 5)
-        add a, (iy + 0)
+        add (iy + 0)
         cp (iy + 4)
         jr NC, .l_0
         ld (ix + 5), a
@@ -503,7 +503,7 @@ p_c92d:  ; #c92d
 
 p_c94c:  ; #c94c
         ld a, (ix + 5)
-        add a, (iy + 1)
+        add (iy + 1)
         jp M, .l_0
         cp (iy + 2)
         jr C, .l_0
@@ -530,7 +530,7 @@ p_c96e:  ; #c96e
 
 p_c967d: ; #c967d
         ld a, (ix + 5)
-        add a, (iy + 3)
+        add (iy + 3)
         jp M, .l_0
         ld (ix + 5), a
         ret
@@ -705,12 +705,12 @@ playMenuMusic:  ; #ca84
         pop af
         
         ld l, a
-        add a, a
-        add a, l
-        add a, a
+        add a
+        add l
+        add a
         ; `a` *= 6
         ld hl, p_c4cb
-        add a, l
+        add l
         ld l, a
         jr NC, .l_0
         inc h
@@ -767,10 +767,10 @@ playMenuMusic:  ; #ca84
 .l_2:
         ld (hl), a
         inc hl
-        add a, c
+        add c
         ld (hl), a
         inc hl
-        add a, c
+        add c
         cp 80
         jr NZ, .l_2
         djnz .l_1
@@ -867,9 +867,9 @@ aySoundFrame:  ; #cb0c
         jp .l_4
 .l_7:
         and #07
-        add a, (iy)
+        add (iy)
         ld de, #CA6C
-        add a, e
+        add e
         ld e, a
         jr NC, .l_8
         inc d
@@ -927,11 +927,11 @@ aySoundFrame:  ; #cb0c
         ld h, a
         jp .l_15
 .l_14:
-        add a, (iy + 10)
-        add a, #0C
+        add (iy + 10)
+        add #0C
         ld (iy + 14), a
         ld hl, p_c697
-        add a, a
+        add a
         ld c, a
         ld b, #00
         add hl, bc
@@ -972,7 +972,7 @@ p_cc5b:  ; #cc5b
         cp #88
         jr NC, .l_0
         and #07
-        add a, (iy)
+        add (iy)
         ld c, a
         ld b, #00
         ld hl, #CA6C
@@ -1040,14 +1040,14 @@ p_cc95:  ; #cc95
         rrca
         rrca
         and #1F
-        add a, (iy + 14)
+        add (iy + 14)
         jp .l_4
 .l_2:
         ld hl, #BE54
         ld a, (iy + 20)
-        add a, a
-        add a, a
-        add a, a
+        add a
+        add a
+        add a
         ld e, a
         add hl, de
         bit 7, (hl)
@@ -1072,9 +1072,9 @@ p_cc95:  ; #cc95
         ld (iy + 17), h
         ld a, (iy + 14)
 .l_4:
-        add a, a
+        add a
         ld hl, p_c697
-        add a, l
+        add l
         ld l, a
         jr NC, .l_5
         inc h

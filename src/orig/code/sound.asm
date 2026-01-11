@@ -101,8 +101,8 @@ beeperSounds:  ; #be3a
 ; Used by playSound.
 playBeeperSound:  ; #be67
         ld l, a
-        add a, a
-        add a, l
+        add a
+        add l
         ld l, a
         ld h, 0
         ld de, beeperSounds
@@ -135,7 +135,7 @@ playBeeperSound:  ; #be67
         call .l_4
         rrc d
         ld a, d
-        add a, 20
+        add 20
         ld d, a
         dec c
         jr NZ, .l_2

@@ -70,7 +70,7 @@ c_c07c:  ; #c07c
         jr NZ, .l_2
         ld c, #10
 .l_2:
-        add a, c
+        add c
         sub #20
         ret C
         ret Z
@@ -309,8 +309,8 @@ c_c07c:  ; #c07c
 ; Used by c_c07c.
 c_c245:  ; #c245
         ld b, a
-    .3  add a, a
-        add a, b
+    .3  add a
+        add b
         ld (.jr2), a
         ld hl, #0000            ; `nop : nop`
         ld (.jr1), hl
@@ -330,7 +330,7 @@ c_c245:  ; #c245
         ld a, c
         ld (.iy1), a
         ld (.iy2), a
-        add a, a
+        add a
         ld (.iy3), a
         ld (.iy4), a
         call c_e47a
@@ -419,7 +419,7 @@ c_c314:  ; #c314
         ld a, c
         ld (.iy1), a
         ld (.iy2), a
-        add a, a
+        add a
         ld (.iy3), a
         ld (.iy4), a
         call c_e47a
@@ -498,14 +498,14 @@ c_c314:  ; #c314
 ; Used by c_c314.
 c_c3ac:  ; #c3ac
         ld b, a
-        add a, a
-        add a, a
+        add a
+        add a
         ld c, a
-        add a, b
+        add b
         ld b, a
         ld a, c
-        add a, a
-        add a, b
+        add a
+        add b
         ld (.jr2), a
         ld hl, #0000            ; `nop : nop`
         ld (.jr1), hl
@@ -526,10 +526,10 @@ c_c3ac:  ; #c3ac
         ld a, c
         ld (.iy1), a
         ld (.iy2), a
-        add a, a
+        add a
         ld (.iy3), a
         ld (.iy4), a
-        add a, c
+        add c
         ld (.iy5), a
         ld (.iy6), a
         call c_e47a
@@ -687,7 +687,7 @@ c_c4c0:  ; #c4c0
         add hl, hl
         add hl, hl
         ld a, h
-        add a, #6C
+        add #6C
         ld h, a
 .l_6:
         push de
@@ -770,7 +770,7 @@ c_c561:  ; #c561
         inc a
         jp NZ, .l_5
         ld a, d
-        add a, #08
+        add #08
         ld d, a
         add hl, bc
         xor a
@@ -826,7 +826,7 @@ c_c561:  ; #c561
         rrca
         rrca
         rrca
-        add a, #58
+        add #58
         ld d, a
         exa
         ld (de), a
@@ -876,7 +876,7 @@ c_c561:  ; #c561
         rrca
         rrca
         rrca
-        add a, #58
+        add #58
         ld d, a
         exa
         ld l, a
@@ -944,7 +944,7 @@ printString:  ; #c67d
         ld a, h
         and %00011000
     .3  rrca
-        add a, high(Screen.attrs)
+        add high(Screen.attrs)
         ld h, a
         pop bc
         exx
