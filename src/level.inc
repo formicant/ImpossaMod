@@ -18,5 +18,8 @@ trajDirTable    EQU #901C   ; #E31C
 blockMap        EQU #9040   ; #E340
 transitTable    EQU #9A18   ; #ED18
 
+end             EQU #A7E2   ; #FAE2
+length          EQU end - start
+
 
     ENDMODULE
