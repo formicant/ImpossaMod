@@ -1,22 +1,19 @@
     MODULE Code
 
 
-c_beb3      EQU #BEB3
-c_beb4      EQU #BEB4
-
 ; (Draw 8 objects?)
 ; Used by c_cc25 and c_cdae.
 c_c044:  ; #c044
         ld ix, c_beb4
-        ld a, #02
+        ld a, 2
         ld (c_beb3), a
-        ld b, #08
+        ld b, 8
 .l_0:
         push bc
         push ix
         call c_c07c
         pop ix
-        ld bc, #0032
+        ld bc, 50
         add ix, bc
         pop bc
         djnz .l_0
@@ -26,15 +23,15 @@ c_c044:  ; #c044
 ; Used by c_cdae.
 c_c060:  ; #c060
         ld ix, c_beb4
-        ld a, #02
+        ld a, 2
         ld (c_beb3), a
-        ld b, #08
+        ld b, 8
 .l_0:
         push bc
         push ix
         call c_c07c.l_3
         pop ix
-        ld bc, #0032
+        ld bc, 50
         add ix, bc
         pop bc
         djnz .l_0
@@ -74,6 +71,7 @@ c_c07c:  ; #c07c
         sub #20
         ret C
         ret Z
+        
 ; This entry point is used by c_c060.
 .l_3:
         bit 0, (ix+5)
@@ -84,44 +82,40 @@ c_c07c:  ; #c07c
         ret
 .l_4:
         ld a, (ix+2)
-        and #F8
-        ld b, #00
+        and %11111000
+        ld b, 0
         ld c, a
         srl c
         ld e, a
-        ld d, #00
+        ld d, 0
         ld l, a
-        ld h, #00
-        add hl, hl
-        add hl, hl
+        ld h, 0
+    .2  add hl, hl
         add hl, de
         add hl, bc
+        ; `hl = (ix+2) * 5.5`
         ld e, (ix+0)
         ld d, (ix+1)
+    DUP 3
         srl d
         rr e
-        srl d
-        rr e
-        srl d
-        rr e
+    EDUP
         ld bc, #5B00
         add hl, bc
         add hl, de
         ex de, hl
         ld a, (c_beb3)
         ld l, a
-        ld h, #00
-        add hl, hl
-        add hl, hl
-        add hl, hl
+        ld h, 0
+   .3   add hl, hl
         ld bc, #6600
         add hl, bc
         push hl
         pop iy
         ld a, (ix+2)
-        and #07
+        and %00000111
         ld c, a
-        ld b, #00
+        ld b, 0
         add iy, bc
         ex de, hl
         ld bc, #0303
@@ -130,19 +124,19 @@ c_c07c:  ; #c07c
         ld bc, #0202
 .l_5:
         ld a, (ix+0)
-        and #07
+        and %00000111
         jr Z, .l_6
         inc b
 .l_6:
         ld a, (ix+2)
         bit 1, (ix+5)
         jr NZ, .l_7
-        and #07
+        and %00000111
         jp Z, .l_9
         jp .l_8
 .l_7:
-        and #07
-        cp #04
+        and %00000111
+        cp %00000100
         jr C, .l_9
 .l_8:
         inc c

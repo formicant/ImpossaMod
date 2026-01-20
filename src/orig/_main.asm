@@ -40,7 +40,8 @@ codeStart:
 
     ORG #BDDF
     INCLUDE "code/sound.asm"
-    ORG #BEB4
+    INCLUDE "code/drawing_vars.asm"
+    ORG #BEB4   ; overlap
     INCLUDE "code/init_interrupts.asm"
     INCLUDE "code/interrupt.asm"
     ORG #C044

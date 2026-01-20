@@ -1,5 +1,6 @@
     SLDOPT COMMENT WPMEM, LOGPOINT, ASSERTION
-    DEVICE ZXSPECTRUM128
+    ; DEVICE ZXSPECTRUM128
+    DEVICE ZXSPECTRUM48
     
     DEFINE _MOD
 
@@ -41,6 +42,8 @@ codeStart:
     
     _NEXT_ORG #BDDF
     INCLUDE "orig/code/sound.asm"
+    _NEXT_ORG #BEB3
+    INCLUDE "orig/code/drawing_vars.asm"
     ; empty space, 401 bytes
     _NEXT_ORG #C044
     INCLUDE "orig/code/drawing.asm"

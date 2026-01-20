@@ -8,7 +8,8 @@
       "remoteType": "zsim",
       "zsim": {
         "visualMemory": true,
-        "memoryModel": "ZX128K",
+        "memoryModel": "ZX48K",
+        // "memoryModel": "ZX128K",
         "ulaScreen": "spectrum",
         "zxBorderWidth": 20,
         "vsyncInterrupt": true,
@@ -17,7 +18,7 @@
       },
       "sjasmplus": [
         {
-          "path": "impossamole.sld"
+          "path": "build/impossamod.sld"
         }
       ],
       "history": {
@@ -38,28 +39,9 @@
       },
       "rootFolder": "${workspaceFolder}",
       // "topOfStack": "Stack.top",
-      "load": "impossamole.sna",
+      "load": "build/impossamod.sna",
       "smallValuesMaximum": 513,
       "tmpDir": ".tmp"
-    },
-    
-    {
-      "type": "dezog",
-      "request": "launch",
-      "name": "Unit Tests",
-      "unitTests": true,
-      "remoteType": "zsim",
-      "disassemblerArgs": {
-        "esxdosRst": true
-      },
-      "sjasmplus": [
-        {
-          "path": "impossamole.sld",
-        }
-      ],
-      "rootFolder": "${workspaceFolder}",
-      "load": "impossamole.sna",
-    },
-
+    }
   ]
 }
