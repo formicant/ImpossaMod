@@ -67,7 +67,7 @@ s_56:       db -0
 s_57:       db -0
 s_58:       db -0
 s_59:       db -0
-s_5A:       block 48    ; 16 × 3
+conveyors:  block 48    ; 16 × 3 (addr, length)
 
 length  EQU $ - start
 

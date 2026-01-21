@@ -144,15 +144,15 @@ printGameMenuText:  ; #c76f
         djnz .l_0
         
         ; print last score
-        ld hl, #0F07
+        ld hl, #0F07            ; y: 15, x: 7
         ld de, textLastScore
         ld c, #43               ; bright magenta
         call printString
-        ld hl, #0F12
-        ld (c_cf85.yx), hl
-        call c_cf85.l_4
-        ld hl, #0000
-        ld (c_cf85.yx), hl
+        ld hl, #0F12            ; y: 15, x: 18
+        ld (printScore.yx), hl
+        call printScore
+        ld hl, #0000            ; y: 0, x: 0
+        ld (printScore.yx), hl
         ret
 
 ; Checks attributes of the active menu item

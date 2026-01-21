@@ -241,8 +241,8 @@ c_cdae:  ; #cdae
         ldir
         call c_c044
         call c_c561
-        ld de, c_cf61
-        jp c_cf85.l_0
+        ld de, scoreTable.walk + 4
+        jp addScoreRaw
 
 ; ?
 ; Used by c_cdae.
@@ -287,12 +287,12 @@ c_ce23:  ; #ce23
 ; (Screen scrolling?)
 ; Used by c_cdae.
 c_ce57:  ; #ce57
-        ld de, #5BB0
-        ld hl, #5BB8
-        ld a, #18
+        ld de, screenTiles
+        ld hl, screenTiles + 8
+        ld a, 24
 .l_0:
     .36 ldi
-        ld bc, #0008
+        ld bc, 8
         add hl, bc
         ex de, hl
         add hl, bc
@@ -305,7 +305,7 @@ c_ce57:  ; #ce57
 ; Used by c_cdae.
 c_ceb2:  ; #ceb2
         ld hl, (State.screenX)
-        ld de, #0020
+        ld de, 32
         add hl, de
         ld e, l
         ld d, h
@@ -314,8 +314,8 @@ c_ceb2:  ; #ceb2
         add hl, de
         ld de, Level.blockMap
         add hl, de
-        ld de, #5BD4
-        ld b, #02
+        ld de, screenTiles + 32 + 4
+        ld b, 2
         jp c_cecc.l_0
 
 ; Copy level map segment to #5BB4 buffer
@@ -329,13 +329,13 @@ c_cecc:  ; #cecc
         add hl, de
         ld de, Level.blockMap
         add hl, de
-        ld de, #5BB4
-        ld b, #0A
+        ld de, screenTiles + 4
+        ld b, 10
 ; This entry point is used by c_ceb2.
 .l_0:
         push bc
         push de
-        ld b, #06
+        ld b, 6
 .l_1:
         push bc
         push hl
@@ -344,9 +344,9 @@ c_cecc:  ; #cecc
     .4  add hl, hl
         ld bc, Level.tileBlocks
         add hl, bc
-        ld a, #04
+        ld a, 4
 .l_2:
-        ld bc, #002C
+        ld bc, 44
     .4  ldi
         ex de, hl
         add hl, bc
@@ -359,13 +359,13 @@ c_cecc:  ; #cecc
         djnz .l_1
         pop de
         push hl
-        ld hl, #0004
+        ld hl, 4
         add hl, de
         ex de, hl
         pop hl
         pop bc
         djnz .l_0
-        jp c_d213
+        jp findConveyors
 
 ; ?
 ; Used by c_cdae.
@@ -397,98 +397,99 @@ c_cf17:  ; #cf17
         djnz .l_0
         ret
 
-; Data block at CF51
-c_cf51:  ; #cf51
-        db #00, #00, #00, #00, #00, #00
+; Score string (6 decimal digits in ASCII with a stop bit)
+scoreString:  ; #cf51
+        block 6
 
-; Score ()
-c_cf57:  ; #cf57
-        db #00, #00, #00, #00, #00
+; Score (6 decimal digits)
+score:  ; #cf57
+        block 6
 
-; (?)
-c_cf5c:
-        db #00
+; Score table (decimal)
+scoreTable:  ; #cf5d
+.walk:  db 0, 0, 0, 6, 3
+        db 0, 0, 1, 0, 0
+        db 0, 0, 2, 0, 0
+        db 0, 0, 4, 0, 0
+        db 0, 0, 8, 0, 0
+        db 0, 1, 6, 0, 0
+        db 0, 3, 2, 0, 0
+.done:  db 2, 0, 0, 0, 0
 
-; (Scores table (decimal)?)
-c_cf5d:  ; #cf5d
-        db #00, #00, #00, #06
-c_cf61:  ; #cf61
-        db #03, #00, #00, #01
-        db #00, #00, #00, #00, #02, #00, #00, #00
-        db #00, #04, #00, #00, #00, #00, #08, #00
-        db #00, #00, #01, #06, #00, #00, #00, #03
-        db #02, #00, #00, #02, #00, #00, #00
-c_cf84:  ; #cf84
-        db #00
-
-; Add score?
+; Add score by index
+;   `a`: index in the score table (1..6)
 ; Used by c_e4fc and c_e6e1.
-c_cf85:  ; #cf85
+addScore:  ; #cf85
         or a
         ret Z
         ld l, a
-        add a
-        add a
+    .2  add a
         add l
         ld l, a
-        ld h, #00
-        ld de, c_cf5d
+        ld h, 0
+        ld de, scoreTable
         add hl, de
-        ld de, #0004
+        ld de, 4
         add hl, de
         ex de, hl
-        jr .l_0
+        jr addScoreRaw
+
+; Add score by addr
+;   `de`: addr of the last digit in the score table
 ; This entry point is used by c_cdae and c_ec00.
-.l_0:
-        ld hl, c_cf5c
+addScoreRaw:
+        ld hl, score + 5
         or a
         ld b, 5
-.l_1:
+.l_0:
         ld a, (de)
         adc a, (hl)
         cp 10
-        jp NC, .l_6
+        jp NC, addScoreSetCarry
         or a
-.l_2:
+.l_1:
         ld (hl), a
         dec hl
         dec de
-        djnz .l_1
+        djnz .l_0
         ld a, (hl)
         adc a, 0
         cp 10
-        jp C, .l_3
+        jp C, .l_2
         xor a
-.l_3:
+.l_2:
         ld (hl), a
+
+; Print score number
 ; This entry point is used by c_c76f and c_d1c1.
-.l_4:
-        ld hl, c_cf57
-        ld de, c_cf51
+printScore:
+        ld hl, score
+        ld de, scoreString
         ld b, 6
-.l_5:
+.l_0:
         ld a, (hl)
         add '0'
         ld (de), a
         inc hl
         inc de
-        djnz .l_5
+        djnz .l_0
         dec de
         ex de, hl
         set 7, (hl)
 .yx+*   ld hl, -0               ; `h`: y coord, `l`: x coord
-        ld de, c_cf51
+        ld de, scoreString
         ld c, #47               ; bright white
         jp printString
-.l_6:
-        sub #0A
+
+addScoreSetCarry:
+        sub 10
         scf
-        jp .l_2
+        jp addScoreRaw.l_1
 
 ; Clear score at #CF57?
 ; Used by c_d133.
 c_cfdb:  ; #cfdb
-        ld hl, c_cf57
+        ld hl, score
         ld b, #06
 .l_0:
         ld (hl), #00
@@ -832,7 +833,7 @@ c_d1c1:  ; #d1c1
         ld (State.coins), a
         ld (State.weapon), a
         call printCoinCount
-        call c_cf85.l_4
+        call printScore
         call c_d04e
         call c_d026
         xor a
@@ -870,81 +871,77 @@ c_d1c1:  ; #d1c1
         ret
 
 
-; ?
+; Finds conveyors in the screen tiles
 ; Used by c_cecc.
-c_d213:  ; #d213
+findConveyors:  ; #d213
         ld a, (conveyorTileIndices.left)
-        ld (#5FD1), a
-        ld hl, #5BDF
+        ld (screenTiles.end + 1), a ; stop-value
+        ld hl, screenTiles + 47     ; before first visible tile
         ld de, (conveyorTileIndices)
-        ld ix, State.s_5A
-.l_0:
+        ld ix, State.conveyors
+.scan:
         inc hl
         ld a, (hl)
         cp d
-        jp Z, .l_2
+        jp Z, .rightConveyor
         cp e
-        jp NZ, .l_0
-        ld bc, #5FD1
+        jp NZ, .scan
+.leftConveyor:
+        ld bc, screenTiles.end + 1
         push hl
         xor a
         sbc hl, bc
         pop hl
-        jp Z, .l_4
+        jp Z, .end
         ld (ix+0), l
         ld (ix+1), h
-        ld b, #00
-.l_1:
+        ld b, 0
+.leftNext:
         inc b
         inc hl
         ld a, (hl)
         cp e
-        jp Z, .l_1
+        jp Z, .leftNext
         ld (ix+2), b
-        inc ix
-        inc ix
-        inc ix
-        jp .l_0
-.l_2:
+    .3  inc ix
+        jp .scan
+.rightConveyor:
         ld (ix+0), l
         ld (ix+1), h
-        ld b, #00
-.l_3:
+        ld b, 0
+.rightNext:
         inc b
         inc hl
         ld a, (hl)
         cp d
-        jp Z, .l_3
+        jp Z, .rightNext
         ld (ix+2), b
-        inc ix
-        inc ix
-        inc ix
-        jp .l_0
-.l_4:
-        ld (ix+0), #00
-        ld (ix+1), #00
+    .3  inc ix
+        jp .scan
+.end:
+        ld (ix+0), 0
+        ld (ix+1), 0
         ret
 
 ; (Fill something with ones?)
 ; Used by c_cc25.
 c_d278:  ; #d278
         ld de, #0580
-        ld ix, State.s_5A
+        ld ix, State.conveyors
 .l_0:
         ld l, (ix+0)
         ld h, (ix+1)
         ld a, h
         or l
         ret Z
+        
         ld b, (ix+2)
         add hl, de
 .l_1:
-        ld (hl), #01
+        ld (hl), 1
         inc hl
         djnz .l_1
-        inc ix
-        inc ix
-        inc ix
+    .3  inc ix
         jp .l_0
 
 ; Clear 400-byte buffer at #BEB4?
@@ -1248,7 +1245,7 @@ c_d460:  ; #d460
         ex de, hl
 .hl+*   ld hl, -0
         add hl, de
-        ld de, #5B00
+        ld de, b_5b00
         add hl, de
         pop de
         pop bc
@@ -3211,7 +3208,7 @@ c_e4fc:  ; #e4fc
         set 7, (ix+5)
         push hl
         ld a, (ix+13)
-        call c_cf85
+        call addScore
         pop hl
         ret
 
@@ -3593,7 +3590,7 @@ c_e6e1:  ; #e6e1
 .l_11:
         ld (iy+5), #00
         ld a, (iy+13)
-        jp c_cf85
+        jp addScore
 .l_12:
         cp #0E
         jr NZ, .l_14
@@ -4216,8 +4213,8 @@ c_ec00:  ; #ec00
         pop ix
         ld a, #FF
         ld (State.s_57), a
-        ld de, c_cf84
-        call c_cf85.l_0
+        ld de, scoreTable.done + 4
+        call addScoreRaw
         ld a, (State.level)
         ld hl, State.levelsDone
         ld e, a

@@ -100,7 +100,7 @@ c_c07c:  ; #c07c
         srl d
         rr e
     EDUP
-        ld bc, #5B00
+        ld bc, b_5b00
         add hl, bc
         add hl, de
         ex de, hl
@@ -613,7 +613,7 @@ c_c3ac:  ; #c3ac
 ; Used by c_cdae.
 c_c4c0:  ; #c4c0
         exx
-        ld de, #4020
+        ld de, Screen.start + 32
         exx
         ld ix, #5820
         ld b, #03

@@ -13,6 +13,7 @@
 ; Loading screen
     ORG #4000
     INCLUDE "orig/data/loading_screen.asm"
+    INCLUDE "orig/code/buffers.asm"
 
 ; Basic loader
     ORG #5CCB

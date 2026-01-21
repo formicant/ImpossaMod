@@ -9,9 +9,10 @@
 ; Loading screen
     ORG #4000
     INCLUDE "data/loading_screen.asm"
+    INCLUDE "code/buffers.asm"
 
 ; Basic loader
-    ORG #5CCB
+    ORG #5CCB   ; overlap
     INCLUDE "basic_loader.asm"
 
 ; Code
