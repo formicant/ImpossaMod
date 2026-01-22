@@ -9,7 +9,7 @@ entryPoint:  ; #cc25
         ld sp, 0
         call initInterrupts
         call detectSpectrumModel
-        
+
         ; init mirroring table
         ld b, 0
         ld h, #6A
@@ -23,7 +23,7 @@ entryPoint:  ; #cc25
     EDUP
         ld (hl), c
         djnz .l_0
-        
+
         jp gameStart
 
 gameStart:  ; #cc5a
@@ -37,7 +37,7 @@ gameStart:  ; #cc5a
         call c_d29a
         call c_e5f2
         call c_d1c1
-        
+
 .gameLoop:
         ld a, (State.s_57)
         or a
@@ -53,7 +53,7 @@ gameStart:  ; #cc5a
         ld bc, 5000
         call delay
         jp .l_2
-        
+
 .l_5:
         call c_d4e5
         call c_d4cd
@@ -73,15 +73,15 @@ gameStart:  ; #cc5a
         call c_d278
         call rollConveyorTiles
         call c_c044
-        
+
         ld c, 3
         call waitFrames
-        
+
         call c_c561
         ld a, (State.s_05)
         or a
         jr Z, .l_6
-        
+
         xor a
         ld (State.s_05), a
         ld ix, c_beb4
@@ -92,7 +92,7 @@ gameStart:  ; #cc5a
         call pauseGameIfPauseKeyPressed
         call checkQuitKey
         jp Z, gameStart
-        
+
         ld a, (State.s_1F)
         or a
         jr Z, .l_8
@@ -129,7 +129,7 @@ showGameOver:  ; #cd22
         ld a, (controlState)
         bit 4, a
         jr NZ, .l_0
-        ld bc, #7530
+        ld bc, 30000
 .l_1:
         ld a, (controlState)
         bit 4, a
@@ -158,9 +158,9 @@ pauseGameIfPauseKeyPressed:  ; #cd5c
 .l_0:
         call checkPauseKey
         jr Z, .l_0
-        ld hl, #1700
+        ld hl, #1700            ; at 23, 0
         ld de, textPaused
-        ld c, #47
+        ld c, #47               ; bright white
         call printString
 .l_1:
         call checkPauseKey
@@ -177,10 +177,10 @@ pauseGameIfPauseKeyPressed:  ; #cd5c
 .l_2:
         call checkPauseKey
         jr Z, .l_2
-        ld hl, #6528
-        ld b, #0A
+        ld hl, scrTileUpd.row23 + 4
+        ld b, 10
 .l_3:
-        ld (hl), #01
+        ld (hl), 1
         inc hl
         djnz .l_3
         ret
@@ -194,51 +194,54 @@ c_cd9b:  ; #cd9b
         ld (State.s_03), hl
         call c_f6ba
         call c_c636
-        jp c_cecc
+        jp fillAllScrTiles
 
 ; (Advance in map?)
 ; Used by c_cc25.
 c_cdae:  ; #cdae
-        ld hl, #6080
-        ld de, #6081
-        ld (hl), #00
-        ld bc, #057F
+        ld hl, scrTileUpd
+        ld de, scrTileUpd + 1
+        ld (hl), 0
+        ld bc, scrTileUpd.length - 1
         ldir
+
         call c_c060
         call c_ce23
         ld c, 3
         call waitFrames
-        ld hl, #5BE0
+        ld hl, scrTiles.row1 + 4
         exx
-        ld hl, #5BE2
-        ld de, #6162
+        ld hl, scrTiles.row1 + 6
+        ld de, scrTileUpd.row1 + 6
         call c_c4c0
         ld c, 1
         call waitFrames
-        ld hl, #5BE2
+        ld hl, scrTiles.row1 + 6
         exx
-        ld hl, #5BE6
-        ld de, #6166
+        ld hl, scrTiles.row1 + 10
+        ld de, scrTileUpd.row1 + 10
         call c_c4c0
         ld c, 5
         call waitFrames
-        ld hl, #5BE6
+        ld hl, scrTiles.row1 + 10
         exx
-        ld hl, #5BE8
-        ld de, #6168
+        ld hl, scrTiles.row1 + 12
+        ld de, scrTileUpd.row1 + 12
         call c_c4c0
         call c_cf17
         ld hl, (State.screenX)
-        ld de, #0008
+        ld de, 8
         add hl, de
         ld (State.screenX), hl
         call c_ce57
-        call c_ceb2
-        ld hl, #6080
-        ld de, #6081
-        ld (hl), #00
-        ld bc, #057F
+        call fillNextScrTiles
+
+        ld hl, scrTileUpd
+        ld de, scrTileUpd + 1
+        ld (hl), 0
+        ld bc, scrTileUpd.length - 1
         ldir
+
         call c_c044
         call c_c561
         ld de, scoreTable.walk + 4
@@ -248,7 +251,7 @@ c_cdae:  ; #cdae
 ; Used by c_cdae.
 c_ce23:  ; #ce23
         ld de, -3
-        ld hl, #615C
+        ld hl, scrTileUpd.row1
         ld c, #04
         xor a
         ld b, a
@@ -287,8 +290,8 @@ c_ce23:  ; #ce23
 ; (Screen scrolling?)
 ; Used by c_cdae.
 c_ce57:  ; #ce57
-        ld de, screenTiles
-        ld hl, screenTiles + 8
+        ld de, scrTiles.row0
+        ld hl, scrTiles.row0 + 8
         ld a, 24
 .l_0:
     .36 ldi
@@ -301,9 +304,10 @@ c_ce57:  ; #ce57
         jr NZ, .l_0
         ret
 
-; (Locate place in level map?)
+
+; Fills right off-screen area of scrTiles with tiles form level map
 ; Used by c_cdae.
-c_ceb2:  ; #ceb2
+fillNextScrTiles:  ; #ceb2
         ld hl, (State.screenX)
         ld de, 32
         add hl, de
@@ -314,13 +318,13 @@ c_ceb2:  ; #ceb2
         add hl, de
         ld de, Level.blockMap
         add hl, de
-        ld de, screenTiles + 32 + 4
+        ld de, scrTiles.row0 + 36
         ld b, 2
-        jp c_cecc.l_0
+        jp fillScrTiles
 
-; Copy level map segment to #5BB4 buffer
+; Fills entire scrTiles with tiles form level map
 ; Used by c_cd9b.
-c_cecc:  ; #cecc
+fillAllScrTiles:  ; #cecc
         ld hl, (State.screenX)
         ld e, l
         ld d, h
@@ -329,14 +333,19 @@ c_cecc:  ; #cecc
         add hl, de
         ld de, Level.blockMap
         add hl, de
-        ld de, screenTiles + 4
+        ld de, scrTiles.row0 + 4
         ld b, 10
-; This entry point is used by c_ceb2.
-.l_0:
+
+; Fills some area in scrTiles with tiles form level map
+;   `hl`: start addr in blockMap
+;   `de`: start addr in scrTiles
+;   `b`: width in blocks
+fillScrTiles:
+.block_column:
         push bc
         push de
         ld b, 6
-.l_1:
+.block:
         push bc
         push hl
         ld l, (hl)
@@ -345,18 +354,20 @@ c_cecc:  ; #cecc
         ld bc, Level.tileBlocks
         add hl, bc
         ld a, 4
-.l_2:
+.tileRow:
         ld bc, 44
     .4  ldi
         ex de, hl
         add hl, bc
         ex de, hl
         dec a
-        jp NZ, .l_2
+        jp NZ, .tileRow
+
         pop hl
         inc hl
         pop bc
-        djnz .l_1
+        djnz .block
+
         pop de
         push hl
         ld hl, 4
@@ -364,8 +375,10 @@ c_cecc:  ; #cecc
         ex de, hl
         pop hl
         pop bc
-        djnz .l_0
+        djnz .block_column
+
         jp findConveyors
+
 
 ; ?
 ; Used by c_cdae.
@@ -502,7 +515,7 @@ c_cfdb:  ; #cfdb
 ; Used by c_d1c1, c_e6e1 and c_e9b1.
 printCoinCount:  ; #cfe6
         ld a, (State.coins)
-        ld hl, #000B            ; y: 0, x: 12
+        ld hl, #000B            ; at 0, 12
         ld c, #46               ; bright yellow
         jp printNumber
 
@@ -698,7 +711,7 @@ delay:  ; #d0f0
 ; Used by c_e52d, c_ef72, c_f4e9, c_f670, c_f697, c_f8f4 and c_fa65.
 generateRandom:  ; #d0fc
         push hl, de
-        
+
         ld hl, (randomSeed)
         ld de, (longFrameCounter.low)
         add hl, de
@@ -712,7 +725,7 @@ generateRandom:  ; #d0fc
         xor h
         ld l, a
         ld (randomSeed), hl
-        
+
         pop de, hl
         ret
 
@@ -735,7 +748,7 @@ incrementLongFrameCounter:  ; #d121
         ld a, l
         or h
         ret NZ
-        
+
         ld hl, (longFrameCounter.high)
         inc hl
         ld (longFrameCounter.high), hl
@@ -750,10 +763,10 @@ clearGameState:  ; #d133
         ld bc, State.length - 1
         ld (hl), 0
         ldir
-        
+
         ld a, 18
         ld (State.maxEnergy), a
-        
+
         call c_cfdb
         ld b, 5
         ld hl, State.levelsDone
@@ -875,8 +888,8 @@ c_d1c1:  ; #d1c1
 ; Used by c_cecc.
 findConveyors:  ; #d213
         ld a, (conveyorTileIndices.left)
-        ld (screenTiles.end + 1), a ; stop-value
-        ld hl, screenTiles + 47     ; before first visible tile
+        ld (scrTiles.stop + 1), a   ; stop-value
+        ld hl, scrTiles.row1 + 3    ; before first visible tile
         ld de, (conveyorTileIndices)
         ld ix, State.conveyors
 .scan:
@@ -887,7 +900,7 @@ findConveyors:  ; #d213
         cp e
         jp NZ, .scan
 .leftConveyor:
-        ld bc, screenTiles.end + 1
+        ld bc, scrTiles.stop + 1
         push hl
         xor a
         sbc hl, bc
@@ -926,7 +939,7 @@ findConveyors:  ; #d213
 ; (Fill something with ones?)
 ; Used by c_cc25.
 c_d278:  ; #d278
-        ld de, #0580
+        ld de, scrTileUpd - scrTiles
         ld ix, State.conveyors
 .l_0:
         ld l, (ix+0)
@@ -934,7 +947,7 @@ c_d278:  ; #d278
         ld a, h
         or l
         ret Z
-        
+
         ld b, (ix+2)
         add hl, de
 .l_1:
@@ -1245,7 +1258,7 @@ c_d460:  ; #d460
         ex de, hl
 .hl+*   ld hl, -0
         add hl, de
-        ld de, b_5b00
+        ld de, scrTiles
         add hl, de
         pop de
         pop bc
@@ -1484,7 +1497,7 @@ gameEnd:  ; #d6c0
         pop bc
         inc c
         djnz .l_0
-        ld bc, #7530
+        ld bc, 30000
         call delay
 .l_1:
         ld a, (controlState)
@@ -3819,7 +3832,7 @@ c_e9b1:  ; #e9b1
         ld (State.shopPrice), a
         or a
         jr Z, .l_2
-        ld hl, #001C            ; y: 0, x: 28
+        ld hl, #001C            ; at 0, 28
         ld c, #47               ; bright white
         call printNumber
 .l_2:
@@ -4943,14 +4956,14 @@ c_f2e7:  ; #f2e7
         jr NZ, .l_4
         call c_d460
         inc hl
-        ld (hl), #00
+        ld (hl), 0
         inc hl
-        ld (hl), #00
-        ld de, #057E
+        ld (hl), 0
+        ld de, scrTileUpd - scrTiles - 2
         add hl, de
-        ld (hl), #01
+        ld (hl), 1
         inc hl
-        ld (hl), #01
+        ld (hl), 1
         jr .l_4
 .l_2:
         inc (ix+6)
@@ -4966,16 +4979,16 @@ c_f2e7:  ; #f2e7
         inc hl
         inc c
         ld (hl), c
-        ld de, #057E
+        ld de, scrTileUpd - scrTiles - 2
         add hl, de
-        ld (hl), #01
+        ld (hl), 1
         inc hl
-        ld (hl), #01
+        ld (hl), 1
         ld a, (ix+2)
-        and #07
+        and %00000111
         jr NZ, .l_4
         call c_d460
-        ld de, #002D
+        ld de, 45
         add hl, de
         ld a, (hl)
         call c_eaee
@@ -4984,7 +4997,7 @@ c_f2e7:  ; #f2e7
 .l_4:
         ld a, (ix+6)
         ld l, a
-        ld h, #00
+        ld h, 0
         ld de, c_f2d1
         add hl, de
         ld a, (hl)

@@ -4,8 +4,8 @@
 ; Clears screen pixels, leaves attributes untouched
 ; Used by c_c6d5, c_c9ac, c_cc25, c_cd22, c_d553 and c_d62c.
 clearScreenPixels:  ; #c869
-        ld hl, Screen.start
-        ld de, Screen.start + 1
+        ld hl, Screen.pixels
+        ld de, Screen.pixels + 1
         ld bc, Screen.pixLength - 1
         ld (hl), 0
         ldir

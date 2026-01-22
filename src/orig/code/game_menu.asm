@@ -10,16 +10,16 @@ activeMenuItemAttrAddr:  ; #c6d3
 gameMenu:  ; #c6d5
         xor a
         call callPlayMenuMusic
-        
+
         call clearScreenPixels
         ld a, #47               ; bright white on black
         call fillScreenAttrs
         ld a, 0
         out (#FE), a            ; set border black
-        
+
         call printGameMenuText
         call clampActiveMenuItemAttrs
-        
+
 .l_0:   ; menu loop
         call c_bdfa             ; (get something from memory page 1)
         jr NZ, .l_1
@@ -68,10 +68,10 @@ gameMenu:  ; #c6d5
 .l_5:
         ld (activeMenuItemAttrAddr), hl
         ld (controlType), a
-        
+
         call printGameMenuText
         call clampActiveMenuItemAttrs
-        
+
 .l_6:   ; change active item's color
         ld hl, (activeMenuItemAttrAddr)
         ld b, 12
@@ -85,7 +85,7 @@ gameMenu:  ; #c6d5
         ld (hl), a
         inc l
         djnz .l_7
-        
+
         ld bc, 20
         call delay              ; delay ~20 ms
         call checkStartKey
@@ -93,7 +93,7 @@ gameMenu:  ; #c6d5
 .l_9:
         call checkStartKey
         jr Z, .l_9
-        
+
         ld a, 1
         call callPlayMenuMusic
         ret
@@ -133,7 +133,7 @@ printGameMenuText:  ; #c76f
         inc de                  ; 'written by core design'
         ld c, #44               ; bright green
         call printString
-        
+
         ; make digits (0..4) white
         ld hl, Screen.attrs.row9 + 9
         ld b, 5
@@ -142,16 +142,16 @@ printGameMenuText:  ; #c76f
         ld de, 32
         add hl, de
         djnz .l_0
-        
+
         ; print last score
-        ld hl, #0F07            ; y: 15, x: 7
+        ld hl, #0F07            ; at 15, 7
         ld de, textLastScore
         ld c, #43               ; bright magenta
         call printString
-        ld hl, #0F12            ; y: 15, x: 18
+        ld hl, #0F12            ; at 15, 18
         ld (printScore.yx), hl
         call printScore
-        ld hl, #0000            ; y: 0, x: 0
+        ld hl, #0000            ; at 0, 0
         ld (printScore.yx), hl
         ret
 

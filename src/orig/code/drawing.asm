@@ -71,7 +71,7 @@ c_c07c:  ; #c07c
         sub #20
         ret C
         ret Z
-        
+
 ; This entry point is used by c_c060.
 .l_3:
         bit 0, (ix+5)
@@ -100,7 +100,7 @@ c_c07c:  ; #c07c
         srl d
         rr e
     EDUP
-        ld bc, b_5b00
+        ld bc, scrTiles
         add hl, bc
         add hl, de
         ex de, hl
@@ -108,7 +108,7 @@ c_c07c:  ; #c07c
         ld l, a
         ld h, 0
    .3   add hl, hl
-        ld bc, #6600
+        ld bc, b_6600
         add hl, bc
         push hl
         pop iy
@@ -149,7 +149,7 @@ c_c07c:  ; #c07c
         exx
         ld a, (c_beb3)
         ld l, a
-        ld h, #6B
+        ld h, high(b_6b00)
         exx
 .l_10:
         push hl
@@ -199,11 +199,11 @@ c_c07c:  ; #c07c
         ld (c_beb3), a
         jp .l_17
 .l_14:
-        ld bc, #0580
+        ld bc, scrTileUpd - scrTiles
         add hl, bc
         ld a, (hl)
         ld c, a
-        cp #02
+        cp 2
         jr C, .l_15
         ld a, (c_beb3)
         ld (hl), a
@@ -211,14 +211,14 @@ c_c07c:  ; #c07c
         ld (c_beb3), a
         ld l, c
         ld h, 0
-        ld bc, #6600
+        ld bc, b_6600
         jp .l_16
 .l_15:
         ld a, (c_beb3)
         ld (hl), a
         inc a
         ld (c_beb3), a
-        ld bc, #FA80
+        ld bc, scrTiles - scrTileUpd
         add hl, bc
         ld l, (hl)
         ld h, 0
@@ -609,25 +609,29 @@ c_c3ac:  ; #c3ac
         ei
         ret
 
-; Tile drawing?
+
+; Move screen tiles
+;   `hl'`: old visible area position in scrTiles
+;   `hl`: new visible area position in in scrTiles
+;   `de`: new visible area position in in scrTileUpd
 ; Used by c_cdae.
 c_c4c0:  ; #c4c0
         exx
-        ld de, Screen.start + 32
+        ld de, Screen.pixels.row1
         exx
-        ld ix, #5820
-        ld b, #03
-.l_0:
+        ld ix, Screen.attrs.row1
+        ld b, 3
+.scrThird:
         push bc
         ld a, b
-        cp #03
-        ld a, #08
-        jp NZ, .l_1
+        cp 3
+        ld a, 8
+        jp NZ, .row
         dec a
-.l_1:
+.row:
         exa
-        ld b, #20
-.l_2:
+        ld b, 32
+.tile:
         ld a, (de)
         and a
         jp Z, .l_3
@@ -635,53 +639,60 @@ c_c4c0:  ; #c4c0
         jp NZ, .l_7
         ld a, (hl)
         exx
-        jp .l_5
+        jp .drawTile
 .l_3:
         ld a, (hl)
         exx
         cp (hl)
-        jp NZ, .l_5
-.l_4:
+        jp NZ, .drawTile
+.back:
         inc hl
         inc e
         exx
         inc de
         inc hl
         inc ix
-        djnz .l_2
-        ld bc, #000C
+        djnz .tile
+        
+        ; skip off-screen scrTiles
+        ld bc, 12
         add hl, bc
         ex de, hl
         add hl, bc
         ex de, hl
         exx
-        ld bc, #000C
+        ld bc, 12
         add hl, bc
         exx
         exa
         dec a
-        jp NZ, .l_1
+        jp NZ, .row
+        
         exx
-        ld bc, #0800
+        ld bc, #800
         ex de, hl
         add hl, bc
         ex de, hl
         exx
         pop bc
-        djnz .l_0
+        djnz .scrThird
         ret
-.l_5:
+        
+.drawTile:
         push hl
+        ; apply attr
         ld l, a
         ld h, high(Level.tileAttrs)
         ld a, (hl)
-        ld (ix+0), a
+        ld (ix), a
+        
+        ; draw pixels
         ld h, 0
     .3  add hl, hl
         ld a, h
         add high(Level.tilePixels)
         ld h, a
-.l_6:
+.copyPixels:
         push de
     DUP 7
         ldi
@@ -691,41 +702,47 @@ c_c4c0:  ; #c4c0
         ldi
         pop de
         pop hl
-        jp .l_4
+        jp .back
+        
 .l_7:
         push hl
         ld l, a
-        inc l
-        ld h, #6B
-        ld l, (hl)
-        ld (ix+0), l
+        inc l                   ; restore after `dec`
+        ld h, high(b_6b00)
+        ld l, (hl)              ; get attr
+        ld (ix), l              ; apply attr
         pop hl
         exx
         push hl
         ld l, a
         ld h, 0
     .3  add hl, hl
-        ld bc, #6608
+        ld bc, b_6600 + 8
         add hl, bc
-        jp .l_6
+        jp .copyPixels
+
 
 ; Tile drawing?
 ; Used by c_cc25 and c_cdae.
 c_c561:  ; #c561
-        ld bc, #18FF
-        ld hl, #6180
-        ld de, #002C
+        ; mark row ends with -1
+        ld bc, #18FF            ; `b`: 24, `c`: -1
+        ld hl, scrTileUpd.row1 + 36
+        ld de, 44
 .l_0:
         ld (hl), c
         add hl, de
         djnz .l_0
-        ld a, #FE
-        ld (#6288), a
-        ld (#63E8), a
-        ld a, #FD
-        ld (#6548), a
-        ld de, #401F
-        ld hl, #615F
+        
+        ; mark screen third ends with -2
+        ld a, -2
+        ld (scrTileUpd.row7 + 36), a
+        ld (scrTileUpd.row15 + 36), a
+        ; mark screen end with -3
+        ld a, -3
+        ld (scrTileUpd.row23 + 36), a
+        ld de, Screen.pixels.row1 - 1
+        ld hl, scrTileUpd.row1 + 3
 .l_1:
         ld bc, #000C
         xor a
@@ -752,17 +769,15 @@ c_c561:  ; #c561
 .l_5:
         cp #FF
         ret Z
-        cp #03
+        cp 3
         jp Z, .l_6
-        ld (hl), #01
+        ld (hl), 1
         push de
         push hl
         ld l, a
-        ld h, #00
-        add hl, hl
-        add hl, hl
-        add hl, hl
-        ld bc, #65F0
+        ld h, 0
+    .3  add hl, hl
+        ld bc, b_6600 - 16
         add hl, bc
     DUP 7
         ldi
@@ -773,7 +788,7 @@ c_c561:  ; #c561
         pop hl
         pop de
         push de
-        ld b, #6B
+        ld b, high(b_6b00)
         dec a
         dec a
         ld c, a
@@ -792,7 +807,7 @@ c_c561:  ; #c561
         ld (hl), #00
         push hl
         push de
-        ld bc, #FA80
+        ld bc, scrTiles - scrTileUpd
         add hl, bc
         ld a, (hl)
         ld l, a
@@ -825,17 +840,18 @@ c_c561:  ; #c561
         pop hl
         jp .l_1
 
+
 ; Fills buffer at #6080 with 1408 ones
 ; Used by c_cd9b.
 c_c636:  ; #c636
         di
         ld (.sp), sp
-        ld sp, #6600
+        ld sp, scrTileUpd.end
         ld hl, #0101
         ld b, 32
-.l_0:
+.row:
     .22 push hl
-        djnz .l_0
+        djnz .row
 .sp+*   ld sp, -0
         ei
         ret
@@ -864,18 +880,18 @@ printString:  ; #c67d
         push bc
         ld a, h
         and %00011000
-        or  high(Screen.start)
+        or  high(Screen.pixels)
         ld b, h
         ld h, a
         ; `h`: screen pixel addr high byte
-        
+
         ld a, b
         and %00000111
     .3  rrca
         or l
         ld l, a
         ; `l`: screen pixel and attr addr low byte
-        
+
         push hl
         exx
         pop hl
@@ -887,13 +903,13 @@ printString:  ; #c67d
         pop bc
         exx
         ; `h'`: screen attr addr high byte
-        
+
 .l_0:
         push de, hl
         ld a, (de)
         res 7, a
         ; `a`: ASCII char code
-        
+
         ex de, hl
         cp ' '
         jr NZ, .l_1
@@ -913,10 +929,10 @@ printString:  ; #c67d
         add hl, de
         ex de, hl
         ; `de`: addr in font
-        
+
         pop hl
         push hl
-        
+
         ; draw char
         ld b, 8
 .l_3:
@@ -925,11 +941,11 @@ printString:  ; #c67d
         inc h
         inc de
         djnz .l_3
-        
+
         ; set attr
         exx
         ld (hl), c
-        
+
         ; next char
         inc hl
         exx
