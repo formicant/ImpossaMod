@@ -1,87 +1,100 @@
     MODULE Code
 
 
-; (Draw 8 objects?)
+; Draw scene objects with coordinate checks
 ; Used by c_cc25 and c_cdae.
-c_c044:  ; #c044
-        ld ix, c_beb4
+drawObjectsChecked:  ; #c044
+        ld ix, sceneObjects
         ld a, 2
-        ld (c_beb3), a
+        ld (objTileIndex), a
         ld b, 8
-.l_0:
+.object:
         push bc
         push ix
-        call c_c07c
+        call drawObjectChecked
         pop ix
         ld bc, 50
         add ix, bc
         pop bc
-        djnz .l_0
+        djnz .object
         ret
 
-; (Draw 8 objects?)
+
+; Draw scene objects without coordinate checks
 ; Used by c_cdae.
-c_c060:  ; #c060
-        ld ix, c_beb4
+drawObjectsUnchecked:  ; #c060
+        ld ix, sceneObjects
         ld a, 2
-        ld (c_beb3), a
+        ld (objTileIndex), a
         ld b, 8
-.l_0:
+.object:
         push bc
         push ix
-        call c_c07c.l_3
+        call drawObject
         pop ix
         ld bc, 50
         add ix, bc
         pop bc
-        djnz .l_0
+        djnz .object
         ret
 
-; (Drawing?)
+
+; Draw an object with coordinate checks
 ; Used by c_c044.
-c_c07c:  ; #c07c
+drawObjectChecked:  ; #c07c
         ld l, (ix+0)
-        ld h, (ix+1)
-        bit 1, (ix+5)
-        jr NZ, .l_0
+        ld h, (ix+1)            ; `hl`: x coord
+
+        bit 1, (ix+5)           ; is sprite big
+        jr NZ, .big
+
+.small:
         ld bc, -16
         add hl, bc
-        ret NC
+        ret NC                  ; ret if < 16
         ld bc, -272
         add hl, bc
-        ret C
-        jr .l_1
-.l_0:
+        ret C                   ; ret if >= 288
+        jr .vertical
+
+.big:   ; if big
         ld bc, -8
         add hl, bc
-        ret NC
+        ret NC                  ; ret if < 8
         ld bc, -280
         add hl, bc
-        ret C
-.l_1:
-        ld a, (ix+2)
-        cp #E0
-        ret NC
-        ld c, #15
-        bit 1, (ix+5)
-        jr NZ, .l_2
-        ld c, #10
-.l_2:
-        add c
-        sub #20
-        ret C
-        ret Z
+        ret C                   ; ret if >= 288
 
-; This entry point is used by c_c060.
-.l_3:
+.vertical:
+        ld a, (ix+2)            ; y coord
+        cp 224
+        ret NC                  ; ret if y >= 224
+
+        ld c, 21                ; big sprite height
+        bit 1, (ix+5)           ; is sprite big
+        jr NZ, .skip
+        ld c, 16                ; small sprite height
+.skip:
+        add c                   ; `a`: bottom
+        sub 32
+        ret C
+        ret Z                   ; ret if bottom <= 32
+        ; continue
+
+
+; Draw an object
+; Used by c_c060.
+drawObject:
         bit 0, (ix+5)
         ret Z
+
         bit 4, (ix+5)
-        jr Z, .l_4
+        jr Z, .start
         res 4, (ix+5)
         ret
-.l_4:
-        ld a, (ix+2)
+
+.start:
+        ld a, (ix+2)            ; y coord
         and %11111000
         ld b, 0
         ld c, a
@@ -93,184 +106,231 @@ c_c07c:  ; #c07c
     .2  add hl, hl
         add hl, de
         add hl, bc
-        ; `hl = (ix+2) * 5.5`
+        ; `hl`: (y coord in tiles) * 44
+
         ld e, (ix+0)
-        ld d, (ix+1)
+        ld d, (ix+1)            ; `de`: x coord
     DUP 3
         srl d
         rr e
     EDUP
+        ; `de`: x coord in tiles
+
         ld bc, scrTiles
         add hl, bc
         add hl, de
         ex de, hl
-        ld a, (c_beb3)
+        ; `de`: addr in `scrTiles`
+        ; `hl`: x coord in tiles
+
+        ld a, (objTileIndex)
         ld l, a
         ld h, 0
    .3   add hl, hl
-        ld bc, b_6600
+        ld bc, objTiles
         add hl, bc
+        ; `hl`: tile addr in `objTiles`
         push hl
         pop iy
-        ld a, (ix+2)
+        ; `iy`: tile addr in `objTiles`
+        ld a, (ix+2)            ; y coord
         and %00000111
         ld c, a
         ld b, 0
         add iy, bc
+        ; `iy`: pixel row addr in `objTiles`
+
         ex de, hl
-        ld bc, #0303
-        bit 1, (ix+5)
-        jr NZ, .l_5
-        ld bc, #0202
-.l_5:
+        ; `de`: tile addr in `objTiles`
+        ; `hl`: addr in `scrTiles`
+
+        ld bc, #0303            ; big sprite size
+        bit 1, (ix+5)           ; is sprite big
+        jr NZ, .skip
+        ld bc, #0202            ; small sprite size
+.skip:
         ld a, (ix+0)
-        and %00000111
-        jr Z, .l_6
-        inc b
-.l_6:
-        ld a, (ix+2)
-        bit 1, (ix+5)
-        jr NZ, .l_7
-        and %00000111
-        jp Z, .l_9
-        jp .l_8
-.l_7:
-        and %00000111
-        cp %00000100
-        jr C, .l_9
-.l_8:
-        inc c
-.l_9:
+        and %00000111           ; `a`: x pixel shift
+        jr Z, .skipWider
+        inc b                   ; 1 tile wider
+.skipWider:
+        ld a, (ix+2)            ; y coord
+        bit 1, (ix+5)           ; is sprite big
+        jr NZ, .big
+.small:
+        and %00000111           ; `a`: y pixel shift
+        jp Z, .skipTaller
+        jp .taller
+.big:
+        and %00000111           ; `a`: y pixel shift
+        cp 4
+        jr C, .skipTaller
+.taller:
+        inc c                   ; 1 tile taller
+.skipTaller:
+        ; `bc`: sprite size in tiles (`b`: width, `c`: height)
+        
         push hl
         push de
         push bc
-        ld a, (ix+9)
-        ld (.a), a
+        ld a, (ix+9)            ; object attr
+        ld (.attr), a
         exx
-        ld a, (c_beb3)
+        ld a, (objTileIndex)
         ld l, a
-        ld h, high(b_6b00)
+        ld h, high(objTileAttrs)
+        ; `hl`: addr in `objTileAttrs`
         exx
-.l_10:
+        ; `hl`: addr in `scrTiles`
+.attrTileColumn:
         push hl
         push bc
-.l_11:
-        ld a, (hl)
+.attrTile:
+        ld a, (hl)              ; tile in `scrTiles`
         ld e, a
         ld d, high(Level.tileAttrs)
-        ld a, (de)
+        ld a, (de)              ; tile attr
         exx
-        and #38                 ; paper
+        ; `hl`: addr in `objTileAttrs`
+        and %00111000           ; paper
         ld c, a
-.a+*    ld a, -0
-        and #47                 ; bright and ink
+.attr+* ld a, -0                ; (ix+9), object attr
+        and %01000111           ; bright and ink
         or c
-        ld (hl), a
+        ld (hl), a              ; set object tile attr
         inc l
         exx
+        ; `hl`: addr in `scrTiles`
         ld de, 44
-        add hl, de
-        dec c
-        jr NZ, .l_11
+        add hl, de              ; one tile row down
+        dec c                   ; dec height
+        jr NZ, .attrTile
+
         pop bc
         pop hl
-        inc hl
-        djnz .l_10
-        pop bc
-        pop de
-        pop hl
-.l_12:
+        inc hl                  ; one tile to the right
+        djnz .attrTileColumn
+        
+        pop bc                  ; size in tiles
+        pop de                  ; tile addr in `objTiles`
+        pop hl                  ; addr in `scrTiles`
+        
+.pixelTileColumn:
         push bc
         push hl
-.l_13:
+.pixelTile:
         push bc
         push hl
-        ld c, (hl)
+        ld c, (hl)              ; tile in `scrTiles`
         ld b, high(Level.tileTypes)
-        ld a, (bc)
+        ld a, (bc)              ; tile type
         and a
-        jp P, .l_14
-        ld bc, #0008
+        jp P, .isBackground
+        
+.isForeground:
+        ; don't draw
+        ld bc, 8
         ex de, hl
         add hl, bc
-        ex de, hl
-        ld a, (c_beb3)
+        ex de, hl               ; `de`: next tile addr in `objTiles`
+        ld a, (objTileIndex)
         inc a
-        ld (c_beb3), a
-        jp .l_17
-.l_14:
+        ld (objTileIndex), a    ; next object tile index
+        jp .skipPixels
+        
+.isBackground:
+        ; draw
         ld bc, scrTileUpd - scrTiles
-        add hl, bc
-        ld a, (hl)
+        add hl, bc              ; `hl`: addr in `scrTileUpd`
+        ld a, (hl)              ; upd value
         ld c, a
         cp 2
-        jr C, .l_15
-        ld a, (c_beb3)
-        ld (hl), a
+        jr C, .notObjTile
+        
+        ; there'a already an object there, draw on top
+        ld a, (objTileIndex)
+        ld (hl), a              ; set object tile index
         inc a
-        ld (c_beb3), a
-        ld l, c
+        ld (objTileIndex), a    ; next object tile index
+        ld l, c                 ; upd value
         ld h, 0
-        ld bc, b_6600
-        jp .l_16
-.l_15:
-        ld a, (c_beb3)
-        ld (hl), a
+        ld bc, objTiles
+        jp .copyPixels
+        
+.notObjTile:
+        ld a, (objTileIndex)
+        ld (hl), a              ; set object tile index
         inc a
-        ld (c_beb3), a
+        ld (objTileIndex), a    ; next object tile index
         ld bc, scrTiles - scrTileUpd
-        add hl, bc
-        ld l, (hl)
+        add hl, bc              ; `hl`: addr in `scrTiles`
+        ld l, (hl)              ; tile
         ld h, 0
         ld bc, Level.tilePixels
-.l_16:
+        
+.copyPixels:
     .3  add hl, hl
         add hl, bc
+        ; `hl`: addr of old object tile pixels or map tile pixels
+        ; `de`: new addr in `objTiles`
     .8  ldi
-.l_17:
-        pop hl
-        ld bc, #002C
-        add hl, bc
+
+.skipPixels:
+        pop hl                  ; addr in `scrTiles`
+        ld bc, 44
+        add hl, bc              ; one tile row down
         pop bc
-        dec c
-        jp NZ, .l_13
-        pop hl
-        inc hl
+        dec c                   ; dec height
+        jp NZ, .pixelTile
+        
+        pop hl                  ; addr in `scrTiles`
+        inc hl                  ; one tile to the right
         pop bc
-        djnz .l_12
-        bit 1, (ix+5)
-        jp NZ, c_c314
+        djnz .pixelTileColumn
+        
+        bit 1, (ix+5)           ; is sprite big
+        jp NZ, drawBigSprite
+        ; continue
+
+
+drawSmallSprite:
         ld a, (ix+0)
-        and #07
+        and %00000111           ; x pixel shift
         jr NZ, c_c245
+        
         ld hl, #0000            ; `nop : nop`
         ld (.jr), hl
         bit 1, (ix+21)
         jr NZ, .l_18
+        
         bit 6, (ix+5)
         jr NZ, .l_18
         ld hl, #0A18            ; `jr .l_21`
         ld (.jr), hl
 .l_18:
-        ld c, #18
+        ld c, 24
         ld a, (ix+2)
-        and #07
+        and %00000111           ; y pixel shift
         jr NZ, .l_19
-        ld c, #10
+        ld c, 16
+        
 .l_19:
-        ld a, c
+        ld a, c                 ; 24 if y pixel shift, else 16
         ld (.iy1), a
         ld (.iy2), a
-        call c_e47a
+        
+        call getSpriteAddr      ; `hl`: sprite addr
+        
         di
         ld (.sp), sp
         ld sp, hl
-        ld h, #6A
-        ld a, #10
+        ld h, high(mirrorTable)
+        ld a, 16
 .l_20:
         exa
-        pop de
-        pop bc
+        pop de                  ; `e`: msk1, `d`: msk0
+        pop bc                  ; `c`: spr1, `b`: spr0
+        
 .jr:    jr .l_21
         ld a, e
         ld l, d
@@ -283,10 +343,10 @@ c_c07c:  ; #c07c
         ld l, a
         ld b, (hl)
 .l_21:
-        ld a, (iy+0)
+        ld a, (iy)
         and d
         or b
-        ld (iy+0), a
+        ld (iy), a
 .iy1+2  ld a, (iy-0)
         and e
         or c
@@ -327,11 +387,11 @@ c_c245:  ; #c245
         add a
         ld (.iy3), a
         ld (.iy4), a
-        call c_e47a
+        call getSpriteAddr
         di
         ld (.sp), sp
         ld sp, hl
-        ld h, #6A
+        ld h, high(mirrorTable)
         ld ixh, #10
 .l_2:
         pop de
@@ -339,7 +399,7 @@ c_c245:  ; #c245
 .jr1:   jr .l_3
         ld b, h
         ld c, l
-        ld h, #6A
+        ld h, high(mirrorTable)
         ld a, e
         ld l, d
         ld e, (hl)
@@ -391,7 +451,7 @@ c_c245:  ; #c245
 
 ; (Sprite drawing?)
 ; Used by c_c07c.
-c_c314:  ; #c314
+drawBigSprite:  ; #c314
         ld a, (ix+0)
         and #07
         jp NZ, c_c3ac
@@ -416,12 +476,12 @@ c_c314:  ; #c314
         add a
         ld (.iy3), a
         ld (.iy4), a
-        call c_e47a
+        call getSpriteAddr
         di
         ld (.sp), sp
         ld sp, hl
         exx
-        ld h, #6A
+        ld h, high(mirrorTable)
         exx
         ld ixh, #15
 .l_2:
@@ -526,7 +586,7 @@ c_c3ac:  ; #c3ac
         add c
         ld (.iy5), a
         ld (.iy6), a
-        call c_e47a
+        call getSpriteAddr
         di
         ld (.sp), sp
         ld sp, hl
@@ -540,7 +600,7 @@ c_c3ac:  ; #c3ac
         ld e, a
         exx
 .jr1:   jr .l_3
-        ld h, #6A
+        ld h, high(mirrorTable)
         ld a, (hl)
         ld l, d
         ld d, (hl)
@@ -549,7 +609,7 @@ c_c3ac:  ; #c3ac
         ld e, a
         exx
         ld b, h
-        ld h, #6A
+        ld h, high(mirrorTable)
         ld a, (hl)
         ld l, b
         ld b, (hl)
@@ -611,11 +671,12 @@ c_c3ac:  ; #c3ac
 
 
 ; Move screen tiles
+; (Used in screen scrolling)
 ;   `hl'`: old visible area position in scrTiles
 ;   `hl`: new visible area position in in scrTiles
 ;   `de`: new visible area position in in scrTileUpd
 ; Used by c_cdae.
-c_c4c0:  ; #c4c0
+moveScreenTiles:  ; #c4c0
         exx
         ld de, Screen.pixels.row1
         exx
@@ -632,20 +693,24 @@ c_c4c0:  ; #c4c0
         exa
         ld b, 32
 .tile:
-        ld a, (de)
+        ld a, (de)              ; `a`: upd (value in `scrTileUpd`)
         and a
-        jp Z, .l_3
-        dec a
-        jp NZ, .l_7
-        ld a, (hl)
+        jp Z, .noUpdate
+        dec a                   ; `a`: upd - 1
+        jp NZ, .objTile
+.update:
+        ; upd = 1 (update)
+        ld a, (hl)              ; new tile
         exx
         jp .drawTile
-.l_3:
-        ld a, (hl)
+
+.noUpdate:
+        ld a, (hl)              ; new tile
         exx
-        cp (hl)
+        cp (hl)                 ; compare with old tile
         jp NZ, .drawTile
-.back:
+
+.nextTile:
         inc hl
         inc e
         exx
@@ -653,7 +718,8 @@ c_c4c0:  ; #c4c0
         inc hl
         inc ix
         djnz .tile
-        
+
+.nextRow:
         ; skip off-screen scrTiles
         ld bc, 12
         add hl, bc
@@ -667,7 +733,8 @@ c_c4c0:  ; #c4c0
         exa
         dec a
         jp NZ, .row
-        
+
+.nextThird:
         exx
         ld bc, #800
         ex de, hl
@@ -676,16 +743,17 @@ c_c4c0:  ; #c4c0
         exx
         pop bc
         djnz .scrThird
+
         ret
-        
+
 .drawTile:
         push hl
-        ; apply attr
+        ; apply attribute
         ld l, a
         ld h, high(Level.tileAttrs)
         ld a, (hl)
-        ld (ix), a
-        
+        ld (ix), a              ; apply attr
+
         ; draw pixels
         ld h, 0
     .3  add hl, hl
@@ -702,38 +770,37 @@ c_c4c0:  ; #c4c0
         ldi
         pop de
         pop hl
-        jp .back
-        
-.l_7:
+        jp .nextTile
+
+.objTile:
         push hl
         ld l, a
-        inc l                   ; restore after `dec`
-        ld h, high(b_6b00)
-        ld l, (hl)              ; get attr
+        inc l                   ; `l`: objTileIndex
+        ld h, high(objTileAttrs)
+        ld l, (hl)              ; object tile attr
         ld (ix), l              ; apply attr
         pop hl
         exx
         push hl
-        ld l, a
+        ld l, a                 ; `l`: objTileIndex - 1
         ld h, 0
     .3  add hl, hl
-        ld bc, b_6600 + 8
+        ld bc, objTiles + 8     ; (index - 1) compensation
         add hl, bc
         jp .copyPixels
 
 
-; Tile drawing?
+; Update all visible screen tiles which need updating
 ; Used by c_cc25 and c_cdae.
-c_c561:  ; #c561
+updateScreenTiles:  ; #c561
         ; mark row ends with -1
         ld bc, #18FF            ; `b`: 24, `c`: -1
         ld hl, scrTileUpd.row1 + 36
         ld de, 44
-.l_0:
+.rowEnd:
         ld (hl), c
         add hl, de
-        djnz .l_0
-        
+        djnz .rowEnd
         ; mark screen third ends with -2
         ld a, -2
         ld (scrTileUpd.row7 + 36), a
@@ -743,42 +810,55 @@ c_c561:  ; #c561
         ld (scrTileUpd.row23 + 36), a
         ld de, Screen.pixels.row1 - 1
         ld hl, scrTileUpd.row1 + 3
-.l_1:
-        ld bc, #000C
+
+        ; scan through screen tiles
+.tile:
+        ld bc, 12               ; gap between visible rows in srcTileUpd
         xor a
-.l_2:
+.nextTile:
         inc e
         inc hl
-.l_3:
-        or (hl)
-        jp Z, .l_2
-        inc a
-        jp NZ, .l_4
+.checkUpd:
+        or (hl)                 ; `a`: upd (value from srcTileUpd)
+        ; `a`: upd
+        jp Z, .nextTile         ; if upd = 0 (no update), go to next tile
+
+        inc a                   ; `a`: upd + 1
+        jp NZ, .skip1
+        ; if upd = -1 (row end marker)
         add hl, bc
         xor a
-        jp .l_3
-.l_4:
-        inc a
-        jp NZ, .l_5
+        jp .checkUpd            ; go to next row
+.skip1:
+        inc a                   ; `a`: upd + 2
+        jp NZ, .skip2
+
+        ; if upd = -2 (third end)
         ld a, d
-        add #08
+        add 8
         ld d, a
         add hl, bc
         xor a
-        jp .l_3
-.l_5:
-        cp #FF
-        ret Z
-        cp 3
-        jp Z, .l_6
-        ld (hl), 1
+        jp .checkUpd            ; go to next row
+.skip2:
+        cp #FF                  ; if upd = -3,
+        ret Z                   ;   exit
+
+        cp 3                    ; if upd = 1 (update)
+        jp Z, .update
+
+.objTile:
+        ; if upd >= 2 (object tile)
+        ; `a`: objTileIndex + 2
+        ld (hl), 1              ; set upd = 1 (update)
         push de
         push hl
         ld l, a
         ld h, 0
     .3  add hl, hl
-        ld bc, b_6600 - 16
+        ld bc, objTiles - 8 * 2 ; (index + 2) compensation
         add hl, bc
+        ; copy pixels to the screen
     DUP 7
         ldi
         dec de
@@ -787,37 +867,40 @@ c_c561:  ; #c561
         ldi
         pop hl
         pop de
+
+        ; apply attribute
         push de
-        ld b, high(b_6b00)
-        dec a
-        dec a
+        ld b, high(objTileAttrs)
+    .2  dec a                   ; `a`: objTileIndex
         ld c, a
-        ld a, (bc)
+        ld a, (bc)              ; object tile attr
+        ; calculate attr addr from pixel addr
         exa
         ld a, d
-        and #18
+        and %00011000
     .3  rrca
-        add #58
+        add high(Screen.attrs)
         ld d, a
         exa
-        ld (de), a
+        ld (de), a              ; apply attr
         pop de
-        jp .l_1
-.l_6:
-        ld (hl), #00
+        jp .tile                ; go to next tile
+
+.update:
+        ld (hl), 0              ; set upd = 0 (no update)
         push hl
         push de
+        ; get addr in `scrTiles
         ld bc, scrTiles - scrTileUpd
         add hl, bc
-        ld a, (hl)
+        ld a, (hl)              ; tile index
         ld l, a
         exa
         ld h, 0
-        add hl, hl
-        add hl, hl
-        add hl, hl
+    .3  add hl, hl
         ld bc, Level.tilePixels
         add hl, bc
+        ; copy tile pixels to the screen
     DUP 7
         ldi
         dec de
@@ -825,25 +908,28 @@ c_c561:  ; #c561
     EDUP
         ldi
         pop de
+
+        ; apply attribute
         push de
         ld a, d
-        and #18
+        and %00011000
     .3  rrca
         add high(Screen.attrs)
         ld d, a
         exa
         ld l, a
         ld h, high(Level.tileAttrs)
-        ld a, (hl)
-        ld (de), a
+        ld a, (hl)              ; tile attr
+        ld (de), a              ; apply attr
         pop de
         pop hl
-        jp .l_1
+        jp .tile
 
 
-; Fills buffer at #6080 with 1408 ones
+; Fill entire `scrTileUpd` buffer with 1's (needs updating)
+; (Disables interrupts!)
 ; Used by c_cd9b.
-c_c636:  ; #c636
+setScrTileUpd:  ; #c636
         di
         ld (.sp), sp
         ld sp, scrTileUpd.end
@@ -856,11 +942,12 @@ c_c636:  ; #c636
         ei
         ret
 
+
 ; Life indicator attributes (3 red, 4 green, 10 blue)
 lifeIndicatorAttrs:  ; #c660
         dh 42 42 42 44 44 44 44 41 41 41 41 41 41 41 41 41 41
 
-; Copies life indicator attributes to the screen
+; Copy life indicator attributes to the screen
 ; Used by c_d04e.
 applyLifeIndicatorAttrs:  ; #c671
         ld hl, lifeIndicatorAttrs
@@ -870,7 +957,7 @@ applyLifeIndicatorAttrs:  ; #c671
         ret
 
 
-; Prints string
+; Print string
 ;   `de`: string address
 ;   `h`: y, `l`: x
 ;   `c`: attribute

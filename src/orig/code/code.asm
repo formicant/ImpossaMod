@@ -12,8 +12,8 @@ entryPoint:  ; #cc25
 
         ; init mirroring table
         ld b, 0
-        ld h, #6A
-.l_0:
+        ld h, high(mirrorTable)
+.byte:
         ld l, b
         ld a, b
         ld c, 0
@@ -22,7 +22,7 @@ entryPoint:  ; #cc25
         rr c
     EDUP
         ld (hl), c
-        djnz .l_0
+        djnz .byte
 
         jp gameStart
 
@@ -72,19 +72,19 @@ gameStart:  ; #cc5a
         call c_df85
         call c_d278
         call rollConveyorTiles
-        call c_c044
+        call drawObjectsChecked
 
         ld c, 3
         call waitFrames
 
-        call c_c561
+        call updateScreenTiles
         ld a, (State.s_05)
         or a
         jr Z, .l_6
 
         xor a
         ld (State.s_05), a
-        ld ix, c_beb4
+        ld ix, sceneObjects
         set 0, (ix+5)
         call c_cdae
         call c_f6e7
@@ -193,7 +193,7 @@ c_cd9b:  ; #cd9b
         add hl, de
         ld (State.s_03), hl
         call c_f6ba
-        call c_c636
+        call setScrTileUpd
         jp fillAllScrTiles
 
 ; (Advance in map?)
@@ -205,7 +205,7 @@ c_cdae:  ; #cdae
         ld bc, scrTileUpd.length - 1
         ldir
 
-        call c_c060
+        call drawObjectsUnchecked
         call c_ce23
         ld c, 3
         call waitFrames
@@ -213,21 +213,21 @@ c_cdae:  ; #cdae
         exx
         ld hl, scrTiles.row1 + 6
         ld de, scrTileUpd.row1 + 6
-        call c_c4c0
+        call moveScreenTiles
         ld c, 1
         call waitFrames
         ld hl, scrTiles.row1 + 6
         exx
         ld hl, scrTiles.row1 + 10
         ld de, scrTileUpd.row1 + 10
-        call c_c4c0
+        call moveScreenTiles
         ld c, 5
         call waitFrames
         ld hl, scrTiles.row1 + 10
         exx
         ld hl, scrTiles.row1 + 12
         ld de, scrTileUpd.row1 + 12
-        call c_c4c0
+        call moveScreenTiles
         call c_cf17
         ld hl, (State.screenX)
         ld de, 8
@@ -242,8 +242,8 @@ c_cdae:  ; #cdae
         ld bc, scrTileUpd.length - 1
         ldir
 
-        call c_c044
-        call c_c561
+        call drawObjectsChecked
+        call updateScreenTiles
         ld de, scoreTable.walk + 4
         jp addScoreRaw
 
@@ -384,7 +384,7 @@ fillScrTiles:
 ; Used by c_cdae.
 c_cf17:  ; #cf17
         ld b, #08
-        ld ix, c_beb4
+        ld ix, sceneObjects
 .l_0:
         ld l, (ix+0)
         ld h, (ix+1)
@@ -674,7 +674,7 @@ c_d0af:  ; #d0af
 ; (Decrement some property for 8 objects at #BEB4)
 ; Used by c_cc25.
 c_d0d0:  ; #d0d0
-        ld ix, c_beb4
+        ld ix, sceneObjects
         ld b, #08
         ld de, #0032
 .l_0:
@@ -779,7 +779,7 @@ clearGameState:  ; #d133
 ; (Copies something to #BEB4)
 ; Used by c_d1c1.
 c_d153:  ; #d153
-        ld ix, c_beb4
+        ld ix, sceneObjects
         ld l, b
         ld h, #00
         add hl, hl
@@ -968,7 +968,7 @@ c_d29a:  ; #d29a
         djnz .l_0
         ld c, l
         ld b, h
-        ld hl, c_beb4
+        ld hl, sceneObjects
 .l_1:
         ld (hl), #00
         inc hl
@@ -1013,7 +1013,7 @@ c_d2b3:  ; #d2b3
 ; (Some game logic?)
 ; Used by c_cc25.
 c_d308:  ; #d308
-        ld ix, c_beb4
+        ld ix, sceneObjects
         bit 0, (ix+24)
         jp NZ, .l_3
         ld a, (State.s_28)
@@ -1523,7 +1523,7 @@ c_d6f1:  ; #d6f1
 ; (Some game logic, calls from call table #D6E7?)
 ; Used by c_cc25.
 c_d709:  ; #d709
-        ld ix, c_beb4
+        ld ix, sceneObjects
         call c_dd73
         ld a, (State.s_28)
         add a
@@ -2557,7 +2557,7 @@ c_df85:  ; #df85
         ld a, (controlState)
         bit 4, a
         ret Z
-        ld ix, c_beb4
+        ld ix, sceneObjects
         ld iy, #BEE6
         ld a, (State.weapon)
         or a
@@ -2752,7 +2752,7 @@ c_df85:  ; #df85
         ld ix, #BEE6
         cp #01
         jr NZ, .l_12
-        ld ix, c_beb4
+        ld ix, sceneObjects
         ld hl, State.s_3E
         ld a, (hl)
         or a
@@ -2784,7 +2784,7 @@ c_df85:  ; #df85
         jr Z, .l_13
         dec (hl)
         push ix
-        ld ix, c_beb4
+        ld ix, sceneObjects
         ld hl, cS.heroThrows
         ld (ix+3), l
         ld (ix+4), h
@@ -3123,70 +3123,83 @@ c_e419:  ; #e419
         ld (ix+4), d
         ret
 
-; (Some sprite drawing logic?)
+; Get phase sprite address for an object
+;   `ix`: object addr in `sceneObjects`
+; (Called from drawing.asm)
 ; Used by c_c07c, c_c245, c_c314 and c_c3ac.
-c_e47a:  ; #e47a
+getSpriteAddr:  ; #e47a
         ld l, (ix+3)
-        ld h, (ix+4)
-        ld de, #007E
-        bit 1, (ix+5)
+        ld h, (ix+4)            ; `hl`: base sprite addr
+        ld de, 21 * 6           ; big sprite size in bytes
+        bit 1, (ix+5)           ; is sprite big
         jr NZ, .l_0
-        ld de, #0040
+        ld de, 16 * 4           ; small sprite size in bytes
 .l_0:
         ld a, (ix+8)
-        cp #FF
+        cp -1
         ret Z
+        
         ld a, (ix+7)
         or a
         ret Z
-        cp #FF
+        
+        cp -1
         jr Z, c_e4fc
+        
         exa
         ld a, (ix+48)
         or a
         ret NZ
         exa
-        cp #FC
+        
+        ; `a`: (ix+7)
+        cp -4
         jp Z, c_e566
-        cp #FD
+        cp -3
         jp Z, c_e54f
-        cp #FE
+        cp -2
         jr Z, c_e52d
-        cp #02
+        cp 2
         jr NZ, .l_4
+        
         ld a, (ix+6)
-        and #02
+        and %00000010
         srl a
         jr Z, .l_3
 .l_1:
         ld b, a
 .l_2:
-        add hl, de
+        add hl, de              ; add sprite size in bytes
         djnz .l_2
 .l_3:
+        ; `hl`: phase sprite addr
         inc (ix+6)
         ret
+        
 .l_4:
-        cp #03
+        cp 3
         jr NZ, .l_5
         ld a, (ix+6)
-        and #07
+        and %00000111
         srl a
         or a
         jr Z, .l_3
-        cp #03
+        cp 3
         jr C, .l_1
-        ld (ix+6), #00
+        
+        ld (ix+6), 0
         jr .l_3
+        
 .l_5:
         ld a, (ix+6)
-        and #06
+        and %00000110
         srl a
         jr Z, .l_3
-        cp #03
+        cp 3
         jr NZ, .l_1
-        ld a, #01
+        ld a, 1
         jr .l_1
+
 
 ; Cloud sprite phase addresses
 c_e4ee:  ; #e4ee
@@ -3353,7 +3366,7 @@ c_e5f2:  ; #e5f2
 ; ?
 ; Used by c_cc25.
 c_e60a:  ; #e60a
-        ld ix, c_beb4
+        ld ix, sceneObjects
         ld a, (State.s_27)
         ld (State.s_44), a
         ld a, (ix+2)
@@ -3492,7 +3505,7 @@ c_e6e1:  ; #e6e1
         ld a, (State.s_46)
         or a
         ret NZ
-        ld ix, c_beb4
+        ld ix, sceneObjects
         ld l, (ix+0)
         ld h, (ix+1)
         ld (c_e6df), hl
@@ -3762,7 +3775,7 @@ c_e920:  ; #e920
         add ix, de
         djnz .l_0
 .l_1:
-        ld iy, c_beb4
+        ld iy, sceneObjects
         ld a, (iy+0)
         add #20
         ld (ix+0), a
@@ -3791,7 +3804,7 @@ c_e9b1:  ; #e9b1
         ld a, (State.s_46)
         cp #7F
         ret NZ
-        ld ix, c_beb4
+        ld ix, sceneObjects
         ld iy, #BF18
         ld b, #06
 .l_0:
@@ -3943,7 +3956,7 @@ c_e9b1:  ; #e9b1
 ; (Init ix+0, 1, 2 from (hl)?)
 ; Used by c_e920 and c_e9b1.
 c_eace:  ; #eace
-        ld ix, c_beb4
+        ld ix, sceneObjects
         ld a, (hl)
         add a
         add a
@@ -4348,7 +4361,7 @@ c_edc0:  ; #edc0
         ld a, (ix+2)
         ld (ix+32), a
         ld (ix+33), #00
-        ld iy, c_beb4
+        ld iy, sceneObjects
         ld l, (iy+0)
         ld h, (iy+1)
         ld a, (iy+10)
@@ -4717,7 +4730,7 @@ c_f0f3:  ; #f0f3
         jr NZ, .l_1
         set 2, (ix+5)
 .l_1:
-        ld iy, c_beb4
+        ld iy, sceneObjects
         ld l, (ix+0)
         ld h, (ix+1)
         ld c, (ix+10)
@@ -5166,7 +5179,7 @@ c_f488:  ; #f488
         ld a, (ix+27)
         or a
         ret Z
-        ld iy, c_beb4
+        ld iy, sceneObjects
         ld a, (ix+26)
         neg
         add (ix+2)
@@ -5359,7 +5372,7 @@ c_f618:  ; #f618
         ld a, (ix+49)
         cp #01
         call Z, c_ee93
-        ld iy, c_beb4
+        ld iy, sceneObjects
         call c_e80a
         jr C, .l_1
         ld (ix+5), #00

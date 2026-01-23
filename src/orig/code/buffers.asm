@@ -38,12 +38,17 @@ scrTiles: ; #5B00
         block 44                ; #6028
         block 44                ; #6054
 .end:                           ; #6080
+.length EQU $ - scrTiles        ; #580 = 1408
 
 ; Which tiles should be updated
 ; Layout is the same as in `scrTiles`
+; Possible values:
+;  -3: screen end marker
+;  -2: screen third end marker
+;  -1: screen row end marker
 ;   0: don't update
 ;   1: update
-;  >1: object id (?)
+;   2..160: object tile index in `objTiles`
 scrTileUpd: ; #6080
         block 44                ; #6080
         block 44                ; #60AC
@@ -78,13 +83,26 @@ scrTileUpd: ; #6080
         block 44                ; #65A8
         block 44                ; #65D4
 .end:                           ; #6600
-.length EQU $ - scrTileUpd
+.length EQU $ - scrTileUpd      ; #580 = 1408
 
-b_6600: ; #6600
-        block 1280              ; 160 × 8
 
-b_6b00: ; #6B00
+; Contains parts of objects drawn on top of map tiles
+objTiles: ; #6600
+        block 16                ; unused
+        block 1008              ; 126 tiles × 8 pixelRows
+
+
+    ALIGN 256
+; Bit mirroring. Initialized in the code
+mirrorTable: ; #6A00
         block 256
+
+
+    ALIGN 256
+; Attributes for `objTiles`
+objTileAttrs: ; #6B00
+        block 2                 ; unused
+        block 126               ; 126 tiles
 
 
     ENDMODULE
