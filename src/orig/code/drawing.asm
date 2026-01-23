@@ -239,7 +239,7 @@ drawObject:
         jp .skipPixels
         
 .isBackground:
-        ; draw
+        ; draw background
         ld bc, scrTileUpd - scrTiles
         add hl, bc              ; `hl`: addr in `scrTileUpd`
         ld a, (hl)              ; upd value
@@ -255,7 +255,7 @@ drawObject:
         ld l, c                 ; upd value
         ld h, 0
         ld bc, objTiles
-        jp .copyPixels
+        jp .copyBgPixels
         
 .notObjTile:
         ld a, (objTileIndex)
@@ -268,10 +268,10 @@ drawObject:
         ld h, 0
         ld bc, Level.tilePixels
         
-.copyPixels:
+.copyBgPixels:
     .3  add hl, hl
         add hl, bc
-        ; `hl`: addr of old object tile pixels or map tile pixels
+        ; `hl`: addr of background object tile pixels or background tile pixels
         ; `de`: new addr in `objTiles`
     .8  ldi
 
@@ -293,31 +293,35 @@ drawObject:
         ; continue
 
 
+; Draw a small (16×16) sprite into `objTiles`
+;   `ix`: object addr in `sceneObjects`
+;   `iy`: pixel row addr in `objTiles`
+; (Disables interrupts!)
 drawSmallSprite:
         ld a, (ix+0)
         and %00000111           ; x pixel shift
-        jr NZ, c_c245
+        jr NZ, drawShiftedSmallSprite
         
         ld hl, #0000            ; `nop : nop`
         ld (.jr), hl
-        bit 1, (ix+21)
-        jr NZ, .l_18
+        bit 1, (ix+21)          ; ?
+        jr NZ, .skipJr
+        bit 6, (ix+5)           ; ?
+        jr NZ, .skipJr
         
-        bit 6, (ix+5)
-        jr NZ, .l_18
-        ld hl, #0A18            ; `jr .l_21`
+        ld hl, #0A18            ; `jr .skipMirror`
         ld (.jr), hl
-.l_18:
+.skipJr:
+        
         ld c, 24
         ld a, (ix+2)
         and %00000111           ; y pixel shift
-        jr NZ, .l_19
+        jr NZ, .yShift
         ld c, 16
-        
-.l_19:
-        ld a, c                 ; 24 if y pixel shift, else 16
-        ld (.iy1), a
-        ld (.iy2), a
+.yShift:
+        ld a, c                 ; offset of the tile to the right (16 or 24)
+        ld (.off1), a
+        ld (.off2), a
         
         call getSpriteAddr      ; `hl`: sprite addr
         
@@ -325,43 +329,51 @@ drawSmallSprite:
         ld (.sp), sp
         ld sp, hl
         ld h, high(mirrorTable)
-        ld a, 16
-.l_20:
+        ld a, 16                ; sprite pixel height
+.pixelRow:
         exa
         pop de                  ; `e`: msk1, `d`: msk0
         pop bc                  ; `c`: spr1, `b`: spr0
         
-.jr:    jr .l_21
-        ld a, e
-        ld l, d
-        ld e, (hl)
-        ld l, a
-        ld d, (hl)
-        ld a, c
-        ld l, b
-        ld c, (hl)
-        ld l, a
-        ld b, (hl)
-.l_21:
-        ld a, (iy)
-        and d
-        or b
-        ld (iy), a
-.iy1+2  ld a, (iy-0)
-        and e
-        or c
-.iy2+2  ld (iy-0), a
-        inc iy
+.jr:    jr .skipMirror          ; `jr` or `nop`
+.mirror:
+        ld a, e                 ; msk1
+        ld l, d                 ; msk0
+        ld e, (hl)              ; mirror(msk0)
+        ld l, a                 ; msk1
+        ld d, (hl)              ; mirror(msk1)
+        ld a, c                 ; spr1
+        ld l, b                 ; spr0
+        ld c, (hl)              ; mirror(spr0)
+        ld l, a                 ; spr1
+        ld b, (hl)              ; mirror(spr1)
+.skipMirror:
+        
+        ld a, (iy)              ; left tile pixel row
+        and d                   ; draw msk0
+        or b                    ; draw spr0
+        ld (iy), a              ; write left pixel row
+        
+.off1+2 ld a, (iy-0)            ; right tile pixel row
+        and e                   ; draw msk1
+        or c                    ; draw spr1
+.off2+2 ld (iy-0), a            ; write right pixel row
+        
+        inc iy                  ; move one pixel row down
         exa
         dec a
-        jp NZ, .l_20
+        jp NZ, .pixelRow
+        
 .sp+*   ld sp, -0
         ei
         ret
 
-; (Preparing sprite drawing?)
-; Used by c_c07c.
-c_c245:  ; #c245
+
+; Draw a small (16×16) sprite into `objTiles` with pixel shift
+;   `ix`: object addr in `sceneObjects`
+;   `iy`: pixel row addr in `objTiles`
+;   `a`: pixel shift (1..7)
+drawShiftedSmallSprite:  ; #c245
         ld b, a
     .3  add a
         add b
