@@ -29,6 +29,9 @@ codeStart:
     INCLUDE "orig/code/controls.asm"
     INCLUDE "orig/code/level_loading.asm"
     INCLUDE "orig/code/code.asm"
+    INCLUDE "orig/code/logic_1.asm"
+    INCLUDE "orig/code/select_sprite.asm"
+    INCLUDE "orig/code/logic_2.asm"
     
     INCLUDE "orig/code/boss_switch.asm"
     INCLUDE "orig/code/boss0_klondike.asm"
@@ -36,7 +39,8 @@ codeStart:
     INCLUDE "orig/code/boss2_amazon.asm"
     INCLUDE "orig/code/boss3_iceland.asm"
     INCLUDE "orig/code/boss4_bermuda.asm"
-    INCLUDE "orig/code/boss1_orient_extra.asm"
+    INCLUDE "orig/code/boss1_3_extra.asm"
+    INCLUDE "orig/code/boss1_extra.asm"
     INCLUDE "orig/code/sound.asm"
     
     INCLUDE "orig/data/font.asm"
