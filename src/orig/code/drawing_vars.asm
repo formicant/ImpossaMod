@@ -14,7 +14,7 @@ sceneObjects: ; #BEB4
 ;  2    y coord in pixels (from -32 ?)
 ;  3    \ base sprite addr
 ;  4    /
-;  5    bit 0: draw, 1: is big, 4: skip once, 6: ?
+;  5    bit 0: draw, 1: is big, 4: skip once, 6: mirror(?)
 ;  6    ?
 ;  7    ?
 ;  8    ?
@@ -30,7 +30,7 @@ sceneObjects: ; #BEB4
 ; 18
 ; 19
 ; 20
-; 21    bit 1: ?
+; 21    bit 1: mirror(?)
 ; 22
 ; 23
 ; 24

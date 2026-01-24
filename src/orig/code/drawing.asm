@@ -303,15 +303,15 @@ drawSmallSprite:
         jr NZ, drawShiftedSmallSprite
         
         ld hl, #0000            ; `nop : nop`
-        ld (.jr), hl
-        bit 1, (ix+21)          ; ?
-        jr NZ, .skipJr
-        bit 6, (ix+5)           ; ?
-        jr NZ, .skipJr
+        ld (.jrMir), hl
+        bit 1, (ix+21)          ; mirror (?)
+        jr NZ, .skip
+        bit 6, (ix+5)           ; mirror (?)
+        jr NZ, .skip
         
         ld hl, #0A18            ; `jr .skipMirror`
-        ld (.jr), hl
-.skipJr:
+        ld (.jrMir), hl
+.skip:
         
         ld c, 24
         ld a, (ix+2)
@@ -330,12 +330,13 @@ drawSmallSprite:
         ld sp, hl
         ld h, high(mirrorTable)
         ld a, 16                ; sprite pixel height
+        
 .pixelRow:
         exa
         pop de                  ; `e`: msk1, `d`: msk0
         pop bc                  ; `c`: spr1, `b`: spr0
         
-.jr:    jr .skipMirror          ; `jr` or `nop`
+.jrMir: jr .skipMirror          ; `jr` or `nop`
 .mirror:
         ld a, e                 ; msk1
         ld l, d                 ; msk0
@@ -350,14 +351,14 @@ drawSmallSprite:
 .skipMirror:
         
         ld a, (iy)              ; left tile pixel row
-        and d                   ; draw msk0
-        or b                    ; draw spr0
-        ld (iy), a              ; write left pixel row
+        and d                   ; draw msk
+        or b                    ; draw spr
+        ld (iy), a
         
 .off1+2 ld a, (iy-0)            ; right tile pixel row
-        and e                   ; draw msk1
-        or c                    ; draw spr1
-.off2+2 ld (iy-0), a            ; write right pixel row
+        and e                   ; draw msk
+        or c                    ; draw spr
+.off2+2 ld (iy-0), a
         
         inc iy                  ; move one pixel row down
         exa
@@ -373,134 +374,160 @@ drawSmallSprite:
 ;   `ix`: object addr in `sceneObjects`
 ;   `iy`: pixel row addr in `objTiles`
 ;   `a`: pixel shift (1..7)
+; (Disables interrupts!)
 drawShiftedSmallSprite:  ; #c245
         ld b, a
     .3  add a
-        add b
-        ld (.jr2), a
+        add b                   ; `a`: jump size = (pixel shift) * 9
+        ld (.jrSh), a
+        
         ld hl, #0000            ; `nop : nop`
-        ld (.jr1), hl
-        bit 1, (ix+21)
-        jr NZ, .l_0
-        bit 6, (ix+5)
-        jr NZ, .l_0
-        ld hl, #0F18            ; `jr .l_3`
-        ld (.jr1), hl
-.l_0:
-        ld c, #18
+        ld (.jrMir), hl
+        bit 1, (ix+21)          ; mirror (?)
+        jr NZ, .skip
+        bit 6, (ix+5)           ; mirror (?)
+        jr NZ, .skip
+        
+        ld hl, #0F18            ; `jr .pixelShift`
+        ld (.jrMir), hl
+.skip:
+
+        ld c, 24
         ld a, (ix+2)
-        and #07
-        jr NZ, .l_1
-        ld c, #10
-.l_1:
-        ld a, c
-        ld (.iy1), a
-        ld (.iy2), a
-        add a
-        ld (.iy3), a
-        ld (.iy4), a
-        call getSpriteAddr
+        and %00000111           ; y pixel shift
+        jr NZ, .yShift
+        ld c, 16
+.yShift:
+        ld a, c                 ; offset of the middle tile
+        ld (.of11), a
+        ld (.of12), a
+        add a                   ; offset of the right tile
+        ld (.of21), a
+        ld (.of22), a
+        
+        call getSpriteAddr      ; `hl`: sprite addr
+        
         di
         ld (.sp), sp
         ld sp, hl
         ld h, high(mirrorTable)
-        ld ixh, #10
-.l_2:
-        pop de
-        pop hl
-.jr1:   jr .l_3
-        ld b, h
-        ld c, l
+        ld ixh, 16              ; sprite pixel height
+        
+.pixelRow:
+        pop de                  ; `e`: msk1, `d`: msk0
+        pop hl                  ; `l`: spr1, `h`: spr0
+        
+.jrMir: jr .pixelShift          ; `jr` or `nop`
+.mirror:
+        ld b, h                 ; spr0
+        ld c, l                 ; spr1
         ld h, high(mirrorTable)
-        ld a, e
-        ld l, d
-        ld e, (hl)
-        ld l, a
-        ld d, (hl)
-        ld a, c
-        ld l, b
-        ld c, (hl)
-        ld l, a
-        ld h, (hl)
-        ld l, c
-.l_3:
-        ld a, #FF
+        ld a, e                 ; msk1
+        ld l, d                 ; msk0
+        ld e, (hl)              ; mirror(msk0)
+        ld l, a                 ; msk1
+        ld d, (hl)              ; mirror(msk1)
+        ld a, c                 ; spr1
+        ld l, b                 ; spr0
+        ld c, (hl)              ; mirror(spr0)
+        ld l, a                 ; spr1
+        ld h, (hl)              ; mirror(spr1)
+        ld l, c                 ; mirror(spr0)
+        
+.pixelShift:
+        ld a, #FF               ; msk padding
         exa
-        xor a
-.l_4:
-.jr2+1  jr .l_4
+        xor a                   ; spr padding
+        
+.jrSh+1 jr $-0
     .9  nop
     DUP 7
-        exa
+        exa                     ; msk
         sll e
         rl d
         rla
-        exa
+        exa                     ; spr
         add hl, hl
         rla
     EDUP
-        ld b, (iy+0)
+        
+        ld b, (iy)              ; left tile pixel row
         exa
         and b
-        ld b, a
+        ld b, a                 ; draw msk
         exa
-        or b
-        ld (iy+0), a
-.iy1+2  ld a, (iy-0)
-        and d
-        or h
-.iy2+2  ld (iy-0), a
-.iy3+2  ld a, (iy-0)
-        and e
-        or l
-.iy4+2  ld (iy-0), a
-        inc iy
+        or b                    ; draw spr
+        ld (iy), a
+        
+.of11+2 ld a, (iy-0)            ; middle tile pixel row
+        and d                   ; draw msk
+        or h                    ; draw spr
+.of12+2 ld (iy-0), a
+        
+.of21+2 ld a, (iy-0)            ; right tile pixel row
+        and e                   ; draw msk1
+        or l                    ; draw spr1
+.of22+2 ld (iy-0), a
+
+        inc iy                  ; move one pixel row down
         dec ixh
-        jp NZ, .l_2
+        jp NZ, .pixelRow
+        
 .sp+*   ld sp, -0
         ei
         ret
 
-; (Sprite drawing?)
-; Used by c_c07c.
+
+; Draw a big (24×21) sprite into `objTiles`
+;   `ix`: object addr in `sceneObjects`
+;   `iy`: pixel row addr in `objTiles`
+; (Disables interrupts!)
 drawBigSprite:  ; #c314
         ld a, (ix+0)
-        and #07
-        jp NZ, c_c3ac
+        and %00000111           ; x pixel shift
+        jp NZ, drawShiftedBigSprite
+        
         ld hl, #0000            ; `nop : nop`
-        bit 1, (ix+21)
-        jr NZ, .l_0
-        bit 6, (ix+5)
-        jr NZ, .l_0
-        ld hl, #2718            ; `jr .l_3`
-.l_0:
-        ld (.jr), hl
-        ld c, #20
+        bit 1, (ix+21)          ; mirror (?)
+        jr NZ, .skip
+        bit 6, (ix+5)           ; mirror (?)
+        jr NZ, .skip
+        
+        ld hl, #2718            ; `jr .skipMirror`
+.skip:
+        ld (.jrMir), hl
+        
+        ld c, 32
         ld a, (ix+2)
-        and #07
-        cp #04
-        jr NC, .l_1
-        ld c, #18
-.l_1:
-        ld a, c
-        ld (.iy1), a
-        ld (.iy2), a
-        add a
-        ld (.iy3), a
-        ld (.iy4), a
-        call getSpriteAddr
+        and %00000111           ; y pixel shift
+        cp 4
+        jr NC, .yShift
+        ld c, 24
+.yShift:
+        ld a, c                 ; offset of the middle tile
+        ld (.of11), a
+        ld (.of12), a
+        add a                   ; offset of the right tile
+        ld (.of21), a
+        ld (.of22), a
+        
+        call getSpriteAddr      ; `hl`: sprite addr
+        
         di
         ld (.sp), sp
         ld sp, hl
         exx
         ld h, high(mirrorTable)
         exx
-        ld ixh, #15
-.l_2:
-        pop de
-        pop bc
-        pop hl
-.jr:    jr .l_3
+        ld ixh, 21              ; sprite pixel height
+        
+.pixelRow:
+        pop de                  ; `e`: msk2, `d`: msk1
+        pop bc                  ; `c`: msk0, `b`: spr0
+        pop hl                  ; `l`: spr2, `h`: spr1
+        
+.jrMir: jr .skipMirror          ; `jr` or `nop`
+.mirror:
         ld a, d
         exa
         ld a, h
@@ -540,78 +567,95 @@ drawBigSprite:  ; #c314
         ld l, a
         exa
         ld b, a
-.l_3:
-        ld a, (iy+0)
-        and c
-        or b
-        ld (iy+0), a
-.iy1+2  ld a, (iy-0)
-        and d
-        or h
-.iy2+2  ld (iy-0), a
-.iy3+2  ld a, (iy-0)
-        and e
-        or l
-.iy4+2  ld (iy-0), a
-        inc iy
+.skipMirror:
+        
+        ld a, (iy)              ; left tile pixel row
+        and c                   ; draw msk
+        or b                    ; draw spr
+        ld (iy), a
+        
+.of11+2 ld a, (iy-0)            ; middle tile pixel row
+        and d                   ; draw msk
+        or h                    ; draw spr
+.of12+2 ld (iy-0), a
+        
+.of21+2 ld a, (iy-0)            ; right tile pixel row
+        and e                   ; draw msk
+        or l                    ; draw spr
+.of22+2 ld (iy-0), a
+        
+        inc iy                  ; move one pixel row down
         dec ixh
-        jp NZ, .l_2
+        jp NZ, .pixelRow
+        
 .sp+*   ld sp, -0
         ei
         ret
 
-; (Preparing sprite drawing?)
-; Used by c_c314.
-c_c3ac:  ; #c3ac
+
+; Draw a big (24×21) sprite into `objTiles`
+;   `ix`: object addr in `sceneObjects`
+;   `iy`: pixel row addr in `objTiles`
+;   `a`: pixel shift (1..7)
+; (Disables interrupts!)
+drawShiftedBigSprite:  ; #c3ac
         ld b, a
-        add a
-        add a
+    .2  add a
         ld c, a
         add b
         ld b, a
         ld a, c
         add a
         add b
-        ld (.jr2), a
+        ; `a`: jump size = (pixel shift) * 13
+        ld (.jrSh), a
+        
         ld hl, #0000            ; `nop : nop`
-        ld (.jr1), hl
-        bit 1, (ix+21)
-        jr NZ, .l_0
-        bit 6, (ix+5)
-        jr NZ, .l_0
-        ld hl, #1418            ; `jr .l_3`
-        ld (.jr1), hl
-.l_0:
-        ld c, #20
+        ld (.jrMir), hl
+        bit 1, (ix+21)          ; mirror (?)
+        jr NZ, .skip
+        bit 6, (ix+5)           ; mirror (?)
+        jr NZ, .skip
+        
+        ld hl, #1418            ; `jr .pixelShift`
+        ld (.jrMir), hl
+.skip:
+        
+        ld c, 32
         ld a, (ix+2)
-        and #07
-        cp #04
-        jr NC, .l_1
-        ld c, #18
-.l_1:
-        ld a, c
-        ld (.iy1), a
-        ld (.iy2), a
-        add a
-        ld (.iy3), a
-        ld (.iy4), a
-        add c
-        ld (.iy5), a
-        ld (.iy6), a
-        call getSpriteAddr
+        and %00000111           ; y pixel shift
+        cp 4
+        jr NC, .yShift
+        ld c, 24
+.yShift:
+        ld a, c                 ; offset of the middle-left tile
+        ld (.of11), a
+        ld (.of12), a
+        add a                   ; offset of the middle-right tile
+        ld (.of21), a
+        ld (.of22), a
+        add c                   ; offset of the right tile
+        ld (.of31), a
+        ld (.od32), a
+        
+        call getSpriteAddr      ; `hl`: sprite addr
+        
         di
         ld (.sp), sp
         ld sp, hl
-        ld ixh, #15
-.l_2:
-        pop de
-        pop hl
+        ld ixh, 21              ; sprite pixel height
+        
+.pixelRow:
+        pop de                  ; `e`: msk2, `d`: msk1
+        pop hl                  ; `l`: msk0, `h`: spr0
         ld a, h
         exx
-        pop hl
-        ld e, a
+        pop hl                  ; `l`: spr2, `h`: spr1
+        ld e, a                 ; `e`: spr0
         exx
-.jr1:   jr .l_3
+        
+.jrMir: jr .pixelShift          ; `jr` or `nop`
+.mirror:
         ld h, high(mirrorTable)
         ld a, (hl)
         ld l, d
@@ -630,53 +674,61 @@ c_c3ac:  ; #c3ac
         ld e, a
         ld h, b
         exx
-.l_3:
-        ld h, #FF
+        
+.pixelShift:
+        ld h, #FF               ; msk padding
         exx
-        ld d, #00
-.l_4:
-.jr2+1  jr .l_4
+        ld d, #00               ; spr padding
+        
+.jrSh+1  jr $-0
     .13 nop
     DUP 7
-        exx
+        exx                     ; msk
         sll e
         rl d
         adc hl, hl
-        exx
+        exx                     ; spr
         add hl, hl
         ex de, hl
         adc hl, hl
         ex de, hl
     EDUP
+        
         ld a, e
         exa
         ld a, d
         exx
-        ld b, a
-        ld a, (iy+0)
-        and h
-        or b
-        ld (iy+0), a
+        ld b, a 
+        
+        ld a, (iy)              ; left tile pixel row
+        and h                   ; draw msk
+        or b                    ; draw spr
+        ld (iy), a
         exa
         ld b, a
-.iy1+2  ld a, (iy-0)
-        and l
-        or b
-.iy2+2  ld (iy-0), a
+        
+.of11+2 ld a, (iy-0)
+        and l                   ; draw msk
+        or b                    ; draw spr
+.of12+2 ld (iy-0), a
         ld a, e
         exa
         ld a, d
         exx
-.iy3+2  and (iy-0)
-        or h
-.iy4+2  ld (iy-0), a
+                                ; middle-right tile pixel row
+.of21+2 and (iy-0)              ; draw msk
+        or h                    ; draw spr
+.of22+2 ld (iy-0), a
         exa
-.iy5+2  and (iy-0)
-        or l
-.iy6+2  ld (iy-0), a
-        inc iy
+                                ; right tile pixel row
+.of31+2 and (iy-0)              ; draw msk
+        or l                    ; draw spr
+.od32+2 ld (iy-0), a
+        
+        inc iy                  ; move one pixel row down
         dec ixh
-        jp NZ, .l_2
+        jp NZ, .pixelRow
+        
 .sp+*   ld sp, -0
         ei
         ret
