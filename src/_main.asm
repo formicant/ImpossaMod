@@ -13,7 +13,7 @@
 ; Loading screen
     ORG #4000
     INCLUDE "orig/data/loading_screen.asm"
-    INCLUDE "orig/code/buffers.asm"
+    INCLUDE "orig/var/buffers.asm"
 
 ; Basic loader
     ORG #5CCB
@@ -41,11 +41,11 @@ codeStart:
     _NEXT_ORG #A7E4
     INCLUDE "orig/data/sprites.asm"
     
-    _NEXT_ORG #BDDF
+    _NEXT_ORG #B9AA ; #BDDF
     INCLUDE "orig/code/sound.asm"
+    DISPLAY $
     _NEXT_ORG #BEB3
-    INCLUDE "orig/code/drawing_vars.asm"
-    ; empty space, 401 bytes
+    INCLUDE "orig/var/scene_objects.asm"
     _NEXT_ORG #C044
     INCLUDE "orig/code/drawing.asm"
     INCLUDE "orig/code/game_menu.asm"
@@ -60,7 +60,7 @@ codeStart:
     _NEXT_ORG #FD00
     INCLUDE "interrupt_table.asm"
     ORG #FE01
-    INCLUDE "orig/state.asm"
+    INCLUDE "orig/var/state.asm"
     ORG #FE01
     INCLUDE "disposable.asm"
     _NEXT_ORG #FEFE

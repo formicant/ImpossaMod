@@ -9,7 +9,7 @@
 ; Loading screen
     ORG #4000
     INCLUDE "data/loading_screen.asm"
-    INCLUDE "code/buffers.asm"
+    INCLUDE "var/buffers.asm"
 
 ; Basic loader
     ORG #5CCB   ; overlap
@@ -41,7 +41,7 @@ codeStart:
 
     ORG #BDDF
     INCLUDE "code/sound.asm"
-    INCLUDE "code/drawing_vars.asm"
+    INCLUDE "var/scene_objects.asm"
     ORG #BEB4   ; overlap
     INCLUDE "code/init_interrupts.asm"
     INCLUDE "code/interrupt.asm"
@@ -57,7 +57,7 @@ codeStart:
     INCLUDE "code/code.asm"
     
     ORG #FE01
-    INCLUDE "state.asm"
+    INCLUDE "var/state.asm"
 
 ; Save game
     EMPTYTAP "original.tap"
