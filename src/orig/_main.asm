@@ -55,6 +55,12 @@ codeStart:
     INCLUDE "data/font.asm"
     ORG #CC25
     INCLUDE "code/code.asm"
+    INCLUDE "code/boss0_klondike.asm"
+    INCLUDE "code/boss1_orient.asm"
+    INCLUDE "code/boss2_amazon.asm"
+    INCLUDE "code/boss3_iceland.asm"
+    INCLUDE "code/boss4_bermuda.asm"
+    INCLUDE "code/boss1_orient_extra.asm"
     
     ORG #FE01
     INCLUDE "var/state.asm"
