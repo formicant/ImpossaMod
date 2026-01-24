@@ -44,8 +44,8 @@ codeStart:
     _NEXT_ORG #B9AA ; #BDDF
     INCLUDE "orig/code/sound.asm"
     DISPLAY $
-    _NEXT_ORG #BEB3
-    INCLUDE "orig/var/scene_objects.asm"
+    _NEXT_ORG  #BEB3 ; #BEB3
+    INCLUDE "orig/var/scene.asm"
     _NEXT_ORG #C044
     INCLUDE "orig/code/drawing.asm"
     INCLUDE "orig/code/game_menu.asm"

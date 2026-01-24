@@ -42,7 +42,7 @@ gameStart:  ; #cc5a
         ld a, (State.s_57)
         or a
         jr Z, .l_5
-        ld ix, #BEE6
+        ld ix, sceneObjects.obj1
         ld de, #0032
         ld b, #07
 .l_4:
@@ -1025,7 +1025,7 @@ c_d308:  ; #d308
         or a
         ret M
 .l_0:
-        ld iy, #BF18
+        ld iy, sceneObjects.obj2
         ld b, #06
 .l_1:
         call c_d3bb
@@ -1267,7 +1267,7 @@ c_d460:  ; #d460
 ; (Set some object properties?)
 ; Used by c_cc25.
 c_d4cd:  ; #d4cd
-        ld ix, #BEE6
+        ld ix, sceneObjects.obj1
         ld b, #07
         ld de, #0032
 .l_0:
@@ -1290,7 +1290,7 @@ c_d4e5:  ; #d4e5
         ld a, (State.s_54)
         or a
         ret NZ
-        ld iy, #BF18
+        ld iy, sceneObjects.obj2
         ld b, #06
 .l_0:
         push bc
@@ -2558,7 +2558,7 @@ c_df85:  ; #df85
         bit 4, a
         ret Z
         ld ix, sceneObjects
-        ld iy, #BEE6
+        ld iy, sceneObjects.obj1
         ld a, (State.weapon)
         or a
         jp NZ, .l_3
@@ -2749,7 +2749,7 @@ c_df85:  ; #df85
         ld (State.s_39), a
         jp c_eb00
 .l_9:
-        ld ix, #BEE6
+        ld ix, sceneObjects.obj1
         cp #01
         jr NZ, .l_12
         ld ix, sceneObjects
@@ -2772,7 +2772,7 @@ c_df85:  ; #df85
 .l_11:
         xor a
         ld (State.s_3D), a
-        ld ix, #BEE6
+        ld ix, sceneObjects.obj1
         ld (ix+5), a
         ret
 .l_12:
@@ -2943,8 +2943,8 @@ c_e31c:  ; #e31c
         ld (c_e308), a
         ret
 .l_0:
-        ld ix, #BEE6
-        ld iy, #BF18
+        ld ix, sceneObjects.obj1
+        ld iy, sceneObjects.obj2
         ld de, #0032
         ld b, #06
 .l_1:
@@ -3284,7 +3284,7 @@ c_e566:  ; #e566
 ; (Modifies some object properties?)
 ; Used by c_cc25.
 c_e56f:  ; #e56f
-        ld ix, #BEE6
+        ld ix, sceneObjects.obj1
         ld b, #07
 .l_0:
         push bc
@@ -3347,13 +3347,13 @@ c_e582:  ; #e582
         ld (ix+2), a
         ret
 
-; (Init some objects at #BEE6)
+; (Init some objects at sceneObjects.obj1)
 ; Used by c_cc25, c_e60a, c_e920 and c_e9b1.
 c_e5f2:  ; #e5f2
         push ix
         push de
         ld de, #0032
-        ld ix, #BEE6
+        ld ix, sceneObjects.obj1
         ld b, #07
 .l_0:
         ld (ix+5), #00
@@ -3478,7 +3478,7 @@ c_e6c2:  ; #e6c2
         push de
         push bc
         ld b, #06
-        ld ix, #BF18
+        ld ix, sceneObjects.obj2
         ld de, #0032
 .l_0:
         bit 0, (ix+5)
@@ -3515,7 +3515,7 @@ c_e6e1:  ; #e6e1
         inc hl
         ld (ix+0), l
         ld (ix+1), h
-        ld iy, #BF18
+        ld iy, sceneObjects.obj2
         ld b, #06
 .l_0:
         push bc
@@ -3765,7 +3765,7 @@ c_e920:  ; #e920
         ld a, #7F
         ld (State.s_46), a
         call c_f6ba
-        ld ix, #BF18
+        ld ix, sceneObjects.obj2
         ld b, #06
         ld de, #0032
 .l_0:
@@ -3805,7 +3805,7 @@ c_e9b1:  ; #e9b1
         cp #7F
         ret NZ
         ld ix, sceneObjects
-        ld iy, #BF18
+        ld iy, sceneObjects.obj2
         ld b, #06
 .l_0:
         push bc
@@ -3997,8 +3997,8 @@ c_eaf7:  ; #eaf7
 ; Check enemies for damaging?
 ; Used by c_df85.
 c_eb00:  ; #eb00
-        ld ix, #BEE6
-        ld iy, #BF18
+        ld ix, sceneObjects.obj1
+        ld iy, sceneObjects.obj2
         ld b, #06
 .l_0:
         push bc
@@ -4205,7 +4205,7 @@ c_ec00:  ; #ec00
         call playSound
         push ix
         push de
-        ld ix, #BF18
+        ld ix, sceneObjects.obj2
         ld b, #04
         ld de, #0032
 .l_5:
@@ -4221,7 +4221,7 @@ c_ec00:  ; #ec00
 .l_7:
         push ix
         push de
-        ld ix, #BF18
+        ld ix, sceneObjects.obj2
         ld b, #04
         ld de, #0032
 .l_8:
@@ -4254,7 +4254,7 @@ c_ec00:  ; #ec00
 ; (Modifies some object properties?)
 ; Used by c_cc25.
 c_ecee:  ; #ecee
-        ld ix, #BF18
+        ld ix, sceneObjects.obj2
         ld b, #06
 .l_0:
         push bc
@@ -5525,7 +5525,7 @@ c_f6e7:  ; #f6e7
         ld (State.s_52), bc
 ; This entry point is used by c_f6ba.
 .l_3:
-        ld ix, #BF18
+        ld ix, sceneObjects.obj2
         ld b, #06
 .l_4:
         bit 0, (ix+5)
@@ -5803,16 +5803,16 @@ c_f8f4:  ; #f8f4
         ld a, (State.s_57)
         or a
         ret NZ
-        ld ix, #BF18
+        ld ix, sceneObjects.obj2
         ld a, #36
         call c_f74a.l_1
-        ld ix, #BF4A
+        ld ix, sceneObjects.obj3
         ld a, #34
         call c_f74a.l_1
-        ld ix, #BF7C
+        ld ix, sceneObjects.obj4
         ld a, #35
         call c_f74a.l_1
-        ld ix, #BFAE
+        ld ix, sceneObjects.obj5
         ld a, #33
         call c_f74a.l_1
         call generateRandom
@@ -5827,7 +5827,7 @@ c_f8f4:  ; #f8f4
         ld h, (hl)
         ld l, a
         ld b, #04
-        ld ix, #BF18
+        ld ix, sceneObjects.obj2
         ld de, #0032
 .l_0:
         ld (ix+0), l
@@ -5848,7 +5848,7 @@ c_f8f4:  ; #f8f4
         ld a, (hl)
         cp #41
         jr NZ, .l_2
-        ld ix, #BF7C
+        ld ix, sceneObjects.obj4
         ld hl, Lev0Klondike.lS.bossAnt2
         ld (ix+3), l
         ld (ix+4), h
@@ -5869,7 +5869,7 @@ c_f8f4:  ; #f8f4
 ; This entry point is used by c_fa65.
 .l_4:
         ld b, #04
-        ld ix, #BF18
+        ld ix, sceneObjects.obj2
         ld de, #0032
 .l_5:
         ld (ix+5), #00
@@ -5891,22 +5891,22 @@ c_f9a4:  ; #f9a4
         ld a, (State.s_57)
         or a
         ret NZ
-        ld ix, #BF18
+        ld ix, sceneObjects.obj2
         ld a, #32
         call c_f74a.l_1
-        ld ix, #BF4A
+        ld ix, sceneObjects.obj3
         ld a, #33
         call c_f74a.l_1
-        ld ix, #BF7C
+        ld ix, sceneObjects.obj4
         ld a, #34
         call c_f74a.l_1
-        ld ix, #BFAE
+        ld ix, sceneObjects.obj5
         ld a, #35
         call c_f74a.l_1
         ld de, c_f99e
         ld b, #03
-        ld ix, #BF18
-        ld iy, #BF4A
+        ld ix, sceneObjects.obj2
+        ld iy, sceneObjects.obj3
 .l_0:
         push bc
         ld l, (ix+0)
@@ -5934,7 +5934,7 @@ c_f9a4:  ; #f9a4
         ld (State.s_51), a
         ret
 .l_1:
-        ld ix, #BF18
+        ld ix, sceneObjects.obj2
         bit 3, (ix+21)
         jr Z, .l_2
         ld a, (ix+2)
@@ -5983,10 +5983,10 @@ c_fa65:  ; #fa65
         ld a, (State.s_57)
         or a
         ret NZ
-        ld ix, #BF18
+        ld ix, sceneObjects.obj2
         ld a, #2B
         call c_f74a.l_1
-        ld ix, #BF4A
+        ld ix, sceneObjects.obj3
         ld a, #2C
         call c_f74a.l_1
         call generateRandom
@@ -5999,8 +5999,8 @@ c_fa65:  ; #fa65
         ld e, (hl)
         inc hl
         ld a, (hl)
-        ld ix, #BF18
-        ld iy, #BF4A
+        ld ix, sceneObjects.obj2
+        ld iy, sceneObjects.obj3
         ld (ix+0), e
         ld (iy+0), e
         ld (ix+1), #00
@@ -6036,14 +6036,14 @@ c_fad3:  ; #fad3
         ld a, (State.s_57)
         or a
         ret NZ
-        ld ix, #BF18
+        ld ix, sceneObjects.obj2
         ld a, #37
         call c_f74a.l_1
-        ld ix, #BF4A
+        ld ix, sceneObjects.obj3
         ld a, #38
         call c_f74a.l_1
-        ld ix, #BF18
-        ld iy, #BF4A
+        ld ix, sceneObjects.obj2
+        ld iy, sceneObjects.obj3
         ld (ix+2), #60
         ld l, (ix+0)
         ld h, (ix+1)
@@ -6060,7 +6060,7 @@ c_fad3:  ; #fad3
         ld (State.s_51), a
         ret
 .l_0:
-        ld ix, #BF18
+        ld ix, sceneObjects.obj2
         ld l, (ix+0)
         ld h, (ix+1)
         bit 1, (ix+21)
@@ -6088,14 +6088,14 @@ c_fb45:  ; #fb45
         ld a, (State.s_57)
         or a
         ret NZ
-        ld ix, #BF18
+        ld ix, sceneObjects.obj2
         ld a, #38
         call c_f74a.l_1
-        ld ix, #BF4A
+        ld ix, sceneObjects.obj3
         ld a, #39
         call c_f74a.l_1
-        ld ix, #BF18
-        ld iy, #BF4A
+        ld ix, sceneObjects.obj2
+        ld iy, sceneObjects.obj3
         ld l, (ix+0)
         ld h, (ix+1)
         ld (iy+0), l
@@ -6110,8 +6110,8 @@ c_fb45:  ; #fb45
         ld (State.s_51), a
         ret
 .l_0:
-        ld ix, #BF18
-        ld iy, #BF4A
+        ld ix, sceneObjects.obj2
+        ld iy, sceneObjects.obj3
         ld a, (State.s_59)
         inc a
         and #07
@@ -6134,7 +6134,7 @@ c_fb45:  ; #fb45
 c_fbb9:  ; #fbb9
         push ix
         ld b, #04
-        ld ix, #BF18
+        ld ix, sceneObjects.obj2
         ld de, #0032
 .l_0:
         ld a, (ix+21)
@@ -6149,15 +6149,15 @@ c_fbb9:  ; #fbb9
 ; Used by c_f9a4.
 c_fbd2:  ; #fbd2
         push ix
-        ld ix, #BF18
-        ld iy, #BF4A
+        ld ix, sceneObjects.obj2
+        ld iy, sceneObjects.obj3
         call c_fbf9
         ld a, (ix+49)
         ld c, (iy+49)
         ld (ix+49), c
         ld (iy+49), a
-        ld ix, #BF7C
-        ld iy, #BFAE
+        ld ix, sceneObjects.obj4
+        ld iy, sceneObjects.obj5
         call c_fbf9
         pop ix
         ret

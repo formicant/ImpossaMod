@@ -41,7 +41,7 @@ codeStart:
 
     ORG #BDDF
     INCLUDE "code/sound.asm"
-    INCLUDE "var/scene_objects.asm"
+    INCLUDE "var/scene.asm"
     ORG #BEB4   ; overlap
     INCLUDE "code/init_interrupts.asm"
     INCLUDE "code/interrupt.asm"

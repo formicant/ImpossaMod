@@ -7,7 +7,14 @@ objTileIndex: ; #BEB3
         db -0
 
 sceneObjects: ; #BEB4
-        block 400               ; 8 objects × 50 bytes
+.obj0:  block 50                ; #BEB4
+.obj1:  block 50                ; #BEE6
+.obj2:  block 50                ; #BF18
+.obj3:  block 50                ; #BF4A
+.obj4:  block 50                ; #BF7C
+.obj5:  block 50                ; #BFAE
+.obj6:  block 50                ; #BFE0
+.obj7:  block 50                ; #C012
 
 ;  0    \ x coord in pixels (from -32 ?)
 ;  1    /
