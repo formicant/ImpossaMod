@@ -20,9 +20,24 @@
     INCLUDE "basic_loader.asm"
 
 ; Code
-    ORG #6BFC   ; #BEFC
+    ORG #6B80   ; #BEFC
 codeStart:
+    INCLUDE "orig/var/scene.asm"
+    INCLUDE "orig/code/drawing.asm"
+    INCLUDE "orig/code/game_menu.asm"
+    INCLUDE "orig/code/utils.asm"
+    INCLUDE "orig/code/controls.asm"
+    INCLUDE "orig/code/level_loading.asm"
+    INCLUDE "orig/code/code.asm"
+    INCLUDE "orig/code/sound.asm"
+    INCLUDE "orig/data/font.asm"
+    INCLUDE "orig/data/sprites.asm"
+    DISPLAY $
+
+    _NEXT_ORG #BEFC
     INCLUDE "orig/data/object_types.asm"
+    
+    _NEXT_ORG Level.start
     INCLUDE "orig/data/0_klondike/object_types.asm"
     _NEXT_ORG Level.objectTable
     INCLUDE "orig/data/0_klondike/object_table.asm"
@@ -37,26 +52,7 @@ codeStart:
     ALIGN 4
     INCLUDE "orig/data/0_klondike/sprites.asm"
     _NEXT_ORG Level.end
-
-    _NEXT_ORG #A7E4
-    INCLUDE "orig/data/sprites.asm"
     
-    _NEXT_ORG #B9AA ; #BDDF
-    INCLUDE "orig/code/sound.asm"
-    DISPLAY $
-    _NEXT_ORG  #BEB3 ; #BEB3
-    INCLUDE "orig/var/scene.asm"
-    _NEXT_ORG #C044
-    INCLUDE "orig/code/drawing.asm"
-    INCLUDE "orig/code/game_menu.asm"
-    INCLUDE "orig/code/utils.asm"
-    INCLUDE "orig/code/controls.asm"
-    INCLUDE "orig/code/level_loading.asm"
-    _NEXT_ORG #CAA5
-    INCLUDE "orig/data/font.asm"
-    INCLUDE "orig/code/code.asm"
-    _NEXT_ORG #FC12
-    ; empty space, 238 bytes
     _NEXT_ORG #FD00
     INCLUDE "interrupt_table.asm"
     ORG #FE01
@@ -67,13 +63,12 @@ codeStart:
     INCLUDE "interrupt.asm"
 
 
-
 codeLength = $ - codeStart
 
-    ORG #CC27
+    ORG Code.entryPoint.lev
         db 0
 
-    SAVESNA "impossamod.sna", #CC25
+    SAVESNA "impossamod.sna", Code.entryPoint
 
 ; Save game
     EMPTYTAP "impossamod.tap"

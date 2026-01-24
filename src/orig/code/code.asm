@@ -4,7 +4,7 @@
 ; Entry point
 entryPoint:  ; #cc25
         di
-        ld a, #FF
+.lev+*  ld a, #FF
         ld (State.loadedLevel), a
         ld sp, 0
         call initInterrupts
