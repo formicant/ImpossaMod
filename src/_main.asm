@@ -29,6 +29,8 @@ codeStart:
     INCLUDE "orig/code/controls.asm"
     INCLUDE "orig/code/level_loading.asm"
     INCLUDE "orig/code/code.asm"
+    
+    INCLUDE "orig/code/boss_switch.asm"
     INCLUDE "orig/code/boss0_klondike.asm"
     INCLUDE "orig/code/boss1_orient.asm"
     INCLUDE "orig/code/boss2_amazon.asm"
@@ -36,6 +38,7 @@ codeStart:
     INCLUDE "orig/code/boss4_bermuda.asm"
     INCLUDE "orig/code/boss1_orient_extra.asm"
     INCLUDE "orig/code/sound.asm"
+    
     INCLUDE "orig/data/font.asm"
     INCLUDE "orig/data/sprites.asm"
     DISPLAY $

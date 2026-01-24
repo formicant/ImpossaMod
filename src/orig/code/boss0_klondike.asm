@@ -7,7 +7,7 @@ c_f8ec:  ; #f8ec
 
 ; Klondike boss logic
 ; Used by c_f8cb.
-c_f8f4:  ; #f8f4
+boss_logic_klondike:  ; #f8f4
         ld a, (State.s_54)
         cp #01
         jr NZ, .l_1

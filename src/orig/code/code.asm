@@ -61,7 +61,7 @@ gameStart:  ; #cc5a
         call c_ecee
         call c_e56f
         call c_f6e7
-        call c_f8cb
+        call boss_logic
         call c_e60a
         call c_d0d0
         call c_e6e1
@@ -5773,25 +5773,6 @@ c_f74a:  ; #f74a
         ld (State.s_54), a
         ld a, #3C
         ld (State.s_55), a
-        ret
-
-; Boss logic switch by level
-; Used by c_cc25.
-c_f8cb:  ; #f8cb
-        ld a, (State.s_54)
-        or a
-        ret Z
-        ld a, (State.level)
-        or a
-        jp Z, c_f8f4
-        cp #01
-        jp Z, c_f9a4
-        cp #02
-        jp Z, c_fa65
-        cp #03
-        jp Z, c_fad3
-        cp #04
-        jp Z, c_fb45
         ret
 
 

@@ -3,7 +3,7 @@
 
 ; Bermuda boss logic
 ; Used by c_f8cb.
-c_fb45:  ; #fb45
+boss_logic_bermuda:  ; #fb45
         ld a, (State.s_54)
         cp #01
         jr NZ, .l_0

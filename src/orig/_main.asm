@@ -55,6 +55,7 @@ codeStart:
     INCLUDE "data/font.asm"
     ORG #CC25
     INCLUDE "code/code.asm"
+    INCLUDE "code/boss_switch.asm"
     INCLUDE "code/boss0_klondike.asm"
     INCLUDE "code/boss1_orient.asm"
     INCLUDE "code/boss2_amazon.asm"
