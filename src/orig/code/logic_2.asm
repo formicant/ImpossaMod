@@ -965,17 +965,17 @@ c_ec00:  ; #ec00
 ; Used by c_cc25.
 c_ecee:  ; #ecee
         ld ix, scene.obj2
-        ld b, #06
-.l_0:
+        ld b, 6
+.object:
         push bc
         push ix
         call c_f488
         call c_ed08
         pop ix
-        ld bc, #0032
+        ld bc, 50
         add ix, bc
         pop bc
-        djnz .l_0
+        djnz .object
         ret
 
 ; (Modifies some object properties?)
@@ -1053,7 +1053,7 @@ c_ed08:  ; #ed08
         ld a, (ix+8)
         cp #6E
         ret NZ
-        ld hl, #A918            ; TODO: suspicious addr!
+        ld hl, #A918            ; TODO: Lev2Amazon.lS.sittingMonkey (?)
         ld (ix+3), l
         ld (ix+4), h
         ld (ix+7), #00

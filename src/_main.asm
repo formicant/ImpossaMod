@@ -3,9 +3,10 @@
     DEVICE ZXSPECTRUM48
     
     DEFINE _MOD
+    DEFINE _DEBUG
 
 ; Definitions
-    INCLUDE "macros.inc"
+    INCLUDE "orig/macros.inc"
     INCLUDE "orig/basic.inc"
     INCLUDE "level.inc"
     INCLUDE "orig/ay.inc"

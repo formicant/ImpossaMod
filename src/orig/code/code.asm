@@ -39,55 +39,59 @@ gameStart:  ; #cc5a
         call initLevel
         ; continue
 
-
 .gameLoop:
-        ld a, (State.s_57)
+        ld a, (State.s_57)      ; ?
         or a
         jr Z, .l_5
+        
         ld ix, scene.obj1
-        ld de, #0032
-        ld b, #07
+        ld de, 50
+        ld b, 7
 .l_4:
         bit 0, (ix+5)
         jr NZ, .l_5
+        
         add ix, de
         djnz .l_4
+        
         ld bc, 5000
-        call delay
+        call delay              ; 5 s delay
         jp .l_2
 
 .l_5:
-        call c_d4e5
+        call performSmartIfSmartKeyPressed
         call c_d4cd
         call c_f553
-        call c_ecee
-        call c_e56f
-        call putNextObjectsToScene
+        call c_ecee             ; (time: long)
+        call c_e56f             ; (time: medium)
+        call putNextObjectsToScene  ; (time: medium)
         call boss_logic
         call c_e60a
         call decBlinkTime
-        call c_e6e1
+        call c_e6e1             ; (time: medium)
         call c_d308
-        call c_d709
+        call c_d709             ; (time: long)
         call c_e920
         call c_e9b1
-        call c_df85
+        call c_df85             ; (time: medium)
         call updateConveyors
         call rollConveyorTiles
-        call drawObjectsChecked
+        call drawObjectsChecked ; (time: extreme)
 
         ld c, 3
         call waitFrames
-
-        call updateScreenTiles
+        
+        call updateScreenTiles  ; (time: extreme)
+        
         ld a, (State.s_05)
         or a
         jr Z, .l_6
 
         xor a
         ld (State.s_05), a
-        ld ix, scene
-        set 0, (ix+5)
+        ld ix, scene.hero
+        set 0, (ix+5)           ; set that hero exists (why not?)
+        
         call advanceInMap
         call putNextObjectsToScene
 .l_6:
@@ -1298,9 +1302,9 @@ c_d4cd:  ; #d4cd
         djnz .l_0
         ret
 
-; Handle Smart
+
 ; Used by c_cc25.
-c_d4e5:  ; #d4e5
+performSmartIfSmartKeyPressed:  ; #d4e5
         call checkSmartKey
         ret NZ
         ld a, (State.hasSmart)

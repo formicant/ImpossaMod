@@ -2,6 +2,7 @@
     DEVICE ZXSPECTRUM48
 
 ; Definitions
+    INCLUDE "macros.inc"
     INCLUDE "basic.inc"
     INCLUDE "level.inc"
     INCLUDE "ay.inc"
