@@ -6,12 +6,12 @@ start:
             BORDER, NOT, PI, ':',\
             PAPER, NOT, PI, ':',\
             INK, NOT, PI, ':',\
-            CLEAR, VAL, '"24063":',\
+            CLEAR, VAL, '"25088":',\
             PRINT, '#', NOT, PI, ';', AT, NOT, PI, ',', NOT, PI, ';', INK, NOT, PI, ',,,,:',\
             POKE, VAL, '"23739",', CODE, '"o":',\
             LOAD, '""', SCREEN_S, ':',\
             LOAD, '""', CODE, ':',\
-            RUN, USR, VAL, '"52261"'>
+            RUN, USR, VAL, '"25088"'>
 
 length  EQU $ - start
 

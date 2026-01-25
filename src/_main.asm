@@ -11,43 +11,49 @@
     INCLUDE "level.inc"
     INCLUDE "orig/ay.inc"
 
+
+; Slow memory
+
 ; Loading screen
     ORG #4000
     INCLUDE "orig/data/loading_screen.asm"
-    INCLUDE "orig/var/buffers.asm"
 
 ; Basic loader
     ORG #5CCB
     INCLUDE "basic_loader.asm"
 
 ; Code
-    ORG #6B80   ; #BEFC
+    ORG #6200   ; #BEFC
 codeStart:
-    INCLUDE "orig/var/scene.asm"
-    INCLUDE "orig/code/drawing.asm"
+    INCLUDE "orig/code/code.asm"
     INCLUDE "orig/code/game_menu.asm"
     INCLUDE "orig/code/utils.asm"
     INCLUDE "orig/code/controls.asm"
-    INCLUDE "orig/code/level_loading.asm"
-    INCLUDE "orig/code/code.asm"
     INCLUDE "orig/code/logic_1.asm"
+    INCLUDE "boss_switch.asm"
+    INCLUDE "disposable.asm"
+
+    _NEXT_ORG #7E80
+    INCLUDE "orig/data/font.asm"
+    _NEXT_ORG #8000
+
+
+; Fast memory
+    
+    ORG #8100
+    INCLUDE "orig/var/obj_tiles.asm"
+    INCLUDE "orig/var/scr_tiles.asm"
+    ORG #8000
+    INCLUDE "interrupt_table.asm"
+    _NEXT_ORG #9191
+    INCLUDE "interrupt.asm"
+    
+    INCLUDE "orig/code/drawing.asm"
     INCLUDE "orig/code/select_sprite.asm"
     INCLUDE "orig/code/logic_2.asm"
     
-    INCLUDE "orig/code/boss_switch.asm"
-    INCLUDE "orig/code/boss0_klondike.asm"
-    INCLUDE "orig/code/boss1_orient.asm"
-    INCLUDE "orig/code/boss2_amazon.asm"
-    INCLUDE "orig/code/boss3_iceland.asm"
-    INCLUDE "orig/code/boss4_bermuda.asm"
-    INCLUDE "orig/code/boss1_3_extra.asm"
-    INCLUDE "orig/code/boss1_extra.asm"
-    INCLUDE "orig/code/sound.asm"
-    
-    INCLUDE "orig/data/font.asm"
+    _NEXT_ORG #AD34
     INCLUDE "orig/data/sprites.asm"
-    DISPLAY $
-
     _NEXT_ORG #BEFC
     INCLUDE "orig/data/object_types.asm"
     
@@ -67,15 +73,11 @@ codeStart:
     INCLUDE "orig/data/0_klondike/sprites.asm"
     _NEXT_ORG Level.end
     
-    _NEXT_ORG #FD00
-    INCLUDE "interrupt_table.asm"
-    ORG #FE01
+    INCLUDE "orig/var/scene.asm"
     INCLUDE "orig/var/state.asm"
-    ORG #FE01
-    INCLUDE "disposable.asm"
-    _NEXT_ORG #FEFE
-    INCLUDE "interrupt.asm"
-
+    INCLUDE "orig/code/sound.asm"
+    INCLUDE "orig/code/level_loading.asm"
+    
 
 codeLength = $ - codeStart
 
