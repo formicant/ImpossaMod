@@ -5,15 +5,15 @@
 ; Used by Orient
 c_fbd2:  ; #fbd2
         push ix
-        ld ix, sceneObjects.obj2
-        ld iy, sceneObjects.obj3
+        ld ix, scene.obj2
+        ld iy, scene.obj3
         call c_fbf9
         ld a, (ix+49)
         ld c, (iy+49)
         ld (ix+49), c
         ld (iy+49), a
-        ld ix, sceneObjects.obj4
-        ld iy, sceneObjects.obj5
+        ld ix, scene.obj4
+        ld iy, scene.obj5
         call c_fbf9
         pop ix
         ret

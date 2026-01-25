@@ -14,22 +14,22 @@ boss_logic_orient:  ; #f9a4
         ld a, (State.s_57)
         or a
         ret NZ
-        ld ix, sceneObjects.obj2
+        ld ix, scene.obj2
         ld a, #32
-        call c_f74a.l_1
-        ld ix, sceneObjects.obj3
+        call putObjectToScene.l_1
+        ld ix, scene.obj3
         ld a, #33
-        call c_f74a.l_1
-        ld ix, sceneObjects.obj4
+        call putObjectToScene.l_1
+        ld ix, scene.obj4
         ld a, #34
-        call c_f74a.l_1
-        ld ix, sceneObjects.obj5
+        call putObjectToScene.l_1
+        ld ix, scene.obj5
         ld a, #35
-        call c_f74a.l_1
+        call putObjectToScene.l_1
         ld de, c_f99e
         ld b, #03
-        ld ix, sceneObjects.obj2
-        ld iy, sceneObjects.obj3
+        ld ix, scene.obj2
+        ld iy, scene.obj3
 .l_0:
         push bc
         ld l, (ix+0)
@@ -57,7 +57,7 @@ boss_logic_orient:  ; #f9a4
         ld (State.s_51), a
         ret
 .l_1:
-        ld ix, sceneObjects.obj2
+        ld ix, scene.obj2
         bit 3, (ix+21)
         jr Z, .l_2
         ld a, (ix+2)

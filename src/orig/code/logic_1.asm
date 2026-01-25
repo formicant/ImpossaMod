@@ -18,7 +18,7 @@ c_d6f1:  ; #d6f1
 ; (Some game logic, calls from call table #D6E7?)
 ; Used by c_cc25.
 c_d709:  ; #d709
-        ld ix, sceneObjects
+        ld ix, scene
         call c_dd73
         ld a, (State.s_28)
         add a
@@ -65,7 +65,7 @@ c_d709:  ; #d709
         cp #09
         jr NZ, .l_4
 .l_1:
-        call c_d0af
+        call decEnergy
         ld a, #02
         ld (State.s_28), a
         ld a, (controlState)
@@ -94,7 +94,7 @@ c_d709:  ; #d709
         xor a
         ld (State.s_05), a
         ld de, (State.screenX)
-        ld hl, (State.s_03)
+        ld hl, (State.mapSpanEnd)
         xor a
         sbc hl, de
         jr Z, .l_5
@@ -1052,8 +1052,8 @@ c_df85:  ; #df85
         ld a, (controlState)
         bit 4, a
         ret Z
-        ld ix, sceneObjects
-        ld iy, sceneObjects.obj1
+        ld ix, scene
+        ld iy, scene.obj1
         ld a, (State.weapon)
         or a
         jp NZ, .l_3
@@ -1244,10 +1244,10 @@ c_df85:  ; #df85
         ld (State.s_39), a
         jp c_eb00
 .l_9:
-        ld ix, sceneObjects.obj1
+        ld ix, scene.obj1
         cp #01
         jr NZ, .l_12
-        ld ix, sceneObjects
+        ld ix, scene
         ld hl, State.s_3E
         ld a, (hl)
         or a
@@ -1267,7 +1267,7 @@ c_df85:  ; #df85
 .l_11:
         xor a
         ld (State.s_3D), a
-        ld ix, sceneObjects.obj1
+        ld ix, scene.obj1
         ld (ix+5), a
         ret
 .l_12:
@@ -1279,7 +1279,7 @@ c_df85:  ; #df85
         jr Z, .l_13
         dec (hl)
         push ix
-        ld ix, sceneObjects
+        ld ix, scene
         ld hl, cS.heroThrows
         ld (ix+3), l
         ld (ix+4), h
@@ -1438,8 +1438,8 @@ c_e31c:  ; #e31c
         ld (c_e308), a
         ret
 .l_0:
-        ld ix, sceneObjects.obj1
-        ld iy, sceneObjects.obj2
+        ld ix, scene.obj1
+        ld iy, scene.obj2
         ld de, #0032
         ld b, #06
 .l_1:

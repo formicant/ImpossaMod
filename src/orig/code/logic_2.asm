@@ -4,7 +4,7 @@
 ; (Modifies some object properties?)
 ; Used by c_cc25.
 c_e56f:  ; #e56f
-        ld ix, sceneObjects.obj1
+        ld ix, scene.obj1
         ld b, #07
 .l_0:
         push bc
@@ -67,18 +67,20 @@ c_e582:  ; #e582
         ld (ix+2), a
         ret
 
-; (Init some objects at sceneObjects.obj1)
+
+; Mark all scene objects except the hero as non-existent
 ; Used by c_cc25, c_e60a, c_e920 and c_e9b1.
-c_e5f2:  ; #e5f2
+removeObjects:  ; #e5f2
         push ix
         push de
-        ld de, #0032
-        ld ix, sceneObjects.obj1
-        ld b, #07
-.l_0:
-        ld (ix+5), #00
+        ld de, 50
+        ld ix, scene.obj1
+        ld b, 7
+.object:
+        ld (ix+5), 0
         add ix, de
-        djnz .l_0
+        djnz .object
+        
         pop de
         pop ix
         ret
@@ -86,7 +88,7 @@ c_e5f2:  ; #e5f2
 ; ?
 ; Used by c_cc25.
 c_e60a:  ; #e60a
-        ld ix, sceneObjects
+        ld ix, scene
         ld a, (State.s_27)
         ld (State.s_44), a
         ld a, (ix+2)
@@ -160,7 +162,7 @@ c_e60a:  ; #e60a
 .l_5:
         ld a, #3C
         ld (State.s_51), a
-        call c_e5f2
+        call removeObjects
         ld hl, #0005
         add hl, de
         ld a, (hl)
@@ -187,8 +189,8 @@ c_e60a:  ; #e60a
         ex de, hl
         add hl, hl
         add hl, hl
-        call c_e5f2
-        call c_cd9b
+        call removeObjects
+        call moveToMapSpan
         xor a
         ret
 
@@ -198,7 +200,7 @@ c_e6c2:  ; #e6c2
         push de
         push bc
         ld b, #06
-        ld ix, sceneObjects.obj2
+        ld ix, scene.obj2
         ld de, #0032
 .l_0:
         bit 0, (ix+5)
@@ -225,7 +227,7 @@ c_e6e1:  ; #e6e1
         ld a, (State.s_46)
         or a
         ret NZ
-        ld ix, sceneObjects
+        ld ix, scene
         ld l, (ix+0)
         ld h, (ix+1)
         ld (c_e6df), hl
@@ -235,7 +237,7 @@ c_e6e1:  ; #e6e1
         inc hl
         ld (ix+0), l
         ld (ix+1), h
-        ld iy, sceneObjects.obj2
+        ld iy, scene.obj2
         ld b, #06
 .l_0:
         push bc
@@ -288,13 +290,13 @@ c_e6e1:  ; #e6e1
         ld (State.soupCans), a
 .l_4:
         ld (iy+5), #00
-        jp c_d026
+        jp printSoupCans
 .l_5:
         cp #05
         jr NZ, .l_6
         ld (iy+5), #00
         ld a, #04
-        jp c_d09a
+        jp addEnergy
 .l_6:
         cp #06
         jr NZ, .l_7
@@ -315,7 +317,7 @@ c_e6e1:  ; #e6e1
 .l_8:
         ld (State.maxEnergy), a
         ld a, #04
-        jp c_d09a
+        jp addEnergy
 .l_9:
         cp #08
         jr NZ, .l_10
@@ -365,7 +367,7 @@ c_e6e1:  ; #e6e1
         ld a, (iy+12)
         cp #FE
         ret Z
-        jp c_d0af
+        jp decEnergy
 
 ; (Checks some object properties?)
 ; Used by c_e6e1, c_e9b1, c_eb19 and c_f618.
@@ -455,7 +457,7 @@ c_e920:  ; #e920
         ld a, (State.s_46)
         bit 7, a
         ret Z
-        call c_e5f2
+        call removeObjects
         ld a, (State.level)
         add a
         add a
@@ -481,11 +483,11 @@ c_e920:  ; #e920
         inc hl
         call c_eace
         pop hl
-        call c_cd9b
+        call moveToMapSpan
         ld a, #7F
         ld (State.s_46), a
-        call c_f6ba
-        ld ix, sceneObjects.obj2
+        call findAndPutObjectsToScene
+        ld ix, scene.obj2
         ld b, #06
         ld de, #0032
 .l_0:
@@ -495,7 +497,7 @@ c_e920:  ; #e920
         add ix, de
         djnz .l_0
 .l_1:
-        ld iy, sceneObjects
+        ld iy, scene
         ld a, (iy+0)
         add #20
         ld (ix+0), a
@@ -524,8 +526,8 @@ c_e9b1:  ; #e9b1
         ld a, (State.s_46)
         cp #7F
         ret NZ
-        ld ix, sceneObjects
-        ld iy, sceneObjects.obj2
+        ld ix, scene
+        ld iy, scene.obj2
         ld b, #06
 .l_0:
         push bc
@@ -535,7 +537,7 @@ c_e9b1:  ; #e9b1
         ld de, #0032
         add iy, de
         djnz .l_0
-        jp c_d04e
+        jp printEnergy
 .l_1:
         ld a, (iy+8)
         or a
@@ -575,7 +577,7 @@ c_e9b1:  ; #e9b1
         ld a, (State.shopPrice)
         or a
         jr NZ, .l_3
-        call c_e5f2
+        call removeObjects
         ld a, (State.level)
     .2  add a
         ld l, a
@@ -599,11 +601,11 @@ c_e9b1:  ; #e9b1
         inc hl
         call c_eace
         pop hl
-        call c_cd9b
+        call moveToMapSpan
         xor a
         ld (State.s_46), a
         ld (State.s_28), a
-        jp c_d04e
+        jp printEnergy
 .l_3:
         ld a, (State.shopPrice)
         ld b, a
@@ -641,13 +643,13 @@ c_e9b1:  ; #e9b1
         ld (State.soupCans), a
 .l_7:
         ld (iy+5), #00
-        jp c_d026
+        jp printSoupCans
 .l_8:
         cp #05
         jr NZ, .l_9
         ld (iy+5), #00
         ld a, #04
-        jp c_d09a
+        jp addEnergy
 .l_9:
         cp #07
         jr NZ, .l_11
@@ -660,7 +662,7 @@ c_e9b1:  ; #e9b1
 .l_10:
         ld (State.maxEnergy), a
         ld a, #04
-        jp c_d09a
+        jp addEnergy
 .l_11:
         cp #08
         ret NZ
@@ -672,7 +674,7 @@ c_e9b1:  ; #e9b1
 ; (Init ix+0, 1, 2 from (hl)?)
 ; Used by c_e920 and c_e9b1.
 c_eace:  ; #eace
-        ld ix, sceneObjects
+        ld ix, scene
         ld a, (hl)
     .5  add a
         add 32
@@ -705,8 +707,8 @@ c_eaf7:  ; #eaf7
 ; Check enemies for damaging?
 ; Used by c_df85.
 c_eb00:  ; #eb00
-        ld ix, sceneObjects.obj1
-        ld iy, sceneObjects.obj2
+        ld ix, scene.obj1
+        ld iy, scene.obj2
         ld b, #06
 .l_0:
         push bc
@@ -913,7 +915,7 @@ c_ec00:  ; #ec00
         call playSound
         push ix
         push de
-        ld ix, sceneObjects.obj2
+        ld ix, scene.obj2
         ld b, #04
         ld de, #0032
 .l_5:
@@ -929,7 +931,7 @@ c_ec00:  ; #ec00
 .l_7:
         push ix
         push de
-        ld ix, sceneObjects.obj2
+        ld ix, scene.obj2
         ld b, #04
         ld de, #0032
 .l_8:
@@ -947,7 +949,7 @@ c_ec00:  ; #ec00
         pop ix
         ld a, #FF
         ld (State.s_57), a
-        ld de, scoreTable.done + 4
+        ld de, scoreTable.done
         call addScoreRaw
         ld a, (State.level)
         ld hl, State.levelsDone
@@ -962,7 +964,7 @@ c_ec00:  ; #ec00
 ; (Modifies some object properties?)
 ; Used by c_cc25.
 c_ecee:  ; #ecee
-        ld ix, sceneObjects.obj2
+        ld ix, scene.obj2
         ld b, #06
 .l_0:
         push bc
@@ -1069,7 +1071,7 @@ c_edc0:  ; #edc0
         ld a, (ix+2)
         ld (ix+32), a
         ld (ix+33), #00
-        ld iy, sceneObjects
+        ld iy, scene
         ld l, (iy+0)
         ld h, (iy+1)
         ld a, (iy+10)
@@ -1438,7 +1440,7 @@ c_f0f3:  ; #f0f3
         jr NZ, .l_1
         set 2, (ix+5)
 .l_1:
-        ld iy, sceneObjects
+        ld iy, scene
         ld l, (ix+0)
         ld h, (ix+1)
         ld c, (ix+10)
@@ -1887,7 +1889,7 @@ c_f488:  ; #f488
         ld a, (ix+27)
         or a
         ret Z
-        ld iy, sceneObjects
+        ld iy, scene
         ld a, (ix+26)
         neg
         add (ix+2)
@@ -2080,7 +2082,7 @@ c_f618:  ; #f618
         ld a, (ix+49)
         cp #01
         call Z, c_ee93
-        ld iy, sceneObjects
+        ld iy, scene
         call c_e80a
         jr C, .l_1
         ld (ix+5), #00
@@ -2097,7 +2099,7 @@ c_f618:  ; #f618
 .l_0:
         ld (State.energy), a
         ld (iy+14), #07
-        jp c_d04e
+        jp printEnergy
 .l_1:
         ld a, (State.level)
         or a
@@ -2163,43 +2165,47 @@ c_f697:  ; #f697
 c_f6b5:  ; #f6b5
         db #00, #31, #5F, #88, #BC
 
-; Get objects from the object table
+
+; Find position in level object table and put objects to the scene
 ; Used by c_cd9b and c_e920.
-c_f6ba:  ; #f6ba
+findAndPutObjectsToScene:  ; #f6ba
         ld bc, Level.objectTable
-.l_0:
+.object:
         ld de, (State.screenX)
         ld a, (bc)
         ld h, a
         inc bc
         ld a, (bc)
-        ld l, a
+        ld l, a                 ; `hl`: x coord on map
         inc bc
         xor a
-        sbc hl, de
-        jr C, .l_1
+        sbc hl, de              ; `hl`: x coord on screen
+        jr C, .skipObject
+        
         push hl
-        ld de, #0020
+        ld de, 32
         xor a
         sbc hl, de
         pop hl
-        jr NC, .l_2
-        call c_f74a
-        jr .l_0
-.l_1:
-        inc bc
-        inc bc
-        jr .l_0
+        jr NC, .l_2             ; object is not yet visible
+        
+        call putObjectToScene
+        jr .object
+        
+.skipObject:
+    .2  inc bc
+        jr .object
+        
 .l_2:
-        dec bc
-        dec bc
-        ld (State.s_52), bc
-        jr c_f6e7.l_3
+    .2  dec bc
+        ld (State.nextObject), bc
+        jr putObjectsToScene
+
 
 ; Get next objects from the object table
 ; Used by c_cc25.
-c_f6e7:  ; #f6e7
-        ld bc, (State.s_52)
+putNextObjectsToScene:  ; #f6e7
+        ld bc, (State.nextObject)
 .l_0:
         ld de, (State.screenX)
         ld a, (bc)
@@ -2218,7 +2224,7 @@ c_f6e7:  ; #f6e7
         pop hl
         jr NC, .l_2
         push bc
-        call c_f74a
+        call putObjectToScene
         pop bc
         inc bc
         inc bc
@@ -2230,10 +2236,12 @@ c_f6e7:  ; #f6e7
 .l_2:
         dec bc
         dec bc
-        ld (State.s_52), bc
-; This entry point is used by c_f6ba.
-.l_3:
-        ld ix, sceneObjects.obj2
+        ld (State.nextObject), bc
+        ; continue
+
+
+putObjectsToScene:
+        ld ix, scene.obj2
         ld b, #06
 .l_4:
         bit 0, (ix+5)
@@ -2259,26 +2267,27 @@ c_f6e7:  ; #f6e7
 
 ; Initialize object from the object type
 ; Used by c_f6ba and c_f6e7.
-c_f74a:  ; #f74a
+putObjectToScene:  ; #f74a
         call c_e6c2
         ret NC
+        
     .3  add hl, hl
-        ld de, #0020
+        ld de, 32
         add hl, de
         ld (ix+0), l
         ld (ix+1), h
         ld a, (bc)
     .3  add a
-        add #20
+        add 32
         ld (ix+2), a
         inc bc
         ld a, (bc)
-        cp #0A
+        cp 10
         jr C, .l_0
         exa
         ld a, (State.level)
         ld l, a
-        ld h, #00
+        ld h, 0
         ld de, c_f6b5
         add hl, de
         ld l, (hl)

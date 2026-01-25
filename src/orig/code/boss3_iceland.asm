@@ -10,14 +10,14 @@ boss_logic_iceland:  ; #fad3
         ld a, (State.s_57)
         or a
         ret NZ
-        ld ix, sceneObjects.obj2
+        ld ix, scene.obj2
         ld a, #37
-        call c_f74a.l_1
-        ld ix, sceneObjects.obj3
+        call putObjectToScene.l_1
+        ld ix, scene.obj3
         ld a, #38
-        call c_f74a.l_1
-        ld ix, sceneObjects.obj2
-        ld iy, sceneObjects.obj3
+        call putObjectToScene.l_1
+        ld ix, scene.obj2
+        ld iy, scene.obj3
         ld (ix+2), #60
         ld l, (ix+0)
         ld h, (ix+1)
@@ -34,7 +34,7 @@ boss_logic_iceland:  ; #fad3
         ld (State.s_51), a
         ret
 .l_0:
-        ld ix, sceneObjects.obj2
+        ld ix, scene.obj2
         ld l, (ix+0)
         ld h, (ix+1)
         bit 1, (ix+21)

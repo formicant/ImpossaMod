@@ -4,7 +4,7 @@
 ; Draw scene objects with coordinate checks
 ; Used by c_cc25 and c_cdae.
 drawObjectsChecked:  ; #c044
-        ld ix, sceneObjects
+        ld ix, scene
         ld a, 2
         ld (objTileIndex), a
         ld b, 8
@@ -23,7 +23,7 @@ drawObjectsChecked:  ; #c044
 ; Draw scene objects without coordinate checks
 ; Used by c_cdae.
 drawObjectsUnchecked:  ; #c060
-        ld ix, sceneObjects
+        ld ix, scene
         ld a, 2
         ld (objTileIndex), a
         ld b, 8
@@ -294,7 +294,7 @@ drawObject:
 
 
 ; Draw a small (16×16) sprite into `objTiles`
-;   `ix`: object addr in `sceneObjects`
+;   `ix`: object addr in `scene`
 ;   `iy`: pixel row addr in `objTiles`
 ; (Disables interrupts!)
 drawSmallSprite:
@@ -371,7 +371,7 @@ drawSmallSprite:
 
 
 ; Draw a small (16×16) sprite into `objTiles` with pixel shift
-;   `ix`: object addr in `sceneObjects`
+;   `ix`: object addr in `scene`
 ;   `iy`: pixel row addr in `objTiles`
 ;   `a`: pixel shift (1..7)
 ; (Disables interrupts!)
@@ -479,7 +479,7 @@ drawShiftedSmallSprite:  ; #c245
 
 
 ; Draw a big (24×21) sprite into `objTiles`
-;   `ix`: object addr in `sceneObjects`
+;   `ix`: object addr in `scene`
 ;   `iy`: pixel row addr in `objTiles`
 ; (Disables interrupts!)
 drawBigSprite:  ; #c314
@@ -594,7 +594,7 @@ drawBigSprite:  ; #c314
 
 
 ; Draw a big (24×21) sprite into `objTiles`
-;   `ix`: object addr in `sceneObjects`
+;   `ix`: object addr in `scene`
 ;   `iy`: pixel row addr in `objTiles`
 ;   `a`: pixel shift (1..7)
 ; (Disables interrupts!)

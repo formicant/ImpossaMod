@@ -14,18 +14,18 @@ boss_logic_klondike:  ; #f8f4
         ld a, (State.s_57)
         or a
         ret NZ
-        ld ix, sceneObjects.obj2
+        ld ix, scene.obj2
         ld a, #36
-        call c_f74a.l_1
-        ld ix, sceneObjects.obj3
+        call putObjectToScene.l_1
+        ld ix, scene.obj3
         ld a, #34
-        call c_f74a.l_1
-        ld ix, sceneObjects.obj4
+        call putObjectToScene.l_1
+        ld ix, scene.obj4
         ld a, #35
-        call c_f74a.l_1
-        ld ix, sceneObjects.obj5
+        call putObjectToScene.l_1
+        ld ix, scene.obj5
         ld a, #33
-        call c_f74a.l_1
+        call putObjectToScene.l_1
         call generateRandom
         and #03
         add a
@@ -38,7 +38,7 @@ boss_logic_klondike:  ; #f8f4
         ld h, (hl)
         ld l, a
         ld b, #04
-        ld ix, sceneObjects.obj2
+        ld ix, scene.obj2
         ld de, #0032
 .l_0:
         ld (ix+0), l
@@ -59,7 +59,7 @@ boss_logic_klondike:  ; #f8f4
         ld a, (hl)
         cp #41
         jr NZ, .l_2
-        ld ix, sceneObjects.obj4
+        ld ix, scene.obj4
         ld hl, Lev0Klondike.lS.bossAnt2
         ld (ix+3), l
         ld (ix+4), h
@@ -80,7 +80,7 @@ boss_logic_klondike:  ; #f8f4
 ; This entry point is used by c_fa65.
 .l_4:
         ld b, #04
-        ld ix, sceneObjects.obj2
+        ld ix, scene.obj2
         ld de, #0032
 .l_5:
         ld (ix+5), #00

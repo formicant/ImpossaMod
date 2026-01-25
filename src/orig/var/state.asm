@@ -5,7 +5,7 @@
 start:
 
 screenX:    dw -0       ; x coord of the left screen edge in the map
-s_03:       dw -0
+mapSpanEnd: dw -0       ; x coord of the current map span right limit - 32
 s_05:       db -0
 coins:      db -0       ; 0, 25, …, 250
 coinDigits: block 3     ; 3 decimal digits in ascii
@@ -60,7 +60,7 @@ s_4E:       db -0
 s_4F:       db -0
 s_50:       db -0
 s_51:       db -0       ; (60..1, some counter?)
-s_52:       dw -0       ; (pointer in the level object table?)
+nextObject: dw -0       ; addr of the next object in level object table
 s_54:       db -0
 s_55:       db -0
 s_56:       db -0

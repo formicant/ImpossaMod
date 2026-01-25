@@ -32,17 +32,19 @@ gameStart:  ; #cc5a
 .l_2:
         call levelSelectionMenu
         call clearScreenPixels
-        ld a, #47
+        ld a, #47               ; bright white ink, black paper
         call fillScreenAttrs
-        call c_d29a
-        call c_e5f2
-        call c_d1c1
+        call clearScene
+        call removeObjects      ; not needed
+        call initLevel
+        ; continue
+
 
 .gameLoop:
         ld a, (State.s_57)
         or a
         jr Z, .l_5
-        ld ix, sceneObjects.obj1
+        ld ix, scene.obj1
         ld de, #0032
         ld b, #07
 .l_4:
@@ -60,17 +62,17 @@ gameStart:  ; #cc5a
         call c_f553
         call c_ecee
         call c_e56f
-        call c_f6e7
+        call putNextObjectsToScene
         call boss_logic
         call c_e60a
-        call c_d0d0
+        call decBlinkTime
         call c_e6e1
         call c_d308
         call c_d709
         call c_e920
         call c_e9b1
         call c_df85
-        call c_d278
+        call updateConveyors
         call rollConveyorTiles
         call drawObjectsChecked
 
@@ -84,10 +86,10 @@ gameStart:  ; #cc5a
 
         xor a
         ld (State.s_05), a
-        ld ix, sceneObjects
+        ld ix, scene
         set 0, (ix+5)
-        call c_cdae
-        call c_f6e7
+        call advanceInMap
+        call putNextObjectsToScene
 .l_6:
         call pauseGameIfPauseKeyPressed
         call checkQuitKey
@@ -104,7 +106,7 @@ gameStart:  ; #cc5a
         xor a
         ld (State.s_20), a
         ld a, #32
-        call c_d09a
+        call addEnergy
         jr .l_8
 .l_7:
         call showGameOver
@@ -173,7 +175,7 @@ pauseGameIfPauseKeyPressed:  ; #cd5c
         ld a, #22
         ld (State.maxEnergy), a
         ld a, #32
-        call c_d09a
+        call addEnergy
 .l_2:
         call checkPauseKey
         jr Z, .l_2
@@ -185,20 +187,24 @@ pauseGameIfPauseKeyPressed:  ; #cd5c
         djnz .l_3
         ret
 
-; ?
+
+; Move to a new map span
+;   `hl`: span start, tiles
+;   `de`: span end, tiles
 ; Used by c_d1c1, c_e60a, c_e920 and c_e9b1.
-c_cd9b:  ; #cd9b
+moveToMapSpan:  ; #cd9b
         ld (State.screenX), hl
         ld hl, -32
         add hl, de
-        ld (State.s_03), hl
-        call c_f6ba
+        ld (State.mapSpanEnd), hl
+        call findAndPutObjectsToScene
         call setScrTileUpd
         jp fillAllScrTiles
 
-; (Advance in map?)
+
+; Scroll the screen an add new objects to the scene
 ; Used by c_cc25.
-c_cdae:  ; #cdae
+advanceInMap:  ; #cdae
         ld hl, scrTileUpd
         ld de, scrTileUpd + 1
         ld (hl), 0
@@ -206,7 +212,7 @@ c_cdae:  ; #cdae
         ldir
 
         call drawObjectsUnchecked
-        call c_ce23
+        call cleanUpObjTiles
         ld c, 3
         call waitFrames
         ld hl, scrTiles.row1 + 4
@@ -228,12 +234,12 @@ c_cdae:  ; #cdae
         ld hl, scrTiles.row1 + 12
         ld de, scrTileUpd.row1 + 12
         call moveScreenTiles
-        call c_cf17
+        call advanceObjectsInMap
         ld hl, (State.screenX)
         ld de, 8
         add hl, de
         ld (State.screenX), hl
-        call c_ce57
+        call scrollScrTiles
         call fillNextScrTiles
 
         ld hl, scrTileUpd
@@ -244,15 +250,16 @@ c_cdae:  ; #cdae
 
         call drawObjectsChecked
         call updateScreenTiles
-        ld de, scoreTable.walk + 4
+        ld de, scoreTable.walk
         jp addScoreRaw
 
-; ?
+
+; Mark object tiles to be updated during screen scrolling
 ; Used by c_cdae.
-c_ce23:  ; #ce23
+cleanUpObjTiles:  ; #ce23
         ld de, -3
         ld hl, scrTileUpd.row1
-        ld c, #04
+        ld c, 4
         xor a
         ld b, a
 .l_0:
@@ -262,46 +269,49 @@ c_ce23:  ; #ce23
         inc hl
 .l_2:
         djnz .l_0
+        
         dec c
         jp NZ, .l_0
         ret
+        
 .l_3:
-        cp #01
-        ld a, #00
+        cp 1
+        ld a, 0
         jp Z, .l_1
-        inc hl
-        inc hl
+        
+    .2  inc hl
         ld a, (hl)
         and a
         jp NZ, .l_4
-        ld (hl), #01
+        ld (hl), 1
 .l_4:
-        inc hl
-        inc hl
+    .2  inc hl
         ld a, (hl)
         and a
         jp NZ, .l_5
-        ld (hl), #01
+        ld (hl), 1
 .l_5:
         add hl, de
         xor a
         jp .l_2
 
-; (Screen scrolling?)
+
+; Move screen tiles to the left by 8 tiles
 ; Used by c_cdae.
-c_ce57:  ; #ce57
+scrollScrTiles:  ; #ce57
         ld de, scrTiles.row0
         ld hl, scrTiles.row0 + 8
         ld a, 24
-.l_0:
+.row:
     .36 ldi
+        
         ld bc, 8
         add hl, bc
         ex de, hl
         add hl, bc
         ex de, hl
         dec a
-        jr NZ, .l_0
+        jr NZ, .row
         ret
 
 
@@ -380,35 +390,38 @@ fillScrTiles:
         jp findConveyors
 
 
-; ?
+; Advance scene objects in map
 ; Used by c_cdae.
-c_cf17:  ; #cf17
-        ld b, #08
-        ld ix, sceneObjects
-.l_0:
+advanceObjectsInMap:  ; #cf17
+        ld b, 8
+        ld ix, scene
+.object:
         ld l, (ix+0)
-        ld h, (ix+1)
+        ld h, (ix+1)            ; `hl`: x coord in pixels
         ld de, -64
         add hl, de
         bit 7, h
-        jr Z, .l_1
-        ld (ix+5), #00
-.l_1:
+        jr Z, .skip             ; if x >= 64, skip
+        ld (ix+5), 0            ; else, mark as non-existent
+.skip:
         ld (ix+0), l
         ld (ix+1), h
-        ld a, (ix+23)
-        cp #01
+        
+        ld a, (ix+23)           ; ? (possibly, horizontal moving)
+        cp 1
         jr NZ, .l_2
+        
         ld l, (ix+30)
         ld h, (ix+31)
         add hl, de
         ld (ix+30), l
         ld (ix+31), h
 .l_2:
-        ld de, #0032
+        ld de, 50               ; next scene object
         add ix, de
-        djnz .l_0
+        djnz .object
         ret
+
 
 ; Score string (6 decimal digits in ASCII with a stop bit)
 scoreString:  ; #cf51
@@ -419,15 +432,16 @@ score:  ; #cf57
         block 6
 
 ; Score table (decimal)
+; (sub-labels point to the last digit)
 scoreTable:  ; #cf5d
-.walk:  db 0, 0, 0, 6, 3
+.walk+4 db 0, 0, 0, 6, 3        ; advance in map
         db 0, 0, 1, 0, 0
         db 0, 0, 2, 0, 0
         db 0, 0, 4, 0, 0
         db 0, 0, 8, 0, 0
         db 0, 1, 6, 0, 0
         db 0, 3, 2, 0, 0
-.done:  db 2, 0, 0, 0, 0
+.done+4 db 2, 0, 0, 0, 0        ; level complete
 
 ; Add score by index
 ;   `a`: index in the score table (1..6)
@@ -501,7 +515,7 @@ addScoreSetCarry:
 
 ; Clear score at #CF57?
 ; Used by c_d133.
-c_cfdb:  ; #cfdb
+clearScore:  ; #cfdb
         ld hl, score
         ld b, #06
 .l_0:
@@ -547,21 +561,14 @@ printNumber:
         jp printString
 
 
-; 1 soup can
-c_d01d:  ; #d01d
-        db "/  "C
-
-; 2 soup cans
-c_d020:  ; #d020
-        db "// "C
-
-; 3 soup cans
-c_d023:  ; #d023
-        db "///"C
+soupCanStrings:
+.one:   db "/  "C
+.two:   db "// "C
+.three: db "///"C
 
 ; Print soup cans in the panel
 ; Used by c_d1c1, c_e6e1 and c_e9b1.
-c_d026:  ; #d026
+printSoupCans:  ; #d026
         ld a, (State.soupCans)
         dec a
         ld l, a
@@ -569,35 +576,36 @@ c_d026:  ; #d026
         add l
         ld l, a
         ld h, #00
-        ld de, c_d01d
+        ld de, soupCanStrings
         add hl, de
         ex de, hl
         ld hl, #0007
         ld c, #43
         jp printString
 
+
 ; Energy characters
-c_d03d:  ; #d03d
-        db #28, #28, #28, #2A, #2A, #2A, #2A, #2C
-        db #2C, #2C, #2C, #2C, #2C, #2C, #2C, #2C
-        db #2C
+energyChars:  ; #d03d
+        db "(((****,,,,,,,,,,"  ; energy full, they look all the same
 
 ; Print energy in the panel
 ; Used by c_d09a, c_d0af, c_d1c1, c_e9b1 and c_f618.
-c_d04e:  ; #d04e
+printEnergy:  ; #d04e
         ld hl, State.energyText
         push hl
-        ld b, #11
+        ld b, 17
 .l_0:
-        ld (hl), #20
+        ld (hl), " "
         inc hl
         djnz .l_0
+        
         pop hl
-        ld de, c_d03d
+        ld de, energyChars
         ld a, (State.energy)
         ld c, a
-        cp #02
+        cp 2
         jr C, .l_2
+        
         srl a
         ld b, a
 .l_1:
@@ -620,23 +628,26 @@ c_d04e:  ; #d04e
         sub b
         srl a
         jr Z, .l_5
+        
         ld b, a
 .l_4:
-        ld (hl), #2E
+        ld (hl), "."            ; energy empty
         inc hl
         djnz .l_4
 .l_5:
         ld hl, State.energyText + 16
         set 7, (hl)
-        ld hl, #000F
+        
+        ld hl, #000F            ; at 0, 15
         ld de, State.energyText
         call printString
         call applyLifeIndicatorAttrs
         ret
 
+
 ; Add energy
 ; Used by c_cc25, c_cd5c, c_e6e1 and c_e9b1.
-c_d09a:  ; #d09a
+addEnergy:  ; #d09a
         exa
         ld a, (State.maxEnergy)
         ld b, a
@@ -649,16 +660,16 @@ c_d09a:  ; #d09a
         ld a, b
 .l_0:
         ld (State.energy), a
-        jp c_d04e
+        jp printEnergy
 
 ; Decrement energy
 ; Used by c_d709 and c_e6e1.
-c_d0af:  ; #d0af
+decEnergy:  ; #d0af
         ld a, (ix+14)
         or a
         ret NZ
         ld a, (State.energy)
-        sub #01
+        sub 1
         jr NC, .l_0
         ld a, #FF
         ld (State.s_1F), a
@@ -668,27 +679,28 @@ c_d0af:  ; #d0af
         ld (ix+14), #07
         ld a, #0C
         call playSound
-        jp c_d04e
+        jp printEnergy
 
 
-; (Decrement some property for 8 objects at #BEB4)
+; Decrement blinking time for all scene objects
 ; Used by c_cc25.
-c_d0d0:  ; #d0d0
-        ld ix, sceneObjects
-        ld b, #08
-        ld de, #0032
-.l_0:
-        ld a, (ix+14)
+decBlinkTime:  ; #d0d0
+        ld ix, scene
+        ld b, 8
+        ld de, 50
+.object:
+        ld a, (ix+14)           ; blink time
         or a
-        jr Z, .l_1
+        jr Z, .skip
+        
         dec a
         ld (ix+14), a
-        and #01
-        jr NZ, .l_1
-        set 4, (ix+5)
-.l_1:
+        and 1                   ; even/odd
+        jr NZ, .skip
+        set 4, (ix+5)           ; blink flag
+.skip:
         add ix, de
-        djnz .l_0
+        djnz .object
         ret
 
 
@@ -697,8 +709,8 @@ c_d0d0:  ; #d0d0
 delay:  ; #d0f0
         push bc
         ld b, #FF
-.l_0:
-        djnz .l_0
+.loop:
+        djnz .loop
         pop bc
         dec bc
         ld a, b
@@ -767,7 +779,7 @@ clearGameState:  ; #d133
         ld a, 18
         ld (State.maxEnergy), a
 
-        call c_cfdb
+        call clearScore
         ld b, 5
         ld hl, State.levelsDone
 .l_0:
@@ -776,57 +788,54 @@ clearGameState:  ; #d133
         djnz .l_0
         ret
 
-; (Copies something to #BEB4)
+; Initialize the hero object and place it to the start position
+;   `bc`: hero's position (x, y), blocks
 ; Used by c_d1c1.
-c_d153:  ; #d153
-        ld ix, sceneObjects
+initHero:  ; #d153
+        ld ix, scene.hero
         ld l, b
-        ld h, #00
-        add hl, hl
-        add hl, hl
-        add hl, hl
-        add hl, hl
-        add hl, hl
-        ld de, #0020
-        add hl, de
+        ld h, 0
+    .5  add hl, hl
+        ld de, 32
+        add hl, de              ; `hl` = `b` × 32 + 32
         ld (ix+0), l
-        ld (ix+1), h
+        ld (ix+1), h            ; set x coord in pixels
+        
         ld a, c
-        add a
-        add a
-        add a
-        add a
-        add a
-        add #28
-        ld (ix+2), a
+    .5  add a
+        add 40                  ; `a` = `c` × 32 + 40
+        ld (ix+2), a            ; set y coord in pixels
+        
         ld hl, cS.heroStands
         ld a, (State.weapon)
         cp 2
-        jr C, .l_0
+        jr C, .noGun
         ld hl, cS.armedHeroStands
-.l_0:
+.noGun:
         ld (ix+3), l
-        ld (ix+4), h
-        ld (ix+21), #01
-        ld (ix+5), #03
-        ld (ix+10), #10
-        ld (ix+11), #15
-        ld (ix+7), #00
-        ld (ix+9), #47
-        ld (ix+8), #FF
+        ld (ix+4), h            ; set sprite addr
+        
+        ld (ix+21), 1           ; mirror (?)
+        ld (ix+5), %00000011    ; flags: exists, big
+        ld (ix+10), #10         ; ?
+        ld (ix+11), #15         ; ?
+        ld (ix+7), 0            ; ?
+        ld (ix+9), #47          ; attr: bright white
+        ld (ix+8), #FF          ; ?
         xor a
-        ld (State.s_28), a
-        ld (State.s_41), a
+        ld (State.s_28), a      ; ?
+        ld (State.s_41), a      ; ?
         ret
 
 
-; Start position and right limit, 4 bytes per level
-c_d1ab:  ; #d1ab
-        db 1, 4, 0,  54
-        db 1, 4, 0, 108
-        db 3, 4, 0, 138
-        db 2, 4, 0, 126
-        db 1, 3, 0,  40
+; Start position (x, y) and map span (start, end) by level
+startPositions:  ; #d1ab
+;          x  y start end
+.lev0:  db 1, 4,  0,  54
+.lev1:  db 1, 4,  0, 108
+.lev2:  db 3, 4,  0, 138
+.lev3:  db 2, 4,  0, 126
+.lev4:  db 1, 3,  0,  40
 
 
 ; (used in #C884 and #D213)
@@ -835,52 +844,58 @@ conveyorTileIndices:  ; #d1bf
 .right: db #74
 
 
-; Init level / game vars
+; Init level / game state
 ; Used by c_cc25.
-c_d1c1:  ; #d1c1
-        ld a, #01
+initLevel:  ; #d1c1
+        ld a, 1
         ld (State.soupCans), a
         ld a, (State.maxEnergy)
         ld (State.energy), a
         xor a
         ld (State.coins), a
         ld (State.weapon), a
+        
+        ; panel info
         call printCoinCount
         call printScore
-        call c_d04e
-        call c_d026
+        call printEnergy
+        call printSoupCans
+        
         xor a
         ld (State.s_54), a
         ld (State.s_46), a
         ld (State.s_57), a
         inc a
         ld (State.hasSmart), a
+        
+        ; set hero's start position
         ld a, (State.level)
-        add a
-        add a
+    .2  add a
         ld l, a
-        ld h, #00
-        ld de, c_d1ab
+        ld h, 0
+        ld de, startPositions
         add hl, de
-        ld b, (hl)
+        
+        ld b, (hl)              ; start x coord, blocks
         inc hl
-        ld c, (hl)
+        ld c, (hl)              ; start y coord, blocks
         push bc
         inc hl
-        ld a, (hl)
+        ld a, (hl)              ; map span start, blocks
         inc hl
-        ld l, (hl)
-        ld h, #00
-        add hl, hl
-        add hl, hl
+        ld l, (hl)              ; map span end, blocks
+        ld h, 0
+    .2  add hl, hl
         ex de, hl
         ld l, a
-        ld h, #00
-        add hl, hl
-        add hl, hl
-        call c_cd9b
-        pop bc
-        call c_d153
+        ld h, 0
+    .2  add hl, hl
+        ; `hl`: map span start, tiles
+        ; `de`: map span end, tiles
+        call moveToMapSpan
+        
+        pop bc                  ; hero's start position, blocks
+        call initHero
         ret
 
 
@@ -936,47 +951,51 @@ findConveyors:  ; #d213
         ld (ix+1), 0
         ret
 
-; (Fill something with ones?)
+
+; Mark all conveyor screen tiles to be updated
 ; Used by c_cc25.
-c_d278:  ; #d278
+updateConveyors:  ; #d278
         ld de, scrTileUpd - scrTiles
         ld ix, State.conveyors
-.l_0:
+.conveyor:
         ld l, (ix+0)
-        ld h, (ix+1)
+        ld h, (ix+1)            ; conveyor addr in `scrTiles`
         ld a, h
         or l
         ret Z
 
-        ld b, (ix+2)
-        add hl, de
-.l_1:
-        ld (hl), 1
+        ld b, (ix+2)            ; conveyor length
+        add hl, de              ; conveyor addr in `scrTileUpd`
+.tile:
+        ld (hl), 1              ; update
         inc hl
-        djnz .l_1
+        djnz .tile
+        
     .3  inc ix
-        jp .l_0
+        jp .conveyor
 
-; Clear 400-byte buffer at #BEB4?
+
+; Clear the `scene` in some crazy way
 ; Used by c_cc25.
-c_d29a:  ; #d29a
-        ld hl, #0000
-        ld de, #0032
-        ld b, #08
+clearScene:  ; #d29a
+        ld hl, 0
+        ld de, 50
+        ld b, 8
 .l_0:
         add hl, de
         djnz .l_0
         ld c, l
         ld b, h
-        ld hl, sceneObjects
+        ld hl, scene
 .l_1:
-        ld (hl), #00
+        ld (hl), 0
         inc hl
         dec bc
         ld a, b
         or c
         jr NZ, .l_1
         ret
+
 
 ; (Some game logic?)
 ; Used by c_ec00.
@@ -1013,7 +1032,7 @@ c_d2b3:  ; #d2b3
 ; (Some game logic?)
 ; Used by c_cc25.
 c_d308:  ; #d308
-        ld ix, sceneObjects
+        ld ix, scene
         bit 0, (ix+24)
         jp NZ, .l_3
         ld a, (State.s_28)
@@ -1025,7 +1044,7 @@ c_d308:  ; #d308
         or a
         ret M
 .l_0:
-        ld iy, sceneObjects.obj2
+        ld iy, scene.obj2
         ld b, #06
 .l_1:
         call c_d3bb
@@ -1267,7 +1286,7 @@ c_d460:  ; #d460
 ; (Set some object properties?)
 ; Used by c_cc25.
 c_d4cd:  ; #d4cd
-        ld ix, sceneObjects.obj1
+        ld ix, scene.obj1
         ld b, #07
         ld de, #0032
 .l_0:
@@ -1292,7 +1311,7 @@ c_d4e5:  ; #d4e5
         ld a, (State.s_54)
         or a
         ret NZ
-        ld iy, sceneObjects.obj2
+        ld iy, scene.obj2
         ld b, #06
 .l_0:
         push bc
@@ -1318,7 +1337,6 @@ c_d4e5:  ; #d4e5
 textSelectLevel:  ; #d51e
         db "SELECT  LEVEL"C
 
-; Level names
 levelNames:  ; #d52b
         db "KLONDIKE"C
         db " ORIENT "C
@@ -1327,8 +1345,7 @@ levelNames:  ; #d52b
 .bermuda
         db "BERMUDA "C
 
-
-; Level selection menu
+; Show level selection menu
 ; Used by c_cc25.
 levelSelectionMenu:  ; #d553
         call clearScreenPixels
@@ -1346,7 +1363,7 @@ levelSelectionMenu:  ; #d553
         inc hl
         djnz .l_0
         cp 5
-        jp Z, gameEnd
+        jp Z, gameWin
         cp 4
         jr NZ, .l_3
         ld de, levelNames.bermuda
@@ -1408,7 +1425,7 @@ levelSelectionMenu:  ; #d553
         bit 4, a
         jr Z, .l_3
 .l_7:
-        call c_d62c
+        call loadLevelIfNeeded
         jp NC, levelSelectionMenu
         ld a, #00
         out (#FE), a
@@ -1436,7 +1453,7 @@ textLoading:  ; #d624
 
 ; Load level if needed
 ; Used by c_d553.
-c_d62c:  ; #d62c
+loadLevelIfNeeded:  ; #d62c
         ld a, (State.loadedLevel)
         ld b, a
         ld a, (State.level)
@@ -1476,6 +1493,7 @@ c_d62c:  ; #d62c
         pop af
         ret
 
+
 ; Game epilogue text
 epilogueText:  ; #d679
         db "  GOOD WORK MONTY"C
@@ -1483,9 +1501,9 @@ epilogueText:  ; #d679
         db "SAFE  YOU HAVE SAVED"C
         db "    OUR PLANET"C
 
-; Game end
+; Successful end of the game
 ; Used by c_d553.
-gameEnd:  ; #d6c0
+gameWin:  ; #d6c0
         ld hl, #0806
         ld de, epilogueText
         ld c, #42

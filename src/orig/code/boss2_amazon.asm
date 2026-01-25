@@ -14,12 +14,12 @@ boss_logic_amazon:  ; #fa65
         ld a, (State.s_57)
         or a
         ret NZ
-        ld ix, sceneObjects.obj2
+        ld ix, scene.obj2
         ld a, #2B
-        call c_f74a.l_1
-        ld ix, sceneObjects.obj3
+        call putObjectToScene.l_1
+        ld ix, scene.obj3
         ld a, #2C
-        call c_f74a.l_1
+        call putObjectToScene.l_1
         call generateRandom
         and #01
         add a
@@ -30,8 +30,8 @@ boss_logic_amazon:  ; #fa65
         ld e, (hl)
         inc hl
         ld a, (hl)
-        ld ix, sceneObjects.obj2
-        ld iy, sceneObjects.obj3
+        ld ix, scene.obj2
+        ld iy, scene.obj3
         ld (ix+0), e
         ld (iy+0), e
         ld (ix+1), #00

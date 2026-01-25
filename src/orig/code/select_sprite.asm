@@ -2,7 +2,7 @@
 
 
 ; Get phase sprite address for an object
-;   `ix`: object addr in `sceneObjects`
+;   `ix`: object addr in `scene`
 ; (Called from drawing.asm)
 ; Used by c_c07c, c_c245, c_c314 and c_c3ac.
 getSpriteAddr:  ; #e47a
