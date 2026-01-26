@@ -1471,7 +1471,7 @@ loadLevelIfNeeded:  ; #d62c
         ld hl, #0C0B
         ld c, #47
         call printString
-        call c_c9ac
+        call Tape.loadLevel
         jr NC, .l_1
         ld a, (State.level)
         ld (State.loadedLevel), a

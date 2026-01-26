@@ -31,7 +31,6 @@ codeStart:
     INCLUDE "orig/code/controls.asm"
     INCLUDE "orig/code/logic_1.asm"
     INCLUDE "boss_switch.asm"
-    INCLUDE "disposable.asm"
 
     _NEXT_ORG #7E80
     INCLUDE "orig/data/font.asm"
@@ -41,13 +40,24 @@ codeStart:
     
     _NEXT_ORG #8000
     INCLUDE "tables.asm"
+    
+    ORG #8000   ; will be overwritten with tables
+    INCLUDE "disposable.asm"
+    DISP Level.end
+    INCLUDE "orig/code/level_loading.asm"
+    ENT
+    
     _NEXT_ORG #9191
     INCLUDE "interrupt.asm"
     
     INCLUDE "orig/code/drawing.asm"
     INCLUDE "orig/code/select_sprite.asm"
     INCLUDE "orig/code/logic_2.asm"
+    INCLUDE "sound.asm"
     
+    DISPLAY "Stack size, words: ", (stackTop - $) / 2
+
+; Data
     _NEXT_ORG #AD34
 stackTop:
     INCLUDE "orig/data/sprites.asm"
@@ -70,11 +80,9 @@ stackTop:
     INCLUDE "orig/data/0_klondike/sprites.asm"
     _NEXT_ORG Level.end
     
-    INCLUDE "orig/var/scene.asm"
+    _NEXT_ORG #FDE5
     INCLUDE "orig/var/state.asm"
-    INCLUDE "orig/code/sound.asm"
-    INCLUDE "orig/code/level_loading.asm"
-    
+    INCLUDE "orig/var/scene.asm"
 
 codeLength = $ - codeStart
 

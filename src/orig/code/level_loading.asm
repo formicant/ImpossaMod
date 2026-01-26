@@ -1,12 +1,14 @@
-    MODULE Code
+    MODULE Tape
 
+
+start:
 
 textFound:  ; #c9a7
         db "FOUND"C
 
 ; Load level from tape
 ; Used by c_d62c.
-c_c9ac:  ; #c9ac
+loadLevel:  ; #c9ac
         di
         ld ix, Level.start
         ld de, #0001
@@ -17,28 +19,28 @@ c_c9ac:  ; #c9ac
         ei
         ret
 .l_0:
-        call clearScreenPixels
+        call Code.clearScreenPixels
         ld hl, #0C09
         ld de, textFound
         ld c, #47
-        call printString
+        call Code.printString
         ld a, (Level.start)
         add a
         add a
         add a
         ld l, a
         ld h, #00
-        ld de, levelNames
+        ld de, Code.levelNames
         add hl, de
         ex de, hl
         ld hl, #0C0F
         ld c, #46
-        call printString
+        call Code.printString
         ld a, (Level.start)
         ld b, a
         ld a, (State.level)
         cp b
-        jr NZ, c_c9ac
+        jr NZ, loadLevel
         ld ix, Level.start
         ld de, #51DF
         scf
@@ -180,6 +182,9 @@ c_ca84:  ; #ca84
         out (#FE), a
         scf
         ret
+
+end:
+length  EQU end - start
 
 
     ENDMODULE
