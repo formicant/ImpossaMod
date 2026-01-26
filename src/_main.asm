@@ -9,6 +9,7 @@
     INCLUDE "orig/macros.inc"
     INCLUDE "orig/basic.inc"
     INCLUDE "orig/structs.inc"
+    INCLUDE "memory.inc"
     INCLUDE "level.inc"
     INCLUDE "orig/ay.inc"
 

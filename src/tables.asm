@@ -54,4 +54,14 @@ scrTileUpd:                     ; #8C00
 .end:                           ; #9180
 
 
+; Memory pages where levels are stored in 128K mode
+LevelMemPages:
+        db MemPage.level0       ; Klondike
+        db MemPage.level1       ; Orient
+        db MemPage.level2       ; Amazon
+        db MemPage.level3       ; Iceland
+        db MemPage.level4       ; Bermuda
+.end:                           ; #9185
+
+
     ENDMODULE
