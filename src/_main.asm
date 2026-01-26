@@ -35,16 +35,12 @@ codeStart:
 
     _NEXT_ORG #7E80
     INCLUDE "orig/data/font.asm"
-    _NEXT_ORG #8000
 
 
 ; Fast memory
     
-    ORG #8100
-    INCLUDE "orig/var/obj_tiles.asm"
-    INCLUDE "orig/var/scr_tiles.asm"
-    ORG #8000
-    INCLUDE "interrupt_table.asm"
+    _NEXT_ORG #8000
+    INCLUDE "tables.asm"
     _NEXT_ORG #9191
     INCLUDE "interrupt.asm"
     
@@ -53,6 +49,7 @@ codeStart:
     INCLUDE "orig/code/logic_2.asm"
     
     _NEXT_ORG #AD34
+stackTop:
     INCLUDE "orig/data/sprites.asm"
     _NEXT_ORG #BEFC
     INCLUDE "orig/data/object_types.asm"

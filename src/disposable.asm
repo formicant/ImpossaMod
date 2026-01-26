@@ -6,10 +6,25 @@
 
 ; Sets interrupt vector and mode
 initInterrupts:
+        ; fill interrupt table
+        ld hl, interruptTable
+        ld b, 0
+        ld a, high(interruptRoutine)
+.loop:
+        ld (hl), a
+        inc l
+        djnz .loop
+        inc h
+        ld (hl), a
+        
         ld a, high(interruptTable)
         ld i, a
         im 2
-        ret                     ; do not enable interrupts yet
+        ; do not enable interrupts yet
+        
+        ex (sp), hl             ; ret addr
+        ld sp, stackTop
+        jp hl                   ; ret
 
 
 ; 48K/128K detection

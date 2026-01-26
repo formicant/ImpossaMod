@@ -10,8 +10,7 @@
 ; Loading screen
     ORG #4000
     INCLUDE "data/loading_screen.asm"
-    INCLUDE "var/scr_tiles.asm"
-    INCLUDE "var/obj_tiles.asm"
+    INCLUDE "var/tables.asm"
 
 ; Basic loader
     ORG #5CCB   ; overlap
