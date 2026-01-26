@@ -109,7 +109,7 @@ c_ca4a:  ; #ca4a
         exa
         jr NZ, .l_0
         jr NC, .l_1
-        ld (ix+0), l
+        ld (ix), l
         jr .l_2
 .l_0:
         rl c
@@ -121,7 +121,7 @@ c_ca4a:  ; #ca4a
         inc de
         jr .l_3
 .l_1:
-        ld a, (ix+0)
+        ld a, (ix)
         xor l
         ret NZ
 .l_2:

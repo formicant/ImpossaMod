@@ -8,10 +8,10 @@ c_fbd2:  ; #fbd2
         ld ix, scene.obj2
         ld iy, scene.obj3
         call c_fbf9
-        ld a, (ix+49)
-        ld c, (iy+49)
-        ld (ix+49), c
-        ld (iy+49), a
+        ld a, (ix+Obj.o_49)
+        ld c, (iy+Obj.o_49)
+        ld (ix+Obj.o_49), c
+        ld (iy+Obj.o_49), a
         ld ix, scene.obj4
         ld iy, scene.obj5
         call c_fbf9
@@ -21,14 +21,14 @@ c_fbd2:  ; #fbd2
 ; (Some boss logic?)
 ; Used by c_fbd2.
 c_fbf9:  ; #fbf9
-        ld l, (ix+3)
-        ld h, (ix+4)
-        ld e, (iy+3)
-        ld d, (iy+4)
-        ld (ix+3), e
-        ld (ix+4), d
-        ld (iy+3), l
-        ld (iy+4), h
+        ld l, (ix+Obj.sprite+0)
+        ld h, (ix+Obj.sprite+1)
+        ld e, (iy+Obj.sprite+0)
+        ld d, (iy+Obj.sprite+1)
+        ld (ix+Obj.sprite+0), e
+        ld (ix+Obj.sprite+1), d
+        ld (iy+Obj.sprite+0), l
+        ld (iy+Obj.sprite+1), h
         ret
 
 

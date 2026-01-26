@@ -32,13 +32,13 @@ boss_logic_amazon:  ; #fa65
         ld a, (hl)
         ld ix, scene.obj2
         ld iy, scene.obj3
-        ld (ix+0), e
-        ld (iy+0), e
-        ld (ix+1), #00
-        ld (iy+1), #00
-        ld (ix+2), a
+        ld (ix+Obj.x+0), e
+        ld (iy+Obj.x+0), e
+        ld (ix+Obj.x+1), #00
+        ld (iy+Obj.x+1), #00
+        ld (ix+Obj.y), a
         add #18
-        ld (iy+2), a
+        ld (iy+Obj.y), a
         ld a, #02
         ld (State.s_54), a
         xor a

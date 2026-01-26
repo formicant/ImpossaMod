@@ -32,20 +32,20 @@ boss_logic_orient:  ; #f9a4
         ld iy, scene.obj3
 .l_0:
         push bc
-        ld l, (ix+0)
-        ld h, (ix+1)
+        ld l, (ix+Obj.x+0)
+        ld h, (ix+Obj.x+1)
         ld a, (de)
         inc de
         ld c, a
         ld b, #00
         add hl, bc
-        ld (iy+0), l
-        ld (iy+1), h
+        ld (iy+Obj.x+0), l
+        ld (iy+Obj.x+1), h
         ld a, (de)
         inc de
-        add (ix+2)
-        ld (iy+2), a
-        ld bc, #0032
+        add (ix+Obj.y)
+        ld (iy+Obj.y), a
+        ld bc, Obj
         add iy, bc
         pop bc
         djnz .l_0
@@ -58,24 +58,24 @@ boss_logic_orient:  ; #f9a4
         ret
 .l_1:
         ld ix, scene.obj2
-        bit 3, (ix+21)
+        bit 3, (ix+Obj.o_21)
         jr Z, .l_2
-        ld a, (ix+2)
+        ld a, (ix+Obj.y)
         cp #20
         jr NC, .l_3
         ld c, #0C
         call c_fbb9
         jr .l_3
 .l_2:
-        ld a, (ix+2)
+        ld a, (ix+Obj.y)
         cp #98
         jr C, .l_3
         ld c, #0C
         call c_fbb9
 .l_3:
-        ld l, (ix+0)
-        ld h, (ix+1)
-        bit 1, (ix+21)
+        ld l, (ix+Obj.x+0)
+        ld h, (ix+Obj.x+1)
+        bit 1, (ix+Obj.o_21)
         jr NZ, .l_4
         ld de, #00F0
         xor a

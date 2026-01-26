@@ -43,17 +43,17 @@ gameStart:  ; #cc5a
         ld a, (State.s_57)      ; ?
         or a
         jr Z, .l_5
-        
+
         ld ix, scene.obj1
-        ld de, 50
+        ld de, Obj
         ld b, 7
 .l_4:
-        bit 0, (ix+5)
+        bit 0, (ix+Obj.flags)
         jr NZ, .l_5
-        
+
         add ix, de
         djnz .l_4
-        
+
         ld bc, 5000
         call delay              ; 5 s delay
         jp .l_2
@@ -80,9 +80,9 @@ gameStart:  ; #cc5a
 
         ld c, 3
         call waitFrames
-        
+
         call updateScreenTiles  ; (time: extreme)
-        
+
         ld a, (State.s_05)
         or a
         jr Z, .l_6
@@ -90,8 +90,8 @@ gameStart:  ; #cc5a
         xor a
         ld (State.s_05), a
         ld ix, scene.hero
-        set 0, (ix+5)           ; set that hero exists (why not?)
-        
+        set 0, (ix+Obj.flags)           ; set that hero exists (why not?)
+
         call advanceInMap
         call putNextObjectsToScene
 .l_6:
@@ -273,16 +273,16 @@ cleanUpObjTiles:  ; #ce23
         inc hl
 .l_2:
         djnz .l_0
-        
+
         dec c
         jp NZ, .l_0
         ret
-        
+
 .l_3:
         cp 1
         ld a, 0
         jp Z, .l_1
-        
+
     .2  inc hl
         ld a, (hl)
         and a
@@ -308,7 +308,7 @@ scrollScrTiles:  ; #ce57
         ld a, 24
 .row:
     .36 ldi
-        
+
         ld bc, 8
         add hl, bc
         ex de, hl
@@ -400,28 +400,28 @@ advanceObjectsInMap:  ; #cf17
         ld b, 8
         ld ix, scene
 .object:
-        ld l, (ix+0)
-        ld h, (ix+1)            ; `hl`: x coord in pixels
+        ld l, (ix+Obj.x+0)
+        ld h, (ix+Obj.x+1)            ; `hl`: x coord in pixels
         ld de, -64
         add hl, de
         bit 7, h
         jr Z, .skip             ; if x >= 64, skip
-        ld (ix+5), 0            ; else, mark as non-existent
+        ld (ix+Obj.flags), 0            ; else, mark as non-existent
 .skip:
-        ld (ix+0), l
-        ld (ix+1), h
-        
-        ld a, (ix+23)           ; ? (possibly, horizontal moving)
+        ld (ix+Obj.x+0), l
+        ld (ix+Obj.x+1), h
+
+        ld a, (ix+Obj.o_23)           ; ? (possibly, horizontal moving)
         cp 1
         jr NZ, .l_2
-        
-        ld l, (ix+30)
-        ld h, (ix+31)
+
+        ld l, (ix+Obj.o_30+0)
+        ld h, (ix+Obj.o_30+1)
         add hl, de
-        ld (ix+30), l
-        ld (ix+31), h
+        ld (ix+Obj.o_30+0), l
+        ld (ix+Obj.o_30+1), h
 .l_2:
-        ld de, 50               ; next scene object
+        ld de, Obj               ; next scene object
         add ix, de
         djnz .object
         ret
@@ -602,14 +602,14 @@ printEnergy:  ; #d04e
         ld (hl), " "
         inc hl
         djnz .l_0
-        
+
         pop hl
         ld de, energyChars
         ld a, (State.energy)
         ld c, a
         cp 2
         jr C, .l_2
-        
+
         srl a
         ld b, a
 .l_1:
@@ -632,7 +632,7 @@ printEnergy:  ; #d04e
         sub b
         srl a
         jr Z, .l_5
-        
+
         ld b, a
 .l_4:
         ld (hl), "."            ; energy empty
@@ -641,7 +641,7 @@ printEnergy:  ; #d04e
 .l_5:
         ld hl, State.energyText + 16
         set 7, (hl)
-        
+
         ld hl, #000F            ; at 0, 15
         ld de, State.energyText
         call printString
@@ -669,7 +669,7 @@ addEnergy:  ; #d09a
 ; Decrement energy
 ; Used by c_d709 and c_e6e1.
 decEnergy:  ; #d0af
-        ld a, (ix+14)
+        ld a, (ix+Obj.blinkTime)
         or a
         ret NZ
         ld a, (State.energy)
@@ -680,7 +680,7 @@ decEnergy:  ; #d0af
         xor a
 .l_0:
         ld (State.energy), a
-        ld (ix+14), #07
+        ld (ix+Obj.blinkTime), #07
         ld a, #0C
         call playSound
         jp printEnergy
@@ -691,17 +691,17 @@ decEnergy:  ; #d0af
 decBlinkTime:  ; #d0d0
         ld ix, scene
         ld b, 8
-        ld de, 50
+        ld de, Obj
 .object:
-        ld a, (ix+14)           ; blink time
+        ld a, (ix+Obj.blinkTime)           ; blink time
         or a
         jr Z, .skip
-        
+
         dec a
-        ld (ix+14), a
+        ld (ix+Obj.blinkTime), a
         and 1                   ; even/odd
         jr NZ, .skip
-        set 4, (ix+5)           ; blink flag
+        set 4, (ix+Obj.flags)           ; blink flag
 .skip:
         add ix, de
         djnz .object
@@ -802,30 +802,30 @@ initHero:  ; #d153
     .5  add hl, hl
         ld de, 32
         add hl, de              ; `hl` = `b` × 32 + 32
-        ld (ix+0), l
-        ld (ix+1), h            ; set x coord in pixels
-        
+        ld (ix+Obj.x+0), l
+        ld (ix+Obj.x+1), h            ; set x coord in pixels
+
         ld a, c
     .5  add a
         add 40                  ; `a` = `c` × 32 + 40
-        ld (ix+2), a            ; set y coord in pixels
-        
+        ld (ix+Obj.y), a            ; set y coord in pixels
+
         ld hl, cS.heroStands
         ld a, (State.weapon)
         cp 2
         jr C, .noGun
         ld hl, cS.armedHeroStands
 .noGun:
-        ld (ix+3), l
-        ld (ix+4), h            ; set sprite addr
-        
-        ld (ix+21), 1           ; mirror (?)
-        ld (ix+5), %00000011    ; flags: exists, big
-        ld (ix+10), #10         ; ?
-        ld (ix+11), #15         ; ?
-        ld (ix+7), 0            ; ?
-        ld (ix+9), #47          ; attr: bright white
-        ld (ix+8), #FF          ; ?
+        ld (ix+Obj.sprite+0), l
+        ld (ix+Obj.sprite+1), h            ; set sprite addr
+
+        ld (ix+Obj.o_21), 1           ; mirror (?)
+        ld (ix+Obj.flags), %00000011    ; flags: exists, big
+        ld (ix+Obj.o_10), #10         ; ?
+        ld (ix+Obj.o_11), #15         ; ?
+        ld (ix+Obj.o_7), 0            ; ?
+        ld (ix+Obj.color), #47          ; attr: bright white
+        ld (ix+Obj.o_8), #FF          ; ?
         xor a
         ld (State.s_28), a      ; ?
         ld (State.s_41), a      ; ?
@@ -858,20 +858,20 @@ initLevel:  ; #d1c1
         xor a
         ld (State.coins), a
         ld (State.weapon), a
-        
+
         ; panel info
         call printCoinCount
         call printScore
         call printEnergy
         call printSoupCans
-        
+
         xor a
         ld (State.s_54), a
         ld (State.s_46), a
         ld (State.s_57), a
         inc a
         ld (State.hasSmart), a
-        
+
         ; set hero's start position
         ld a, (State.level)
     .2  add a
@@ -879,7 +879,7 @@ initLevel:  ; #d1c1
         ld h, 0
         ld de, startPositions
         add hl, de
-        
+
         ld b, (hl)              ; start x coord, blocks
         inc hl
         ld c, (hl)              ; start y coord, blocks
@@ -897,7 +897,7 @@ initLevel:  ; #d1c1
         ; `hl`: map span start, tiles
         ; `de`: map span end, tiles
         call moveToMapSpan
-        
+
         pop bc                  ; hero's start position, blocks
         call initHero
         ret
@@ -925,8 +925,8 @@ findConveyors:  ; #d213
         sbc hl, bc
         pop hl
         jp Z, .end
-        ld (ix+0), l
-        ld (ix+1), h
+        ld (ix+Conveyor.start+0), l
+        ld (ix+Conveyor.start+1), h
         ld b, 0
 .leftNext:
         inc b
@@ -934,12 +934,12 @@ findConveyors:  ; #d213
         ld a, (hl)
         cp e
         jp Z, .leftNext
-        ld (ix+2), b
-    .3  inc ix
+        ld (ix+Conveyor.length), b
+    .3  inc ix                  ; next conveyor
         jp .scan
 .rightConveyor:
-        ld (ix+0), l
-        ld (ix+1), h
+        ld (ix+Conveyor.start+0), l
+        ld (ix+Conveyor.start+1), h
         ld b, 0
 .rightNext:
         inc b
@@ -947,12 +947,12 @@ findConveyors:  ; #d213
         ld a, (hl)
         cp d
         jp Z, .rightNext
-        ld (ix+2), b
-    .3  inc ix
+        ld (ix+Conveyor.length), b
+    .3  inc ix                  ; next conveyor
         jp .scan
 .end:
-        ld (ix+0), 0
-        ld (ix+1), 0
+        ld (ix+Conveyor.start+0), 0
+        ld (ix+Conveyor.start+1), 0
         ret
 
 
@@ -962,20 +962,20 @@ updateConveyors:  ; #d278
         ld de, scrTileUpd - scrTiles
         ld ix, State.conveyors
 .conveyor:
-        ld l, (ix+0)
-        ld h, (ix+1)            ; conveyor addr in `scrTiles`
+        ld l, (ix+Conveyor.start+0)
+        ld h, (ix+Conveyor.start+1)
         ld a, h
         or l
         ret Z
 
-        ld b, (ix+2)            ; conveyor length
+        ld b, (ix+Conveyor.length)
         add hl, de              ; conveyor addr in `scrTileUpd`
 .tile:
         ld (hl), 1              ; update
         inc hl
         djnz .tile
-        
-    .3  inc ix
+
+    .3  inc ix                  ; next conveyor
         jp .conveyor
 
 
@@ -983,7 +983,7 @@ updateConveyors:  ; #d278
 ; Used by c_cc25.
 clearScene:  ; #d29a
         ld hl, 0
-        ld de, 50
+        ld de, Obj
         ld b, 8
 .l_0:
         add hl, de
@@ -1004,32 +1004,32 @@ clearScene:  ; #d29a
 ; (Some game logic?)
 ; Used by c_ec00.
 c_d2b3:  ; #d2b3
-        bit 1, (iy+5)
+        bit 1, (iy+Obj.flags)
         jr Z, .l_0
-        res 1, (iy+5)
-        ld l, (iy+0)
-        ld h, (iy+1)
+        res 1, (iy+Obj.flags)
+        ld l, (iy+Obj.x+0)
+        ld h, (iy+Obj.x+1)
         ld de, #0004
         add hl, de
-        ld (iy+0), l
-        ld (iy+1), h
-        ld a, (iy+2)
+        ld (iy+Obj.x+0), l
+        ld (iy+Obj.x+1), h
+        ld a, (iy+Obj.y)
         add #04
-        ld (iy+2), a
+        ld (iy+Obj.y), a
 .l_0:
         ld hl, cS.coin
-        ld (iy+3), l
-        ld (iy+4), h
-        ld (iy+7), #00
-        ld (iy+23), #06
-        ld (iy+8), #06
-        ld (iy+21), #00
-        ld (iy+15), #00
-        ld (iy+12), #FE
-        ld (iy+9), #46
-        res 5, (iy+5)
-        res 3, (iy+5)
-        res 2, (iy+5)
+        ld (iy+Obj.sprite+0), l
+        ld (iy+Obj.sprite+1), h
+        ld (iy+Obj.o_7), #00
+        ld (iy+Obj.o_23), #06
+        ld (iy+Obj.o_8), #06
+        ld (iy+Obj.o_21), #00
+        ld (iy+Obj.o_15), #00
+        ld (iy+Obj.o_12), #FE
+        ld (iy+Obj.color), #46
+        res 5, (iy+Obj.flags)
+        res 3, (iy+Obj.flags)
+        res 2, (iy+Obj.flags)
         xor a
         ret
 
@@ -1037,7 +1037,7 @@ c_d2b3:  ; #d2b3
 ; Used by c_cc25.
 c_d308:  ; #d308
         ld ix, scene
-        bit 0, (ix+24)
+        bit 0, (ix+Obj.o_24)
         jp NZ, .l_3
         ld a, (State.s_28)
         cp #03
@@ -1053,7 +1053,7 @@ c_d308:  ; #d308
 .l_1:
         call c_d3bb
         jr NZ, .l_2
-        ld de, #0032
+        ld de, Obj
         add iy, de
         djnz .l_1
         ret
@@ -1061,20 +1061,20 @@ c_d308:  ; #d308
         xor a
         ld (State.s_28), a
         ld (State.s_41), a
-        ld (ix+19), #00
-        set 0, (ix+24)
+        ld (ix+Obj.o_19), #00
+        set 0, (ix+Obj.o_24)
         push iy
         pop hl
-        ld (ix+30), l
-        ld (ix+31), h
+        ld (ix+Obj.o_30+0), l
+        ld (ix+Obj.o_30+1), h
 .l_3:
-        ld l, (ix+30)
-        ld h, (ix+31)
+        ld l, (ix+Obj.o_30+0)
+        ld h, (ix+Obj.o_30+1)
         push hl
         pop iy
         call c_d3bb
         jr NZ, .l_4
-        res 0, (ix+24)
+        res 0, (ix+Obj.o_24)
         ret
 .l_4:
         ld hl, cS.heroStands
@@ -1083,21 +1083,21 @@ c_d308:  ; #d308
         jr C, .l_5
         ld hl, cS.armedHeroStands
 .l_5:
-        ld (ix+3), l
-        ld (ix+4), h
-        ld a, (iy+2)
-        sub (ix+11)
-        ld (ix+2), a
-        ld c, (iy+21)
-        ld a, (iy+23)
+        ld (ix+Obj.sprite+0), l
+        ld (ix+Obj.sprite+1), h
+        ld a, (iy+Obj.y)
+        sub (ix+Obj.o_11)
+        ld (ix+Obj.y), a
+        ld c, (iy+Obj.o_21)
+        ld a, (iy+Obj.o_23)
         cp #03
         jr Z, .l_6
-        ld c, (iy+18)
+        ld c, (iy+Obj.o_18)
 .l_6:
         ld a, c
         and #03
         ret Z
-        ld a, (iy+19)
+        ld a, (iy+Obj.o_19)
         ld d, #00
         bit 0, c
         jr NZ, .l_7
@@ -1118,42 +1118,42 @@ c_d308:  ; #d308
         pop de
         ret NZ
 .l_9:
-        ld l, (ix+0)
-        ld h, (ix+1)
+        ld l, (ix+Obj.x+0)
+        ld h, (ix+Obj.x+1)
         add hl, de
-        ld (ix+0), l
-        ld (ix+1), h
+        ld (ix+Obj.x+0), l
+        ld (ix+Obj.x+1), h
         ret
 
 ; (Some game logic?)
 ; Used by c_d308.
 c_d3bb:  ; #d3bb
-        bit 0, (iy+5)
+        bit 0, (iy+Obj.flags)
         ret Z
-        bit 0, (iy+24)
+        bit 0, (iy+Obj.o_24)
         ret Z
-        ld a, (ix+2)
-        add (ix+11)
-        sub (iy+2)
+        ld a, (ix+Obj.y)
+        add (ix+Obj.o_11)
+        sub (iy+Obj.y)
         jp P, .l_0
         neg
 .l_0:
         cp #05
         jr NC, .l_1
-        ld l, (ix+0)
-        ld h, (ix+1)
+        ld l, (ix+Obj.x+0)
+        ld h, (ix+Obj.x+1)
         ld de, #0014
         add hl, de
-        ld e, (iy+0)
-        ld d, (iy+1)
+        ld e, (iy+Obj.x+0)
+        ld d, (iy+Obj.x+1)
         xor a
         sbc hl, de
         jr C, .l_1
-        ld l, (iy+10)
+        ld l, (iy+Obj.o_10)
         ld h, #00
         add hl, de
-        ld e, (ix+0)
-        ld d, (ix+1)
+        ld e, (ix+Obj.x+0)
+        ld d, (ix+Obj.x+1)
         inc de
         inc de
         inc de
@@ -1179,18 +1179,18 @@ c_d407:  ; #d407
         ld hl, #0120
         ld (.de), hl
 .l_1:
-        ld a, (ix+2)
+        ld a, (ix+Obj.y)
         cp #E0
         jr NC, .l_2
-        ld c, (ix+11)
+        ld c, (ix+Obj.o_11)
         add c
         cp #20
         jr C, .l_2
-        ld l, (ix+0)
-        ld h, (ix+1)
+        ld l, (ix+Obj.x+0)
+        ld h, (ix+Obj.x+1)
         push hl
         ld d, #00
-        ld e, (ix+10)
+        ld e, (ix+Obj.o_10)
         add hl, de
         ld de, #0020
         xor a
@@ -1208,16 +1208,16 @@ c_d407:  ; #d407
 ; Subtracts constants from some object properies?
 ; Used by c_ec00 and c_ed08.
 c_d443:  ; #d443
-        ld l, (ix+0)
-        ld h, (ix+1)
+        ld l, (ix+Obj.x+0)
+        ld h, (ix+Obj.x+1)
         ld de, -4
         add hl, de
-        ld (ix+0), l
-        ld (ix+1), h
+        ld (ix+Obj.x+0), l
+        ld (ix+Obj.x+1), h
         ld a, #FE
-        add (ix+2)
-        ld (ix+2), a
-        set 1, (ix+5)
+        add (ix+Obj.y)
+        ld (ix+Obj.y), a
+        set 1, (ix+Obj.flags)
         ret
 
 ; ?
@@ -1226,7 +1226,7 @@ c_d443:  ; #d443
 c_d460:  ; #d460
         push bc
         push de
-        ld a, (ix+2)
+        ld a, (ix+Obj.y)
         cp #20
         jr NC, .l_0
         ld a, #21
@@ -1250,9 +1250,9 @@ c_d460:  ; #d460
         add hl, bc
         add hl, de
         ld (.hl), hl
-        ld l, (ix+0)
-        ld h, (ix+1)
-        ld a, (ix+8)
+        ld l, (ix+Obj.x+0)
+        ld h, (ix+Obj.x+1)
+        ld a, (ix+Obj.o_8)
         cp #0E
         jr Z, .l_4
         ld de, #0020
@@ -1266,8 +1266,8 @@ c_d460:  ; #d460
         xor a
         sbc hl, de
         jp P, .l_3
-        ld l, (ix+0)
-        ld h, (ix+1)
+        ld l, (ix+Obj.x+0)
+        ld h, (ix+Obj.x+1)
         jr .l_4
 .l_3:
         ld hl, #0120
@@ -1292,11 +1292,11 @@ c_d460:  ; #d460
 c_d4cd:  ; #d4cd
         ld ix, scene.obj1
         ld b, #07
-        ld de, #0032
+        ld de, Obj
 .l_0:
-        bit 7, (ix+5)
+        bit 7, (ix+Obj.flags)
         jr Z, .l_1
-        ld (ix+5), #00
+        ld (ix+Obj.flags), #00
 .l_1:
         add ix, de
         djnz .l_0
@@ -1310,7 +1310,7 @@ performSmartIfSmartKeyPressed:  ; #d4e5
         ld a, (State.hasSmart)
         or a
         ret Z
-        
+
         ; perform smart
         ld a, (State.s_54)
         or a
@@ -1319,17 +1319,17 @@ performSmartIfSmartKeyPressed:  ; #d4e5
         ld b, #06
 .l_0:
         push bc
-        bit 3, (iy+24)
+        bit 3, (iy+Obj.o_24)
         jr NZ, .l_1
-        ld l, (iy+0)
-        ld h, (iy+1)
+        ld l, (iy+Obj.x+0)
+        ld h, (iy+Obj.x+1)
         ld de, #0120
         xor a
         sbc hl, de
         jr NC, .l_1
         call c_ec00.l_0
 .l_1:
-        ld de, #0032
+        ld de, Obj
         add iy, de
         pop bc
         djnz .l_0

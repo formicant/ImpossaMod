@@ -18,12 +18,12 @@ boss_logic_bermuda:  ; #fb45
         call putObjectToScene.l_1
         ld ix, scene.obj2
         ld iy, scene.obj3
-        ld l, (ix+0)
-        ld h, (ix+1)
-        ld (iy+0), l
-        ld (iy+1), h
-        ld (ix+2), #92
-        ld (iy+2), #A7
+        ld l, (ix+Obj.x+0)
+        ld h, (ix+Obj.x+1)
+        ld (iy+Obj.x+0), l
+        ld (iy+Obj.x+1), h
+        ld (ix+Obj.y), #92
+        ld (iy+Obj.y), #A7
         ld a, #02
         ld (State.s_54), a
         xor a
@@ -43,12 +43,12 @@ boss_logic_bermuda:  ; #fb45
         cp #05
         jr NZ, .l_2
 .l_1:
-        set 6, (ix+5)
-        set 6, (iy+5)
+        set 6, (ix+Obj.flags)
+        set 6, (iy+Obj.flags)
         ret
 .l_2:
-        res 6, (ix+5)
-        res 6, (iy+5)
+        res 6, (ix+Obj.flags)
+        res 6, (iy+Obj.flags)
         ret
 
 

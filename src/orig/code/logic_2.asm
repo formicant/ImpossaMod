@@ -9,7 +9,7 @@ c_e56f:  ; #e56f
 .l_0:
         push bc
         call c_e582
-        ld bc, #0032
+        ld bc, Obj
         add ix, bc
         pop bc
         djnz .l_0
@@ -18,53 +18,53 @@ c_e56f:  ; #e56f
 ; (Modifies some object properties?)
 ; Used by c_e56f.
 c_e582:  ; #e582
-        bit 0, (ix+5)
+        bit 0, (ix+Obj.flags)
         ret Z
-        ld a, (ix+48)
+        ld a, (ix+Obj.o_48)
         or a
         ret NZ
-        bit 5, (ix+5)
+        bit 5, (ix+Obj.flags)
         ret NZ
-        bit 2, (ix+5)
+        bit 2, (ix+Obj.flags)
         jr NZ, .l_1
-        bit 0, (ix+21)
+        bit 0, (ix+Obj.o_21)
         jr Z, .l_0
-        ld e, (ix+19)
+        ld e, (ix+Obj.o_19)
         ld d, #00
-        ld l, (ix+0)
-        ld h, (ix+1)
+        ld l, (ix+Obj.x+0)
+        ld h, (ix+Obj.x+1)
         add hl, de
-        ld (ix+0), l
-        ld (ix+1), h
+        ld (ix+Obj.x+0), l
+        ld (ix+Obj.x+1), h
         jr .l_1
 .l_0:
-        bit 1, (ix+21)
+        bit 1, (ix+Obj.o_21)
         jr Z, .l_1
-        ld a, (ix+19)
+        ld a, (ix+Obj.o_19)
         neg
         ld e, a
         ld d, #FF
-        ld l, (ix+0)
-        ld h, (ix+1)
+        ld l, (ix+Obj.x+0)
+        ld h, (ix+Obj.x+1)
         add hl, de
-        ld (ix+0), l
-        ld (ix+1), h
+        ld (ix+Obj.x+0), l
+        ld (ix+Obj.x+1), h
 .l_1:
-        bit 3, (ix+5)
+        bit 3, (ix+Obj.flags)
         ret NZ
-        bit 3, (ix+21)
+        bit 3, (ix+Obj.o_21)
         jr Z, .l_2
-        ld a, (ix+20)
+        ld a, (ix+Obj.o_20)
         neg
-        add (ix+2)
-        ld (ix+2), a
+        add (ix+Obj.y)
+        ld (ix+Obj.y), a
         ret
 .l_2:
-        bit 2, (ix+21)
+        bit 2, (ix+Obj.o_21)
         ret Z
-        ld a, (ix+20)
-        add (ix+2)
-        ld (ix+2), a
+        ld a, (ix+Obj.o_20)
+        add (ix+Obj.y)
+        ld (ix+Obj.y), a
         ret
 
 
@@ -73,14 +73,14 @@ c_e582:  ; #e582
 removeObjects:  ; #e5f2
         push ix
         push de
-        ld de, 50
+        ld de, Obj
         ld ix, scene.obj1
         ld b, 7
 .object:
-        ld (ix+5), 0
+        ld (ix+Obj.flags), 0
         add ix, de
         djnz .object
-        
+
         pop de
         pop ix
         ret
@@ -91,7 +91,7 @@ c_e60a:  ; #e60a
         ld ix, scene
         ld a, (State.s_27)
         ld (State.s_44), a
-        ld a, (ix+2)
+        ld a, (ix+Obj.y)
         ld (State.s_43), a
         cp #0B
         jp C, .l_0
@@ -101,18 +101,18 @@ c_e60a:  ; #e60a
 .l_0:
         xor a
         exa
-        ld (ix+2), #E0
+        ld (ix+Obj.y), #E0
         xor a
         ld (State.s_27), a
         jr .l_2
 .l_1:
         ld a, #01
         exa
-        ld (ix+2), #0C
+        ld (ix+Obj.y), #0C
 .l_2:
         ld de, Level.transitTable
-        ld l, (ix+0)
-        ld h, (ix+1)
+        ld l, (ix+Obj.x+0)
+        ld h, (ix+Obj.x+1)
         ld bc, -22
         add hl, bc
         sra h
@@ -148,14 +148,14 @@ c_e60a:  ; #e60a
         dec de
         dec de
 .l_4:
-        ld hl, #0008
+        ld hl, Transit
         add hl, de
         ex de, hl
         ld a, (de)
         or a
         jp P, .l_3
         ld a, (State.s_43)
-        ld (ix+2), a
+        ld (ix+Obj.y), a
         ld a, (State.s_44)
         ld (State.s_27), a
         ret
@@ -172,8 +172,8 @@ c_e60a:  ; #e60a
         add a
         add a
         add #20
-        ld (ix+0), a
-        ld (ix+1), #00
+        ld (ix+Obj.x+0), a
+        ld (ix+Obj.x+1), #00
         ld de, -4
         add hl, de
         ld e, (hl)
@@ -201,9 +201,9 @@ c_e6c2:  ; #e6c2
         push bc
         ld b, #06
         ld ix, scene.obj2
-        ld de, #0032
+        ld de, Obj
 .l_0:
-        bit 0, (ix+5)
+        bit 0, (ix+Obj.flags)
         jr Z, .l_1
         add ix, de
         djnz .l_0
@@ -228,15 +228,15 @@ c_e6e1:  ; #e6e1
         or a
         ret NZ
         ld ix, scene
-        ld l, (ix+0)
-        ld h, (ix+1)
+        ld l, (ix+Obj.x+0)
+        ld h, (ix+Obj.x+1)
         ld (c_e6df), hl
         inc hl
         inc hl
         inc hl
         inc hl
-        ld (ix+0), l
-        ld (ix+1), h
+        ld (ix+Obj.x+0), l
+        ld (ix+Obj.x+1), h
         ld iy, scene.obj2
         ld b, #06
 .l_0:
@@ -244,18 +244,18 @@ c_e6e1:  ; #e6e1
         call c_e80a
         pop bc
         jr NC, .l_1
-        ld de, #0032
+        ld de, Obj
         add iy, de
         djnz .l_0
         ld hl, (c_e6df)
-        ld (ix+0), l
-        ld (ix+1), h
+        ld (ix+Obj.x+0), l
+        ld (ix+Obj.x+1), h
         ret
 .l_1:
         ld hl, (c_e6df)
-        ld (ix+0), l
-        ld (ix+1), h
-        ld a, (iy+8)
+        ld (ix+Obj.x+0), l
+        ld (ix+Obj.x+1), h
+        ld a, (iy+Obj.o_8)
         cp #0E
         jp NC, .l_12
         or a
@@ -270,7 +270,7 @@ c_e6e1:  ; #e6e1
         ld (State.weapon), a
         ld hl, #02EE
         ld (State.s_3A), hl
-        ld (iy+5), #00
+        ld (iy+Obj.flags), #00
         ld a, #0D
         jp playSound
 .l_2:
@@ -289,18 +289,18 @@ c_e6e1:  ; #e6e1
         inc a
         ld (State.soupCans), a
 .l_4:
-        ld (iy+5), #00
+        ld (iy+Obj.flags), #00
         jp printSoupCans
 .l_5:
         cp #05
         jr NZ, .l_6
-        ld (iy+5), #00
+        ld (iy+Obj.flags), #00
         ld a, #04
         jp addEnergy
 .l_6:
         cp #06
         jr NZ, .l_7
-        ld (iy+5), #00
+        ld (iy+Obj.flags), #00
         ld a, (State.coins)
         add #19
         ld (State.coins), a
@@ -308,7 +308,7 @@ c_e6e1:  ; #e6e1
 .l_7:
         cp #07
         jr NZ, .l_9
-        ld (iy+5), #00
+        ld (iy+Obj.flags), #00
         ld a, (State.maxEnergy)
         add #04
         cp #22
@@ -321,7 +321,7 @@ c_e6e1:  ; #e6e1
 .l_9:
         cp #08
         jr NZ, .l_10
-        ld (iy+5), #00
+        ld (iy+Obj.flags), #00
         ld a, #FF
         ld (State.s_20), a
         ret
@@ -331,18 +331,18 @@ c_e6e1:  ; #e6e1
         ld a, (controlState)
         bit 2, a
         ret Z
-        ld (iy+5), #00
+        ld (iy+Obj.flags), #00
         ld a, #FF
         ld (State.s_46), a
         ret
 .l_11:
-        ld (iy+5), #00
-        ld a, (iy+13)
+        ld (iy+Obj.flags), #00
+        ld a, (iy+Obj.o_13)
         jp addScore
 .l_12:
         cp #0E
         jr NZ, .l_14
-        bit 3, (iy+21)
+        bit 3, (iy+Obj.o_21)
         ret NZ
         ld a, (State.s_45)
         or a
@@ -359,12 +359,12 @@ c_e6e1:  ; #e6e1
         ld a, #32
         ld (State.s_45), a
 .l_14:
-        ld a, (iy+7)
+        ld a, (iy+Obj.o_7)
         cp #FF
         ret Z
-        bit 0, (iy+24)
+        bit 0, (iy+Obj.o_24)
         ret NZ
-        ld a, (iy+12)
+        ld a, (iy+Obj.o_12)
         cp #FE
         ret Z
         jp decEnergy
@@ -372,33 +372,33 @@ c_e6e1:  ; #e6e1
 ; (Checks some object properties?)
 ; Used by c_e6e1, c_e9b1, c_eb19 and c_f618.
 c_e80a:  ; #e80a
-        bit 0, (iy+5)
+        bit 0, (iy+Obj.flags)
         jr NZ, .l_0
         scf
         ret
 .l_0:
-        ld d, (ix+11)
-        ld e, (ix+10)
-        ld b, (iy+11)
-        ld c, (iy+10)
-        ld a, (ix+2)
+        ld d, (ix+Obj.o_11)
+        ld e, (ix+Obj.o_10)
+        ld b, (iy+Obj.o_11)
+        ld c, (iy+Obj.o_10)
+        ld a, (ix+Obj.y)
         ld l, a
         add d
-        ld h, (iy+2)
+        ld h, (iy+Obj.y)
         cp h
         ret C
         ld a, h
         add b
         cp l
         ret C
-        ld l, (ix+0)
-        ld h, (ix+1)
+        ld l, (ix+Obj.x+0)
+        ld h, (ix+Obj.x+1)
         push hl
         ld d, #00
         add hl, de
-        ld e, (iy+0)
-        ld d, (iy+1)
-        ld a, (iy+8)
+        ld e, (iy+Obj.x+0)
+        ld d, (iy+Obj.x+1)
+        ld a, (iy+Obj.o_8)
         cp #0E
         jr NZ, .l_1
         ld a, e
@@ -411,7 +411,7 @@ c_e80a:  ; #e80a
         ret C
         ex de, hl
         ld b, #00
-        ld a, (iy+8)
+        ld a, (iy+Obj.o_8)
         cp #0E
         jr NZ, .l_2
         ld a, c
@@ -489,35 +489,35 @@ c_e920:  ; #e920
         call findAndPutObjectsToScene
         ld ix, scene.obj2
         ld b, #06
-        ld de, #0032
+        ld de, Obj
 .l_0:
-        ld a, (ix+8)
+        ld a, (ix+Obj.o_8)
         or a
         jr Z, .l_1
         add ix, de
         djnz .l_0
 .l_1:
         ld iy, scene
-        ld a, (iy+0)
+        ld a, (iy+Obj.x+0)
         add #20
-        ld (ix+0), a
-        ld (ix+1), #00
-        ld a, (iy+2)
+        ld (ix+Obj.x+0), a
+        ld (ix+Obj.x+1), #00
+        ld a, (iy+Obj.y)
         add #0B
-        ld (ix+2), a
+        ld (ix+Obj.y), a
         ld hl, cS.shopMole
-        ld (ix+3), l
-        ld (ix+4), h
-        ld (ix+9), #47
-        ld (ix+21), #00
-        ld (ix+10), #18
-        ld (ix+11), #15
-        ld (ix+8), #09
-        ld (ix+5), #03
-        ld (ix+12), #FE
-        ld (ix+24), #00
-        ld (ix+49), #00
-        ld (ix+23), #00
+        ld (ix+Obj.sprite+0), l
+        ld (ix+Obj.sprite+1), h
+        ld (ix+Obj.color), #47
+        ld (ix+Obj.o_21), #00
+        ld (ix+Obj.o_10), #18
+        ld (ix+Obj.o_11), #15
+        ld (ix+Obj.o_8), #09
+        ld (ix+Obj.flags), #03
+        ld (ix+Obj.o_12), #FE
+        ld (ix+Obj.o_24), #00
+        ld (ix+Obj.o_49), #00
+        ld (ix+Obj.o_23), #00
         ret
 
 ; Shop logic
@@ -534,12 +534,12 @@ c_e9b1:  ; #e9b1
         call c_e80a
         pop bc
         jr NC, .l_1
-        ld de, #0032
+        ld de, Obj
         add iy, de
         djnz .l_0
         jp printEnergy
 .l_1:
-        ld a, (iy+8)
+        ld a, (iy+Obj.o_8)
         or a
         ret Z
         dec a
@@ -624,7 +624,7 @@ c_e9b1:  ; #e9b1
 .l_5:
         ld (State.coins), a
         call printCoinCount
-        ld (iy+5), #00
+        ld (iy+Obj.flags), #00
         ld a, (State.shopItem)
         inc a
         cp #04
@@ -642,18 +642,18 @@ c_e9b1:  ; #e9b1
         inc a
         ld (State.soupCans), a
 .l_7:
-        ld (iy+5), #00
+        ld (iy+Obj.flags), #00
         jp printSoupCans
 .l_8:
         cp #05
         jr NZ, .l_9
-        ld (iy+5), #00
+        ld (iy+Obj.flags), #00
         ld a, #04
         jp addEnergy
 .l_9:
         cp #07
         jr NZ, .l_11
-        ld (iy+5), #00
+        ld (iy+Obj.flags), #00
         ld a, (State.maxEnergy)
         add #04
         cp #22
@@ -666,25 +666,25 @@ c_e9b1:  ; #e9b1
 .l_11:
         cp #08
         ret NZ
-        ld (iy+5), #00
+        ld (iy+Obj.flags), #00
         ld a, #FF
         ld (State.s_20), a
         ret
 
-; (Init ix+0, 1, 2 from (hl)?)
+; (Init ix+Obj.o_0, 1, 2 from (hl)?)
 ; Used by c_e920 and c_e9b1.
 c_eace:  ; #eace
         ld ix, scene
         ld a, (hl)
     .5  add a
         add 32
-        ld (ix+0), a
-        ld (ix+1), 0
+        ld (ix+Obj.x+0), a
+        ld (ix+Obj.x+1), 0
         inc hl
         ld a, (hl)
     .5  add a
         add 32
-        ld (ix+2), a
+        ld (ix+Obj.y), a
         ret
 
 ; Get tile type without bit 7
@@ -715,7 +715,7 @@ c_eb00:  ; #eb00
         call c_eb19
         pop bc
         ret NC
-        ld de, #0032
+        ld de, Obj
         add iy, de
         djnz .l_0
         scf
@@ -724,24 +724,24 @@ c_eb00:  ; #eb00
 ; Logic for damaging enemies?
 ; Used by c_eb00.
 c_eb19:  ; #eb19
-        ld a, (iy+8)
+        ld a, (iy+Obj.o_8)
         or a
         jp Z, c_ec00.l_3
-        bit 0, (iy+5)
+        bit 0, (iy+Obj.flags)
         jp Z, c_ec00.l_3
-        ld a, (iy+12)
+        ld a, (iy+Obj.o_12)
         cp #FE
         jp Z, c_ec00.l_3
-        ld a, (iy+14)
+        ld a, (iy+Obj.blinkTime)
         or a
         jp NZ, c_ec00.l_3
         ld a, (State.weapon)
         or a
         jr NZ, .l_1
-        ld a, (iy+7)
+        ld a, (iy+Obj.o_7)
         cp #FF
         jr NZ, .l_0
-        res 0, (ix+5)
+        res 0, (ix+Obj.flags)
         ret
 .l_0:
         ld a, (State.soupCans)
@@ -755,47 +755,47 @@ c_eb19:  ; #eb19
         add hl, de
         ld c, l
         ld b, h
-        ld l, (ix+0)
-        ld h, (ix+1)
+        ld l, (ix+Obj.x+0)
+        ld h, (ix+Obj.x+1)
         push hl
         ld a, (bc)
         inc bc
         ld e, a
         ld d, #00
         add hl, de
-        ld (ix+0), l
-        ld (ix+1), h
+        ld (ix+Obj.x+0), l
+        ld (ix+Obj.x+1), h
         ld a, (bc)
         inc bc
-        ld (ix+10), a
+        ld (ix+Obj.o_10), a
         ld a, (bc)
-        ld (ix+11), a
+        ld (ix+Obj.o_11), a
         call c_e80a
         pop hl
-        ld (ix+0), l
-        ld (ix+1), h
+        ld (ix+Obj.x+0), l
+        ld (ix+Obj.x+1), h
         ret C
-        set 0, (ix+5)
+        set 0, (ix+Obj.flags)
         jr c_ec00
 .l_1:
         cp #01
         jr NZ, .l_3
-        bit 1, (ix+5)
+        bit 1, (ix+Obj.flags)
         jr NZ, .l_2
-        ld a, (ix+0)
+        ld a, (ix+Obj.x+0)
         add #04
-        ld (ix+0), a
-        ld a, (ix+1)
+        ld (ix+Obj.x+0), a
+        ld a, (ix+Obj.x+1)
         adc a, #00
-        ld (ix+1), a
+        ld (ix+Obj.x+1), a
         call c_e80a
         exa
-        ld a, (ix+0)
+        ld a, (ix+Obj.x+0)
         add #FC
-        ld (ix+0), a
-        ld a, (ix+1)
+        ld (ix+Obj.x+0), a
+        ld a, (ix+Obj.x+1)
         adc a, #FF
-        ld (ix+1), a
+        ld (ix+Obj.x+1), a
         exa
         ret
 .l_2:
@@ -810,25 +810,25 @@ c_eb19:  ; #eb19
         add hl, de
         ld c, l
         ld b, h
-        ld l, (ix+0)
-        ld h, (ix+1)
+        ld l, (ix+Obj.x+0)
+        ld h, (ix+Obj.x+1)
         push hl
         ld a, (bc)
         inc bc
         ld e, a
         ld d, #00
         add hl, de
-        ld (ix+0), l
-        ld (ix+1), h
+        ld (ix+Obj.x+0), l
+        ld (ix+Obj.x+1), h
         ld a, (bc)
         inc bc
-        ld (ix+10), a
+        ld (ix+Obj.o_10), a
         ld a, (bc)
-        ld (ix+11), a
+        ld (ix+Obj.o_11), a
         call c_e80a
         pop hl
-        ld (ix+0), l
-        ld (ix+1), h
+        ld (ix+Obj.x+0), l
+        ld (ix+Obj.x+1), h
         ret C
         jr c_ec00
 .l_3:
@@ -844,10 +844,10 @@ c_ebf4:  ; #ebf4
 ; Damage/kill enemy?
 ; Used by c_eb19.
 c_ec00:  ; #ec00
-        ld a, (iy+7)
+        ld a, (iy+Obj.o_7)
         cp #FF
         jr Z, .l_3
-        ld a, (iy+12)
+        ld a, (iy+Obj.o_12)
         cp #FF
         jr Z, .l_3
         ld a, (State.weapon)
@@ -869,19 +869,19 @@ c_ec00:  ; #ec00
         or a
         jr NZ, .l_4
         ld a, b
-        add (iy+12)
+        add (iy+Obj.o_12)
         jr Z, .l_0
         jr NC, .l_0
-        ld (iy+12), a
-        ld (iy+14), #04
+        ld (iy+Obj.o_12), a
+        ld (iy+Obj.blinkTime), #04
         ld a, #03
         call playSound
         jr .l_2
 ; This entry point is used by c_d4e5.
 .l_0:
-        bit 4, (iy+24)
+        bit 4, (iy+Obj.o_24)
         jp NZ, c_d2b3
-        bit 1, (iy+5)
+        bit 1, (iy+Obj.flags)
         jr NZ, .l_1
         push ix
         push iy
@@ -891,9 +891,9 @@ c_ec00:  ; #ec00
         pop iy
         pop ix
 .l_1:
-        ld (iy+6), #00
-        ld (iy+7), #FF
-        ld (iy+9), #47
+        ld (iy+Obj.o_6), #00
+        ld (iy+Obj.o_7), #FF
+        ld (iy+Obj.color), #47
         ld a, #06
         call playSound
 .l_2:
@@ -917,11 +917,11 @@ c_ec00:  ; #ec00
         push de
         ld ix, scene.obj2
         ld b, #04
-        ld de, #0032
+        ld de, Obj
 .l_5:
-        bit 1, (ix+5)
+        bit 1, (ix+Obj.flags)
         jr Z, .l_6
-        ld (ix+14), #04
+        ld (ix+Obj.blinkTime), #04
 .l_6:
         add ix, de
         djnz .l_5
@@ -933,15 +933,15 @@ c_ec00:  ; #ec00
         push de
         ld ix, scene.obj2
         ld b, #04
-        ld de, #0032
+        ld de, Obj
 .l_8:
-        bit 0, (ix+5)
+        bit 0, (ix+Obj.flags)
         jr Z, .l_9
-        bit 1, (ix+5)
+        bit 1, (ix+Obj.flags)
         jr Z, .l_9
-        ld (ix+6), #00
-        ld (ix+7), #FF
-        ld (ix+9), #47
+        ld (ix+Obj.o_6), #00
+        ld (ix+Obj.o_7), #FF
+        ld (ix+Obj.color), #47
 .l_9:
         add ix, de
         djnz .l_8
@@ -972,7 +972,7 @@ c_ecee:  ; #ecee
         call c_f488
         call c_ed08
         pop ix
-        ld bc, 50
+        ld bc, Obj
         add ix, bc
         pop bc
         djnz .object
@@ -981,19 +981,19 @@ c_ecee:  ; #ecee
 ; (Modifies some object properties?)
 ; Used by c_ecee.
 c_ed08:  ; #ed08
-        bit 0, (ix+5)
+        bit 0, (ix+Obj.flags)
         ret Z
         call c_f564
-        ld a, (ix+23)
+        ld a, (ix+Obj.o_23)
         cp #01
         jp Z, c_f618
-        bit 5, (ix+5)
+        bit 5, (ix+Obj.flags)
         ret NZ
-        ld a, (ix+8)
+        ld a, (ix+Obj.o_8)
         cp #0E
         jp Z, c_f2e7
         call c_f4e9
-        ld a, (ix+23)
+        ld a, (ix+Obj.o_23)
         cp #02
         jr NZ, .l_0
         call c_f37e
@@ -1001,7 +1001,7 @@ c_ed08:  ; #ed08
 .l_0:
         cp #04
         call Z, c_f37e
-        ld a, (ix+23)
+        ld a, (ix+Obj.o_23)
         or a
         jp Z, .l_1
         cp #03
@@ -1014,11 +1014,11 @@ c_ed08:  ; #ed08
         jp Z, c_f518
         ret
 .l_1:
-        set 2, (ix+5)
-        set 3, (ix+5)
+        set 2, (ix+Obj.flags)
+        set 3, (ix+Obj.flags)
         ret
 .l_2:
-        ld a, (ix+22)
+        ld a, (ix+Obj.o_22)
         cp #FE
         jr Z, .l_5
         cp #FF
@@ -1027,20 +1027,20 @@ c_ed08:  ; #ed08
         ld a, (State.s_4A)
         cp #02
         ret C
-        bit 1, (ix+5)
+        bit 1, (ix+Obj.flags)
         jr NZ, .l_3
         call c_d443
 .l_3:
-        ld a, (ix+8)
+        ld a, (ix+Obj.o_8)
         cp #28
         jr NZ, .l_4
-        ld a, (ix+0)
+        ld a, (ix+Obj.x+0)
         sub #08
-        ld (ix+0), a
+        ld (ix+Obj.x+0), a
 .l_4:
-        ld (ix+6), #00
-        ld (ix+7), #FF
-        ld (ix+9), #47
+        ld (ix+Obj.o_6), #00
+        ld (ix+Obj.o_7), #FF
+        ld (ix+Obj.color), #47
         ld a, #06
         jp playSound
 .l_5:
@@ -1048,66 +1048,66 @@ c_ed08:  ; #ed08
         ld a, (State.s_4A)
         cp #04
         ret C
-        ld (ix+23), #00
-        set 5, (ix+5)
-        ld a, (ix+8)
+        ld (ix+Obj.o_23), #00
+        set 5, (ix+Obj.flags)
+        ld a, (ix+Obj.o_8)
         cp #6E
         ret NZ
         ld hl, #A918            ; TODO: Lev2Amazon.lS.sittingMonkey (?)
-        ld (ix+3), l
-        ld (ix+4), h
-        ld (ix+7), #00
+        ld (ix+Obj.sprite+0), l
+        ld (ix+Obj.sprite+1), h
+        ld (ix+Obj.o_7), #00
         ret
 
 ; (Modifies some object properties?)
 ; Used by c_f564.
 c_edc0:  ; #edc0
-        ld (ix+29), a
-        ld l, (ix+0)
-        ld h, (ix+1)
-        ld (ix+30), l
-        ld (ix+31), h
+        ld (ix+Obj.o_29), a
+        ld l, (ix+Obj.x+0)
+        ld h, (ix+Obj.x+1)
+        ld (ix+Obj.o_30+0), l
+        ld (ix+Obj.o_30+1), h
         push hl
-        ld a, (ix+2)
-        ld (ix+32), a
-        ld (ix+33), #00
+        ld a, (ix+Obj.y)
+        ld (ix+Obj.o_32), a
+        ld (ix+Obj.o_33), #00
         ld iy, scene
-        ld l, (iy+0)
-        ld h, (iy+1)
-        ld a, (iy+10)
+        ld l, (iy+Obj.x+0)
+        ld h, (iy+Obj.x+1)
+        ld a, (iy+Obj.o_10)
         srl a
         sub #03
         ld e, a
         ld d, #00
         add hl, de
-        ld (ix+34), l
-        ld (ix+35), h
+        ld (ix+Obj.o_34), l
+        ld (ix+Obj.o_35), h
         push hl
-        ld a, (iy+11)
+        ld a, (iy+Obj.o_11)
         srl a
         sub #03
-        add (iy+2)
-        ld (ix+36), a
-        ld (ix+37), #00
+        add (iy+Obj.y)
+        ld (ix+Obj.o_36), a
+        ld (ix+Obj.o_37), #00
         pop hl
         pop de
         xor a
         sbc hl, de
         ex de, hl
-        ld c, (ix+32)
-        ld b, (ix+33)
-        ld l, (ix+36)
-        ld h, (ix+37)
+        ld c, (ix+Obj.o_32)
+        ld b, (ix+Obj.o_33)
+        ld l, (ix+Obj.o_36)
+        ld h, (ix+Obj.o_37)
         xor a
         sbc hl, bc
         bit 7, d
         jp M, .l_0
-        ld (ix+42), #01
-        ld (ix+43), #00
+        ld (ix+Obj.o_42), #01
+        ld (ix+Obj.o_43), #00
         jr .l_1
 .l_0:
-        ld (ix+42), #FF
-        ld (ix+43), #FF
+        ld (ix+Obj.o_42), #FF
+        ld (ix+Obj.o_43), #FF
         ld a, d
         cpl
         ld d, a
@@ -1116,29 +1116,29 @@ c_edc0:  ; #edc0
         ld e, a
         inc de
 .l_1:
-        ld (ix+38), e
-        ld (ix+39), d
+        ld (ix+Obj.o_38), e
+        ld (ix+Obj.o_39), d
         ld a, h
         or l
         jr Z, .l_2
         bit 7, h
         jp M, .l_3
-        ld (ix+44), #01
-        ld (ix+45), #00
-        ld (ix+46), #00
-        ld (ix+47), #00
+        ld (ix+Obj.o_44), #01
+        ld (ix+Obj.o_45), #00
+        ld (ix+Obj.o_46), #00
+        ld (ix+Obj.o_47), #00
         jr .l_4
 .l_2:
-        ld (ix+44), #01
-        ld (ix+45), #00
-        ld (ix+46), #FF
-        ld (ix+47), #FF
+        ld (ix+Obj.o_44), #01
+        ld (ix+Obj.o_45), #00
+        ld (ix+Obj.o_46), #FF
+        ld (ix+Obj.o_47), #FF
         jr .l_4
 .l_3:
-        ld (ix+44), #FF
-        ld (ix+45), #FF
-        ld (ix+46), #00
-        ld (ix+47), #00
+        ld (ix+Obj.o_44), #FF
+        ld (ix+Obj.o_45), #FF
+        ld (ix+Obj.o_46), #00
+        ld (ix+Obj.o_47), #00
         ld a, h
         cpl
         ld h, a
@@ -1147,112 +1147,112 @@ c_edc0:  ; #edc0
         ld l, a
         inc hl
 .l_4:
-        ld (ix+40), l
-        ld (ix+41), h
-        ld (ix+36), #00
-        ld (ix+37), #00
+        ld (ix+Obj.o_40), l
+        ld (ix+Obj.o_41), h
+        ld (ix+Obj.o_36), #00
+        ld (ix+Obj.o_37), #00
         ret
 
 ; (Modifies some object properties?)
 ; Used by c_f618.
 c_ee93:  ; #ee93
-        ld a, (ix+7)
+        ld a, (ix+Obj.o_7)
         cp #FF
         ret Z
-        ld b, (ix+29)
-        ld e, (ix+38)
-        ld d, (ix+39)
-        ld l, (ix+40)
-        ld h, (ix+41)
+        ld b, (ix+Obj.o_29)
+        ld e, (ix+Obj.o_38)
+        ld d, (ix+Obj.o_39)
+        ld l, (ix+Obj.o_40)
+        ld h, (ix+Obj.o_41)
         xor a
         sbc hl, de
         jr NC, .l_2
 .l_0:
-        ld a, (ix+46)
+        ld a, (ix+Obj.o_46)
         or a
         jp M, .l_1
-        ld l, (ix+32)
-        ld h, (ix+33)
-        ld e, (ix+44)
-        ld d, (ix+45)
+        ld l, (ix+Obj.o_32)
+        ld h, (ix+Obj.o_33)
+        ld e, (ix+Obj.o_44)
+        ld d, (ix+Obj.o_45)
         add hl, de
-        ld (ix+32), l
-        ld (ix+33), h
-        ld e, (ix+38)
-        ld d, (ix+39)
-        ld l, (ix+46)
-        ld h, (ix+47)
+        ld (ix+Obj.o_32), l
+        ld (ix+Obj.o_33), h
+        ld e, (ix+Obj.o_38)
+        ld d, (ix+Obj.o_39)
+        ld l, (ix+Obj.o_46)
+        ld h, (ix+Obj.o_47)
         xor a
         sbc hl, de
-        ld (ix+46), l
-        ld (ix+47), h
+        ld (ix+Obj.o_46), l
+        ld (ix+Obj.o_47), h
 .l_1:
-        ld l, (ix+30)
-        ld h, (ix+31)
-        ld e, (ix+42)
-        ld d, (ix+43)
+        ld l, (ix+Obj.o_30+0)
+        ld h, (ix+Obj.o_30+1)
+        ld e, (ix+Obj.o_42)
+        ld d, (ix+Obj.o_43)
         add hl, de
-        ld (ix+30), l
-        ld (ix+31), h
-        ld l, (ix+40)
-        ld h, (ix+41)
-        ld e, (ix+46)
-        ld d, (ix+47)
+        ld (ix+Obj.o_30+0), l
+        ld (ix+Obj.o_30+1), h
+        ld l, (ix+Obj.o_40)
+        ld h, (ix+Obj.o_41)
+        ld e, (ix+Obj.o_46)
+        ld d, (ix+Obj.o_47)
         add hl, de
-        ld (ix+46), l
-        ld (ix+47), h
+        ld (ix+Obj.o_46), l
+        ld (ix+Obj.o_47), h
         djnz .l_0
         jr .l_4
 .l_2:
-        ld a, (ix+46)
+        ld a, (ix+Obj.o_46)
         or a
         jp P, .l_3
-        ld l, (ix+30)
-        ld h, (ix+31)
-        ld e, (ix+42)
-        ld d, (ix+43)
+        ld l, (ix+Obj.o_30+0)
+        ld h, (ix+Obj.o_30+1)
+        ld e, (ix+Obj.o_42)
+        ld d, (ix+Obj.o_43)
         add hl, de
-        ld (ix+30), l
-        ld (ix+31), h
-        ld l, (ix+40)
-        ld h, (ix+41)
-        ld e, (ix+46)
-        ld d, (ix+47)
+        ld (ix+Obj.o_30+0), l
+        ld (ix+Obj.o_30+1), h
+        ld l, (ix+Obj.o_40)
+        ld h, (ix+Obj.o_41)
+        ld e, (ix+Obj.o_46)
+        ld d, (ix+Obj.o_47)
         xor a
         add hl, de
-        ld (ix+46), l
-        ld (ix+47), h
+        ld (ix+Obj.o_46), l
+        ld (ix+Obj.o_47), h
 .l_3:
-        ld l, (ix+32)
-        ld h, (ix+33)
-        ld e, (ix+44)
-        ld d, (ix+45)
+        ld l, (ix+Obj.o_32)
+        ld h, (ix+Obj.o_33)
+        ld e, (ix+Obj.o_44)
+        ld d, (ix+Obj.o_45)
         add hl, de
-        ld (ix+32), l
-        ld (ix+33), h
-        ld e, (ix+38)
-        ld d, (ix+39)
-        ld l, (ix+46)
-        ld h, (ix+47)
+        ld (ix+Obj.o_32), l
+        ld (ix+Obj.o_33), h
+        ld e, (ix+Obj.o_38)
+        ld d, (ix+Obj.o_39)
+        ld l, (ix+Obj.o_46)
+        ld h, (ix+Obj.o_47)
         xor a
         sbc hl, de
-        ld (ix+46), l
-        ld (ix+47), h
+        ld (ix+Obj.o_46), l
+        ld (ix+Obj.o_47), h
         djnz .l_2
 .l_4:
-        ld l, (ix+30)
-        ld h, (ix+31)
-        ld (ix+0), l
-        ld (ix+1), h
-        ld a, (ix+32)
-        ld (ix+2), a
+        ld l, (ix+Obj.o_30+0)
+        ld h, (ix+Obj.o_30+1)
+        ld (ix+Obj.x+0), l
+        ld (ix+Obj.x+1), h
+        ld a, (ix+Obj.o_32)
+        ld (ix+Obj.y), a
         xor a
         ret
 
 ; (Some game logic?)
 ; Used by c_ed08.
 c_ef72:  ; #ef72
-        ld a, (ix+22)
+        ld a, (ix+Obj.o_22)
         cp #FF
         jp Z, .l_0
         cp #FE
@@ -1267,31 +1267,31 @@ c_ef72:  ; #ef72
         call c_f697
         call c_f1d7
         ld a, (State.s_4C)
-        bit 0, (ix+21)
+        bit 0, (ix+Obj.o_21)
         jr NZ, .l_1
         ld a, (State.s_4B)
 .l_1:
         cp #04
         jr NC, .l_3
-        ld a, (ix+8)
+        ld a, (ix+Obj.o_8)
         cp #82
         jr Z, .l_4
         ld a, (State.s_4E)
-        bit 0, (ix+21)
+        bit 0, (ix+Obj.o_21)
         jr NZ, .l_2
         ld a, (State.s_4D)
 .l_2:
         or a
         jr NZ, .l_4
 .l_3:
-        ld a, (ix+21)
+        ld a, (ix+Obj.o_21)
         xor #03
-        ld (ix+21), a
+        ld (ix+Obj.o_21), a
         jp .l_23
 .l_4:
-        ld l, (ix+0)
-        ld h, (ix+1)
-        bit 0, (ix+21)
+        ld l, (ix+Obj.x+0)
+        ld h, (ix+Obj.x+1)
+        bit 0, (ix+Obj.o_21)
         jr NZ, .l_5
         ld de, #0020
         xor a
@@ -1300,7 +1300,7 @@ c_ef72:  ; #ef72
         jp .l_23
 .l_5:
         ld d, #00
-        ld e, (ix+10)
+        ld e, (ix+Obj.o_10)
         add hl, de
         ld de, #0120
         xor a
@@ -1308,102 +1308,102 @@ c_ef72:  ; #ef72
         jr NC, .l_3
         jp .l_23
 .l_6:
-        ld (ix+20), #08
+        ld (ix+Obj.o_20), #08
         call c_f1d7
-        bit 7, (ix+24)
+        bit 7, (ix+Obj.o_24)
         jr NZ, .l_9
         call c_f670
         call c_f697
         ld a, (State.s_4C)
-        bit 0, (ix+21)
+        bit 0, (ix+Obj.o_21)
         jr NZ, .l_7
         ld a, (State.s_4B)
 .l_7:
         cp #04
         jr C, .l_8
-        ld a, (ix+21)
+        ld a, (ix+Obj.o_21)
         xor #03
-        ld (ix+21), a
+        ld (ix+Obj.o_21), a
 .l_8:
         ld a, (State.s_4A)
         cp #02
         jp NC, .l_23
-        set 7, (ix+24)
-        set 2, (ix+5)
-        set 2, (ix+21)
+        set 7, (ix+Obj.o_24)
+        set 2, (ix+Obj.flags)
+        set 2, (ix+Obj.o_21)
         jp .l_23
 .l_9:
         ld a, (State.s_4A)
         cp #02
         jp C, .l_23
-        res 7, (ix+24)
-        res 2, (ix+5)
-        res 2, (ix+21)
+        res 7, (ix+Obj.o_24)
+        res 2, (ix+Obj.flags)
+        res 2, (ix+Obj.o_21)
         jp .l_23
 .l_10:
-        bit 0, (ix+15)
+        bit 0, (ix+Obj.o_15)
         jr Z, .l_11
         call generateRandom
         cp #0A
         jr NC, .l_11
-        ld a, (ix+21)
+        ld a, (ix+Obj.o_21)
         xor #0C
-        ld (ix+21), a
+        ld (ix+Obj.o_21), a
 .l_11:
-        bit 1, (ix+15)
+        bit 1, (ix+Obj.o_15)
         jr Z, .l_12
         call generateRandom
         cp #0A
         jr NC, .l_12
-        ld a, (ix+21)
+        ld a, (ix+Obj.o_21)
         xor #03
-        ld (ix+21), a
+        ld (ix+Obj.o_21), a
 .l_12:
         call c_f1d7
-        bit 0, (ix+21)
+        bit 0, (ix+Obj.o_21)
         jr Z, .l_13
         ld a, (State.s_4C)
         cp #02
         jr NC, .l_14
         jr .l_15
 .l_13:
-        bit 1, (ix+21)
+        bit 1, (ix+Obj.o_21)
         jr Z, .l_15
         ld a, (State.s_4B)
         cp #02
         jr C, .l_15
 .l_14:
-        ld a, (ix+21)
+        ld a, (ix+Obj.o_21)
         xor #03
-        ld (ix+21), a
+        ld (ix+Obj.o_21), a
 .l_15:
-        bit 2, (ix+21)
+        bit 2, (ix+Obj.o_21)
         jr Z, .l_16
         ld a, (State.s_4A)
         cp #02
         jr NC, .l_17
         jr .l_18
 .l_16:
-        bit 3, (ix+21)
+        bit 3, (ix+Obj.o_21)
         jr Z, .l_18
         ld a, (State.s_49)
         cp #02
         jr C, .l_18
 .l_17:
-        ld a, (ix+21)
+        ld a, (ix+Obj.o_21)
         xor #0C
-        ld (ix+21), a
+        ld (ix+Obj.o_21), a
 .l_18:
         jp .l_23
 .l_19:
-        ld a, (ix+15)
-        cp (ix+16)
+        ld a, (ix+Obj.o_15)
+        cp (ix+Obj.o_16)
         jr Z, .l_20
-        inc (ix+15)
+        inc (ix+Obj.o_15)
         jp .l_23
 .l_20:
-        ld (ix+15), #00
-        ld c, (ix+21)
+        ld (ix+Obj.o_15), #00
+        ld c, (ix+Obj.o_21)
         ld a, c
         and #03
         jr Z, .l_21
@@ -1416,49 +1416,49 @@ c_ef72:  ; #ef72
         xor #0C
 .l_22:
         or b
-        ld (ix+21), a
+        ld (ix+Obj.o_21), a
         jp .l_23
 ; This entry point is used by c_f0f3 and c_f518.
 .l_23:
         call c_d407
         ret C
-        ld (ix+5), #00
+        ld (ix+Obj.flags), #00
         ret
 
 ; (Some game logic?)
 ; Used by c_ed08.
 c_f0f3:  ; #f0f3
-        ld (ix+19), #02
-        ld (ix+20), #02
-        res 2, (ix+5)
-        res 3, (ix+5)
-        bit 0, (ix+22)
+        ld (ix+Obj.o_19), #02
+        ld (ix+Obj.o_20), #02
+        res 2, (ix+Obj.flags)
+        res 3, (ix+Obj.flags)
+        bit 0, (ix+Obj.o_22)
         jr NZ, .l_0
-        set 3, (ix+5)
+        set 3, (ix+Obj.flags)
 .l_0:
-        bit 1, (ix+22)
+        bit 1, (ix+Obj.o_22)
         jr NZ, .l_1
-        set 2, (ix+5)
+        set 2, (ix+Obj.flags)
 .l_1:
         ld iy, scene
-        ld l, (ix+0)
-        ld h, (ix+1)
-        ld c, (ix+10)
+        ld l, (ix+Obj.x+0)
+        ld h, (ix+Obj.x+1)
+        ld c, (ix+Obj.o_10)
         srl c
         ld b, #00
         add hl, bc
         ex de, hl
-        ld l, (iy+0)
-        ld h, (iy+1)
-        ld c, (iy+10)
+        ld l, (iy+Obj.x+0)
+        ld h, (iy+Obj.x+1)
+        ld c, (iy+Obj.o_10)
         srl c
         ld b, #00
         add hl, bc
         xor a
         sbc hl, de
-        ld (ix+21), #01
+        ld (ix+Obj.o_21), #01
         jp P, .l_2
-        ld (ix+21), #02
+        ld (ix+Obj.o_21), #02
         ld a, l
         cpl
         ld l, a
@@ -1467,76 +1467,76 @@ c_f0f3:  ; #f0f3
         ld h, a
         inc hl
 .l_2:
-        ld e, (ix+19)
+        ld e, (ix+Obj.o_19)
         ld d, #00
         xor a
         sbc hl, de
         jp P, .l_3
-        set 2, (ix+5)
+        set 2, (ix+Obj.flags)
 .l_3:
-        ld a, (ix+2)
-        ld c, (ix+11)
+        ld a, (ix+Obj.y)
+        ld c, (ix+Obj.o_11)
         srl c
         add c
         ld c, a
-        ld a, (iy+2)
-        ld b, (iy+11)
+        ld a, (iy+Obj.y)
+        ld b, (iy+Obj.o_11)
         srl b
         add b
         sub c
-        set 2, (ix+21)
-        res 3, (ix+21)
+        set 2, (ix+Obj.o_21)
+        res 3, (ix+Obj.o_21)
         jp P, .l_4
         cpl
-        set 3, (ix+21)
-        res 2, (ix+21)
+        set 3, (ix+Obj.o_21)
+        res 2, (ix+Obj.o_21)
 .l_4:
-        cp (ix+20)
+        cp (ix+Obj.o_20)
         jr NC, .l_5
-        set 3, (ix+5)
+        set 3, (ix+Obj.flags)
 .l_5:
         call c_f1d7
-        bit 0, (ix+21)
+        bit 0, (ix+Obj.o_21)
         jr Z, .l_6
         ld a, (State.s_4C)
         cp #04
         jr C, .l_6
-        set 2, (ix+5)
+        set 2, (ix+Obj.flags)
 .l_6:
-        bit 1, (ix+21)
+        bit 1, (ix+Obj.o_21)
         jr Z, .l_7
         ld a, (State.s_4B)
         cp #04
         jr C, .l_7
-        set 2, (ix+5)
+        set 2, (ix+Obj.flags)
 .l_7:
-        bit 2, (ix+21)
+        bit 2, (ix+Obj.o_21)
         jr Z, .l_8
         ld a, (State.s_4A)
         cp #03
         jr C, .l_8
-        set 3, (ix+5)
+        set 3, (ix+Obj.flags)
 .l_8:
-        bit 3, (ix+21)
+        bit 3, (ix+Obj.o_21)
         jr Z, .l_9
         ld a, (State.s_49)
         cp #03
         jr C, .l_9
-        set 3, (ix+5)
+        set 3, (ix+Obj.flags)
 .l_9:
         jp c_ef72.l_23
 
 ; (Modifies some object properties?)
 ; Used by c_ed08, c_ef72, c_f0f3 and c_f518.
 c_f1d7:  ; #f1d7
-        bit 1, (ix+5)
+        bit 1, (ix+Obj.flags)
         jr NZ, .l_0
-        ld a, (ix+0)
+        ld a, (ix+Obj.x+0)
         add #08
-        ld (ix+0), a
-        ld a, (ix+1)
+        ld (ix+Obj.x+0), a
+        ld a, (ix+Obj.x+1)
         adc a, #00
-        ld (ix+1), a
+        ld (ix+Obj.x+1), a
         call c_d460
         ld a, (hl)
         call c_eaee
@@ -1546,12 +1546,12 @@ c_f1d7:  ; #f1d7
         ld a, (hl)
         call c_eaee
         ld (State.s_4A), a
-        ld a, (ix+0)
+        ld a, (ix+Obj.x+0)
         add #F8
-        ld (ix+0), a
-        ld a, (ix+1)
+        ld (ix+Obj.x+0), a
+        ld a, (ix+Obj.x+1)
         adc a, #FF
-        ld (ix+1), a
+        ld (ix+Obj.x+1), a
         call c_d460
         ld de, #002C
         add hl, de
@@ -1575,20 +1575,20 @@ c_f1d7:  ; #f1d7
         ld (State.s_4E), a
         ret
 .l_0:
-        ld a, (ix+0)
+        ld a, (ix+Obj.x+0)
         add #0C
-        ld (ix+0), a
-        ld a, (ix+1)
+        ld (ix+Obj.x+0), a
+        ld a, (ix+Obj.x+1)
         adc a, #00
-        ld (ix+1), a
+        ld (ix+Obj.x+1), a
         call c_d460
-        ld a, (ix+0)
+        ld a, (ix+Obj.x+0)
         add #F4
-        ld (ix+0), a
-        ld a, (ix+1)
+        ld (ix+Obj.x+0), a
+        ld a, (ix+Obj.x+1)
         adc a, #FF
-        ld (ix+1), a
-        bit 1, (ix+21)
+        ld (ix+Obj.x+1), a
+        bit 1, (ix+Obj.o_21)
         jr NZ, .l_1
         dec hl
 .l_1:
@@ -1601,7 +1601,7 @@ c_f1d7:  ; #f1d7
         call c_eaee
         ld (State.s_4A), a
         inc hl
-        bit 1, (ix+21)
+        bit 1, (ix+Obj.o_21)
         jr NZ, .l_2
         dec hl
 .l_2:
@@ -1612,7 +1612,7 @@ c_f1d7:  ; #f1d7
         or c
         ld (State.s_4A), a
         call c_d460
-        ld a, (ix+8)
+        ld a, (ix+Obj.o_8)
         cp #82
         jr Z, .l_3
         ld de, #0058
@@ -1628,7 +1628,7 @@ c_f1d7:  ; #f1d7
         call c_eaee
         ld (State.s_4C), a
         ld de, #0029
-        ld a, (ix+8)
+        ld a, (ix+Obj.o_8)
         cp #11
         jr Z, .l_4
         cp #12
@@ -1657,24 +1657,24 @@ c_f2d1:  ; #f2d1
 ; (Modifies some object properties?)
 ; Used by c_ed08.
 c_f2e7:  ; #f2e7
-        ld a, (ix+19)
+        ld a, (ix+Obj.o_19)
         or a
         jr Z, .l_0
-        dec (ix+19)
+        dec (ix+Obj.o_19)
         ret
 .l_0:
-        bit 2, (ix+21)
+        bit 2, (ix+Obj.o_21)
         jr NZ, .l_2
-        ld a, (ix+6)
+        ld a, (ix+Obj.o_6)
         or a
         jr NZ, .l_1
-        ld (ix+21), #04
-        ld (ix+20), #00
-        ld (ix+19), #20
+        ld (ix+Obj.o_21), #04
+        ld (ix+Obj.o_20), #00
+        ld (ix+Obj.o_19), #20
         ret
 .l_1:
-        dec (ix+6)
-        ld a, (ix+2)
+        dec (ix+Obj.o_6)
+        ld a, (ix+Obj.y)
         and #07
         jr NZ, .l_4
         call c_d460
@@ -1689,7 +1689,7 @@ c_f2e7:  ; #f2e7
         ld (hl), 1
         jr .l_4
 .l_2:
-        inc (ix+6)
+        inc (ix+Obj.o_6)
         call c_d460
         ld c, #BD
         ld a, (State.level)
@@ -1707,7 +1707,7 @@ c_f2e7:  ; #f2e7
         ld (hl), 1
         inc hl
         ld (hl), 1
-        ld a, (ix+2)
+        ld a, (ix+Obj.y)
         and %00000111
         jr NZ, .l_4
         call c_d460
@@ -1718,17 +1718,17 @@ c_f2e7:  ; #f2e7
         or a
         jr NZ, .l_5
 .l_4:
-        ld a, (ix+6)
+        ld a, (ix+Obj.o_6)
         ld l, a
         ld h, 0
         ld de, c_f2d1
         add hl, de
         ld a, (hl)
-        ld (ix+20), a
+        ld (ix+Obj.o_20), a
         ret
 .l_5:
-        ld (ix+21), #08
-        ld (ix+20), #00
+        ld (ix+Obj.o_21), #08
+        ld (ix+Obj.o_20), #00
         ret
 
 ; (Direction transform?)
@@ -1739,12 +1739,12 @@ c_f373:  ; #f373
 ; (Moves object along trajectory?)
 ; Used by c_ed08.
 c_f37e:  ; #f37e
-        bit 5, (ix+5)
+        bit 5, (ix+Obj.flags)
         ret NZ
         xor a
         ld (State.s_4F), a
         ld (State.s_50), a
-        ld a, (ix+15)
+        ld a, (ix+Obj.o_15)
         add a
         ld l, a
         ld h, #00
@@ -1753,7 +1753,7 @@ c_f37e:  ; #f37e
         ld e, (hl)
         inc hl
         ld d, (hl)
-        ld a, (ix+15)
+        ld a, (ix+Obj.o_15)
         add a
         ld l, a
         ld h, #00
@@ -1763,7 +1763,7 @@ c_f37e:  ; #f37e
         inc hl
         ld b, (hl)
 .l_0:
-        ld l, (ix+16)
+        ld l, (ix+Obj.o_16)
         ld h, #00
         add hl, de
         ld a, (hl)
@@ -1772,33 +1772,33 @@ c_f37e:  ; #f37e
         dec hl
         ld a, (hl)
         ld (State.s_4F), a
-        ld l, (ix+16)
+        ld l, (ix+Obj.o_16)
         ld h, #00
         add hl, bc
         dec hl
         ld a, (hl)
         ld (State.s_50), a
-        dec (ix+16)
+        dec (ix+Obj.o_16)
         jr .l_5
 .l_1:
         cp #FE
         jr NZ, .l_2
-        ld (ix+16), #00
+        ld (ix+Obj.o_16), #00
         jr .l_0
 .l_2:
         cp #FD
         jr NZ, .l_3
-        dec (ix+16)
+        dec (ix+Obj.o_16)
         jr .l_5
 .l_3:
         cp #FC
         jr NZ, .l_4
-        ld (ix+17), #FF
-        dec (ix+16)
+        ld (ix+Obj.o_17), #FF
+        dec (ix+Obj.o_16)
         jr .l_0
 .l_4:
         ld (State.s_4F), a
-        ld l, (ix+16)
+        ld l, (ix+Obj.o_16)
         ld h, #00
         add hl, bc
         ld a, (hl)
@@ -1810,7 +1810,7 @@ c_f37e:  ; #f37e
         ld de, c_f373
         add hl, de
         ld c, (hl)
-        ld a, (ix+17)
+        ld a, (ix+Obj.o_17)
         or a
         jr Z, .l_8
         ld a, c
@@ -1827,113 +1827,113 @@ c_f37e:  ; #f37e
         or b
         ld c, a
 .l_8:
-        ld (ix+18), c
+        ld (ix+Obj.o_18), c
         ld a, (State.s_4F)
-        bit 0, (ix+24)
+        bit 0, (ix+Obj.o_24)
         jr Z, .l_9
-        ld (ix+19), a
+        ld (ix+Obj.o_19), a
 .l_9:
         ld b, a
         bit 2, c
         jr Z, .l_10
-        ld a, (ix+2)
+        ld a, (ix+Obj.y)
         add b
-        ld (ix+2), a
+        ld (ix+Obj.y), a
         jr .l_11
 .l_10:
         bit 3, c
         jr Z, .l_11
-        ld a, (ix+2)
+        ld a, (ix+Obj.y)
         sub b
-        ld (ix+2), a
+        ld (ix+Obj.y), a
 .l_11:
         ld e, b
         ld d, #00
         bit 0, c
         jr Z, .l_12
-        ld l, (ix+0)
-        ld h, (ix+1)
+        ld l, (ix+Obj.x+0)
+        ld h, (ix+Obj.x+1)
         add hl, de
-        ld (ix+0), l
-        ld (ix+1), h
+        ld (ix+Obj.x+0), l
+        ld (ix+Obj.x+1), h
         jr .l_13
 .l_12:
         bit 1, c
         jr Z, .l_13
-        ld l, (ix+0)
-        ld h, (ix+1)
+        ld l, (ix+Obj.x+0)
+        ld h, (ix+Obj.x+1)
         xor a
         sbc hl, de
-        ld (ix+0), l
-        ld (ix+1), h
+        ld (ix+Obj.x+0), l
+        ld (ix+Obj.x+1), h
 .l_13:
-        ld a, (ix+17)
+        ld a, (ix+Obj.o_17)
         or a
         jr NZ, .l_14
-        inc (ix+16)
+        inc (ix+Obj.o_16)
         jr .l_15
 .l_14:
-        dec (ix+16)
+        dec (ix+Obj.o_16)
         jp P, .l_15
-        ld (ix+16), #00
-        ld (ix+17), #00
+        ld (ix+Obj.o_16), #00
+        ld (ix+Obj.o_17), #00
 .l_15:
         call c_d407
         ret C
-        ld (ix+5), #00
+        ld (ix+Obj.flags), #00
         ret
 
 ; (Modifies some object properties?)
 ; Used by c_ecee.
 c_f488:  ; #f488
-        ld a, (ix+27)
+        ld a, (ix+Obj.o_27)
         or a
         ret Z
         ld iy, scene
-        ld a, (ix+26)
+        ld a, (ix+Obj.o_26)
         neg
-        add (ix+2)
+        add (ix+Obj.y)
         ld c, a
-        add (ix+28)
-        cp (iy+2)
+        add (ix+Obj.o_28)
+        cp (iy+Obj.y)
         ret C
-        ld a, (iy+2)
-        add (iy+11)
+        ld a, (iy+Obj.y)
+        add (iy+Obj.o_11)
         cp c
         ret C
-        ld l, (ix+0)
-        ld h, (ix+1)
-        ld e, (ix+25)
+        ld l, (ix+Obj.x+0)
+        ld h, (ix+Obj.x+1)
+        ld e, (ix+Obj.o_25)
         ld d, #00
         xor a
         sbc hl, de
         ex de, hl
-        ld l, (iy+0)
-        ld h, (iy+1)
-        ld c, (iy+10)
+        ld l, (iy+Obj.x+0)
+        ld h, (iy+Obj.x+1)
+        ld c, (iy+Obj.o_10)
         ld b, #00
         add hl, bc
         xor a
         sbc hl, de
         ret C
-        ld l, (ix+27)
+        ld l, (ix+Obj.o_27)
         ld h, #00
         add hl, de
-        ld e, (iy+0)
-        ld d, (iy+1)
+        ld e, (iy+Obj.x+0)
+        ld d, (iy+Obj.x+1)
         xor a
         sbc hl, de
         ret C
-        res 5, (ix+5)
-        res 2, (ix+5)
-        res 3, (ix+5)
-        ld (ix+27), #00
+        res 5, (ix+Obj.flags)
+        res 2, (ix+Obj.flags)
+        res 3, (ix+Obj.flags)
+        ld (ix+Obj.o_27), #00
         ret
 
 ; (Modifies some object properties?)
 ; Used by c_ed08.
 c_f4e9:  ; #f4e9
-        ld a, (ix+8)
+        ld a, (ix+Obj.o_8)
         cp #0F
         jr Z, .l_0
         cp #10
@@ -1942,9 +1942,9 @@ c_f4e9:  ; #f4e9
         call generateRandom
         cp #02
         ret NC
-        ld (ix+6), #00
-        ld (ix+7), #FF
-        ld (ix+9), #47
+        ld (ix+Obj.o_6), #00
+        ld (ix+Obj.o_7), #FF
+        ld (ix+Obj.color), #47
         ret
 
 ; Data block at F506
@@ -1956,7 +1956,7 @@ c_f506:  ; #f506
 ; (Modifies some object properties?)
 ; Used by c_ed08.
 c_f518:  ; #f518
-        ld a, (ix+15)
+        ld a, (ix+Obj.o_15)
         ld l, a
         ld h, #00
         ld de, c_f506
@@ -1964,11 +1964,11 @@ c_f518:  ; #f518
         ld a, (hl)
         cp #7F
         jr NZ, .l_0
-        dec (ix+15)
+        dec (ix+Obj.o_15)
         ld a, #08
 .l_0:
-        add (ix+2)
-        ld (ix+2), a
+        add (ix+Obj.y)
+        ld (ix+Obj.y), a
         ld a, (hl)
         cp #7F
         jr NZ, .l_1
@@ -1976,12 +1976,12 @@ c_f518:  ; #f518
         ld a, (State.s_4A)
         cp #04
         jr C, .l_1
-        ld a, (ix+2)
+        ld a, (ix+Obj.y)
         and #F8
-        ld (ix+2), a
-        ld (ix+23), #00
+        ld (ix+Obj.y), a
+        ld (ix+Obj.o_23), #00
 .l_1:
-        inc (ix+15)
+        inc (ix+Obj.o_15)
         jp c_ef72.l_23
 
 ; Decrements some counter at State.s_51
@@ -2004,10 +2004,10 @@ c_f564:  ; #f564
         ld a, (State.s_51)
         or a
         ret NZ
-        ld a, (ix+23)
+        ld a, (ix+Obj.o_23)
         cp #01
         ret Z
-        ld a, (ix+49)
+        ld a, (ix+Obj.o_49)
         or a
         ret Z
         push ix
@@ -2017,55 +2017,55 @@ c_f564:  ; #f564
         pop ix
         ret NC
         ld hl, cS.powerBullet1
-        ld (iy+3), l
-        ld (iy+4), h
-        ld (iy+7), #00
-        ld (iy+9), #47
-        ld (iy+21), #00
-        ld (iy+19), #05
-        ld (iy+20), #03
-        ld (iy+10), #06
-        ld (iy+11), #06
-        ld (iy+12), #01
-        ld (iy+5), #01
-        ld (iy+8), #00
-        ld (iy+23), #01
-        ld (iy+24), #00
-        ld a, (ix+49)
-        ld (iy+49), a
-        ld a, (ix+10)
-        sub (iy+10)
+        ld (iy+Obj.sprite+0), l
+        ld (iy+Obj.sprite+1), h
+        ld (iy+Obj.o_7), #00
+        ld (iy+Obj.color), #47
+        ld (iy+Obj.o_21), #00
+        ld (iy+Obj.o_19), #05
+        ld (iy+Obj.o_20), #03
+        ld (iy+Obj.o_10), #06
+        ld (iy+Obj.o_11), #06
+        ld (iy+Obj.o_12), #01
+        ld (iy+Obj.flags), #01
+        ld (iy+Obj.o_8), #00
+        ld (iy+Obj.o_23), #01
+        ld (iy+Obj.o_24), #00
+        ld a, (ix+Obj.o_49)
+        ld (iy+Obj.o_49), a
+        ld a, (ix+Obj.o_10)
+        sub (iy+Obj.o_10)
         srl a
         ld e, a
         ld d, #00
-        ld l, (ix+0)
-        ld h, (ix+1)
+        ld l, (ix+Obj.x+0)
+        ld h, (ix+Obj.x+1)
         add hl, de
-        ld (iy+0), l
-        ld (iy+1), h
-        ld a, (ix+11)
-        sub (iy+11)
+        ld (iy+Obj.x+0), l
+        ld (iy+Obj.x+1), h
+        ld a, (ix+Obj.o_11)
+        sub (iy+Obj.o_11)
         srl a
-        add (ix+2)
-        ld (iy+2), a
-        ld a, (iy+49)
+        add (ix+Obj.y)
+        ld (iy+Obj.y), a
+        ld a, (iy+Obj.o_49)
         cp #01
         jr Z, .l_2
         cp #02
         jr NZ, .l_0
-        ld a, (ix+21)
+        ld a, (ix+Obj.o_21)
         and #03
-        ld (iy+21), a
+        ld (iy+Obj.o_21), a
         ret
 .l_0:
         cp #03
         jr NZ, .l_1
-        ld (iy+21), #08
+        ld (iy+Obj.o_21), #08
         ret
 .l_1:
         cp #04
         ret NZ
-        ld (iy+21), #04
+        ld (iy+Obj.o_21), #04
         ret
 .l_2:
         push ix
@@ -2079,15 +2079,15 @@ c_f564:  ; #f564
 ; (Modifies some object properties?)
 ; Used by c_ed08.
 c_f618:  ; #f618
-        ld a, (ix+49)
+        ld a, (ix+Obj.o_49)
         cp #01
         call Z, c_ee93
         ld iy, scene
         call c_e80a
         jr C, .l_1
-        ld (ix+5), #00
-        ld b, (ix+12)
-        ld a, (iy+14)
+        ld (ix+Obj.flags), #00
+        ld b, (ix+Obj.o_12)
+        ld a, (iy+Obj.blinkTime)
         or a
         ret NZ
         ld a, (State.energy)
@@ -2098,7 +2098,7 @@ c_f618:  ; #f618
         xor a
 .l_0:
         ld (State.energy), a
-        ld (iy+14), #07
+        ld (iy+Obj.blinkTime), #07
         jp printEnergy
 .l_1:
         ld a, (State.level)
@@ -2113,44 +2113,44 @@ c_f618:  ; #f618
         call c_eaee
         cp #04
         jr C, .l_3
-        ld (ix+5), #00
+        ld (ix+Obj.flags), #00
         ret
 .l_3:
         call c_d407.l_0
         ret C
-        ld (ix+5), #00
+        ld (ix+Obj.flags), #00
         ret
 
 ; (Some game logic?)
 ; Used by c_ef72.
 c_f670:  ; #f670
-        bit 5, (ix+24)
+        bit 5, (ix+Obj.o_24)
         ret Z
         call generateRandom
         cp #08
         ret NC
-        bit 1, (ix+15)
+        bit 1, (ix+Obj.o_15)
         jr Z, .l_0
-        ld a, (ix+21)
+        ld a, (ix+Obj.o_21)
         xor #03
-        ld (ix+21), a
+        ld (ix+Obj.o_21), a
 .l_0:
-        bit 0, (ix+15)
+        bit 0, (ix+Obj.o_15)
         ret Z
-        ld a, (ix+21)
+        ld a, (ix+Obj.o_21)
         xor #0C
-        ld (ix+21), a
+        ld (ix+Obj.o_21), a
         ret
 
 ; (Some game logic?)
 ; Used by c_ef72.
 c_f697:  ; #f697
-        bit 1, (ix+24)
+        bit 1, (ix+Obj.o_24)
         ret Z
-        ld a, (ix+48)
+        ld a, (ix+Obj.o_48)
         or a
         jr Z, .l_0
-        dec (ix+48)
+        dec (ix+Obj.o_48)
         ret
 .l_0:
         call generateRandom
@@ -2158,7 +2158,7 @@ c_f697:  ; #f697
         ret NC
         call generateRandom
         and #1F
-        ld (ix+48), a
+        ld (ix+Obj.o_48), a
         ret
 
 ; Object type offset by level
@@ -2181,21 +2181,21 @@ findAndPutObjectsToScene:  ; #f6ba
         xor a
         sbc hl, de              ; `hl`: x coord on screen
         jr C, .skipObject
-        
+
         push hl
         ld de, 32
         xor a
         sbc hl, de
         pop hl
         jr NC, .l_2             ; object is not yet visible
-        
+
         call putObjectToScene
         jr .object
-        
+
 .skipObject:
     .2  inc bc
         jr .object
-        
+
 .l_2:
     .2  dec bc
         ld (State.nextObject), bc
@@ -2244,23 +2244,23 @@ putObjectsToScene:
         ld ix, scene.obj2
         ld b, #06
 .l_4:
-        bit 0, (ix+5)
+        bit 0, (ix+Obj.flags)
         jr Z, .l_6
-        ld l, (ix+0)
-        ld h, (ix+1)
+        ld l, (ix+Obj.x+0)
+        ld h, (ix+Obj.x+1)
         ld de, #0120
         xor a
         sbc hl, de
         jp C, .l_5
-        set 5, (ix+5)
+        set 5, (ix+Obj.flags)
         jr .l_6
 .l_5:
-        ld a, (ix+27)
+        ld a, (ix+Obj.o_27)
         or a
         jr NZ, .l_6
-        res 5, (ix+5)
+        res 5, (ix+Obj.flags)
 .l_6:
-        ld de, #0032
+        ld de, Obj
         add ix, de
         djnz .l_4
         ret
@@ -2270,16 +2270,16 @@ putObjectsToScene:
 putObjectToScene:  ; #f74a
         call c_e6c2
         ret NC
-        
+
     .3  add hl, hl
         ld de, 32
         add hl, de
-        ld (ix+0), l
-        ld (ix+1), h
+        ld (ix+Obj.x+0), l
+        ld (ix+Obj.x+1), h
         ld a, (bc)
     .3  add a
         add 32
-        ld (ix+2), a
+        ld (ix+Obj.y), a
         inc bc
         ld a, (bc)
         cp 10
@@ -2315,148 +2315,148 @@ putObjectToScene:  ; #f74a
         pop hl
         ld de, Common.objectTypes
         add hl, de
-        ld (ix+6), #00
-        ld (ix+48), #00
-        ld (ix+21), #02
+        ld (ix+Obj.o_6), #00
+        ld (ix+Obj.o_48), #00
+        ld (ix+Obj.o_21), #02
         ld a, (hl)
-        ld (ix+3), a
+        ld (ix+Obj.sprite+0), a
         inc hl
         ld a, (hl)
-        ld (ix+4), a
+        ld (ix+Obj.sprite+1), a
         inc hl
         ld a, (hl)
-        ld (ix+9), a
+        ld (ix+Obj.color), a
         inc hl
         ld a, (hl)
-        ld (ix+7), a
+        ld (ix+Obj.o_7), a
         inc hl
         ld a, (hl)
-        ld (ix+5), a
+        ld (ix+Obj.flags), a
         inc hl
         ld a, (hl)
-        ld (ix+10), a
+        ld (ix+Obj.o_10), a
         inc hl
         ld a, (hl)
-        ld (ix+11), a
+        ld (ix+Obj.o_11), a
         inc hl
         ld a, (hl)
-        ld (ix+12), a
+        ld (ix+Obj.o_12), a
         inc hl
         ld a, (hl)
         or a
         jr Z, .l_2
-        ld a, (ix+5)
+        ld a, (ix+Obj.flags)
         or #2C
-        ld (ix+5), a
+        ld (ix+Obj.flags), a
 .l_2:
         inc hl
         ld a, (hl)
-        ld (ix+13), a
+        ld (ix+Obj.o_13), a
         inc hl
         ld a, (hl)
-        ld (ix+24), a
+        ld (ix+Obj.o_24), a
         inc hl
         ld a, (hl)
-        ld (ix+8), a
+        ld (ix+Obj.o_8), a
         or a
         jr NZ, .l_3
         ld a, (State.s_46)
         cp #7F
         jr NZ, .l_3
-        ld (ix+5), #00
+        ld (ix+Obj.flags), #00
         ret
 .l_3:
         inc hl
         ld a, (hl)
-        ld (ix+49), a
+        ld (ix+Obj.o_49), a
         inc hl
         ld a, (hl)
-        ld (ix+15), a
+        ld (ix+Obj.o_15), a
         inc hl
         ld a, (hl)
-        ld (ix+16), a
+        ld (ix+Obj.o_16), a
         inc hl
         ld a, (hl)
-        ld (ix+17), a
+        ld (ix+Obj.o_17), a
         inc hl
         ld a, (hl)
-        ld (ix+18), a
+        ld (ix+Obj.o_18), a
         inc hl
         ld a, (hl)
-        ld (ix+19), a
+        ld (ix+Obj.o_19), a
         inc hl
         ld a, (hl)
-        ld (ix+20), a
+        ld (ix+Obj.o_20), a
         inc hl
         ld a, (hl)
-        ld (ix+21), a
+        ld (ix+Obj.o_21), a
         inc hl
         ld a, (hl)
-        ld (ix+22), a
+        ld (ix+Obj.o_22), a
         inc hl
         ld a, (hl)
-        ld (ix+23), a
+        ld (ix+Obj.o_23), a
         inc hl
         ld a, (hl)
-        ld (ix+25), a
+        ld (ix+Obj.o_25), a
         inc hl
         ld a, (hl)
-        ld (ix+26), a
+        ld (ix+Obj.o_26), a
         inc hl
         ld a, (hl)
-        ld (ix+27), a
+        ld (ix+Obj.o_27), a
         inc hl
         ld a, (hl)
-        ld (ix+28), a
-        ld a, (ix+21)
+        ld (ix+Obj.o_28), a
+        ld a, (ix+Obj.o_21)
         ld l, a
         ld h, #00
         ld de, c_f373
         add hl, de
         ld a, (hl)
-        ld (ix+21), a
-        bit 1, (ix+5)
+        ld (ix+Obj.o_21), a
+        bit 1, (ix+Obj.flags)
         jr NZ, .l_4
-        ld a, (ix+2)
-        sub (ix+11)
-        ld (ix+2), a
+        ld a, (ix+Obj.y)
+        sub (ix+Obj.o_11)
+        ld (ix+Obj.y), a
         jr .l_5
 .l_4:
-        ld a, (ix+2)
-        sub (ix+11)
-        ld (ix+2), a
+        ld a, (ix+Obj.y)
+        sub (ix+Obj.o_11)
+        ld (ix+Obj.y), a
 .l_5:
-        ld a, (ix+8)
+        ld a, (ix+Obj.o_8)
         cp #0E
         jr NZ, .l_6
-        ld l, (ix+0)
-        ld h, (ix+1)
+        ld l, (ix+Obj.x+0)
+        ld h, (ix+Obj.x+1)
         ld de, #0004
         add hl, de
-        ld (ix+0), l
-        ld (ix+1), h
-        ld a, (ix+2)
+        ld (ix+Obj.x+0), l
+        ld (ix+Obj.x+1), h
+        ld a, (ix+Obj.y)
         and #F8
-        ld (ix+2), a
+        ld (ix+Obj.y), a
         ret
 .l_6:
         cp #01
         jr NZ, .l_7
-        ld a, (ix+2)
+        ld a, (ix+Obj.y)
         add #06
-        ld (ix+2), a
+        ld (ix+Obj.y), a
         ret
 .l_7:
-        ld a, (ix+8)
+        ld a, (ix+Obj.o_8)
         cp #A3
         jr NZ, .l_8
-        ld (ix+5), #00
+        ld (ix+Obj.flags), #00
         ret
 .l_8:
         ld a, (State.s_54)
         or a
         ret NZ
-        ld a, (ix+8)
+        ld a, (ix+Obj.o_8)
         cp #35
         jr Z, .l_9
         cp #5E
@@ -2474,7 +2474,7 @@ putObjectToScene:  ; #f74a
         xor a
         sbc hl, de
         jr NC, .l_10
-        ld (ix+5), #00
+        ld (ix+Obj.flags), #00
         ret
 .l_10:
         ld a, #01

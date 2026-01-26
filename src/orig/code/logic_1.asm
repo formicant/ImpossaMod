@@ -72,11 +72,11 @@ c_d709:  ; #d709
         and #03
         jp Z, .l_2
         ld b, a
-        ld a, (ix+21)
+        ld a, (ix+Obj.o_21)
         and #FC
         or b
-        ld (ix+21), a
-        ld (ix+19), #02
+        ld (ix+Obj.o_21), a
+        ld (ix+Obj.o_19), #02
 .l_2:
         ld a, #03
         ld (State.s_27), a
@@ -88,8 +88,8 @@ c_d709:  ; #d709
         jr C, .l_3
         ld hl, cS.armedHeroJumps
 .l_3:
-        ld (ix+3), l
-        ld (ix+4), h
+        ld (ix+Obj.sprite+0), l
+        ld (ix+Obj.sprite+1), h
 .l_4:
         xor a
         ld (State.s_05), a
@@ -99,8 +99,8 @@ c_d709:  ; #d709
         sbc hl, de
         jr Z, .l_5
         jr C, .l_5
-        ld l, (ix+0)
-        ld h, (ix+1)
+        ld l, (ix+Obj.x+0)
+        ld h, (ix+Obj.x+1)
         ld de, -200
         add hl, de
         jr NC, .l_5
@@ -111,16 +111,16 @@ c_d709:  ; #d709
 .l_6:
         call c_de37
         jr NZ, .l_4
-        ld a, (ix+0)
+        ld a, (ix+Obj.x)
         add #FF
-        ld (ix+0), a
+        ld (ix+Obj.x), a
         jp .l_4
 .l_7:
         call c_deb1
         jr NZ, .l_4
-        ld a, (ix+0)
+        ld a, (ix+Obj.x)
         add #01
-        ld (ix+0), a
+        ld (ix+Obj.x), a
         jp .l_4
 
 ; (Some game logic from call table #D6E7?)
@@ -148,7 +148,7 @@ c_d7f6:  ; #d7f6
         jp NZ, .l_7
         bit 0, a
         jp NZ, .l_8
-        bit 0, (ix+24)
+        bit 0, (ix+Obj.o_24)
         ret NZ
         ld a, (State.s_31)
         call c_eaee
@@ -177,20 +177,20 @@ c_d7f6:  ; #d7f6
         jp C, c_d94c.l_11
         ret
 .l_3:
-        bit 0, (ix+21)
+        bit 0, (ix+Obj.o_21)
         jr NZ, .l_4
         call c_de37
         jp NZ, c_d94c.l_11
-        ld a, (ix+0)
+        ld a, (ix+Obj.x)
         add #FE
-        ld (ix+0), a
+        ld (ix+Obj.x), a
         jp .l_5
 .l_4:
         call c_deb1
         jp NZ, c_d94c.l_11
-        ld a, (ix+0)
+        ld a, (ix+Obj.x)
         add #02
-        ld (ix+0), a
+        ld (ix+Obj.x), a
 .l_5:
         ld hl, cS.heroWalks1
         ld a, (State.weapon)
@@ -198,8 +198,8 @@ c_d7f6:  ; #d7f6
         jr C, .l_6
         ld hl, cS.armedHeroWalks1
 .l_6:
-        ld (ix+3), l
-        ld (ix+4), h
+        ld (ix+Obj.sprite+0), l
+        ld (ix+Obj.sprite+1), h
         ret
 .l_7:
         ld a, #01
@@ -208,9 +208,9 @@ c_d7f6:  ; #d7f6
         ld (State.s_41), a
         xor a
         ld (State.s_42), a
-        ld (ix+6), a
-        set 1, (ix+21)
-        res 0, (ix+21)
+        ld (ix+Obj.o_6), a
+        set 1, (ix+Obj.o_21)
+        res 0, (ix+Obj.o_21)
         ret
 .l_8:
         ld a, #01
@@ -219,26 +219,26 @@ c_d7f6:  ; #d7f6
         ld (State.s_41), a
         xor a
         ld (State.s_42), a
-        ld (ix+6), a
-        set 0, (ix+21)
-        res 1, (ix+21)
+        ld (ix+Obj.o_6), a
+        set 0, (ix+Obj.o_21)
+        res 1, (ix+Obj.o_21)
         ret
 .l_9:
         ld a, (State.s_45)
         or a
         ret NZ
-        res 0, (ix+24)
+        res 0, (ix+Obj.o_24)
         ld a, #02
         ld (State.s_28), a
         ld a, (controlState)
         and #03
         jp Z, .l_10
         ld b, a
-        ld a, (ix+21)
+        ld a, (ix+Obj.o_21)
         and #FC
         or b
-        ld (ix+21), a
-        ld (ix+19), #02
+        ld (ix+Obj.o_21), a
+        ld (ix+Obj.o_19), #02
 .l_10:
         ld a, #03
         ld (State.s_27), a
@@ -250,8 +250,8 @@ c_d7f6:  ; #d7f6
         jr C, .l_11
         ld hl, cS.armedHeroJumps
 .l_11:
-        ld (ix+3), l
-        ld (ix+4), h
+        ld (ix+Obj.sprite+0), l
+        ld (ix+Obj.sprite+1), h
         ld a, #05
         call playSound
         jp c_da95
@@ -270,15 +270,15 @@ c_d7f6:  ; #d7f6
         jr C, .l_13
         ld hl, cS.armedHeroClimbs
 .l_13:
-        ld (ix+3), l
-        ld (ix+4), h
+        ld (ix+Obj.sprite+0), l
+        ld (ix+Obj.sprite+1), h
         xor a
         ld (State.s_41), a
         jp c_dbfc
 
 ; (Some game logic from call table #D6E7?)
 c_d94c:  ; #d94c
-        bit 0, (ix+24)
+        bit 0, (ix+Obj.o_24)
         jr NZ, .l_0
         ld a, (State.s_31)
         call c_eaee
@@ -299,7 +299,7 @@ c_d94c:  ; #d94c
         cp #02
         jp Z, c_d7f6.l_12
 .l_1:
-        bit 0, (ix+21)
+        bit 0, (ix+Obj.o_21)
         jp NZ, .l_5
         call c_de37
         or a
@@ -313,16 +313,16 @@ c_d94c:  ; #d94c
         cp #08
         jr NZ, .l_3
 .l_2:
-        ld a, (ix+0)
+        ld a, (ix+Obj.x)
         add #FF
-        ld (ix+0), a
+        ld (ix+Obj.x), a
         ld a, #04
         ld (State.s_41), a
         jr .l_4
 .l_3:
-        ld a, (ix+0)
+        ld a, (ix+Obj.x)
         add #FE
-        ld (ix+0), a
+        ld (ix+Obj.x), a
         ld a, #02
         ld (State.s_41), a
         ld a, (State.s_42)
@@ -346,16 +346,16 @@ c_d94c:  ; #d94c
         cp #08
         jr NZ, .l_7
 .l_6:
-        ld a, (ix+0)
+        ld a, (ix+Obj.x)
         add #01
-        ld (ix+0), a
+        ld (ix+Obj.x), a
         ld a, #04
         ld (State.s_41), a
         jr .l_8
 .l_7:
-        ld a, (ix+0)
+        ld a, (ix+Obj.x)
         add #02
-        ld (ix+0), a
+        ld (ix+Obj.x), a
         ld a, #02
         ld (State.s_41), a
         ld a, (State.s_42)
@@ -385,19 +385,19 @@ c_d94c:  ; #d94c
         xor a
         ld (State.s_28), a
         ld (State.s_41), a
-        ld a, (ix+2)
+        ld a, (ix+Obj.y)
         and #F8
         or #03
-        ld (ix+2), a
-        ld (ix+19), #00
+        ld (ix+Obj.y), a
+        ld (ix+Obj.o_19), #00
         ld hl, cS.heroStands
         ld a, (State.weapon)
         cp 2
         jr C, .l_12
         ld hl, cS.armedHeroStands
 .l_12:
-        ld (ix+3), l
-        ld (ix+4), h
+        ld (ix+Obj.sprite+0), l
+        ld (ix+Obj.sprite+1), h
         ret
 ; This entry point is used by c_d7f6, c_da95, c_dbfc and c_e6e1.
 .l_13:
@@ -411,12 +411,12 @@ c_d94c:  ; #d94c
         and #03
         jp Z, .l_14
         ld b, a
-        ld a, (ix+21)
+        ld a, (ix+Obj.o_21)
         and #FC
         or b
-        ld (ix+21), a
+        ld (ix+Obj.o_21), a
         ld a, #02
-        ld (ix+19), a
+        ld (ix+Obj.o_19), a
 .l_14:
         ld hl, cS.heroFalls
         ld a, (State.weapon)
@@ -424,8 +424,8 @@ c_d94c:  ; #d94c
         jr C, .l_15
         ld hl, cS.armedHeroFalls
 .l_15:
-        ld (ix+3), l
-        ld (ix+4), h
+        ld (ix+Obj.sprite+0), l
+        ld (ix+Obj.sprite+1), h
         jp c_db4e
 
 ; (Some game logic from call table #D6E7?)
@@ -437,8 +437,8 @@ c_da95:  ; #da95
         jr C, .l_0
         ld hl, cS.armedHeroJumps
 .l_0:
-        ld (ix+3), l
-        ld (ix+4), h
+        ld (ix+Obj.sprite+0), l
+        ld (ix+Obj.sprite+1), h
         ld a, (controlState)
         bit 3, a
         jr Z, .l_1
@@ -449,26 +449,26 @@ c_da95:  ; #da95
         cp #02
         jp Z, c_d7f6.l_12
 .l_1:
-        ld a, (ix+19)
+        ld a, (ix+Obj.o_19)
         or a
         jr Z, .l_3
-        bit 0, (ix+21)
+        bit 0, (ix+Obj.o_21)
         jr NZ, .l_2
         call c_de37
         or a
         jr NZ, .l_3
-        ld a, (ix+19)
+        ld a, (ix+Obj.o_19)
         neg
-        add (ix+0)
-        ld (ix+0), a
+        add (ix+Obj.x)
+        ld (ix+Obj.x), a
         jr .l_3
 .l_2:
         call c_deb1
         or a
         jr NZ, .l_3
-        ld a, (ix+19)
-        add (ix+0)
-        ld (ix+0), a
+        ld a, (ix+Obj.o_19)
+        add (ix+Obj.x)
+        ld (ix+Obj.x), a
 .l_3:
         ld a, (State.s_27)
         ld e, a
@@ -479,8 +479,8 @@ c_da95:  ; #da95
         ld (State.s_37), a
         cp #7F
         jp Z, c_d94c.l_13
-        add (ix+2)
-        ld (ix+2), a
+        add (ix+Obj.y)
+        ld (ix+Obj.y), a
         ld a, (hl)
         ld hl, State.s_27
         inc (hl)
@@ -511,9 +511,9 @@ c_da95:  ; #da95
 .l_5:
         exa
         neg
-        add (ix+2)
+        add (ix+Obj.y)
         and #F8
-        ld (ix+2), a
+        ld (ix+Obj.y), a
         ret
 
 ; (Some game logic from call table #D6E7?)
@@ -529,44 +529,44 @@ c_db4e:  ; #db4e
         cp #02
         jp Z, c_d7f6.l_12
 .l_0:
-        ld l, (ix+0)
-        ld h, (ix+1)
+        ld l, (ix+Obj.x+0)
+        ld h, (ix+Obj.x+1)
         push hl
-        ld a, (ix+19)
+        ld a, (ix+Obj.o_19)
         or a
         jr Z, .l_2
-        bit 0, (ix+21)
+        bit 0, (ix+Obj.o_21)
         jr NZ, .l_1
         call c_de37
         or a
         jr NZ, .l_2
-        ld a, (ix+19)
+        ld a, (ix+Obj.o_19)
         neg
-        add (ix+0)
-        ld (ix+0), a
+        add (ix+Obj.x)
+        ld (ix+Obj.x), a
         jr .l_2
 .l_1:
         call c_deb1
         or a
         jr NZ, .l_2
-        ld a, (ix+19)
-        add (ix+0)
-        ld (ix+0), a
+        ld a, (ix+Obj.o_19)
+        add (ix+Obj.x)
+        ld (ix+Obj.x), a
 .l_2:
         exx
-        ld l, (ix+0)
-        ld h, (ix+1)
+        ld l, (ix+Obj.x+0)
+        ld h, (ix+Obj.x+1)
         exx
         pop hl
-        ld (ix+0), l
-        ld (ix+1), h
-        ld a, (ix+2)
+        ld (ix+Obj.x+0), l
+        ld (ix+Obj.x+1), h
+        ld a, (ix+Obj.y)
         add #04
-        ld (ix+2), a
+        ld (ix+Obj.y), a
         call c_dd09
         exx
-        ld (ix+0), l
-        ld (ix+1), h
+        ld (ix+Obj.x+0), l
+        ld (ix+Obj.x+1), h
         exx
         ld a, (State.s_31)
         call c_eaee
@@ -581,17 +581,17 @@ c_db4e:  ; #db4e
         jr NZ, .l_3
         bit 0, a
         jr NZ, .l_4
-        ld (ix+19), #00
+        ld (ix+Obj.o_19), #00
         ret
 .l_3:
-        ld (ix+19), #02
-        set 1, (ix+21)
-        res 0, (ix+21)
+        ld (ix+Obj.o_19), #02
+        set 1, (ix+Obj.o_21)
+        res 0, (ix+Obj.o_21)
         ret
 .l_4:
-        ld (ix+19), #02
-        set 0, (ix+21)
-        res 1, (ix+21)
+        ld (ix+Obj.o_19), #02
+        set 0, (ix+Obj.o_21)
+        res 1, (ix+Obj.o_21)
         ret
 
 ; (Some game logic from call table #D6E7?)
@@ -619,9 +619,9 @@ c_dbfc:  ; #dbfc
         cp #04
         jr NC, .l_1
         call c_dcce
-        ld a, (ix+2)
+        ld a, (ix+Obj.y)
         add #FE
-        ld (ix+2), a
+        ld (ix+Obj.y), a
 .l_1:
         ld a, (controlState)
         bit 2, a
@@ -636,13 +636,13 @@ c_dbfc:  ; #dbfc
         jp Z, c_d94c.l_13
 .l_2:
         call c_dcce
-        ld a, (ix+2)
+        ld a, (ix+Obj.y)
         add #02
-        ld (ix+2), a
+        ld (ix+Obj.y), a
 .l_3:
-        ld a, (ix+2)
+        ld a, (ix+Obj.y)
         or #01
-        ld (ix+2), a
+        ld (ix+Obj.y), a
         and #07
         cp #03
         jr NZ, .l_4
@@ -667,9 +667,9 @@ c_dbfc:  ; #dbfc
         call c_de37
         jr NZ, .l_6
         call c_dcce
-        ld a, (ix+0)
+        ld a, (ix+Obj.x)
         add #FE
-        ld (ix+0), a
+        ld (ix+Obj.x), a
 .l_6:
         ld a, (controlState)
         bit 0, a
@@ -686,9 +686,9 @@ c_dbfc:  ; #dbfc
         call c_deb1
         jr NZ, .l_8
         call c_dcce
-        ld a, (ix+0)
+        ld a, (ix+Obj.x)
         add #02
-        ld (ix+0), a
+        ld (ix+Obj.x), a
 .l_8:
         ret
 
@@ -700,92 +700,92 @@ c_dcce:  ; #dcce
         and #03
         ld (State.s_42), a
         ret NZ
-        ld a, (ix+21)
+        ld a, (ix+Obj.o_21)
         xor #03
-        ld (ix+21), a
+        ld (ix+Obj.o_21), a
         ret
 
 ; ?
 ; Used by c_dbfc.
 c_dce1:  ; #dce1
-        ld a, (ix+0)
+        ld a, (ix+Obj.x)
         add #0C
-        ld (ix+0), a
-        ld a, (ix+2)
+        ld (ix+Obj.x), a
+        ld a, (ix+Obj.y)
         add #15
-        ld (ix+2), a
+        ld (ix+Obj.y), a
         call c_d460
         ld a, (hl)
         ld (State.s_34), a
-        ld a, (ix+0)
+        ld a, (ix+Obj.x)
         add #F4
-        ld (ix+0), a
-        ld a, (ix+2)
+        ld (ix+Obj.x), a
+        ld a, (ix+Obj.y)
         add #EB
-        ld (ix+2), a
+        ld (ix+Obj.y), a
         ret
 
 ; ?
 ; Used by c_da95 and c_db4e.
 c_dd09:  ; #dd09
-        ld a, (ix+0)
+        ld a, (ix+Obj.x)
         add #06
-        ld (ix+0), a
-        ld a, (ix+1)
+        ld (ix+Obj.x), a
+        ld a, (ix+Obj.x+1)
         adc a, #00
-        ld (ix+1), a
-        ld a, (ix+2)
+        ld (ix+Obj.x+1), a
+        ld a, (ix+Obj.y)
         add #18
-        ld (ix+2), a
+        ld (ix+Obj.y), a
         call c_d460
         ld a, (hl)
         ld (State.s_31), a
         inc hl
         ld a, (hl)
         ld (State.s_32), a
-        ld a, (ix+0)
+        ld a, (ix+Obj.x)
         add #FA
-        ld (ix+0), a
-        ld a, (ix+1)
+        ld (ix+Obj.x), a
+        ld a, (ix+Obj.x+1)
         adc a, #FF
-        ld (ix+1), a
-        ld a, (ix+2)
+        ld (ix+Obj.x+1), a
+        ld a, (ix+Obj.y)
         add #E8
-        ld (ix+2), a
+        ld (ix+Obj.y), a
         ret
 
 ; ?
 ; Used by c_da95 and c_dbfc.
 c_dd46:  ; #dd46
-        ld a, (ix+0)
+        ld a, (ix+Obj.x)
         add #06
-        ld (ix+0), a
-        ld a, (ix+2)
+        ld (ix+Obj.x), a
+        ld a, (ix+Obj.y)
         add #FF
-        ld (ix+2), a
+        ld (ix+Obj.y), a
         call c_d460
         ld a, (hl)
         ld (State.s_35), a
         inc hl
         ld a, (hl)
         ld (State.s_36), a
-        ld a, (ix+0)
+        ld a, (ix+Obj.x)
         add #FA
-        ld (ix+0), a
-        ld a, (ix+2)
+        ld (ix+Obj.x), a
+        ld a, (ix+Obj.y)
         add #01
-        ld (ix+2), a
+        ld (ix+Obj.y), a
         ret
 
 ; ?
 ; Used by c_d709.
 c_dd73:  ; #dd73
-        ld a, (ix+0)
+        ld a, (ix+Obj.x)
         add #04
-        ld (ix+0), a
-        ld a, (ix+1)
+        ld (ix+Obj.x), a
+        ld a, (ix+Obj.x+1)
         adc a, #00
-        ld (ix+1), a
+        ld (ix+Obj.x+1), a
         call c_d460
         ld bc, #002C
         ld a, (hl)
@@ -799,12 +799,12 @@ c_dd73:  ; #dd73
         add hl, bc
         ld a, (hl)
         ld (State.s_2C), a
-        ld a, (ix+0)
+        ld a, (ix+Obj.x)
         add #0C
-        ld (ix+0), a
-        ld a, (ix+1)
+        ld (ix+Obj.x), a
+        ld a, (ix+Obj.x+1)
         adc a, #00
-        ld (ix+1), a
+        ld (ix+Obj.x+1), a
         call c_d460
         ld bc, #002C
         ld a, (hl)
@@ -818,46 +818,46 @@ c_dd73:  ; #dd73
         add hl, bc
         ld a, (hl)
         ld (State.s_30), a
-        ld a, (ix+0)
+        ld a, (ix+Obj.x)
         add #F6
-        ld (ix+0), a
-        ld a, (ix+1)
+        ld (ix+Obj.x), a
+        ld a, (ix+Obj.x+1)
         adc a, #FF
-        ld (ix+1), a
-        ld a, (ix+2)
+        ld (ix+Obj.x+1), a
+        ld a, (ix+Obj.y)
         add #15
-        ld (ix+2), a
+        ld (ix+Obj.y), a
         call c_d460
         ld a, (hl)
         ld (State.s_31), a
         inc hl
         ld a, (hl)
         ld (State.s_32), a
-        ld a, (ix+0)
+        ld a, (ix+Obj.x)
         add #06
-        ld (ix+0), a
-        ld a, (ix+1)
+        ld (ix+Obj.x), a
+        ld a, (ix+Obj.x+1)
         adc a, #00
-        ld (ix+1), a
-        ld a, (ix+2)
+        ld (ix+Obj.x+1), a
+        ld a, (ix+Obj.y)
         add #F8
-        ld (ix+2), a
+        ld (ix+Obj.y), a
         call c_d460
         ld a, (hl)
         ld (State.s_33), a
         add hl, bc
         ld a, (hl)
         ld (State.s_34), a
-        ld a, (ix+0)
+        ld a, (ix+Obj.x)
         add #F4
-        ld (ix+0), a
-        ld a, (ix+1)
+        ld (ix+Obj.x), a
+        ld a, (ix+Obj.x+1)
         adc a, #FF
-        ld (ix+1), a
-        ld a, (ix+2)
+        ld (ix+Obj.x+1), a
+        ld a, (ix+Obj.y)
         add #F3
-        ld (ix+2), a
-        ld a, (ix+2)
+        ld (ix+Obj.y), a
+        ld a, (ix+Obj.y)
         and #07
         cp #03
         jr NZ, .l_0
@@ -871,8 +871,8 @@ c_dd73:  ; #dd73
 ; (Checks something?)
 ; Used by c_d308, c_d709, c_d7f6, c_d94c, c_da95, c_db4e and c_dbfc.
 c_de37:  ; #de37
-        ld l, (ix+0)
-        ld h, (ix+1)
+        ld l, (ix+Obj.x+0)
+        ld h, (ix+Obj.x+1)
         ld de, -32
         add hl, de
         jr NC, .l_2
@@ -930,8 +930,8 @@ c_de37:  ; #de37
 ; (Checks something?)
 ; Used by c_d308, c_d709, c_d7f6, c_d94c, c_da95, c_db4e and c_dbfc.
 c_deb1:  ; #deb1
-        ld l, (ix+0)
-        ld h, (ix+1)
+        ld l, (ix+Obj.x+0)
+        ld h, (ix+Obj.x+1)
         ld de, -252
         add hl, de
         jr C, .l_2
@@ -1060,25 +1060,25 @@ c_df85:  ; #df85
         ld a, #04
         call playSound
         ld hl, cS.heroKicks
-        ld (ix+3), l
-        ld (ix+4), h
-        ld (iy+5), #02
-        ld (iy+9), #47
-        ld (iy+21), #01
-        ld (iy+19), #00
-        ld (iy+7), #00
-        ld l, (ix+0)
-        ld h, (ix+1)
+        ld (ix+Obj.sprite+0), l
+        ld (ix+Obj.sprite+1), h
+        ld (iy+Obj.flags), #02
+        ld (iy+Obj.color), #47
+        ld (iy+Obj.o_21), #01
+        ld (iy+Obj.o_19), #00
+        ld (iy+Obj.o_7), #00
+        ld l, (ix+Obj.x+0)
+        ld h, (ix+Obj.x+1)
         ld de, #0010
-        bit 0, (ix+21)
+        bit 0, (ix+Obj.o_21)
         jr NZ, .l_2
         ld de, -16
 .l_2:
         add hl, de
-        ld (iy+0), l
-        ld (iy+1), h
-        ld a, (ix+2)
-        ld (iy+2), a
+        ld (iy+Obj.x+0), l
+        ld (iy+Obj.x+1), h
+        ld a, (ix+Obj.y)
+        ld (iy+Obj.y), a
         ld a, (State.soupCans)
         dec a
         add a
@@ -1087,10 +1087,10 @@ c_df85:  ; #df85
         ld de, kickBubbles
         add hl, de
         ld a, (hl)
-        ld (iy+3), a
+        ld (iy+Obj.sprite+0), a
         inc hl
         ld a, (hl)
-        ld (iy+4), a
+        ld (iy+Obj.sprite+1), a
         ld a, #01
         ld (State.s_3D), a
         ld a, #03
@@ -1102,33 +1102,33 @@ c_df85:  ; #df85
         ld a, #04
         call playSound
         ld hl, cS.heroThrows
-        ld (ix+3), l
-        ld (ix+4), h
+        ld (ix+Obj.sprite+0), l
+        ld (ix+Obj.sprite+1), h
         ld hl, cS.shatterbomb
-        ld (iy+3), l
-        ld (iy+4), h
-        ld (iy+5), #01
-        ld (iy+9), #45
-        ld (iy+7), #00
-        ld (iy+10), #08
-        ld (iy+11), #08
-        ld l, (ix+0)
-        ld h, (ix+1)
+        ld (iy+Obj.sprite+0), l
+        ld (iy+Obj.sprite+1), h
+        ld (iy+Obj.flags), #01
+        ld (iy+Obj.color), #45
+        ld (iy+Obj.o_7), #00
+        ld (iy+Obj.o_10), #08
+        ld (iy+Obj.o_11), #08
+        ld l, (ix+Obj.x+0)
+        ld h, (ix+Obj.x+1)
         ld de, #0008
-        bit 0, (ix+21)
+        bit 0, (ix+Obj.o_21)
         jr NZ, .l_4
         ld de, -6
 .l_4:
         add hl, de
-        ld (iy+0), l
-        ld (iy+1), h
-        ld a, (ix+2)
+        ld (iy+Obj.x+0), l
+        ld (iy+Obj.x+1), h
+        ld a, (ix+Obj.y)
         add #FC
-        ld (iy+2), a
-        ld (iy+19), #04
-        ld a, (ix+21)
+        ld (iy+Obj.y), a
+        ld (iy+Obj.o_19), #04
+        ld a, (ix+Obj.o_21)
         and #03
-        ld (iy+21), a
+        ld (iy+Obj.o_21), a
         xor a
         ld (State.s_3F), a
         ld a, #02
@@ -1154,36 +1154,36 @@ c_df85:  ; #df85
         ld c, (hl)
         inc hl
         ld b, (hl)
-        ld (iy+3), c
-        ld (iy+4), b
+        ld (iy+Obj.sprite+0), c
+        ld (iy+Obj.sprite+1), b
         inc hl
         ld a, (hl)
-        ld (iy+10), a
+        ld (iy+Obj.o_10), a
         inc hl
         ld a, (hl)
-        ld (iy+11), a
+        ld (iy+Obj.o_11), a
         inc hl
         ld a, (hl)
-        add (ix+2)
-        ld (iy+2), a
-        ld l, (ix+0)
-        ld h, (ix+1)
+        add (ix+Obj.y)
+        ld (iy+Obj.y), a
+        ld l, (ix+Obj.x+0)
+        ld h, (ix+Obj.x+1)
         ld de, #0018
-        bit 0, (ix+21)
+        bit 0, (ix+Obj.o_21)
         jr NZ, .l_6
         ld de, -16
 .l_6:
         add hl, de
-        ld (iy+0), l
-        ld (iy+1), h
-        ld (iy+5), #01
-        ld (iy+9), #47
-        ld (iy+19), #08
-        ld (iy+20), #08
-        ld (iy+7), #00
-        ld a, (ix+21)
+        ld (iy+Obj.x+0), l
+        ld (iy+Obj.x+1), h
+        ld (iy+Obj.flags), #01
+        ld (iy+Obj.color), #47
+        ld (iy+Obj.o_19), #08
+        ld (iy+Obj.o_20), #08
+        ld (iy+Obj.o_7), #00
+        ld a, (ix+Obj.o_21)
         and #03
-        ld (iy+21), a
+        ld (iy+Obj.o_21), a
         ld (State.s_38), a
         ld a, #03
         ld (State.s_3D), a
@@ -1208,35 +1208,35 @@ c_df85:  ; #df85
         ld c, (hl)
         inc hl
         ld b, (hl)
-        ld (iy+3), c
-        ld (iy+4), b
+        ld (iy+Obj.sprite+0), c
+        ld (iy+Obj.sprite+1), b
         inc hl
         ld a, (hl)
-        ld (iy+10), a
+        ld (iy+Obj.o_10), a
         inc hl
         ld a, (hl)
-        ld (iy+11), a
+        ld (iy+Obj.o_11), a
         inc hl
         ld a, (hl)
-        add (ix+2)
-        ld (iy+2), a
-        ld l, (ix+0)
-        ld h, (ix+1)
+        add (ix+Obj.y)
+        ld (iy+Obj.y), a
+        ld l, (ix+Obj.x+0)
+        ld h, (ix+Obj.x+1)
         ld de, #0010
-        bit 0, (ix+21)
+        bit 0, (ix+Obj.o_21)
         jr NZ, .l_8
         ld de, -6
 .l_8:
         add hl, de
-        ld (iy+0), l
-        ld (iy+1), h
-        ld (iy+7), #00
-        ld (iy+5), #01
-        ld (iy+9), #45
-        ld (iy+19), #08
-        ld a, (ix+21)
+        ld (iy+Obj.x+0), l
+        ld (iy+Obj.x+1), h
+        ld (iy+Obj.o_7), #00
+        ld (iy+Obj.flags), #01
+        ld (iy+Obj.color), #45
+        ld (iy+Obj.o_19), #08
+        ld a, (ix+Obj.o_21)
         and #03
-        ld (iy+21), a
+        ld (iy+Obj.o_21), a
         ld (State.s_38), a
         ld a, #04
         ld (State.s_3D), a
@@ -1254,21 +1254,21 @@ c_df85:  ; #df85
         jr Z, .l_10
         dec (hl)
         ld hl, cS.heroKicks
-        ld (ix+3), l
-        ld (ix+4), h
+        ld (ix+Obj.sprite+0), l
+        ld (ix+Obj.sprite+1), h
         ret
 .l_10:
         ld a, (State.s_28)
         or a
         jr NZ, .l_11
         ld hl, cS.heroStands
-        ld (ix+3), l
-        ld (ix+4), h
+        ld (ix+Obj.sprite+0), l
+        ld (ix+Obj.sprite+1), h
 .l_11:
         xor a
         ld (State.s_3D), a
         ld ix, scene.obj1
-        ld (ix+5), a
+        ld (ix+Obj.flags), a
         ret
 .l_12:
         cp #02
@@ -1281,8 +1281,8 @@ c_df85:  ; #df85
         push ix
         ld ix, scene
         ld hl, cS.heroThrows
-        ld (ix+3), l
-        ld (ix+4), h
+        ld (ix+Obj.sprite+0), l
+        ld (ix+Obj.sprite+1), h
         pop ix
 .l_13:
         ld a, (State.s_40)
@@ -1300,26 +1300,26 @@ c_df85:  ; #df85
         jr Z, .l_14
         ld hl, State.s_3F
         inc (hl)
-        ld (ix+20), a
+        ld (ix+Obj.o_20), a
 .l_14:
-        ld a, (ix+20)
-        add (ix+2)
-        ld (ix+2), a
+        ld a, (ix+Obj.o_20)
+        add (ix+Obj.y)
+        ld (ix+Obj.y), a
         call c_d407.l_0
         jp NC, .l_18
-        ld a, (ix+0)
+        ld a, (ix+Obj.x)
         add #04
-        ld (ix+0), a
-        ld a, (ix+1)
+        ld (ix+Obj.x), a
+        ld a, (ix+Obj.x+1)
         adc a, #00
-        ld (ix+1), a
+        ld (ix+Obj.x+1), a
         call c_d460
-        ld a, (ix+0)
+        ld a, (ix+Obj.x)
         add #FC
-        ld (ix+0), a
-        ld a, (ix+1)
+        ld (ix+Obj.x), a
+        ld a, (ix+Obj.x+1)
         adc a, #FF
-        ld (ix+1), a
+        ld (ix+Obj.x+1), a
         ld a, (hl)
         call c_eaee
         cp #02
@@ -1327,19 +1327,19 @@ c_df85:  ; #df85
 .l_15:
         ld a, #06
         call playSound
-        ld a, (ix+0)
+        ld a, (ix+Obj.x)
         add #FC
-        ld (ix+0), a
-        ld a, (ix+1)
+        ld (ix+Obj.x), a
+        ld a, (ix+Obj.x+1)
         adc a, #FF
-        ld (ix+1), a
-        ld a, (ix+2)
+        ld (ix+Obj.x+1), a
+        ld a, (ix+Obj.y)
         add #F8
-        ld (ix+2), a
+        ld (ix+Obj.y), a
         xor a
         ld (State.s_40), a
-        ld (ix+21), a
-        set 1, (ix+5)
+        ld (ix+Obj.o_21), a
+        set 1, (ix+Obj.flags)
         ld a, (State.soupCans)
         dec a
         ld (.l), a
@@ -1373,13 +1373,13 @@ c_df85:  ; #df85
         ld a, (hl)
         inc hl
         ld h, (hl)
-        ld (ix+3), a
-        ld (ix+4), h
-        ld (ix+9), #47
+        ld (ix+Obj.sprite+0), a
+        ld (ix+Obj.sprite+1), h
+        ld (ix+Obj.color), #47
         jp c_eb00
 .l_18:
         xor a
-        ld (ix+5), a
+        ld (ix+Obj.flags), a
         ld (State.s_3D), a
         ld (State.s_40), a
         ld (c_e308), a
@@ -1387,25 +1387,25 @@ c_df85:  ; #df85
 .l_19:
         call c_d407.l_0
         jr NC, .l_18
-        ld a, (ix+0)
+        ld a, (ix+Obj.x)
         add #04
-        ld (ix+0), a
-        ld a, (ix+1)
+        ld (ix+Obj.x), a
+        ld a, (ix+Obj.x+1)
         adc a, #00
-        ld (ix+1), a
-        ld a, (ix+2)
+        ld (ix+Obj.x+1), a
+        ld a, (ix+Obj.y)
         add #08
-        ld (ix+2), a
+        ld (ix+Obj.y), a
         call c_d460
-        ld a, (ix+0)
+        ld a, (ix+Obj.x)
         add #FC
-        ld (ix+0), a
-        ld a, (ix+1)
+        ld (ix+Obj.x), a
+        ld a, (ix+Obj.x+1)
         adc a, #FF
-        ld (ix+1), a
-        ld a, (ix+2)
+        ld (ix+Obj.x+1), a
+        ld a, (ix+Obj.y)
         add #F8
-        ld (ix+2), a
+        ld (ix+Obj.y), a
         ld a, (hl)
         call c_eaee
         cp #02
@@ -1440,23 +1440,23 @@ c_e31c:  ; #e31c
 .l_0:
         ld ix, scene.obj1
         ld iy, scene.obj2
-        ld de, #0032
+        ld de, Obj
         ld b, #06
 .l_1:
-        bit 0, (iy+5)
+        bit 0, (iy+Obj.flags)
         jr Z, .l_2
-        ld a, (iy+7)
+        ld a, (iy+Obj.o_7)
         cp #FF
         jr Z, .l_2
-        bit 7, (iy+5)
+        bit 7, (iy+Obj.flags)
         jr NZ, .l_2
-        ld a, (iy+12)
+        ld a, (iy+Obj.o_12)
         cp #FE
         jr Z, .l_2
         cp #FF
         jr Z, .l_2
-        ld l, (iy+0)
-        ld h, (iy+1)
+        ld l, (iy+Obj.x+0)
+        ld h, (iy+Obj.x+1)
         ld de, #0020
         xor a
         sbc hl, de
@@ -1464,22 +1464,22 @@ c_e31c:  ; #e31c
 .l_2:
         add iy, de
         djnz .l_1
-        ld a, (ix+21)
+        ld a, (ix+Obj.o_21)
         and #03
-        ld (ix+21), a
+        ld (ix+Obj.o_21), a
         ret
 .l_3:
-        ld a, (ix+21)
+        ld a, (ix+Obj.o_21)
         ld l, a
         ld h, #00
         ld de, c_e311
         add hl, de
         ld b, (hl)
-        ld (ix+21), #00
-        ld l, (ix+0)
-        ld h, (ix+1)
-        ld e, (iy+0)
-        ld d, (iy+1)
+        ld (ix+Obj.o_21), #00
+        ld l, (ix+Obj.x+0)
+        ld h, (ix+Obj.x+1)
+        ld e, (iy+Obj.x+0)
+        ld d, (iy+Obj.x+1)
         xor a
         sbc hl, de
         jp P, .l_4
@@ -1490,32 +1490,32 @@ c_e31c:  ; #e31c
         neg
         ld l, a
         inc hl
-        set 0, (ix+21)
+        set 0, (ix+Obj.o_21)
         jr .l_5
 .l_4:
-        set 1, (ix+21)
+        set 1, (ix+Obj.o_21)
 .l_5:
         ld de, #0004
         xor a
         sbc hl, de
         jr NC, .l_6
-        ld (ix+21), #00
+        ld (ix+Obj.o_21), #00
 .l_6:
-        ld a, (ix+2)
-        sub (iy+2)
+        ld a, (ix+Obj.y)
+        sub (iy+Obj.y)
         jp P, .l_7
         neg
-        set 2, (ix+21)
+        set 2, (ix+Obj.o_21)
         jr .l_8
 .l_7:
-        set 3, (ix+21)
+        set 3, (ix+Obj.o_21)
 .l_8:
         cp #04
         jr NC, .l_9
-        res 2, (ix+21)
-        res 3, (ix+21)
+        res 2, (ix+Obj.o_21)
+        res 3, (ix+Obj.o_21)
 .l_9:
-        ld a, (ix+21)
+        ld a, (ix+Obj.o_21)
         ld l, a
         ld h, #00
         ld de, c_e311
@@ -1541,7 +1541,7 @@ c_e31c:  ; #e31c
         ld de, c_e309
         add hl, de
         ld a, (hl)
-        ld (ix+21), a
+        ld (ix+Obj.o_21), a
 .l_11:
         ld a, #01
         ld (c_e308), a
@@ -1575,14 +1575,14 @@ c_e419:  ; #e419
         ld a, (State.s_41)
         or a
         jr Z, .l_0
-        inc (ix+6)
-        ld a, (ix+6)
+        inc (ix+Obj.o_6)
+        ld a, (ix+Obj.o_6)
         and #02
         jr NZ, .l_0
         ld de, cS.heroSmallStands
 .l_0:
-        ld (ix+3), e
-        ld (ix+4), d
+        ld (ix+Obj.sprite+0), e
+        ld (ix+Obj.sprite+1), d
         ret
 .l_1:
         ld a, (State.s_41)
@@ -1594,12 +1594,12 @@ c_e419:  ; #e419
         cp (hl)
         ret NZ
         ld (hl), #00
-        inc (ix+6)
-        ld a, (ix+6)
+        inc (ix+Obj.o_6)
+        ld a, (ix+Obj.o_6)
         cp #06
         jr C, .l_2
         xor a
-        ld (ix+6), a
+        ld (ix+Obj.o_6), a
 .l_2:
         add a
         ld l, a
@@ -1614,8 +1614,8 @@ c_e419:  ; #e419
         ld e, (hl)
         inc hl
         ld d, (hl)
-        ld (ix+3), e
-        ld (ix+4), d
+        ld (ix+Obj.sprite+0), e
+        ld (ix+Obj.sprite+1), d
         ret
 
 

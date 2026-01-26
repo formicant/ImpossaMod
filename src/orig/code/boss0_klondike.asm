@@ -39,11 +39,11 @@ boss_logic_klondike:  ; #f8f4
         ld l, a
         ld b, #04
         ld ix, scene.obj2
-        ld de, #0032
+        ld de, Obj
 .l_0:
-        ld (ix+0), l
-        ld (ix+1), #00
-        ld (ix+2), h
+        ld (ix+Obj.x+0), l
+        ld (ix+Obj.x+1), #00
+        ld (ix+Obj.y), h
         add ix, de
         djnz .l_0
         ld a, #02
@@ -61,8 +61,8 @@ boss_logic_klondike:  ; #f8f4
         jr NZ, .l_2
         ld ix, scene.obj4
         ld hl, Lev0Klondike.lS.bossAnt2
-        ld (ix+3), l
-        ld (ix+4), h
+        ld (ix+Obj.sprite+0), l
+        ld (ix+Obj.sprite+1), h
         ld a, #FF
         ld (State.s_56), a
         ld a, #02
@@ -81,9 +81,9 @@ boss_logic_klondike:  ; #f8f4
 .l_4:
         ld b, #04
         ld ix, scene.obj2
-        ld de, #0032
+        ld de, Obj
 .l_5:
-        ld (ix+5), #00
+        ld (ix+Obj.flags), #00
         djnz .l_5
         ld a, #01
         ld (State.s_54), a

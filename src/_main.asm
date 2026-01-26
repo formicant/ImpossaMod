@@ -8,6 +8,7 @@
 ; Definitions
     INCLUDE "orig/macros.inc"
     INCLUDE "orig/basic.inc"
+    INCLUDE "orig/structs.inc"
     INCLUDE "level.inc"
     INCLUDE "orig/ay.inc"
 

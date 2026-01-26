@@ -18,14 +18,14 @@ boss_logic_iceland:  ; #fad3
         call putObjectToScene.l_1
         ld ix, scene.obj2
         ld iy, scene.obj3
-        ld (ix+2), #60
-        ld l, (ix+0)
-        ld h, (ix+1)
-        ld (iy+0), l
-        ld (iy+1), h
+        ld (ix+Obj.y), #60
+        ld l, (ix+Obj.x+0)
+        ld h, (ix+Obj.x+1)
+        ld (iy+Obj.x+0), l
+        ld (iy+Obj.x+1), h
         ld a, #13
-        add (ix+2)
-        ld (iy+2), a
+        add (ix+Obj.y)
+        ld (iy+Obj.y), a
         ld a, #02
         ld (State.s_54), a
         xor a
@@ -35,9 +35,9 @@ boss_logic_iceland:  ; #fad3
         ret
 .l_0:
         ld ix, scene.obj2
-        ld l, (ix+0)
-        ld h, (ix+1)
-        bit 1, (ix+21)
+        ld l, (ix+Obj.x+0)
+        ld h, (ix+Obj.x+1)
+        bit 1, (ix+Obj.o_21)
         jr NZ, .l_2
         ld de, #0108
         xor a

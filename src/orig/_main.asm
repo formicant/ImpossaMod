@@ -4,6 +4,7 @@
 ; Definitions
     INCLUDE "macros.inc"
     INCLUDE "basic.inc"
+    INCLUDE "structs.inc"
     INCLUDE "level.inc"
     INCLUDE "ay.inc"
 
@@ -67,7 +68,7 @@ codeStart:
     INCLUDE "code/boss4_bermuda.asm"
     INCLUDE "code/boss1_3_extra.asm"
     INCLUDE "code/boss1_extra.asm"
-    
+
     ORG #FE01
     INCLUDE "var/state.asm"
 

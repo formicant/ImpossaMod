@@ -2,37 +2,37 @@
 
 
 ; #B282 transitTable:
-;       isDown fromX toLeft toRight toX
-        db 0 : dw  65, 109, 119 : db 4
-        db 1 : dw 114,  64, 108 : db 3
-        db 1 : dw 115,  64, 108 : db 3
-        db 1 : dw  67, 119, 143 : db 1
-        db 0 : dw 139,  84, 108 : db 2
-        db 0 : dw  95, 144, 156 : db 2
-        db 1 : dw 103, 156, 170 : db 1
-        db 1 : dw 152,  99, 107 : db 4
-        db 1 : dw 153,  99, 107 : db 4
-        db 0 : dw 167, 171, 221 : db 3
-        db 0 : dw 187, 328, 340 : db 0
-        db 0 : dw 188, 328, 340 : db 1
-        db 1 : dw 335, 192, 222 : db 3
-        db 1 : dw 336, 192, 222 : db 3
-        db 1 : dw 337, 192, 222 : db 4
-        db 1 : dw 338, 192, 222 : db 5
-        db 1 : dw 215, 223, 295 : db 2
-        db 1 : dw 216, 223, 295 : db 3
-        db 1 : dw 217, 223, 295 : db 4
-        db 1 : dw 218, 223, 295 : db 5
-        db 1 : dw 290, 312, 328 : db 2
-        db 1 : dw 291, 312, 328 : db 5
-        db 0 : dw 293, 296, 312 : db 2
-        db 1 : dw 308, 341, 399 : db 1
-        db 1 : dw 309, 341, 399 : db 2
-        db 1 : dw 310, 341, 399 : db 3
-        db 0 : dw 324, 346, 400 : db 2
-        db 0 : dw 393, 400, 408 : db 0
-        db 0 : dw 394, 400, 408 : db 1
-        db 0 : dw 395, 400, 408 : db 2
+        ;    down from start end to
+        Transit 0,  65, 109, 119, 4
+        Transit 1, 114,  64, 108, 3
+        Transit 1, 115,  64, 108, 3
+        Transit 1,  67, 119, 143, 1
+        Transit 0, 139,  84, 108, 2
+        Transit 0,  95, 144, 156, 2
+        Transit 1, 103, 156, 170, 1
+        Transit 1, 152,  99, 107, 4
+        Transit 1, 153,  99, 107, 4
+        Transit 0, 167, 171, 221, 3
+        Transit 0, 187, 328, 340, 0
+        Transit 0, 188, 328, 340, 1
+        Transit 1, 335, 192, 222, 3
+        Transit 1, 336, 192, 222, 3
+        Transit 1, 337, 192, 222, 4
+        Transit 1, 338, 192, 222, 5
+        Transit 1, 215, 223, 295, 2
+        Transit 1, 216, 223, 295, 3
+        Transit 1, 217, 223, 295, 4
+        Transit 1, 218, 223, 295, 5
+        Transit 1, 290, 312, 328, 2
+        Transit 1, 291, 312, 328, 5
+        Transit 0, 293, 296, 312, 2
+        Transit 1, 308, 341, 399, 1
+        Transit 1, 309, 341, 399, 2
+        Transit 1, 310, 341, 399, 3
+        Transit 0, 324, 346, 400, 2
+        Transit 0, 393, 400, 408, 0
+        Transit 0, 394, 400, 408, 1
+        Transit 0, 395, 400, 408, 2
         db #80                  ; stop mark
 
 
