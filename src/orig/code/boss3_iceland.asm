@@ -3,7 +3,7 @@
 
 ; Iceland boss logic
 ; Used by c_f8cb.
-boss_logic_iceland:  ; #fad3
+bossLogicIceland:  ; #fad3
         ld a, (State.s_54)
         cp #01
         jr NZ, .l_0

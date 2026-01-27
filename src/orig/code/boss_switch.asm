@@ -7,18 +7,18 @@ boss_logic:  ; #f8cb
         ld a, (State.s_54)
         or a
         ret Z
-        
+
         ld a, (State.level)
         or a
-        jp Z, boss_logic_klondike
+        jp Z, bossLogicKlondike
         cp 1
-        jp Z, boss_logic_orient
+        jp Z, bossLogicOrient
         cp 2
-        jp Z, boss_logic_amazon
+        jp Z, bossLogicAmazon
         cp 3
-        jp Z, boss_logic_iceland
+        jp Z, bossLogicIceland
         cp 4
-        jp Z, boss_logic_bermuda
+        jp Z, bossLogicBermuda
         ret
 
 

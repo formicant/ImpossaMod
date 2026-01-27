@@ -1,31 +1,6 @@
     MODULE Code
 
 
-; Entry point
-entryPoint:  ; #cc25
-        di
-.lev+*  ld a, #FF
-        ld (State.loadedLevel), a
-        ld sp, 0
-        call initInterrupts
-        call detectSpectrumModel
-
-        ; init mirroring table
-        ld b, 0
-        ld h, high(mirrorTable)
-.byte:
-        ld l, b
-        ld a, b
-        ld c, 0
-    DUP 8
-        rla
-        rr c
-    EDUP
-        ld (hl), c
-        djnz .byte
-
-        jp gameStart
-
 gameStart:  ; #cc5a
         call gameMenu
         call clearGameState
@@ -35,7 +10,7 @@ gameStart:  ; #cc5a
         ld a, #47               ; bright white ink, black paper
         call fillScreenAttrs
         call clearScene
-        call removeObjects      ; not needed
+        call removeObjects      ; not needed (?)
         call initLevel
         ; continue
 
@@ -59,23 +34,23 @@ gameStart:  ; #cc5a
         jp .l_2
 
 .l_5:
-        call performSmartIfSmartKeyPressed
-        call c_d4cd
-        call c_f553
-        call c_ecee             ; (time: long)
-        call c_e56f             ; (time: medium)
+        call performSmartIfSmartKeyPressed ; TODO: replace
+        call c_d4cd             ; TODO: can be inlined
+        call c_f553             ; TODO: can be inlined
+        call c_ecee             ; TODO: can be inlined (time: long)
+        call c_e56f             ; TODO: can be inlined (time: medium)
         call putNextObjectsToScene  ; (time: medium)
-        call boss_logic
-        call c_e60a
-        call decBlinkTime
-        call c_e6e1             ; (time: medium)
-        call c_d308
-        call c_d709             ; (time: long)
-        call c_e920
-        call c_e9b1
-        call c_df85             ; (time: medium)
-        call updateConveyors
-        call rollConveyorTiles
+        call boss_logic         ; TODO: can be inlined
+        call c_e60a             ; TODO: can be inlined
+        call decBlinkTime       ; TODO: can be inlined
+        call c_e6e1             ; TODO: can be inlined (time: medium)
+        call c_d308             ; TODO: can be inlined
+        call c_d709             ; TODO: can be inlined (time: long)
+        call c_e920             ; TODO: can be inlined
+        call c_e9b1             ; TODO: can be inlined
+        call c_df85             ; TODO: can be inlined (time: medium)
+        call updateConveyors    ; TODO: can be inlined
+        call rollConveyorTiles  ; TODO: can be inlined
         call drawObjectsChecked ; (time: extreme)
 
         ld c, 3
@@ -90,13 +65,13 @@ gameStart:  ; #cc5a
         xor a
         ld (State.s_05), a
         ld ix, scene.hero
-        set 0, (ix+Obj.flags)           ; set that hero exists (why not?)
+        set 0, (ix+Obj.flags)   ; set that hero exists (why not?)
 
-        call advanceInMap
+        call advanceInMap       ; TODO: can be inlined
         call putNextObjectsToScene
 .l_6:
-        call pauseGameIfPauseKeyPressed
-        call checkQuitKey
+        call pauseGameIfPauseKeyPressed ; TODO: replace
+        call checkQuitKey       ; TODO: remove
         jp Z, gameStart
 
         ld a, (State.s_1F)
@@ -113,7 +88,7 @@ gameStart:  ; #cc5a
         call addEnergy
         jr .l_8
 .l_7:
-        call showGameOver
+        call showGameOver       ; TODO: can be inlined
         jp gameStart
 .l_8:
         jp .gameLoop
@@ -1471,7 +1446,7 @@ loadLevelIfNeeded:  ; #d62c
         ld hl, #0C0B
         ld c, #47
         call printString
-        call Tape.loadLevel
+        call loadLevel
         jr NC, .l_1
         ld a, (State.level)
         ld (State.loadedLevel), a

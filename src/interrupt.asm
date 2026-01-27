@@ -1,16 +1,16 @@
     MODULE Code
 
 
-interruptRoutine:               ; #fefe
+interruptRoutine:
     ASSERT low(interruptRoutine) == high(interruptRoutine)
         push af, bc, hl
-        
+
         ld a, (shortFrameCounter)
         inc a
         ld (shortFrameCounter), a
 
         call pollControlKeys
-        
+
         ; increment long frame counter
         ld hl, (longFrameCounter.low)
         inc hl
@@ -18,7 +18,7 @@ interruptRoutine:               ; #fefe
         ld a, l
         or h
         jr Z, .incLongFrameHigh
-        
+
         pop hl, bc, af
         ei
         ret
@@ -27,7 +27,7 @@ interruptRoutine:               ; #fefe
         ld hl, (longFrameCounter.high)
         inc hl
         ld (longFrameCounter.high), hl
-        
+
         pop hl, bc, af
         ei
         ret

@@ -1,7 +1,5 @@
-    MODULE Tape
+    MODULE Code
 
-
-start:
 
 textFound:  ; #c9a7
         db "FOUND"C
@@ -19,23 +17,23 @@ loadLevel:  ; #c9ac
         ei
         ret
 .l_0:
-        call Code.clearScreenPixels
+        call clearScreenPixels
         ld hl, #0C09
         ld de, textFound
         ld c, #47
-        call Code.printString
+        call printString
         ld a, (Level.start)
         add a
         add a
         add a
         ld l, a
         ld h, #00
-        ld de, Code.levelNames
+        ld de, levelNames
         add hl, de
         ex de, hl
         ld hl, #0C0F
         ld c, #46
-        call Code.printString
+        call printString
         ld a, (Level.start)
         ld b, a
         ld a, (State.level)
@@ -183,8 +181,7 @@ c_ca84:  ; #ca84
         scf
         ret
 
-end:
-length  EQU end - start
+loadLevelEnd:
 
 
     ENDMODULE

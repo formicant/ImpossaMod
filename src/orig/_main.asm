@@ -56,6 +56,7 @@ codeStart:
     ORG #CAA5
     INCLUDE "data/font.asm"
     ORG #CC25
+    INCLUDE "code/entry_point.asm"
     INCLUDE "code/code.asm"
     INCLUDE "code/logic_1.asm"
     INCLUDE "code/select_sprite.asm"
@@ -66,7 +67,6 @@ codeStart:
     INCLUDE "code/boss2_amazon.asm"
     INCLUDE "code/boss3_iceland.asm"
     INCLUDE "code/boss4_bermuda.asm"
-    INCLUDE "code/boss1_3_extra.asm"
     INCLUDE "code/boss1_extra.asm"
 
     ORG #FE01
