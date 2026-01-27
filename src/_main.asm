@@ -1,6 +1,5 @@
     SLDOPT COMMENT WPMEM, LOGPOINT, ASSERTION
-    ; DEVICE ZXSPECTRUM128
-    DEVICE ZXSPECTRUM48
+    DEVICE ZXSPECTRUM128
     
     DEFINE _MOD
     DEFINE _DEBUG
@@ -55,15 +54,29 @@ codeStart:
     INCLUDE "sound.asm"
     INCLUDE "orig/code/level_loading.asm"
     
-    ; DISPLAY "Stack size, words: ", (stackTop - $) / 2
+    DISPLAY "Stack size, words: ", (stackTop - $) / 2
 
-; Data
     _NEXT_ORG #AEAE
 stackTop:
+; Data
     INCLUDE "orig/data/sprites.asm"
     INCLUDE "orig/data/object_types.asm"
-    
-    _NEXT_ORG Level.start         : INCLUDE "orig/data/0_klondike/object_types.asm"
+
+codeLength = $ - codeStart
+
+; Variables
+    _NEXT_ORG Level.end
+    INCLUDE "orig/var/state.asm"
+    INCLUDE "orig/var/scene.asm"
+
+
+; Levels
+    ORG 0
+    INCLUDE "orig/data/headers.asm"
+
+    PAGE MemPage.level0         ; Klondike
+    ORG Level.start
+    _NEXT_ORG Level.levObjectTypes: INCLUDE "orig/data/0_klondike/object_types.asm"
     _NEXT_ORG Level.blockMap      : INCLUDE "orig/data/0_klondike/block_map.asm"
     _NEXT_ORG Level.transitTable  : INCLUDE "orig/data/0_klondike/transits.asm"
     _NEXT_ORG Level.sprites       : INCLUDE "orig/data/0_klondike/sprites.asm"
@@ -72,29 +85,88 @@ stackTop:
     _NEXT_ORG Level.bossLogicAddr : dw -0
     _NEXT_ORG Level.trajVelTable  : INCLUDE "orig/data/0_klondike/traj_table.asm"
                                     INCLUDE "orig/data/0_klondike/trajectories.asm"
+                                    INCLUDE "orig/code/boss0_klondike.asm"
     _NEXT_ORG Level.end
 
-codeLength = $ - codeStart
-    
-    INCLUDE "orig/var/state.asm"
-    INCLUDE "orig/var/scene.asm"
+    PAGE MemPage.level1         ; Orient
+    ORG Level.start
+    _NEXT_ORG Level.levObjectTypes: INCLUDE "orig/data/1_orient/object_types.asm"
+    _NEXT_ORG Level.blockMap      : INCLUDE "orig/data/1_orient/block_map.asm"
+    _NEXT_ORG Level.transitTable  : INCLUDE "orig/data/1_orient/transits.asm"
+    _NEXT_ORG Level.sprites       : INCLUDE "orig/data/1_orient/sprites.asm"
+    _NEXT_ORG Level.tilePixels    : INCLUDE "orig/data/1_orient/tiles.asm"
+    _NEXT_ORG Level.objectTable   : INCLUDE "orig/data/1_orient/object_table.asm"
+    _NEXT_ORG Level.bossLogicAddr : dw -0
+    _NEXT_ORG Level.trajVelTable  : INCLUDE "orig/data/1_orient/traj_table.asm"
+                                    INCLUDE "orig/data/1_orient/trajectories.asm"
+                                    INCLUDE "orig/code/boss1_orient.asm"
+                                    INCLUDE "orig/code/boss1_3_extra.asm"
+                                    INCLUDE "orig/code/boss1_extra.asm"
+    _NEXT_ORG Level.end
 
-    ORG Code.entryPoint.lev
-        db 0
+    PAGE MemPage.level2         ; Amazon
+    ORG Level.start
+    _NEXT_ORG Level.levObjectTypes: INCLUDE "orig/data/2_amazon/object_types.asm"
+    _NEXT_ORG Level.blockMap      : INCLUDE "orig/data/2_amazon/block_map.asm"
+    _NEXT_ORG Level.transitTable  : INCLUDE "orig/data/2_amazon/transits.asm"
+    _NEXT_ORG Level.sprites       : INCLUDE "orig/data/2_amazon/sprites.asm"
+    _NEXT_ORG Level.tilePixels    : INCLUDE "orig/data/2_amazon/tiles.asm"
+    _NEXT_ORG Level.objectTable   : INCLUDE "orig/data/2_amazon/object_table.asm"
+    _NEXT_ORG Level.bossLogicAddr : dw -0
+    _NEXT_ORG Level.trajVelTable  : INCLUDE "orig/data/2_amazon/traj_table.asm"
+                                    INCLUDE "orig/data/2_amazon/trajectories.asm"
+                                    INCLUDE "orig/code/boss2_amazon.asm"
+    _NEXT_ORG Level.end
 
-    SAVESNA "impossamod.sna", Code.entryPoint
+    PAGE MemPage.level3         ; Iceland
+    ORG Level.start
+    _NEXT_ORG Level.levObjectTypes: INCLUDE "orig/data/3_iceland/object_types.asm"
+    _NEXT_ORG Level.blockMap      : INCLUDE "orig/data/3_iceland/block_map.asm"
+    _NEXT_ORG Level.transitTable  : INCLUDE "orig/data/3_iceland/transits.asm"
+    _NEXT_ORG Level.sprites       : INCLUDE "orig/data/3_iceland/sprites.asm"
+    _NEXT_ORG Level.tilePixels    : INCLUDE "orig/data/3_iceland/tiles.asm"
+    _NEXT_ORG Level.objectTable   : INCLUDE "orig/data/3_iceland/object_table.asm"
+    _NEXT_ORG Level.bossLogicAddr : dw -0
+    _NEXT_ORG Level.trajVelTable  : INCLUDE "orig/data/3_iceland/traj_table.asm"
+                                    INCLUDE "orig/data/3_iceland/trajectories.asm"
+                                    INCLUDE "orig/code/boss3_iceland.asm"
+                                    INCLUDE "orig/code/boss1_3_extra.asm"
+    _NEXT_ORG Level.end
+
+    PAGE MemPage.level4         ; Bermuda
+    ORG Level.start
+    _NEXT_ORG Level.levObjectTypes: INCLUDE "orig/data/4_bermuda/object_types.asm"
+    _NEXT_ORG Level.blockMap      : INCLUDE "orig/data/4_bermuda/block_map.asm"
+    _NEXT_ORG Level.transitTable  : INCLUDE "orig/data/4_bermuda/transits.asm"
+    _NEXT_ORG Level.sprites       : INCLUDE "orig/data/4_bermuda/sprites.asm"
+    _NEXT_ORG Level.tilePixels    : INCLUDE "orig/data/4_bermuda/tiles.asm"
+    _NEXT_ORG Level.objectTable   : INCLUDE "orig/data/4_bermuda/object_table.asm"
+    _NEXT_ORG Level.bossLogicAddr : dw -0
+    _NEXT_ORG Level.trajVelTable  : INCLUDE "orig/data/4_bermuda/traj_table.asm"
+                                    INCLUDE "orig/data/4_bermuda/trajectories.asm"
+                                    INCLUDE "orig/code/boss4_bermuda.asm"
+    _NEXT_ORG Level.end
+
 
 ; Save game
+    SAVESNA "impossamod.sna", Code.entryPoint
+
     EMPTYTAP "impossamod.tap"
     SAVETAP "impossamod.tap", BASIC, "ImpossaMod", Basic.start, Basic.length, 1
     SAVETAP "impossamod.tap", CODE, "screen", Screen.start, Screen.length
     SAVETAP "impossamod.tap", CODE, "impossamod", codeStart, codeLength
-
-; ; Save levels
-;     ORG 0
-;     INCLUDE "orig/data/headers.asm"
-
-; ; Save level 0 Klondike
-;     SAVETAP "impossamod.tap", HEADLESS, Headers.level0, 1, #80
-;     SAVETAP "impossamod.tap", HEADLESS, Level.start, Level.length
-
+    PAGE MemPage.level0         ; Klondike
+    SAVETAP "impossamod.tap", HEADLESS, Headers.level0, 1, #80
+    SAVETAP "impossamod.tap", HEADLESS, Level.start, Level.length
+    PAGE MemPage.level1         ; Orient
+    SAVETAP "impossamod.tap", HEADLESS, Headers.level0, 1, #80
+    SAVETAP "impossamod.tap", HEADLESS, Level.start, Level.length
+    PAGE MemPage.level2         ; Amazon
+    SAVETAP "impossamod.tap", HEADLESS, Headers.level0, 1, #80
+    SAVETAP "impossamod.tap", HEADLESS, Level.start, Level.length
+    PAGE MemPage.level3         ; Iceland
+    SAVETAP "impossamod.tap", HEADLESS, Headers.level0, 1, #80
+    SAVETAP "impossamod.tap", HEADLESS, Level.start, Level.length
+    PAGE MemPage.level4         ; Bermuda
+    SAVETAP "impossamod.tap", HEADLESS, Headers.level0, 1, #80
+    SAVETAP "impossamod.tap", HEADLESS, Level.start, Level.length
