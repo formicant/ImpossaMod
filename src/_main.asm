@@ -45,9 +45,6 @@ codeStart:
     
     ORG #8000   ; will be overwritten with tables
     INCLUDE "disposable.asm"
-    DISP Level.end
-    INCLUDE "orig/code/level_loading.asm"
-    ENT
     
     _NEXT_ORG #9191
     INCLUDE "interrupt.asm"
@@ -56,37 +53,31 @@ codeStart:
     INCLUDE "orig/code/select_sprite.asm"
     INCLUDE "orig/code/logic_2.asm"
     INCLUDE "sound.asm"
+    INCLUDE "orig/code/level_loading.asm"
     
-    DISPLAY "Stack size, words: ", (stackTop - $) / 2
+    ; DISPLAY "Stack size, words: ", (stackTop - $) / 2
 
 ; Data
-    _NEXT_ORG #AD34
+    _NEXT_ORG #AEAE
 stackTop:
     INCLUDE "orig/data/sprites.asm"
-    _NEXT_ORG #BEFC
     INCLUDE "orig/data/object_types.asm"
     
-    _NEXT_ORG Level.start
-    INCLUDE "orig/data/0_klondike/object_types.asm"
-    _NEXT_ORG Level.objectTable
-    INCLUDE "orig/data/0_klondike/object_table.asm"
-    _NEXT_ORG Level.tilePixels
-    INCLUDE "orig/data/0_klondike/tiles.asm"
-    INCLUDE "orig/data/0_klondike/trajectories.asm"
-    _NEXT_ORG Level.trajVelTable
-    INCLUDE "orig/data/0_klondike/traj_table.asm"
-    _NEXT_ORG Level.blockMap
-    INCLUDE "orig/data/0_klondike/block_map.asm"
-    INCLUDE "orig/data/0_klondike/transits.asm"
-    ALIGN 4
-    INCLUDE "orig/data/0_klondike/sprites.asm"
+    _NEXT_ORG Level.start         : INCLUDE "orig/data/0_klondike/object_types.asm"
+    _NEXT_ORG Level.blockMap      : INCLUDE "orig/data/0_klondike/block_map.asm"
+    _NEXT_ORG Level.transitTable  : INCLUDE "orig/data/0_klondike/transits.asm"
+    _NEXT_ORG Level.sprites       : INCLUDE "orig/data/0_klondike/sprites.asm"
+    _NEXT_ORG Level.tilePixels    : INCLUDE "orig/data/0_klondike/tiles.asm"
+    _NEXT_ORG Level.objectTable   : INCLUDE "orig/data/0_klondike/object_table.asm"
+    _NEXT_ORG Level.bossLogicAddr : dw -0
+    _NEXT_ORG Level.trajVelTable  : INCLUDE "orig/data/0_klondike/traj_table.asm"
+                                    INCLUDE "orig/data/0_klondike/trajectories.asm"
     _NEXT_ORG Level.end
-    
-    _NEXT_ORG #FDE5
-    INCLUDE "orig/var/state.asm"
-    INCLUDE "orig/var/scene.asm"
 
 codeLength = $ - codeStart
+    
+    INCLUDE "orig/var/state.asm"
+    INCLUDE "orig/var/scene.asm"
 
     ORG Code.entryPoint.lev
         db 0

@@ -28,10 +28,10 @@ detectSpectrumModel:
         
 .if48k:
         ; move tape loading procedures
-        ld hl, Tape.start
-        ld bc, Tape.length
-        ld de, Level.end
-        ldir
+        ; ld hl, Tape.start
+        ; ld bc, Tape.length
+        ; ld de, Level.end
+        ; ldir
         ; continue
 
 

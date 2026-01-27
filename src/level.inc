@@ -2,23 +2,24 @@
     MODULE Level
 
 
-start           EQU #C000
+start           EQU #C178
 
-levObjectTypes  EQU #C000
-objectTable     EQU #C4E0
+levObjectTypes  EQU #C178
+blockMap        EQU #C658
+transitTable    EQU #D030
+sprites         EQU #D124
+tilePixels      EQU #DE00
+tileAttrs       EQU #E600
+tileTypes       EQU #E700
+tileBlocks      EQU #E800
+objectTable     EQU #F544
+bossLogicAddr   EQU #F862
+trajVelTable    EQU #F864
+trajDirTable    EQU #F886
+; trajectories  (variable)
+; bossLogic     (variable)
 
-tilePixels      EQU #C800
-tileAttrs       EQU #D000
-tileTypes       EQU #D100
-tileBlocks      EQU #D200
-
-trajVelTable    EQU #E2FA
-trajDirTable    EQU #E31C
-
-blockMap        EQU #E340
-transitTable    EQU #ED18
-
-end             EQU #FAE2
+end             EQU #FDE5
 length          EQU end - start
 
 
