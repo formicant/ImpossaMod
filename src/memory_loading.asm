@@ -7,6 +7,7 @@ loadLevelFromMemory:
 
 ; In 128K mode, this code should replace `loadLevel`
     DISP loadLevel
+
         ; set black attrs to hide the artifacts
         xor a
         call fillScreenAttrs

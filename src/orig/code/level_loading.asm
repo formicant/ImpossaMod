@@ -9,47 +9,49 @@ textFound:  ; #c9a7
 loadLevel:  ; #c9ac
         di
         ld ix, Level.start
-        ld de, #0001
+        ld de, 1                ; header length
         scf
-        ld a, #80
-        call c_c9fb
-        jr C, .l_0
+        ld a, #80               ; non-standard header flag
+        call loadBytes
+        jr C, .found
         ei
         ret
-.l_0:
+.found:
         call clearScreenPixels
-        ld hl, #0C09
+        ld hl, #0C09            ; at 12, 9
         ld de, textFound
-        ld c, #47
+        ld c, #47               ; bright white
         call printString
-        ld a, (Level.start)
-        add a
-        add a
-        add a
+        
+        ld a, (Level.start)     ; found level
+    .3  add a
         ld l, a
-        ld h, #00
+        ld h, 0
         ld de, levelNames
         add hl, de
-        ex de, hl
-        ld hl, #0C0F
-        ld c, #46
+        ex de, hl               ; `de`: level name
+        
+        ld hl, #0C0F            ; at 12, 15
+        ld c, #46               ; bright yellow
         call printString
-        ld a, (Level.start)
+        
+        ld a, (Level.start)     ; found level
         ld b, a
-        ld a, (State.level)
+        ld a, (State.level)     ; selected level
         cp b
-        jr NZ, loadLevel
+        jr NZ, loadLevel        ; don't load
+        
         ld ix, Level.start
-        ld de, #51DF
+        ld de, Level.length
         scf
-        ld a, #FF
-        call c_c9fb
+        ld a, #FF               ; code block flag
+        call loadBytes
         ei
         ret
 
 ; Load block from tape
 ; Used by c_c9ac.
-c_c9fb:  ; #c9fb
+loadBytes:  ; #c9fb
         inc d
         exa
         dec d

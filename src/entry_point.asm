@@ -3,7 +3,7 @@
 ; Code that executes once at game start and can be disposed of afterwards
 
 
-ldBytes EQU #0556               ; ROM tape loading procedure
+romLoadBytes    EQU #0556       ; ROM tape loading routine
 
 
 entryPoint:
@@ -35,9 +35,9 @@ entryPoint:
         ; load level header
         ld ix, Level.end
         ld de, 1
-        ld a, #80               ; non-standard flag
+        ld a, #80               ; non-standard header flag
         scf
-        call ldBytes
+        call romLoadBytes
         jr NC, .loadingError
 
         ; load level
@@ -45,7 +45,7 @@ entryPoint:
         ld de, Level.length
         ld a, #FF               ; code block flag
         scf
-        call ldBytes
+        call romLoadBytes
         jr NC, .loadingError
 
         pop hl, bc
