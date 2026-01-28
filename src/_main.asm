@@ -31,6 +31,7 @@ codeStart:
     INCLUDE "orig/code/controls.asm"
     INCLUDE "orig/code/logic_1.asm"
     INCLUDE "boss_switch.asm"
+    INCLUDE "sound.asm"
 
     DISPLAY "Slow free: ", Common.font - $
 
@@ -45,7 +46,7 @@ codeStart:
     ORG Code.disposable         ; will be overwritten with tables
     INCLUDE "entry_point.asm"
     INCLUDE "memory_loading.asm"
-    ; INCLUDE "orig/code/ay_sound.asm"
+    ; INCLUDE "orig/code/ay_sound.asm"    ; length: #D78 = 3448
 
     DISPLAY "Disp free: ", Code.interruptRoutine - $
 
@@ -55,7 +56,7 @@ codeStart:
     INCLUDE "orig/code/drawing.asm"
     INCLUDE "orig/code/select_sprite.asm"
     INCLUDE "orig/code/logic_2.asm"
-    INCLUDE "sound.asm"
+    INCLUDE "orig/code/beeper_sound.asm"
     INCLUDE "orig/code/level_loading.asm"
 
     DISPLAY "Fast free: ", stackTop - $

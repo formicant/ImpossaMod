@@ -3,11 +3,20 @@
 
 ; Play sound (beeper or AY)
 playSound:
-        ; TODO !
-        ret
+        ld c, a
+        ld a, (useBeeper)
+        or a
+        ld a, c
+        jp NZ, playBeeperSound
+        ; TODO:
+        ; jp playAySound
 
 
 callPlayMenuMusic:
+        ; TODO !
+        ret
+
+callAySoundFrame:
         ; TODO !
         ret
 
@@ -17,6 +26,9 @@ c_bdfa:  ; #bdfa
         ; TODO !
         ret
 
+
+useBeeper:
+        db 1
 
 ; #FF if Spectrum 48K, #00 if Spectrum 128K
 is48k:  db -0

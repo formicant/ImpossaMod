@@ -61,8 +61,8 @@ entryPoint:
 ; entry point used in the .sna snapshot
 .sna:
         ; replace tape level loader with memory level loader
-        ld hl, loadLevelFromMemory
-        ld bc, loadLevelFromMemory.length
+        ld hl, loadLevelFromMemoryStored
+        ld bc, loadLevelFromMemoryLength
         ld de, loadLevel
         ldir
 

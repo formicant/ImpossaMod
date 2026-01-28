@@ -1,13 +1,14 @@
     MODULE Code
 
 
+
+; In 128K mode, this code should replace `loadLevel`
+loadLevelFromMemoryStored
+    DISP loadLevel
+
 ; Copy level from its memory page into fast memory page 0
 ; Screen is used as temporary buffer
 loadLevelFromMemory:
-
-; In 128K mode, this code should replace `loadLevel`
-    DISP loadLevel
-
         ; set black attrs to hide the artifacts
         xor a
         call fillScreenAttrs
@@ -43,14 +44,14 @@ loadLevelFromMemory:
         exa
         pop hl, bc
         ld de, Screen.start
-        call .copyMemoryBlock   ; copy from level page to screen
+        call copyMemoryBlock    ; copy from level page to screen
 
         ld bc, #7FFD
         ld a, #10
         out (c), a              ; set page 0
         pop de, bc
         ld hl, Screen.start
-        call .copyMemoryBlock   ; copy from screen to page 0
+        call copyMemoryBlock    ; copy from screen to page 0
 
         pop hl, bc
         ld a, h
@@ -70,8 +71,9 @@ loadLevelFromMemory:
                                 ; `bc`: current length
         jr .copy
 
+
 ; `ldir` but faster
-.copyMemoryBlock:
+copyMemoryBlock:
         xor a
         sub c
         and %00001111
@@ -86,7 +88,7 @@ loadLevelFromMemory:
     ASSERT $ <= loadLevelEnd
     ENT
 
-.length EQU $ - loadLevelFromMemory
+loadLevelFromMemoryLength   EQU $ - loadLevelFromMemoryStored
 
 
     ENDMODULE

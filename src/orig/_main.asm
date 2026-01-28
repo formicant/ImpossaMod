@@ -23,7 +23,9 @@ codeStart:
     INCLUDE "code/detect_model.asm"
 
     ORG #5E80
+    DISP #C000
     INCLUDE "code/ay_sound.asm"
+    ENT
 
     ORG Level.start
     INCLUDE "data/0_klondike/tiles.asm"
@@ -43,6 +45,7 @@ codeStart:
 
     ORG #BDDF
     INCLUDE "code/sound.asm"
+    INCLUDE "code/beeper_sound.asm"
     INCLUDE "var/scene.asm"
     ORG #BEB4   ; overlap
     INCLUDE "code/init_interrupts.asm"

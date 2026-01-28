@@ -1,8 +1,6 @@
     MODULE Code
 
 
-        DISP #C000
-
 ; Copied to RAM page 1 #C000
 p_c000:  ; #c000
         dh 80 2C 30 2D 30 2C 30 31
@@ -1138,8 +1136,6 @@ playAySound:  ; #cd25
 ; (some counter (0..2)?)
 p_cd77:  ; #cd77
         db 0
-
-          ENT
 
 
     ENDMODULE
