@@ -55,7 +55,7 @@ codeStart:
     INCLUDE "orig/code/drawing.asm"
     INCLUDE "orig/code/select_sprite.asm"
     INCLUDE "orig/code/logic_2.asm"
-    INCLUDE "orig/code/sound.asm"
+    INCLUDE "sound.asm"
     INCLUDE "orig/code/level_loading.asm"
 
     DISPLAY "Fast free: ", stackTop - $
@@ -150,6 +150,8 @@ codeLength = $ - codeStart
                                     INCLUDE "orig/data/4_bermuda/trajectories.asm"
                                     INCLUDE "orig/code/boss4_bermuda.asm"
     _NEXT_ORG Level.end
+    
+    PAGE 0
 
 
 ; Output

@@ -8,8 +8,7 @@
       "remoteType": "zsim",
       "zsim": {
         "visualMemory": true,
-        "memoryModel": "ZX48K",
-        // "memoryModel": "ZX128K",
+        "memoryModel": "ZX128K",
         "ulaScreen": "spectrum",
         "zxBorderWidth": 20,
         "vsyncInterrupt": true,

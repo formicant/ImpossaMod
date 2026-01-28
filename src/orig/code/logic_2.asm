@@ -1053,7 +1053,7 @@ c_ed08:  ; #ed08
         ld a, (ix+Obj.o_8)
         cp #6E
         ret NZ
-        ld hl, #A918            ; TODO: Lev2Amazon.lS.sittingMonkey (?)
+        ld hl, Lev2Amazon.lS.sittingMonkey
         ld (ix+Obj.sprite+0), l
         ld (ix+Obj.sprite+1), h
         ld (ix+Obj.o_7), #00
