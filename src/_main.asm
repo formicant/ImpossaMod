@@ -5,12 +5,12 @@
     DEFINE _DEBUG
 
 ; Definitions
-    INCLUDE "orig/macros.inc"
-    INCLUDE "orig/basic.inc"
-    INCLUDE "orig/structs.inc"
-    INCLUDE "memory.inc"
-    INCLUDE "level.inc"
-    INCLUDE "orig/ay.inc"
+    INCLUDE "orig/inc/macros.inc"
+    INCLUDE "orig/inc/basic.inc"
+    INCLUDE "orig/inc/structs.inc"
+    INCLUDE "inc/memory.inc"
+    INCLUDE "inc/level.inc"
+    INCLUDE "orig/inc/ay.inc"
 
 
 ; Slow memory
@@ -30,8 +30,8 @@ codeStart:
     INCLUDE "orig/code/utils.asm"
     INCLUDE "orig/code/controls.asm"
     INCLUDE "orig/code/logic_1.asm"
-    INCLUDE "boss_switch.asm"
-    INCLUDE "sound.asm"
+    INCLUDE "code/boss_switch.asm"
+    INCLUDE "code/sound.asm"
 
     DISPLAY "Slow free: ", Common.font - $
 
@@ -41,17 +41,17 @@ codeStart:
 
 ; Fast memory
     _NEXT_ORG #8000
-    INCLUDE "tables.asm"
+    INCLUDE "data/tables.asm"
 
     ORG Code.disposable         ; will be overwritten with tables
-    INCLUDE "entry_point.asm"
-    INCLUDE "memory_loading.asm"
+    INCLUDE "code/entry_point.asm"
+    INCLUDE "code/memory_loading.asm"
     ; INCLUDE "orig/code/ay_sound.asm"    ; length: #D78 = 3448
 
     DISPLAY "Disp free: ", Code.interruptRoutine - $
 
     _NEXT_ORG #9191
-    INCLUDE "interrupt.asm"
+    INCLUDE "code/interrupt.asm"
 
     INCLUDE "orig/code/drawing.asm"
     INCLUDE "orig/code/select_sprite.asm"
@@ -75,6 +75,7 @@ codeLength = $ - codeStart
     INCLUDE "orig/var/state.asm"
     INCLUDE "orig/var/scene.asm"
 
+    DISPLAY Level.length
 
 ; Levels
     ORG 0

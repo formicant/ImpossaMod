@@ -2,11 +2,11 @@
     DEVICE ZXSPECTRUM48
 
 ; Definitions
-    INCLUDE "macros.inc"
-    INCLUDE "basic.inc"
-    INCLUDE "structs.inc"
-    INCLUDE "level.inc"
-    INCLUDE "ay.inc"
+    INCLUDE "inc/macros.inc"
+    INCLUDE "inc/basic.inc"
+    INCLUDE "inc/structs.inc"
+    INCLUDE "inc/level.inc"
+    INCLUDE "inc/ay.inc"
 
 ; Loading screen
     ORG #4000
