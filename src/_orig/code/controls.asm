@@ -1,7 +1,7 @@
     MODULE Code
 
 
-; Sets flag Z if [C] key is pressed
+; Set flag Z if [C] key is pressed
 ; Used by c_cd5c.
 checkCheatKey:  ; #c8c2
         ld bc, #FEFE            ; keyboard half-row [cs]..[V]
@@ -9,7 +9,7 @@ checkCheatKey:  ; #c8c2
         bit 3, a                ; key [C]
         ret
 
-; Sets flag Z if [Q] key is pressed
+; Set flag Z if [Q] key is pressed
 ; Used by c_cc25.
 checkQuitKey:  ; #c8ca
         ld bc, #FBFE            ; keyboard half-row [Q]..[T]
@@ -17,7 +17,7 @@ checkQuitKey:  ; #c8ca
         bit 0, a                ; key [Q]
         ret
 
-; Sets flag Z if [0] key is pressed
+; Set flag Z if [0] key is pressed
 ; Used by c_c6d5.
 checkStartKey:  ; #c8d2
         ld bc, #EFFE            ; keyboard half-row [0]..[6]
@@ -25,7 +25,7 @@ checkStartKey:  ; #c8d2
         bit 0, a                ; key [0]
         ret
 
-; Sets flag Z if [H] key is pressed
+; Set flag Z if [H] key is pressed
 ; Used by c_cd5c.
 checkPauseKey:  ; #c8da
         ld bc, #BFFE            ; keyboard half-row [en]..[H]
@@ -33,7 +33,7 @@ checkPauseKey:  ; #c8da
         bit 4, a                ; key [H]
         ret
 
-; Sets flag Z if [space] is pressed
+; Set flag Z if [space] is pressed
 ; Used by c_d4e5.
 checkSmartKey:  ; #c8e2
         ld bc, #7FFE            ; keyboard half-row [sp]..[B]
@@ -41,7 +41,7 @@ checkSmartKey:  ; #c8e2
         bit 0, a                ; key [sp]
         ret
 
-; Waits until all keys released
+; Wait until all keys released
 waitKeyRelease:  ; #c8ea
         ld bc, #00FE            ; all keyboard half-rows together
         in a, (c)
@@ -56,7 +56,7 @@ controlType:    ; #c8f6
 controlState:   ; #c8f7
         db 0    ; bit 0: right, bit 1: left, bit 2: down, bit 3: up, bit 4: fire
 
-; Gets control key state
+; Get control key state
 ; Used in interrupts
 pollControlKeys:  ; #c8f8
         push hl

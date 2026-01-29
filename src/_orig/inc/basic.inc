@@ -161,12 +161,12 @@ RETURN      EQU #FE
 COPY        EQU #FF
 
 
-; Adds a Basic program line
-    MACRO _BASIC_LINE _lineNumber, _text
-        byte high(_lineNumber), low(_lineNumber)
+; Add a Basic program line
+    MACRO _BASIC_LINE lineNumber?, text?
+        byte high(lineNumber?), low(lineNumber?)
         word .end - .start
 .start:
-        byte _text
+        byte text?
         byte C_ENTER
 .end:
     ENDM

@@ -28,7 +28,7 @@ codeStart:
     INCLUDE "_orig/code/code.asm"
     INCLUDE "_orig/code/game_menu.asm"
     INCLUDE "_orig/code/utils.asm"
-    INCLUDE "_orig/code/controls.asm"
+    INCLUDE "code/controls.asm"
     INCLUDE "_orig/code/logic_1.asm"
     INCLUDE "code/boss_switch.asm"
     INCLUDE "code/sound.asm"

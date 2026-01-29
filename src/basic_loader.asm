@@ -7,8 +7,9 @@ start:
             PAPER, NOT, PI, ':',\
             INK, NOT, PI, ':',\
             CLEAR, VAL, '"25088":',\
-            PRINT, '#', NOT, PI, ';', AT, NOT, PI, ',', NOT, PI,\
-                ';', INK, NOT, PI, ',,,,:',\
+            PRINT, '#', NOT, PI, ';',\
+                AT, NOT, PI, ',', NOT, PI, ';',\
+                INK, NOT, PI, ',,,,:',\
             POKE, VAL, '"23739",', CODE, '"o":',\
             LOAD, '""', SCREEN_S, ':',\
             LOAD, '""', CODE, ':',\
