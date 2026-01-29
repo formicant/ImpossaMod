@@ -45,7 +45,7 @@
         "--syntax=b",
         "--fullpath=rel",
         "--outprefix=build/",
-        "src/orig/_main.asm"
+        "src/_orig/_main.asm"
       ]
     }
   ]
