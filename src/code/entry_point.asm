@@ -79,6 +79,9 @@ entryPoint:
 .initGame:
         ld a, -1                ; no level is loaded into page 0
         ld (State.loadedLevel), a
+        
+        call setControlKeys
+        
         jp gameStart
 
 .loadingError:

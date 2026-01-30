@@ -2,14 +2,29 @@
 
 
 interruptRoutine:
-    ASSERT low(interruptRoutine) == high(interruptRoutine)
-        push af, bc, hl
+    ASSERT low($) == high($)
+        push af, hl
 
+        ; poll control keys
+        ld l, 1                 ; const
+        ; actual instructions are inserted here in `setControlKeys`
+.keyPollInstructions:
+    DUP 8
+        nop ; for keyboard:     ; for Kempston:
+        nop ;   ld a, <halfRow> ;   xor a
+        nop ;   in a, (#FE)     ;   in a, (#1F)
+        nop ;                   ;   cpl
+        and -0                  ; bit mask placeholder
+        sub l                   ; flag `C` is set iff the key is pressed
+        rl h                    ; add bit to the control state
+    EDUP
+        ld a, h
+        ld (controlState), a
+        
+        ; increment short frame counter
         ld a, (shortFrameCounter)
         inc a
         ld (shortFrameCounter), a
-
-        call pollControlKeys
 
         ; increment long frame counter
         ld hl, (longFrameCounter.low)
@@ -19,7 +34,7 @@ interruptRoutine:
         or h
         jr Z, .incLongFrameHigh
 
-        pop hl, bc, af
+        pop hl, af
         ei
         ret
 
@@ -28,7 +43,7 @@ interruptRoutine:
         inc hl
         ld (longFrameCounter.high), hl
 
-        pop hl, bc, af
+        pop hl, af
         ei
         ret
 
@@ -47,12 +62,5 @@ waitFrames:
 shortFrameCounter:
         db -0
 
-
-; ; AY stub
-; playAySound:
-; playMenuMusic:
-; aySoundFrame:
-; p_c9fa:
-;         ret
 
     ENDMODULE

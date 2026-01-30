@@ -75,8 +75,6 @@ codeLength = $ - codeStart
     INCLUDE "_orig/var/state.asm"
     INCLUDE "_orig/var/scene.asm"
 
-    DISPLAY Level.length
-
 ; Levels
     ORG 0
     INCLUDE "_orig/data/headers.asm"
