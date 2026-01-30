@@ -1,4 +1,4 @@
-    MODULE Code
+    MODULE AY
 
 
 ; Copied to RAM page 1 #C000
@@ -159,9 +159,10 @@ p_c000:  ; #c000
         dh 08 60 FF
 
 ; used in playMenuMusic
-p_c4cb:
-        dh D7 C4 02 C5 0A C5
-        dh 1E C5 1E C5 1E C5
+p_c4cb: ;      A      B      C
+.start: dw #C4D7, #C502, #C50A
+.stop:  dw #C51E, #C51E, #C51E
+
 p_c4d7:
         dh 88 03 04 1A 83 07
         dh 08 09 FE
@@ -173,10 +174,13 @@ p_c4d7:
         dh 05 FF 16 16 19 17 82 06
         dh 0E 0F 10 16 0E 0F 10 10
         dh 11 12 13 14 15 FF 01 FF
+p_c520:
         dh 00 12 15 2C 32 5C DA F7
         dh 0D 27 3D 53 6D BF E5 39
         dh 85 B5 DB F4 36 78 8B 94
-        dh 9F 9F C7 15 69 BD C0 C0
+        dh 9F 9F C7 15 69 BD
+p_c53e:
+        dh C0 C0
         dh C0 C0 C0 C0 C0 C0 C1 C1
         dh C1 C1 C1 C1 C1 C2 C2 C2
         dh C2 C2 C3 C3 C3 C3 C3 C3
@@ -185,9 +189,13 @@ p_c4d7:
         dh 00 00 00 00 8A 29 49 00
         dh 00 00 00 00 8A 21 39 00
         dh 00 00 00 00 A1 31 00 00
-        dh 00 00 00 00 60 FF 30 FF
-        dh 30 10 06 01 00 01 7F FD
-        dh 00 FE 37 00 00 00 00 01
+        dh 00 00 00 00
+
+; effect
+p_c584:
+        dh 60 FF 30 FF 30 10 06 01 00 01 7F FD 00
+
+        dh FE 37 00 00 00 00 01
         dh 7F FA 00 FF 28 00 01 18
         dh 00 02 7F FC 00 FF 28 00
         dh 01 18 00 02 7F FE 32 FF
@@ -217,125 +225,192 @@ aySounds:  ; #c5d4
         dh 7F FD 08 DD 7E 00 00 DD FC 01 F2 03 01
 
 
+; Note table
 p_c697:  ; #c697
-        dh EE 0E 18 0E 4D
-        dh 0D 8E 0C DA 0B 2F 0B 8F
-        dh 0A F7 09 68 09 E1 08 61
-        dh 08 E9 07 77 07 0C 07 A7
-        dh 06 47 06 ED 05 98 05 47
-        dh 05 FC 04 D4 04 70 04 31
-        dh 04 F4 03 DC 03 86 03 53
-        dh 03 24 03 F6 02 CC 02 A4
-        dh 02 7E 02 5A 02 38 02 18
-        dh 02 FA 01 DE 01 C3 01 AA
-        dh 01 92 01 7B 01 66 01 52
-        dh 01 3F 01 2D 01 1C 01 0C
-        dh 01 FD 00 EF 00 E1 00 D5
-        dh 00 C9 00 BE 00 B3 00 A9
-        dh 00 9F 00 96 00 8E 00 86
-        dh 00 7F 00 77 00 71 00 6A
-        dh 00 64 00 5F 00 59 00 54
-        dh 00 50 00 4B 00 47 00 43
-        dh 00 3F 00 3C 00 38 00 35
-        dh 00 32 00 2F 00 2D 00 2A
-        dh 00 28 00 26 00 24 00 22
-        dh 00 20 00 18 00
+        dw #0EEE
+        dw #0E18
+        dw #0D4D
+        dw #0C8E
+        dw #0BDA
+        dw #0B2F
+        dw #0A8F
+        dw #09F7
+        dw #0968
+        dw #08E1
+        dw #0861
+        dw #07E9
+        dw #0777
+        dw #070C
+        dw #06A7
+        dw #0647
+        dw #05ED
+        dw #0598
+        dw #0547
+        dw #04FC
+        dw #04D4
+        dw #0470
+        dw #0431
+        dw #03F4
+        dw #03DC
+        dw #0386
+        dw #0353
+        dw #0324
+        dw #02F6
+        dw #02CC
+        dw #02A4
+        dw #027E
+        dw #025A
+        dw #0238
+        dw #0218
+        dw #01FA
+        dw #01DE
+        dw #01C3
+        dw #01AA
+        dw #0192
+        dw #017B
+        dw #0166
+        dw #0152
+        dw #013F
+        dw #012D
+        dw #011C
+        dw #010C
+        dw #00FD
+        dw #00EF
+        dw #00E1
+        dw #00D5
+        dw #00C9
+        dw #00BE
+        dw #00B3
+        dw #00A9
+        dw #009F
+        dw #0096
+        dw #008E
+        dw #0086
+        dw #007F
+        dw #0077
+        dw #0071
+        dw #006A
+        dw #0064
+        dw #005F
+        dw #0059
+        dw #0054
+        dw #0050
+        dw #004B
+        dw #0047
+        dw #0043
+        dw #003F
+        dw #003C
+        dw #0038
+        dw #0035
+        dw #0032
+        dw #002F
+        dw #002D
+        dw #002A
+        dw #0028
+        dw #0026
+        dw #0024
+        dw #0022
+        dw #0020
+        dw #0018
 
 
 mixerValue:  ; #c741
-        db AY.mixOff
+        db mixOff
 
+; #c742    mxT  mxN  mxM  period vol  susT   ?  vCnt vValue vSlope phAddr inAddr flag
+ayChA:  Ch #FE, #F7, #09, #6F6D, #6E, #74, #79, #0D, #090A, #646C, #6320, #282C, #69
+ayChB:  Ch #FD, #EF, #12, #7470, #78, #73, #69, #7A, #2965, #0A0D, #6C09, #2064, #62
+ayChC:  Ch #FB, #DF, #24, #090A, #61, #64, #64, #20, #6C68, #622C, #0963, #6D3B, #6F
 
-; #c742
-;           _  _  _  l  h     c  5 *6 =0 =0  7  8  l  h yl yh  9
-;           0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17
-ayChA:  dh FE F7 09 6D 6F 6E 74 79 0D 0A 09 6C 64 20 63 2C 28 69
-ayChB:  dh FD EF 12 70 74 78 73 69 7A 65 29 0D 0A 09 6C 64 20 62
-ayChC:  dh FB DF 24 0A 09 61 64 64 20 68 6C 2C 62 63 09 3B 6D 6F
-; relative displacements:
-dPerL   EQU  3
-dPerH   EQU  4
-dVol    EQU  5
-
-dChB    EQU 18
-dChC    EQU 36
-
-
-p_c778:  ; #c778
+noisePeriod:  ; #c778
         db 0
 
 
-; (some subroutine?)
+; Play sound effect
+;   `ix`: channel addr
+;   `iy`: effect addr
+;   `hl`: period
+;   `c`: duration
 ; Used by p_cb0c and p_cd25.
-p_c779:  ; #c779
+playEffect:  ; #c779
         di
         ld a, iyl
-        ld (ix + 15), a
+        ld (ix+Ch.effectAddr+0), a
         ld a, iyh
-        ld (ix + 16), a
-        ld (ix + 3), l
-        ld (ix + 4), h
-        ld (ix + 6), c
-        ld a, (iy + 5)
-        ld (ix + 7), a
-        ld a, (iy + 6)
-        and #7F
+        ld (ix+Ch.effectAddr+1), a
+
+        ld (ix+Ch.period+0), l
+        ld (ix+Ch.period+1), h
+        ld (ix+Ch.duration), c
+
+        ld a, (iy+Effect.e_5)
+        ld (ix+Ch.ch_7), a
+
+        ld a, (iy+Effect.vibrPeriod)
+        and %01111111
         srl a
         jr NZ, .l_0
         ld a, 1
 .l_0:
-        ld (ix + 8), a
-        ld a, (iy + 7)
-        ld (ix + 11), a
-        ld a, (iy + 8)
-        ld (ix + 12), a
+        ld (ix+Ch.vibrCounter), a
+
+        ld a, (iy+Effect.vibrSlope+0)
+        ld (ix+Ch.vibrSlope+0), a
+        ld a, (iy+Effect.vibrSlope+1)
+        ld (ix+Ch.vibrSlope+1), a
+
         xor a
-        ld (ix + 9), a
-        ld (ix + 10), a
+        ld (ix+Ch.vibrValue+0), a
+        ld (ix+Ch.vibrValue+1), a
+
         ld a, (mixerValue)
-        or (ix + 2)
-        ld c, (iy + 9)
-        ld (ix + 17), c
+        or (ix+Ch.mixMask)
+        ld c, (iy+Effect.flags)
+        ld (ix+Ch.flags), c
         bit 0, c
         jr Z, .l_1
-        and (ix)
+        and (ix+Ch.mixTone)
 .l_1:
         bit 1, c
         jr Z, .l_2
-        and (ix + 1)
+        and (ix+Ch.mixNoise)
 .l_2:
         ld (mixerValue), a
         bit 2, c
         jr NZ, .l_3
-        
-        ld hl, p_c92d
-        ld (ix + 13), l
-        ld (ix + 14), h
+
+        ld hl, onsetPhase
+        ld (ix+Ch.phaseAddr+0), l
+        ld (ix+Ch.phaseAddr+1), h
         ret
 
 .l_3:
         ; set envelope
         call doNothing
-        ld a, (iy + 0)
-        ld c, AY.regEnvShape
+
+        ld a, (iy+Effect.envShape)
+        ld c, regEnvShape
         call setAyReg
-        ld a, (iy + 4)
-        ld c, AY.regEnvPer
+
+        ld a, (iy+Effect.envPeriod)
+        ld c, regEnvPer
         call setAyReg
         inc c
         xor a
         call setAyReg
-        ld (ix + 5), #FF
+
+        ld (ix+Ch.volume), #FF
+
         jp justReturn
 
 
-; Initializes AY registers and some variables
+; Initialize AY registers and some struct fields
 initAy:  ; #c7fe
         call doNothing
-        
-        ld c, AY.regMixer
+
+        ld c, regMixer
         ld a, (mixerValue)
-        or AY.mixOff
+        or mixOff
         ld (mixerValue), a
         call setAyReg
         xor a
@@ -353,226 +428,243 @@ initAy:  ; #c7fe
         call setAyReg
         inc c                   ; regEnvShape
         call setAyReg
-        
-        ld (ayChA + 17), a
-        ld (ayChB + 17), a
-        ld (ayChC + 17), a
-        ld (ayChA + 5), a
-        ld (ayChB + 5), a
-        ld (ayChC + 5), a
-        
+
+        ld (ayChA.flags), a
+        ld (ayChB.flags), a
+        ld (ayChC.flags), a
+        ld (ayChA.volume), a
+        ld (ayChB.volume), a
+        ld (ayChC.volume), a
+
         jp justReturn
 
 
-; Writes values to AY registers
+; Write values to AY registers
 ; Used by p_cb0c.
 setAyValues:  ; #c83f
         ld a, (mixerValue)
-        and AY.mixOff
-        cp AY.mixOff
+        and mixOff
+        cp mixOff
         ret Z
-        
+
         ld ix, ayChA
-        call p_c8fb
+        call applyEffect
         ld ix, ayChB
-        call p_c8fb
+        call applyEffect
         ld ix, ayChC
-        call p_c8fb
-        
+        call applyEffect
+
         call doNothing
         ld ix, ayChA
-        
+
         ; regMixer
-        ld c, AY.regMixer
+        ld c, regMixer
         ld a, (mixerValue)
         call setAyReg
-        
+
         ; regPeriodA
-        ld c, AY.regPeriodA
-        ld a, (ayChA + dPerL)
-        add (ix + 9)
-        bit 1, (ix + 17)
+        ld c, regPeriodA
+        ld a, (ayChA.period+0)
+        add (ix+Ch.vibrValue+0)
+        bit 1, (ix+Ch.flags)
         jp Z, .l_0
-        ld (p_c778), a
+        ld (noisePeriod), a
 .l_0:
         call setAyReg
         inc c
-        ld a, (ayChA + dPerH)
-        adc a, (ix + 10)
+        ld a, (ayChA.period+1)
+        adc a, (ix+Ch.vibrValue+1)
         call setAyReg
-        
+
         ; regPeriodB
         inc c
-        ld a, (ayChB + dPerL)
-        add (ix + dChB + 9)
-        bit 1, (ix + dChB + 17)
+        ld a, (ayChB.period+0)
+        add (ix+Ch+Ch.vibrValue+0)
+        bit 1, (ix+Ch+Ch.flags)
         jp Z, .l_1
-        ld (p_c778), a
+        ld (noisePeriod), a
 .l_1:
         call setAyReg
         inc c
-        ld a, (ayChB + dPerH)
-        adc a, (ix + dChB + 10)
+        ld a, (ayChB.period+1)
+        adc a, (ix+Ch+Ch.vibrValue+1)
         call setAyReg
-        
+
         ; regPeriodC
         inc c
-        ld a, (ayChC + dPerL)
-        add (ix + dChC + 9)
-        bit 1, (ix + dChC + 17)
+        ld a, (ayChC.period+0)
+        add (ix+2*Ch+Ch.vibrValue+0)
+        bit 1, (ix+2*Ch+Ch.flags)
         jp Z, .l_2
-        ld (p_c778), a
+        ld (noisePeriod), a
 .l_2:
         call setAyReg
         inc c
-        ld a, (ayChC + dPerH)
-        adc a, (ix + dChC + 10)
+        ld a, (ayChC.period+1)
+        adc a, (ix+2*Ch+Ch.vibrValue+1)
         call setAyReg
-        
+
         ; regNoisePer
         inc c
-        ld a, (p_c778)
+        ld a, (noisePeriod)
    .3   rrca
         call setAyReg
-        
+
         ; regVolumeA
-        ld c, AY.regVolumeA
-        ld a, (ayChA + dVol)
+        ld c, regVolumeA
+        ld a, (ayChA.volume)
      .3 srl a
         call setAyReg
-        
+
         ; regVolumeB
         inc c
-        ld a, (ayChB + dVol)
+        ld a, (ayChB.volume)
     .3  srl a
         call setAyReg
-        
+
         ; regVolumeC
         inc c
-        ld a, (ayChC + dVol)
+        ld a, (ayChC.volume)
     .3  srl a
         call setAyReg
-        
+
         jp justReturn
 
 
-p_c8fb:  ; #c8fb
+applyEffect:  ; #c8fb
         ld a, (mixerValue)
-        and (ix + 2)
-        cp (ix + 2)
+        and (ix+Ch.mixMask)
+        cp (ix+Ch.mixMask)
         ret Z
-        
-        ld a, (ix + 15)
+
+        ld a, (ix+Ch.effectAddr+0)
         ld iyl, a
-        ld a, (ix + 16)
+        ld a, (ix+Ch.effectAddr+1)
         ld iyh, a
-        
-        ld a, (ix + 6)
+
+        ld a, (ix+Ch.duration)
         and a
         jr Z, .l_0
-        cp #FF
+        cp -1
         jr Z, .l_0
-        dec (ix + 6)
+        dec (ix+Ch.duration)
 .l_0:
         call p_c9a3
-        bit 2, (iy + 9)
+
+        bit 2, (iy+Effect.flags)
         jp NZ, p_c99c
-        ld l, (ix + 13)
-        ld h, (ix + 14)
+
+        ld l, (ix+Ch.phaseAddr+0)
+        ld h, (ix+Ch.phaseAddr+1)
         jp hl
         ; possible jumps:
-        ; p_c92d, p_c94c, p_c96e, p_c967d
-
-p_c92d:  ; #c92d
-        ld a, (ix + 5)
-        add (iy + 0)
-        cp (iy + 4)
-        jr NC, .l_0
-        ld (ix + 5), a
-        ret
-.l_0:
-        ld a, (iy + 4)
-        ld (ix + 5), a
-        ld hl, p_c94c
-        ld (ix + 13), l
-        ld (ix + 14), h
-        ret
+        ; onsetPhase, decayPhase, sustainPhase, releasePhase
 
 
-p_c94c:  ; #c94c
-        ld a, (ix + 5)
-        add (iy + 1)
-        jp M, .l_0
-        cp (iy + 2)
-        jr C, .l_0
-        ld (ix + 5), a
+onsetPhase:  ; #c92d
+        ld a, (ix+Ch.volume)
+        add (iy+Effect.envShape)
+        cp (iy+Effect.envPeriod)
+        jr NC, .end
+        ld (ix+Ch.volume), a
         ret
-.l_0:
-        ld a, (iy + 2)
-        ld (ix + 5), a
-        ld hl, p_c96e
-        ld (ix + 13), l
-        ld (ix + 14), h
+.end:
+        ld a, (iy+Effect.envPeriod)
+        ld (ix+Ch.volume), a
+        ld hl, decayPhase
+        ld (ix+Ch.phaseAddr+0), l
+        ld (ix+Ch.phaseAddr+1), h
         ret
 
 
-p_c96e:  ; #c96e
-        ld a, (ix + 6)
+decayPhase:  ; #c94c
+        ld a, (ix+Ch.volume)
+        add (iy+Effect.decaySpd)
+        jp M, .end
+        cp (iy+Effect.sustainLev)
+        jr C, .end
+        ld (ix+Ch.volume), a
+        ret
+.end:
+        ld a, (iy+Effect.sustainLev)
+        ld (ix+Ch.volume), a
+        ld hl, sustainPhase
+        ld (ix+Ch.phaseAddr+0), l
+        ld (ix+Ch.phaseAddr+1), h
+        ret
+
+
+sustainPhase:  ; #c96e
+        ld a, (ix+Ch.duration)
         and a
         ret NZ
-        ld hl, p_c967d
-        ld (ix + 13), l
-        ld (ix + 14), h
+
+        ld hl, releasePhase
+        ld (ix+Ch.phaseAddr+0), l
+        ld (ix+Ch.phaseAddr+1), h
         ret
 
 
-p_c967d: ; #c967d
-        ld a, (ix + 5)
-        add (iy + 3)
-        jp M, .l_0
-        ld (ix + 5), a
+releasePhase: ; #c967d
+        ld a, (ix+Ch.volume)
+        add (iy+Effect.releaseSpd)
+        jp M, switchOff
+        ld (ix+Ch.volume), a
         ret
-.l_0:
-        ld (ix + 5), 0
+
+
+switchOff:
+        ld (ix+Ch.volume), 0
         ld a, (mixerValue)
-        or (ix + 2)
+        or (ix+Ch.mixMask)
         ld (mixerValue), a
-        res 7, (ix + 17)
+        res 7, (ix+Ch.flags)
         ret
+
 
 p_c99c:  ; #c99c
-        ld a, (ix + 6)
+        ld a, (ix+Ch.duration)
         and a
         ret NZ
-        jr p_c967d.l_0
+        jr switchOff
 
 
 p_c9a3:  ; # c9a3
-        ld a, (ix + 7)
+        ld a, (ix+Ch.ch_7)
         and a
-        jr Z, .l_0
-        cp #FF
+        jr Z, .zero
+        cp -1
         ret Z
-        dec (ix + 7)
+
+        dec (ix+Ch.ch_7)
         ret NZ
-.l_0:
-        ld l, (ix + 9)
-        ld h, (ix + 10)
-        ld c, (ix + 11)
-        ld b, (ix + 12)
+
+.zero:
+        ; update vibrato value
+        ld l, (ix+Ch.vibrValue+0)
+        ld h, (ix+Ch.vibrValue+1)
+        ld c, (ix+Ch.vibrSlope+0)
+        ld b, (ix+Ch.vibrSlope+1)
         add hl, bc
-        ld (ix + 9), l
-        ld (ix + 10), h
-        dec (ix + 8)
+        ld (ix+Ch.vibrValue+0), l
+        ld (ix+Ch.vibrValue+1), h
+
+        dec (ix+Ch.vibrCounter)
         ret NZ
-        ld a, (iy + 6)
+
+        ld a, (iy+Effect.vibrPeriod)
         and a
         ret Z
-        jp P, .l_1
-        ld (ix + 7), #FF
+
+        jp P, .positive
+        ld (ix+Ch.ch_7), -1
         ret
-.l_1:
-        ld (ix + 8), a
+
+.positive:
+        ; reset vibrato counter with duration
+        ld (ix+Ch.vibrCounter), a
+
+        ; negate vibrato slope
         ld a, c
         cpl
         ld c, a
@@ -580,8 +672,9 @@ p_c9a3:  ; # c9a3
         cpl
         ld b, a
         inc bc
-        ld (ix + 11), c
-        ld (ix + 12), b
+
+        ld (ix+Ch.vibrSlope+0), c
+        ld (ix+Ch.vibrSlope+1), b
         ret
 
 
@@ -599,28 +692,28 @@ justReturn:  ; #c9e6
 setAyReg:  ; #c9e7
         push bc
         ld e, c
-        ld bc, #FFFD
+        ld bc, registPort
         out (c), e
-        ld b, #BF
+        ld b, high(valuePort)
         out (c), a
         pop bc
         ret
 
 
 ; Unused?
-p_c9f4:  ; #c9f4
-        jp callPlayMenuMusic
+callPlayMenuMusic:  ; #c9f4
+        jp Code.callPlayMenuMusic
 
 ; Unused?
-p_c9f7:  ; #c9f7
-        jp callAySoundFrame
+callAySoundFrame:  ; #c9f7
+        jp Code.callAySoundFrame
 
 
-; (some byte, external?)
-p_c9fa:  ; #c9fa
+; Non-zero if sound/music is playing, zero if silent
+isPlaying:  ; #c9fa
         db 0
 
-; ()
+; (unused ?)
 p_c9fb:  ; #c9fb
         dh C3 05 CA AF 32 FA C9 C3
         dh FE C7 F3 6F 5F 26 00 54
@@ -630,65 +723,13 @@ p_c9fb:  ; #c9fb
         dh C7 CD 79 C7 DD CB 11 FE
         dh FB C9
 
-; ()
-p_ca2d:  ; #ca2d
-        db 0
-
-; > (0, 1)
-p_ca2e:  ; #ca2e
-        dh 6F 64 65 0D 0A 09
-
-p_ca34: dw #646C
-p_ca36: db #20  ; > 1
-p_ca37: db #28  ; > 0
-p_ca38: db #69  ; > #FF
-p_ca39: db #78  ; > 1
-p_ca3a: db #2B  ; > #FF
-
-; ()
-p_ca3b:  ; #ca3b
-        dh 73
-
-; > 0
-p_ca3c:  ; #ca3c
-        dh 70 74 63 6F 6C 29 08
-
-; > (2, 3)
-p_ca43:  ; #ca43
-        dh 37 31 09 09 3B 73
-
-p_ca49: dw #7465
-p_ca4b: db #20  ; > 1
-p_ca4c: db #63  ; > 0
-p_ca4d: db #6F  ; > #FF
-p_ca4e: db #6C  ; > 1
-p_ca4f: db #6F  ; > #FF
-
-p_ca50: db #75
-
-; > 0
-p_ca51:  ; #ca51
-        dh 72 20 74 6F 20 77
-        dh 10
-
-; > (4, 5)
-p_ca58: dh 69 74 65 0D 0A 09
-
-p_ca5e: dw #6572
-p_ca60: db #74  ; > 1
-p_ca61: db #0D  ; > 0
-p_ca62: db #0A  ; > #FF
-p_ca63: db #0D  ; > 1
-p_ca64: db #0A  ; > #FF
-
-p_ca65: db #3B
-
-; > 0
-p_ca66:  ; #ca66
-        dh 2D 2D 2D 2D 2D 2D
+; #ca2d
+partA:  Part #00, #646F, #0D65, #090A, #646C, #20, #28, #69, #78, #2B, #73, #70, #6374, #6F, #6C, #29
+partB:  Part #08, #3137, #0909, #733B, #7465, #20, #63, #6F, #6C, #6F, #75, #72, #7420, #6F, #20, #77
+partC:  Part #10, #7469, #0D65, #090A, #6572, #74, #0D, #0A, #0D, #0A, #3B, #2D, #2D2D, #2D, #2D, #2D
 
 ; 3 × 8 bytes
-; > 0, 10, 20, 30, 40, 50, 60, 70
+; Initialized as 0, 10, 20, 30, 40, 50, 60, 70
 p_ca6c:  ; #ca6c
         dh 2D 2D 2D 2D 20 63 6F 69
         dh 6E 20 6A 75 6D 70 69 6E
@@ -696,12 +737,12 @@ p_ca6c:  ; #ca6c
 
 
 ; Initializes menu AY music
-;   `a`: (0 or 1) something(?)
+;   `a`: 0 - start, 1 - stop
 playMenuMusic:  ; #ca84
         push af
         call initAy
         pop af
-        
+
         ld l, a
         add a
         add l
@@ -714,49 +755,48 @@ playMenuMusic:  ; #ca84
         inc h
 .l_0:
         ; `hl`: p_c4cb + 6 * `a`
-        
         ld e, (hl)
         inc hl
         ld d, (hl)
         inc hl
-        ld (p_ca2e), de
-        
+        ld (partA.i_1), de
+
         ld e, (hl)
         inc hl
         ld d, (hl)
         inc hl
-        ld (p_ca43), de
-        
+        ld (partB.i_1), de
+
         ld e, (hl)
         inc hl
         ld d, (hl)
         inc hl
-        ld (p_ca58), de
-        
+        ld (partC.i_1), de
+
         ; init with 0
         xor a
-        ld (p_ca37), a
-        ld (p_ca4c), a
-        ld (p_ca61), a
-        ld (p_ca3c), a
-        ld (p_ca51), a
-        ld (p_ca66), a
-        
-        ; init with #FF
+        ld (partA.i_10), a
+        ld (partB.i_10), a
+        ld (partC.i_10), a
+        ld (partA.i_15), a
+        ld (partB.i_15), a
+        ld (partC.i_15), a
+
+        ; init with -1
         cpl
-        ld (p_ca38), a
-        ld (p_ca4d), a
-        ld (p_ca62), a
-        
+        ld (partA.i_11), a
+        ld (partB.i_11), a
+        ld (partC.i_11), a
+
         ; init with 1
         ld a, 1
-        ld (p_ca36), a
-        ld (p_ca4b), a
-        ld (p_ca60), a
-        ld (p_ca39), a
-        ld (p_ca4e), a
-        ld (p_ca63), a
-        
+        ld (partA.i_9), a
+        ld (partB.i_9), a
+        ld (partC.i_9), a
+        ld (partA.i_12), a
+        ld (partB.i_12), a
+        ld (partC.i_12), a
+
         ; init with (0, 10, 20, …, 70)
         ld hl, p_ca6c
         ld bc, #030A  ; `b`= 3, `c`= 10
@@ -772,73 +812,79 @@ playMenuMusic:  ; #ca84
         cp 80
         jr NZ, .l_2
         djnz .l_1
-        
+
         ; init with some addr(?)
-        ld hl, #C584
-        ld (p_ca34), hl
-        ld (p_ca49), hl
-        ld (p_ca5e), hl
-        
-        ; init with #FF
-        ld a, #FF
-        ld (p_ca3a), a
-        ld (p_ca4f), a
-        ld (p_ca64), a
-        ld (p_c9fa), a
-        
+        ld hl, p_c584
+        ld (partA.effectAddr), hl
+        ld (partB.effectAddr), hl
+        ld (partC.effectAddr), hl
+
+        ; init with -1
+        ld a, -1
+        ld (partA.i_13), a
+        ld (partB.i_13), a
+        ld (partC.i_13), a
+        ld (isPlaying), a
+
         ret
 
 
 ; Called in interrupts
 aySoundFrame:  ; #cb0c
         call setAyValues
-        ld a, (p_c9fa)
+        ld a, (isPlaying)
         and a
         ret Z
-        
-        ld a, (p_ca3a)
-        ld hl, p_ca4f
+
+        ld a, (partA.i_13)
+        ld hl, partB.i_13
         or (hl)
-        ld hl, p_ca64
+        ld hl, partC.i_13
         or (hl)
-        ld (p_c9fa), a
+        ld (isPlaying), a
         jr NZ, .l_0
+
         xor a
-        ld (p_c9fa), a
+        ld (isPlaying), a
         ld a, (mixerValue)
-        and #3F
-        cp #3F
+        and mixOff
+        cp mixOff
         ret Z
-        ld a, #01
-        ld (p_c9fa), a
+
+        ld a, 1
+        ld (isPlaying), a
         ret
+
 .l_0:
-        ld iy, p_ca2d
+        ld iy, partA
         ld ix, ayChA
         call .l_1
-        ld iy, #CA42
+
+        ld iy, partB
         ld ix, ayChB
         call .l_1
-        ld iy, #CA57
+
+        ld iy, partC
         ld ix, ayChC
 .l_1:
         call p_cc95
-        ld a, (iy + 11)
+        ld a, (iy+Part.i_11)
         and a
         jr Z, .l_10
 .l_2:
-        dec (iy + 9)
+        dec (iy+Part.i_9)
         jr Z, .l_3
-        ld a, (iy + 3)
-        ld (iy + 5), a
-        ld a, (iy + 4)
-        ld (iy + 6), a
-        ld (iy + 11), #00
+        ld a, (iy+Part.i_3+0)
+        ld (iy+Part.i_5+0), a
+        ld a, (iy+Part.i_3+1)
+        ld (iy+Part.i_5+1), a
+        ld (iy+Part.i_11), 0
         jr .l_10
+
 .l_3:
-        ld (iy + 9), #01
-        ld l, (iy + 1)
-        ld h, (iy + 2)
+        ld (iy+Part.i_9), 1
+        ld l, (iy+Part.i_1+0)
+        ld h, (iy+Part.i_1+1)
 .l_4:
         ld a, (hl)
         cp #80
@@ -847,26 +893,26 @@ aySoundFrame:  ; #cb0c
         jr NZ, .l_5
         inc hl
         ld a, (hl)
-        ld (iy + 10), a
+        ld (iy+Part.i_10), a
         inc hl
         jp .l_4
 .l_5:
         cp #FF
         jr NZ, .l_6
         xor a
-        ld (iy + 13), a
+        ld (iy+Part.i_13), a
         ret
 .l_6:
         cp #C0
         jr NC, .l_7
         and #1F
-        ld (iy + 9), a
+        ld (iy+Part.i_9), a
         inc hl
         jp .l_4
 .l_7:
         and #07
-        add (iy)
-        ld de, #CA6C
+        add (iy+Part.i_0)
+        ld de, p_ca6c
         add e
         ld e, a
         jr NC, .l_8
@@ -876,39 +922,39 @@ aySoundFrame:  ; #cb0c
         ldi
         jp .l_4
 .l_9:
-        ld (iy + 11), #00
+        ld (iy+Part.i_11), #00
         inc hl
-        ld (iy + 1), l
-        ld (iy + 2), h
+        ld (iy+Part.i_1+0), l
+        ld (iy+Part.i_1+1), h
         ld c, a
         ld b, #00
-        ld hl, #C520
+        ld hl, p_c520
         add hl, bc
         ld e, (hl)
-        ld hl, #C53E
+        ld hl, p_c53e
         add hl, bc
         ld d, (hl)
-        ld (iy + 3), e
-        ld (iy + 4), d
+        ld (iy+Part.i_3+0), e
+        ld (iy+Part.i_3+1), d
         jr .l_11
 .l_10:
-        ld e, (iy + 5)
-        ld d, (iy + 6)
+        ld e, (iy+Part.i_5+0)
+        ld d, (iy+Part.i_5+1)
 .l_11:
-        dec (iy + 12)
+        dec (iy+Part.i_12)
         jr Z, .l_12
         ld a, (de)
         cp #80
         call NC, p_cc5b
-        ld (iy + 5), e
-        ld (iy + 6), d
+        ld (iy+Part.i_5+0), e
+        ld (iy+Part.i_5+1), d
         ret
 .l_12:
         ld a, (de)
         cp #80
         jr C, .l_13
         call p_cc5b
-        ld a, (iy + 11)
+        ld a, (iy+Part.i_11)
         and a
         jr Z, .l_12
         jp .l_2
@@ -925,9 +971,9 @@ aySoundFrame:  ; #cb0c
         ld h, a
         jp .l_15
 .l_14:
-        add (iy + 10)
+        add (iy+Part.i_10)
         add #0C
-        ld (iy + 14), a
+        ld (iy+Part.i_14), a
         ld hl, p_c697
         add a
         ld c, a
@@ -938,30 +984,31 @@ aySoundFrame:  ; #cb0c
         ld h, (hl)
         ld l, a
 .l_15:
-        ld a, (iy + 15)
+        ld a, (iy+Part.i_15)
         or #C0
-        ld (iy + 20), a
+        ld (iy+Part.i_20), a
         inc de
         ld a, (de)
         inc de
-        ld (iy + 12), a
+        ld (iy+Part.i_12), a
         ld c, a
-        ld (iy + 5), e
-        ld (iy + 6), d
-        ld e, (iy + 7)
-        ld a, (iy + 8)
+        ld (iy+Part.i_5+0), e
+        ld (iy+Part.i_5+1), d
+        ld e, (iy+Part.effectAddr+0)
+        ld a, (iy+Part.effectAddr+1)
         ld iyh, a
         ld iyl, e
-        bit 7, (ix + 17)
+        bit 7, (ix+Ch.flags)
         ret NZ
-        jp p_c779
+        jp playEffect
+
 .l_16:
         inc de
         ld a, (de)
         inc de
-        ld (iy + 12), a
-        ld (iy + 5), e
-        ld (iy + 6), d
+        ld (iy+Part.i_12), a
+        ld (iy+Part.i_5+0), e
+        ld (iy+Part.i_5+1), d
         ret
 
 
@@ -970,28 +1017,28 @@ p_cc5b:  ; #cc5b
         cp #88
         jr NC, .l_0
         and #07
-        add (iy)
+        add (iy+Part.i_0)
         ld c, a
         ld b, #00
-        ld hl, #CA6C
+        ld hl, p_ca6c
         add hl, bc
         ld c, (hl)
-        ld hl, #C584
+        ld hl, p_c584
         add hl, bc
-        ld (iy + 7), l
-        ld (iy + 8), h
+        ld (iy+Part.effectAddr+0), l
+        ld (iy+Part.effectAddr+1), h
         inc de
         ret
 .l_0:
         cp #FF
         jr NZ, .l_1
-        ld (iy + 11), #FF
+        ld (iy+Part.i_11), #FF
         ret
 .l_1:
         cp #C0
         jr NC, .l_2
         and #0F
-        ld (iy + 15), a
+        ld (iy+Part.i_15), a
         inc de
         ret
 .l_2:
@@ -1005,70 +1052,76 @@ p_cc5b:  ; #cc5b
 
 
 p_cc95:  ; #cc95
-        bit 7, (ix + 17)
+        bit 7, (ix+Ch.flags)
         ret NZ
-        ld a, (iy + 20)
+
+        ld a, (iy+Part.i_20)
         bit 7, a
         ret Z
-        and #3F
+
+        and mixOff
         jr NZ, .l_0
-        res 7, (iy + 20)
+        res 7, (iy+Part.i_20)
         ret
+
 .l_0:
-        ld d, #07
-        bit 6, (iy + 20)
+        ld d, %00000111
+        bit 6, (iy+Part.i_20)
         jr NZ, .l_2
-        dec (iy + 18)
+        dec (iy+Part.i_18)
         ret NZ
-        dec (iy + 19)
+
+        dec (iy+Part.i_19)
         jp Z, .l_2
-        ld l, (iy + 16)
-        ld h, (iy + 17)
+
+        ld l, (iy+Part.i_16+0)
+        ld h, (iy+Part.i_16+1)
         inc l
-        ld (iy + 16), l
+        ld (iy+Part.i_16+0), l
         jp NZ, .l_1
         inc h
-        ld (iy + 17), h
+        ld (iy+Part.i_16+1), h
 .l_1:
         ld a, (hl)
         and d
-        ld (iy + 18), a
+        ld (iy+Part.i_18), a
         ld a, (hl)
-        rrca
-        rrca
-        rrca
-        and #1F
-        add (iy + 14)
+    .3  rrca
+        and %00011111
+        add (iy+Part.i_14)
         jp .l_4
+
 .l_2:
-        ld hl, #BE54
-        ld a, (iy + 20)
-        add a
-        add a
-        add a
+        ld hl, #BE54            ; #C554 - #0700
+        ld a, (iy+Part.i_20)
+    .3  add a
         ld e, a
-        add hl, de
+        add hl, de              ; `hl`: #C554 + 8 * Part.i_20
+
         bit 7, (hl)
         jr NZ, .l_3
-        bit 6, (iy + 20)
+
+        bit 6, (iy+Part.i_20)
         jr NZ, .l_3
-        ld (iy + 19), #01
+
+        ld (iy+Part.i_19), 1
         ret
+
 .l_3:
-        res 6, (iy + 20)
+        res 6, (iy+Part.i_20)
         ld a, (hl)
-        rrca
-        rrca
-        rrca
+    .3  rrca
         and d
-        ld (iy + 18), a
+        ld (iy+Part.i_18), a
+
         ld a, (hl)
         and d
         inc a
-        ld (iy + 19), a
-        ld (iy + 16), l
-        ld (iy + 17), h
-        ld a, (iy + 14)
+        ld (iy+Part.i_19), a
+        ld (iy+Part.i_16+0), l
+        ld (iy+Part.i_16+1), h
+
+        ld a, (iy+Part.i_14)
 .l_4:
         add a
         ld hl, p_c697
@@ -1078,10 +1131,10 @@ p_cc95:  ; #cc95
         inc h
 .l_5:
         ld a, (hl)
-        ld (ix + 3), a
+        ld (ix+Ch.period+0), a
         inc hl
         ld a, (hl)
-        ld (ix + 4), a
+        ld (ix+Ch.period+1), a
         ret
 
 
@@ -1089,7 +1142,7 @@ p_cc95:  ; #cc95
 ;   `a`: sound index (0..14)
 playAySound:  ; #cd25
         push hl, de, bc, ix, iy
-        
+
         ld e, a
         ld l, a
         ld h, 0
@@ -1107,15 +1160,15 @@ playAySound:  ; #cd25
         push hl
         pop iy
         ; `iy`: sound effect addr
-        
-        ld a, (p_cd77)
+
+        ld a, (channelCounter)
         inc a
         cp 3
         jp C, .l_0
         xor a
 .l_0:
-        ld (p_cd77), a
-        
+        ld (channelCounter), a
+
         ld ix, ayChA
         and a
         jp Z, .l_1
@@ -1124,17 +1177,17 @@ playAySound:  ; #cd25
         jp Z, .l_1
         ld ix, ayChC
 .l_1:
-        ld l, (iy + 10)
-        ld h, (iy + 11)
-        ld c, (iy + 12)
-        call p_c779
-        
+        ld l, (iy+Effect.period+0)
+        ld h, (iy+Effect.period+1)
+        ld c, (iy+Effect.duration)
+        call playEffect
+
         pop iy, ix, bc, de, hl
         ret
 
 
-; (some counter (0..2)?)
-p_cd77:  ; #cd77
+; (channel counter (0..2)?)
+channelCounter:  ; #cd77
         db 0
 
 

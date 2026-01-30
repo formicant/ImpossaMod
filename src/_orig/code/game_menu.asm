@@ -21,8 +21,8 @@ gameMenu:  ; #c6d5
         call clampActiveMenuItemAttrs
 
 .l_0:   ; menu loop
-        call c_bdfa             ; (get something from memory page 1)
-        jr NZ, .l_1
+        call hasMusicEnded
+        jr NZ, .l_1             ; skip if not ended
         xor a
         call callPlayMenuMusic
 .l_1:

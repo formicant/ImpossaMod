@@ -22,7 +22,7 @@ callAySoundFrame:
 
 
 ; (get something from memory page 1)
-c_bdfa:  ; #bdfa
+hasMusicEnded:  ; #bdfa
         ; TODO !
         ret
 
