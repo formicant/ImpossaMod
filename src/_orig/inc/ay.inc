@@ -56,23 +56,23 @@ duration    byte
 
     ENDS
 
-    STRUCT Part     ; length: 21
-i_0         byte
-i_1         word
-i_3         word
-i_5         word
+    STRUCT Sect     ; length: 21
+i_0         byte    ; = chan index * 8 (const?)
+i_1         word    ; musicInitAddrs
+scoreAddr   word
+noteAddr    word
 effectAddr  word
-i_9         byte
-i_10        byte
-i_11        byte
-i_12        byte
-i_13        byte
-i_14        byte
-i_15        byte
-i_16        word    ; part length addr?
-i_18        byte    ; remaining part length?
-i_19        byte    ; remaining notes in part?
-i_20        byte
+i_9         byte    ; init with 1, 5 bits when #80 <= v <#C0
+transpose   byte    ; init with 0, marked by #FE
+i_11        byte    ; init with -1
+duration    byte    ; init with 1
+isPlaying   byte    ; init with -1
+note        byte
+i_15        byte    ; init with 0
+i_16        word    ; section length addr?
+i_18        byte    ; remaining section length?
+i_19        byte    ; remaining notes in section?
+i_20        byte    ; bit 7: ?, 6: ?, 5..0: ?
     ENDS
 
 

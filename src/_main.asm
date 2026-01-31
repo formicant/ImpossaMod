@@ -8,9 +8,9 @@
     INCLUDE "_orig/inc/macros.inc"
     INCLUDE "_orig/inc/basic.inc"
     INCLUDE "_orig/inc/structs.inc"
+    INCLUDE "_orig/inc/ay.inc"
     INCLUDE "inc/memory.inc"
     INCLUDE "inc/level.inc"
-    INCLUDE "_orig/inc/ay.inc"
 
 
 ; Slow memory
@@ -28,9 +28,9 @@ codeStart:
     INCLUDE "_orig/code/code.asm"
     INCLUDE "_orig/code/game_menu.asm"
     INCLUDE "_orig/code/utils.asm"
-    INCLUDE "code/controls.asm"
     INCLUDE "_orig/code/logic_1.asm"
     INCLUDE "code/boss_switch.asm"
+    INCLUDE "code/controls.asm"
     INCLUDE "code/sound.asm"
 
     DISPLAY "Slow free: ", Common.font - $

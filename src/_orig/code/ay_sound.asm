@@ -2,189 +2,116 @@
 
 
 ; Copied to RAM page 1 #C000
-p_c000:  ; #c000
-        dh 80 2C 30 2D 30 2C 30 31
-        dh 30 2C 30 2D 30 2C 30 25
-        dh 30 FF 7F 30 FF 80 91 1C
-        dh 30 92 20 30 1F 30 22 30
-        dh 20 30 93 23 30 22 30 94
-        dh 27 30 90 FF 81 01 18 01
-        dh 18 FF 81 01 18 01 18 01
-        dh 18 01 18 01 18 01 18 01
-        dh 0C 01 0C 01 0C 01 0C 01
-        dh 18 01 18 01 18 01 18 01
-        dh 18 01 18 01 0C 01 0C 01
-        dh 0C 01 0C FF 82 12 06 36
-        dh 06 1E 06 2A 06 12 06 36
-        dh 06 1E 06 2A 06 12 06 36
-        dh 06 1E 06 2A 06 12 06 36
-        dh 06 1E 06 2A 06 12 06 36
-        dh 06 1E 06 2A 06 12 06 36
-        dh 06 1E 06 2A 06 12 06 36
-        dh 06 1E 06 2A 06 12 06 36
-        dh 06 1E 06 2A 06 12 06 36
-        dh 06 1E 06 2A 06 12 06 36
-        dh 06 1E 06 2A 06 12 06 36
-        dh 06 1E 06 2A 06 12 06 36
-        dh 06 1E 06 2A 06 12 06 36
-        dh 06 1E 06 2A 06 12 06 36
-        dh 06 1E 06 12 06 12 06 12
-        dh 06 12 0C 12 0C 12 06 12
-        dh 06 FF 81 91 23 12 23 12
-        dh 23 12 92 27 12 27 0C 27
-        dh 0C 29 12 29 12 29 12 22
-        dh 12 22 0C 22 0C 90 FF 81
-        dh 0D 06 0D 06 0D 0C 0D 0C
-        dh 0D 06 0D 0C 0D 0C 0D 06
-        dh 08 0C 0B 0C FF 81 10 06
-        dh 10 06 10 0C 10 0C 10 06
-        dh 10 06 0B 06 0B 06 0B 0C
-        dh 0B 0C 0B 06 0B 06 FF 81
-        dh 0D 06 19 0C 0D 06 19 0C
-        dh 0D 06 19 0C 0D 06 19 0C
-        dh 0B 0C 08 0C FF 81 0D 06
-        dh 0D 06 0D 0C 0D 12 0D 0C
-        dh 0D 06 0D 0C 0D 0C 19 06
-        dh 19 06 FF 81 10 06 10 06
-        dh 10 0C 10 0C 10 06 10 06
-        dh 0B 06 0B 06 0B 0C 0B 0C
-        dh 0B 06 0B 06 FF 81 0D 06
-        dh 0D 06 19 0C 0D 0C 19 06
-        dh 0D 0C 0D 06 19 0C 0D 0C
-        dh 19 0C 09 06 09 06 15 0C
-        dh 09 0C 15 06 0B 0C 0B 06
-        dh 17 0C 0B 0C 17 0C 0D 06
-        dh 0D 06 19 0C 0D 0C 19 06
-        dh 0D 0C 0D 06 19 0C 0D 0C
-        dh 19 0C 10 06 10 06 1C 0C
-        dh 10 0C 1C 06 0B 0C 0B 06
-        dh 17 0C 0B 0C 17 0C FF 81
-        dh 0D 06 0D 0C 0D 06 0D 0C
-        dh 0D 06 0D 12 0B 0C 10 0C
-        dh 0B 0C 09 06 09 0C 09 0C
-        dh 09 0C 09 06 0B 0C 08 0C
-        dh 0B 0C 0D 0C FF 83 2A 0C
-        dh 2A 0C 1E 0C 2A 0C 2A 06
-        dh 2A 0C 2A 06 1E 0C 1E 0C
-        dh 2A 0C 2A 0C 1E 12 2A 0C
-        dh 2A 06 2A 06 2A 06 1E 06
-        dh 12 06 06 06 06 06 06 0C
-        dh 06 0C 2A 0C 1E 0C 1E 0C
-        dh 2A 0C 1E 0C 2A 0C 1E 0C
-        dh 1E 0C 2A 0C 2A 06 2A 06
-        dh 2A 06 36 06 36 06 2A 06
-        dh 1E 06 12 06 06 06 06 06
-        dh FF 84 19 0C 20 06 20 06
-        dh 1F 0C 20 0C 25 0C 24 0C
-        dh 25 0C 27 0C 19 0C 21 06
-        dh 21 06 20 0C 21 0C 23 0C
-        dh 21 0C 20 0C 1C 0C 19 0C
-        dh 20 06 20 06 1F 0C 20 0C
-        dh 25 0C 24 0C 25 0C 27 0C
-        dh 28 0C 2A 06 2C 06 2D 0C
-        dh 2C 06 2A 06 2C 0C 2A 0C
-        dh 28 0C 27 0C FF 84 25 0C
-        dh 20 0C 25 0C 2C 0C 28 18
-        dh 27 18 25 0C 20 0C 25 0C
-        dh 2C 0C 28 0C 27 0C 25 0C
-        dh 23 0C 25 0C 20 0C 25 0C
-        dh 2C 0C 28 18 27 0C 23 0C
-        dh 21 30 20 30 FF 84 25 78
-        dh 28 06 27 06 28 06 27 06
-        dh 28 0C 2A 0C 28 0C 23 0C
-        dh 25 78 28 06 27 06 28 06
-        dh 27 06 28 0C 2A 0C 28 0C
-        dh 29 0C FF 80 2A 78 2D 06
-        dh 2C 06 2D 06 2C 06 2D 0C
-        dh 2F 0C 2D 0C 28 0C 2A 60
-        dh 85 2A 60 FF 84 14 0C 17
-        dh 0C 16 0C 17 0C 14 0C 23
-        dh 0C 22 0C 20 0C 1B 0C 1E
-        dh 0C 1D 0C 1E 0C 1B 0C 2A
-        dh 0C 29 0C 27 0C 1E 0C 21
-        dh 0C 20 0C 21 0C 1E 0C 2D
-        dh 0C 2C 0C 2A 0C 34 0C 33
-        dh 0C 31 0C 28 0C 27 0C 25
-        dh 0C 1C 0C 1B 0C FF 84 14
-        dh 0C 17 0C 16 0C 17 0C 14
-        dh 0C 23 0C 22 0C 20 0C 1B
-        dh 0C 1E 0C 1D 0C 1E 0C 1B
-        dh 0C 2A 0C 29 0C 27 0C 1E
-        dh 0C 21 0C 20 0C 21 0C 1E
-        dh 0C 2D 0C 2C 0C 2A 0C 22
-        dh 0C 25 0C 24 0C 25 0C 22
-        dh 0C 25 0C 28 0C 2B 0C FF
-        dh 84 94 2C 0C 2C 18 2D 18
-        dh 2C 18 2A 0C 2C 60 90 86
-        dh 01 03 FF 7F 60 7F 60 7F
-        dh 60 7F 60 FF 84 17 60 85
-        dh 17 60 7F 60 7F 60 FF 82
-        dh 12 60 12 60 12 60 12 06
-        dh 12 06 12 06 12 06 12 06
-        dh 12 06 12 06 12 06 12 06
-        dh 12 06 12 06 12 06 12 06
-        dh 12 06 12 06 12 06 FF 81
-        dh 0D 0C 0D 0C 0D 0C 0D 0C
-        dh 0D 0C 0D 0C 0D 0C 0D 0C
-        dh 0D 0C 0D 0C 0D 0C 0D 0C
-        dh 0D 0C 0D 06 0D 06 0D 0C
-        dh 0D 06 0D 06 0D 0C 0D 0C
-        dh 0D 0C 0D 0C 0D 0C 0D 0C
-        dh 0D 0C 0D 0C 0D 06 0D 06
-        dh 0D 0C 0D 0C 0D 06 0D 0C
-        dh 0D 06 0D 06 0D 06 0D 0C
-        dh 0D 06 0D 06 FF 81 14 06
-        dh 14 06 14 0C 14 12 14 0C
-        dh 14 06 14 0C 14 0C 14 06
-        dh 14 06 0F 06 0F 06 0F 0C
-        dh 0F 0C 0F 06 0F 0C 0F 0C
-        dh 0F 06 0F 0C 0F 06 0F 06
-        dh 12 06 12 06 12 0C 12 12
-        dh 12 0C 12 06 12 0C 12 0C
-        dh 12 06 12 06 0D 06 0D 06
-        dh 0D 0C 0D 12 0D 0C 0D 06
-        dh 0D 0C 0D 0C 0D 06 0D 06
-        dh FF 81 14 06 14 06 14 0C
-        dh 14 12 14 0C 14 06 14 0C
-        dh 14 0C 14 06 14 06 0F 06
-        dh 0F 06 0F 0C 0F 0C 0F 06
-        dh 0F 0C 0F 0C 0F 06 0F 0C
-        dh 0F 06 0F 06 12 06 12 06
-        dh 12 0C 12 12 12 0C 12 06
-        dh 12 0C 12 0C 12 06 12 06
-        dh 16 06 0A 06 0A 0C 0A 12
-        dh 0A 0C 0A 06 0A 0C 0A 0C
-        dh 0A 06 0A 06 FF 81 08 0C
-        dh 08 18 09 18 08 18 06 0C
-        dh 08 60 FF
+
+score:  ; #c000
+.part0:
+        dh 80 2C 30 2D 30 2C 30 31 30 2C 30 2D 30 2C 30 25 30 FF
+.part1:
+        dh 7F 30 FF
+.part2:
+        dh 80 91 1C 30 92 20 30 1F 30 22 30 20 30 93 23 30 22 30 94 27 30 90 FF
+.part3:
+        dh 81 01 18 01 18 FF
+.part4:
+        dh 81 01 18 01 18 01 18 01 18 01 18 01 18 01 0C 01 0C 01 0C 01 0C 01 18 01 18 01 18 01 18 01 18 01 18 01 0C 01 0C 01 0C 01 0C FF
+.part5:
+        dh 82 12 06 36 06 1E 06 2A 06 12 06 36 06 1E 06 2A 06 12 06 36 06 1E 06 2A 06 12 06 36 06 1E 06 2A 06 12 06 36 06 1E 06 2A 06 12 06 36 06 1E 06 2A 06 12 06 36 06 1E 06 2A 06 12 06 36 06 1E 06 2A 06 12 06 36 06 1E 06 2A 06 12 06 36 06 1E 06 2A 06 12 06 36 06 1E 06 2A 06 12 06 36 06 1E 06 2A 06 12 06 36 06 1E 06 2A 06 12 06 36 06 1E 06 12 06 12 06 12 06 12 0C 12 0C 12 06 12 06 FF
+.part6:
+        dh 81 91 23 12 23 12 23 12 92 27 12 27 0C 27 0C 29 12 29 12 29 12 22 12 22 0C 22 0C 90 FF
+.part7:
+        dh 81 0D 06 0D 06 0D 0C 0D 0C 0D 06 0D 0C 0D 0C 0D 06 08 0C 0B 0C FF
+.part8:
+        dh 81 10 06 10 06 10 0C 10 0C 10 06 10 06 0B 06 0B 06 0B 0C 0B 0C 0B 06 0B 06 FF
+.part9:
+        dh 81 0D 06 19 0C 0D 06 19 0C 0D 06 19 0C 0D 06 19 0C 0B 0C 08 0C FF
+.part10:
+        dh 81 0D 06 0D 06 0D 0C 0D 12 0D 0C 0D 06 0D 0C 0D 0C 19 06 19 06 FF
+.part11:
+        dh 81 10 06 10 06 10 0C 10 0C 10 06 10 06 0B 06 0B 06 0B 0C 0B 0C 0B 06 0B 06 FF
+.part12:
+        dh 81 0D 06 0D 06 19 0C 0D 0C 19 06 0D 0C 0D 06 19 0C 0D 0C 19 0C 09 06 09 06 15 0C 09 0C 15 06 0B 0C 0B 06 17 0C 0B 0C 17 0C 0D 06 0D 06 19 0C 0D 0C 19 06 0D 0C 0D 06 19 0C 0D 0C 19 0C 10 06 10 06 1C 0C 10 0C 1C 06 0B 0C 0B 06 17 0C 0B 0C 17 0C FF
+.part13:
+        dh 81 0D 06 0D 0C 0D 06 0D 0C 0D 06 0D 12 0B 0C 10 0C 0B 0C 09 06 09 0C 09 0C 09 0C 09 06 0B 0C 08 0C 0B 0C 0D 0C FF
+.part14:
+        dh 83 2A 0C 2A 0C 1E 0C 2A 0C 2A 06 2A 0C 2A 06 1E 0C 1E 0C 2A 0C 2A 0C 1E 12 2A 0C 2A 06 2A 06 2A 06 1E 06 12 06 06 06 06 06 06 0C 06 0C 2A 0C 1E 0C 1E 0C 2A 0C 1E 0C 2A 0C 1E 0C 1E 0C 2A 0C 2A 06 2A 06 2A 06 36 06 36 06 2A 06 1E 06 12 06 06 06 06 06 FF
+.part15:
+        dh 84 19 0C 20 06 20 06 1F 0C 20 0C 25 0C 24 0C 25 0C 27 0C 19 0C 21 06 21 06 20 0C 21 0C 23 0C 21 0C 20 0C 1C 0C 19 0C 20 06 20 06 1F 0C 20 0C 25 0C 24 0C 25 0C 27 0C 28 0C 2A 06 2C 06 2D 0C 2C 06 2A 06 2C 0C 2A 0C 28 0C 27 0C FF
+.part16:
+        dh 84 25 0C 20 0C 25 0C 2C 0C 28 18 27 18 25 0C 20 0C 25 0C 2C 0C 28 0C 27 0C 25 0C 23 0C 25 0C 20 0C 25 0C 2C 0C 28 18 27 0C 23 0C 21 30 20 30 FF
+.part17:
+        dh 84 25 78 28 06 27 06 28 06 27 06 28 0C 2A 0C 28 0C 23 0C 25 78 28 06 27 06 28 06 27 06 28 0C 2A 0C 28 0C 29 0C FF
+.part18:
+        dh 80 2A 78 2D 06 2C 06 2D 06 2C 06 2D 0C 2F 0C 2D 0C 28 0C 2A 60 85 2A 60 FF
+.part19:
+        dh 84 14 0C 17 0C 16 0C 17 0C 14 0C 23 0C 22 0C 20 0C 1B 0C 1E 0C 1D 0C 1E 0C 1B 0C 2A 0C 29 0C 27 0C 1E 0C 21 0C 20 0C 21 0C 1E 0C 2D 0C 2C 0C 2A 0C 34 0C 33 0C 31 0C 28 0C 27 0C 25 0C 1C 0C 1B 0C FF
+.part20:
+        dh 84 14 0C 17 0C 16 0C 17 0C 14 0C 23 0C 22 0C 20 0C 1B 0C 1E 0C 1D 0C 1E 0C 1B 0C 2A 0C 29 0C 27 0C 1E 0C 21 0C 20 0C 21 0C 1E 0C 2D 0C 2C 0C 2A 0C 22 0C 25 0C 24 0C 25 0C 22 0C 25 0C 28 0C 2B 0C FF
+.part21:
+        dh 84 94 2C 0C 2C 18 2D 18 2C 18 2A 0C 2C 60 90 86 01 03 FF
+.part22:
+        dh 7F 60 7F 60 7F 60 7F 60 FF
+.part23:
+        dh 84 17 60 85 17 60 7F 60 7F 60 FF
+.part24:
+.part25:
+        dh 82 12 60 12 60 12 60 12 06 12 06 12 06 12 06 12 06 12 06 12 06 12 06 12 06 12 06 12 06 12 06 12 06 12 06 12 06 12 06 FF
+.part26:
+        dh 81 0D 0C 0D 0C 0D 0C 0D 0C 0D 0C 0D 0C 0D 0C 0D 0C 0D 0C 0D 0C 0D 0C 0D 0C 0D 0C 0D 06 0D 06 0D 0C 0D 06 0D 06 0D 0C 0D 0C 0D 0C 0D 0C 0D 0C 0D 0C 0D 0C 0D 0C 0D 06 0D 06 0D 0C 0D 0C 0D 06 0D 0C 0D 06 0D 06 0D 06 0D 0C 0D 06 0D 06 FF
+.part27:
+        dh 81 14 06 14 06 14 0C 14 12 14 0C 14 06 14 0C 14 0C 14 06 14 06 0F 06 0F 06 0F 0C 0F 0C 0F 06 0F 0C 0F 0C 0F 06 0F 0C 0F 06 0F 06 12 06 12 06 12 0C 12 12 12 0C 12 06 12 0C 12 0C 12 06 12 06 0D 06 0D 06 0D 0C 0D 12 0D 0C 0D 06 0D 0C 0D 0C 0D 06 0D 06 FF
+.part28:
+        dh 81 14 06 14 06 14 0C 14 12 14 0C 14 06 14 0C 14 0C 14 06 14 06 0F 06 0F 06 0F 0C 0F 0C 0F 06 0F 0C 0F 0C 0F 06 0F 0C 0F 06 0F 06 12 06 12 06 12 0C 12 12 12 0C 12 06 12 0C 12 0C 12 06 12 06 16 06 0A 06 0A 0C 0A 12 0A 0C 0A 06 0A 0C 0A 0C 0A 06 0A 06 FF
+.part29:
+        dh 81 08 0C 08 18 09 18 08 18 06 0C 08 60 FF
+
 
 ; used in playMenuMusic
-p_c4cb: ;      A      B      C
-.start: dw #C4D7, #C502, #C50A
-.stop:  dw #C51E, #C51E, #C51E
+musicInitAddrs:
+.start: dw startA, startB, startC
+.stop:  dw stopCh, stopCh, stopCh
 
-p_c4d7:
+startA:
         dh 88 03 04 1A 83 07
         dh 08 09 FE
         dh F9 09 FE 00 09 FE F9 09
         dh FE 00 83 0A 0B 0C 82 0D
         dh 0C 83 0A 0B 0C 82 0D 0C
         dh 0C FE 05 0C FE 00 1B 1C
-        dh 1D FF 00 02 FE 05 02 8E
-        dh 05 FF 16 16 19 17 82 06
+        dh 1D FF
+startB:
+        dh 00 02 FE 05 02 8E
+        dh 05 FF
+startC:
+        dh 16 16 19 17 82 06
         dh 0E 0F 10 16 0E 0F 10 10
-        dh 11 12 13 14 15 FF 01 FF
-p_c520:
-        dh 00 12 15 2C 32 5C DA F7
-        dh 0D 27 3D 53 6D BF E5 39
-        dh 85 B5 DB F4 36 78 8B 94
-        dh 9F 9F C7 15 69 BD
-p_c53e:
-        dh C0 C0
-        dh C0 C0 C0 C0 C0 C0 C1 C1
-        dh C1 C1 C1 C1 C1 C2 C2 C2
-        dh C2 C2 C3 C3 C3 C3 C3 C3
-        dh C3 C4 C4 C4 8A 21 49 00
+        dh 11 12 13 14 15 FF
+stopCh:
+        dh 01 FF
+
+scorePartAddrsLow:
+        db low(score.part0),   low(score.part1),   low(score.part2)
+        db low(score.part3),   low(score.part4),   low(score.part5)
+        db low(score.part6),   low(score.part7),   low(score.part8)
+        db low(score.part9),   low(score.part10),  low(score.part11)
+        db low(score.part12),  low(score.part13),  low(score.part14)
+        db low(score.part15),  low(score.part16),  low(score.part17)
+        db low(score.part18),  low(score.part19),  low(score.part20)
+        db low(score.part21),  low(score.part22),  low(score.part23)
+        db low(score.part24),  low(score.part25),  low(score.part26)
+        db low(score.part27),  low(score.part28),  low(score.part29)
+scorePartAddrsHigh:
+        db high(score.part0),  high(score.part1),  high(score.part2)
+        db high(score.part3),  high(score.part4),  high(score.part5)
+        db high(score.part6),  high(score.part7),  high(score.part8)
+        db high(score.part9),  high(score.part10), high(score.part11)
+        db high(score.part12), high(score.part13), high(score.part14)
+        db high(score.part15), high(score.part16), high(score.part17)
+        db high(score.part18), high(score.part19), high(score.part20)
+        db high(score.part21), high(score.part22), high(score.part23)
+        db high(score.part24), high(score.part25), high(score.part26)
+        db high(score.part27), high(score.part28), high(score.part29)
+        
+        dh 8A 21 49 00
         dh 00 00 00 00 8A 19 41 00
         dh 00 00 00 00 8A 29 49 00
         dh 00 00 00 00 8A 21 39 00
@@ -207,111 +134,111 @@ p_c584:
 
 ; AY sound effects (15 × 13 bytes)
 aySounds:  ; #c5d4
-        ;                                 l  h  c
-        dh 7F E9 01 FF 7F 00 00 A3 00 01 DA 05 01
-        dh 1B FF 01 FF 50 00 00 01 00 01 2F 00 01
-        dh 7F E9 01 FF 7F 00 00 29 FF 01 4E 03 01
-        dh 08 F2 01 F9 6B FF 00 00 00 05 3C 0F 02
-        dh 0E F2 01 F9 29 FF 00 00 00 02 58 00 01
-        dh 7F FC 01 FF 44 00 00 EC FF 01 6A 08 01
-        dh 7F FD 01 FF 60 00 00 00 FF 02 F0 00 01
-        dh 0C 00 00 00 71 00 00 9C 00 05 BB 0F 0F
-        dh 0A FA 01 F6 00 00 00 FF FF 05 23 00 1C
-        dh 14 EC 01 FF 7F 01 00 00 00 02 7C 00 0A
-        dh 7F FD 01 FF 7F 04 00 E0 FF 01 6D 09 01
-        dh 7F FA 01 FF 7F 00 00 F2 FF 01 7D 02 01
-        dh 7F F6 01 FF 7F 00 00 00 00 01 84 0D 01
-        dh 7F F9 01 FF 7F 00 00 00 00 01 C8 00 01
-        dh 7F FD 08 DD 7E 00 00 DD FC 01 F2 03 01
+        ;      env  decS sust relS envP  ?   vibP vibSl  flag period dur
+        Effect #7F, #E9, #01, #FF, #7F, #00, #00, #00A3, #01, #05DA, #01
+        Effect #1B, #FF, #01, #FF, #50, #00, #00, #0001, #01, #002F, #01
+        Effect #7F, #E9, #01, #FF, #7F, #00, #00, #FF29, #01, #034E, #01
+        Effect #08, #F2, #01, #F9, #6B, #FF, #00, #0000, #05, #0F3C, #02
+        Effect #0E, #F2, #01, #F9, #29, #FF, #00, #0000, #02, #0058, #01
+        Effect #7F, #FC, #01, #FF, #44, #00, #00, #FFEC, #01, #086A, #01
+        Effect #7F, #FD, #01, #FF, #60, #00, #00, #FF00, #02, #00F0, #01
+        Effect #0C, #00, #00, #00, #71, #00, #00, #009C, #05, #0FBB, #0F
+        Effect #0A, #FA, #01, #F6, #00, #00, #00, #FFFF, #05, #0023, #1C
+        Effect #14, #EC, #01, #FF, #7F, #01, #00, #0000, #02, #007C, #0A
+        Effect #7F, #FD, #01, #FF, #7F, #04, #00, #FFE0, #01, #096D, #01
+        Effect #7F, #FA, #01, #FF, #7F, #00, #00, #FFF2, #01, #027D, #01
+        Effect #7F, #F6, #01, #FF, #7F, #00, #00, #0000, #01, #0D84, #01
+        Effect #7F, #F9, #01, #FF, #7F, #00, #00, #0000, #01, #00C8, #01
+        Effect #7F, #FD, #08, #DD, #7E, #00, #00, #FCDD, #01, #03F2, #01
 
 
-; Note table
-p_c697:  ; #c697
-        dw #0EEE
-        dw #0E18
-        dw #0D4D
-        dw #0C8E
-        dw #0BDA
-        dw #0B2F
-        dw #0A8F
-        dw #09F7
-        dw #0968
-        dw #08E1
-        dw #0861
-        dw #07E9
-        dw #0777
-        dw #070C
-        dw #06A7
-        dw #0647
-        dw #05ED
-        dw #0598
-        dw #0547
-        dw #04FC
-        dw #04D4
-        dw #0470
-        dw #0431
-        dw #03F4
-        dw #03DC
-        dw #0386
-        dw #0353
-        dw #0324
-        dw #02F6
-        dw #02CC
-        dw #02A4
-        dw #027E
-        dw #025A
-        dw #0238
-        dw #0218
-        dw #01FA
-        dw #01DE
-        dw #01C3
-        dw #01AA
-        dw #0192
-        dw #017B
-        dw #0166
-        dw #0152
-        dw #013F
-        dw #012D
-        dw #011C
-        dw #010C
-        dw #00FD
-        dw #00EF
-        dw #00E1
-        dw #00D5
-        dw #00C9
-        dw #00BE
-        dw #00B3
-        dw #00A9
-        dw #009F
-        dw #0096
-        dw #008E
-        dw #0086
-        dw #007F
-        dw #0077
-        dw #0071
-        dw #006A
-        dw #0064
-        dw #005F
-        dw #0059
-        dw #0054
-        dw #0050
-        dw #004B
-        dw #0047
-        dw #0043
-        dw #003F
-        dw #003C
-        dw #0038
-        dw #0035
-        dw #0032
-        dw #002F
-        dw #002D
-        dw #002A
-        dw #0028
-        dw #0026
-        dw #0024
-        dw #0022
-        dw #0020
-        dw #0018
+; Period value for each note
+noteTable:  ; #c697
+        dw 3822 ; [ 0] A♯₀
+        dw 3608 ; [ 1] B₀ 
+        dw 3405 ; [ 2] C₁ 
+        dw 3214 ; [ 3] C♯₁
+        dw 3034 ; [ 4] D₁ 
+        dw 2863 ; [ 5] D♯₁
+        dw 2703 ; [ 6] E₁ 
+        dw 2551 ; [ 7] F₁ 
+        dw 2408 ; [ 8] F♯₁
+        dw 2273 ; [ 9] G₁ 
+        dw 2145 ; [10] G♯₁
+        dw 2025 ; [11] A₁ 
+        dw 1911 ; [12] A♯₁
+        dw 1804 ; [13] B₁ 
+        dw 1703 ; [14] C₂ 
+        dw 1607 ; [15] C♯₂
+        dw 1517 ; [16] D₂ 
+        dw 1432 ; [17] D♯₂
+        dw 1351 ; [18] E₂ 
+        dw 1276 ; [19] F₂ 
+.err20: dw 1236 ; [20] F♯₂ (should be 1204)
+        dw 1136 ; [21] G₂ 
+        dw 1073 ; [22] G♯₂
+        dw 1012 ; [23] A₂ 
+.err24: dw  988 ; [24] A♯₂ (should be 956)
+        dw  902 ; [25] B₂ 
+        dw  851 ; [26] C₃ 
+        dw  804 ; [27] C♯₃
+        dw  758 ; [28] D₃ 
+        dw  716 ; [29] D♯₃
+        dw  676 ; [30] E₃ 
+        dw  638 ; [31] F₃ 
+        dw  602 ; [32] F♯₃
+        dw  568 ; [33] G₃ 
+        dw  536 ; [34] G♯₃
+        dw  506 ; [35] A₃ 
+        dw  478 ; [36] A♯₃
+        dw  451 ; [37] B₃ 
+        dw  426 ; [38] C₄ 
+        dw  402 ; [39] C♯₄
+        dw  379 ; [40] D₄ 
+        dw  358 ; [41] D♯₄
+        dw  338 ; [42] E₄ 
+        dw  319 ; [43] F₄ 
+        dw  301 ; [44] F♯₄
+        dw  284 ; [45] G₄ 
+        dw  268 ; [46] G♯₄
+        dw  253 ; [47] A₄ 
+        dw  239 ; [48] A♯₄
+        dw  225 ; [49] B₄ 
+        dw  213 ; [50] C₅ 
+        dw  201 ; [51] C♯₅
+        dw  190 ; [52] D₅ 
+        dw  179 ; [53] D♯₅
+        dw  169 ; [54] E₅ 
+        dw  159 ; [55] F₅ 
+        dw  150 ; [56] F♯₅
+        dw  142 ; [57] G₅ 
+        dw  134 ; [58] G♯₅
+        dw  127 ; [59] A₅ 
+        dw  119 ; [60] A♯₅
+        dw  113 ; [61] B₅ 
+        dw  106 ; [62] C₆ 
+        dw  100 ; [63] C♯₆
+        dw   95 ; [64] D₆ 
+        dw   89 ; [65] D♯₆
+        dw   84 ; [66] E₆ 
+        dw   80 ; [67] F₆ 
+        dw   75 ; [68] F♯₆
+        dw   71 ; [69] G₆ 
+        dw   67 ; [70] G♯₆
+        dw   63 ; [71] A₆ 
+        dw   60 ; [72] A♯₆
+        dw   56 ; [73] B₆ 
+        dw   53 ; [74] C₇ 
+        dw   50 ; [75] C♯₇
+        dw   47 ; [76] D₇ 
+        dw   45 ; [77] D♯₇
+        dw   42 ; [78] E₇ 
+        dw   40 ; [79] F₇ 
+        dw   38 ; [80] F♯₇
+        dw   36 ; [81] G₇ 
+        dw   34 ; [82] G♯₇
+        dw   32 ; [83] A₇ 
+.err84: dw   24 ; [84] A♯₇ (should be 30)
 
 
 mixerValue:  ; #c741
@@ -724,9 +651,10 @@ p_c9fb:  ; #c9fb
         dh FB C9
 
 ; #ca2d
-partA:  Part #00, #646F, #0D65, #090A, #646C, #20, #28, #69, #78, #2B, #73, #70, #6374, #6F, #6C, #29
-partB:  Part #08, #3137, #0909, #733B, #7465, #20, #63, #6F, #6C, #6F, #75, #72, #7420, #6F, #20, #77
-partC:  Part #10, #7469, #0D65, #090A, #6572, #74, #0D, #0A, #0D, #0A, #3B, #2D, #2D2D, #2D, #2D, #2D
+;              0      1      3      5      7    9   10   11   12   13   14   15     16   18   19   20
+sectA:  Sect #00, #646F, #0D65, #090A, #646C, #20, #28, #69, #78, #2B, #73, #70, #6374, #6F, #6C, #29
+sectB:  Sect #08, #3137, #0909, #733B, #7465, #20, #63, #6F, #6C, #6F, #75, #72, #7420, #6F, #20, #77
+sectC:  Sect #10, #7469, #0D65, #090A, #6572, #74, #0D, #0A, #0D, #0A, #3B, #2D, #2D2D, #2D, #2D, #2D
 
 ; 3 × 8 bytes
 ; Initialized as 0, 10, 20, 30, 40, 50, 60, 70
@@ -748,7 +676,7 @@ playMenuMusic:  ; #ca84
         add l
         add a
         ; `a` *= 6
-        ld hl, p_c4cb
+        ld hl, musicInitAddrs
         add l
         ld l, a
         jr NC, .l_0
@@ -759,43 +687,43 @@ playMenuMusic:  ; #ca84
         inc hl
         ld d, (hl)
         inc hl
-        ld (partA.i_1), de
+        ld (sectA.i_1), de
 
         ld e, (hl)
         inc hl
         ld d, (hl)
         inc hl
-        ld (partB.i_1), de
+        ld (sectB.i_1), de
 
         ld e, (hl)
         inc hl
         ld d, (hl)
         inc hl
-        ld (partC.i_1), de
+        ld (sectC.i_1), de
 
         ; init with 0
         xor a
-        ld (partA.i_10), a
-        ld (partB.i_10), a
-        ld (partC.i_10), a
-        ld (partA.i_15), a
-        ld (partB.i_15), a
-        ld (partC.i_15), a
+        ld (sectA.transpose), a
+        ld (sectB.transpose), a
+        ld (sectC.transpose), a
+        ld (sectA.i_15), a
+        ld (sectB.i_15), a
+        ld (sectC.i_15), a
 
         ; init with -1
         cpl
-        ld (partA.i_11), a
-        ld (partB.i_11), a
-        ld (partC.i_11), a
+        ld (sectA.i_11), a
+        ld (sectB.i_11), a
+        ld (sectC.i_11), a
 
         ; init with 1
         ld a, 1
-        ld (partA.i_9), a
-        ld (partB.i_9), a
-        ld (partC.i_9), a
-        ld (partA.i_12), a
-        ld (partB.i_12), a
-        ld (partC.i_12), a
+        ld (sectA.i_9), a
+        ld (sectB.i_9), a
+        ld (sectC.i_9), a
+        ld (sectA.duration), a
+        ld (sectB.duration), a
+        ld (sectC.duration), a
 
         ; init with (0, 10, 20, …, 70)
         ld hl, p_ca6c
@@ -815,15 +743,15 @@ playMenuMusic:  ; #ca84
 
         ; init with some addr(?)
         ld hl, p_c584
-        ld (partA.effectAddr), hl
-        ld (partB.effectAddr), hl
-        ld (partC.effectAddr), hl
+        ld (sectA.effectAddr), hl
+        ld (sectB.effectAddr), hl
+        ld (sectC.effectAddr), hl
 
         ; init with -1
         ld a, -1
-        ld (partA.i_13), a
-        ld (partB.i_13), a
-        ld (partC.i_13), a
+        ld (sectA.isPlaying), a
+        ld (sectB.isPlaying), a
+        ld (sectC.isPlaying), a
         ld (isPlaying), a
 
         ret
@@ -836,10 +764,10 @@ aySoundFrame:  ; #cb0c
         and a
         ret Z
 
-        ld a, (partA.i_13)
-        ld hl, partB.i_13
+        ld a, (sectA.isPlaying)
+        ld hl, sectB.isPlaying
         or (hl)
-        ld hl, partC.i_13
+        ld hl, sectC.isPlaying
         or (hl)
         ld (isPlaying), a
         jr NZ, .l_0
@@ -856,62 +784,73 @@ aySoundFrame:  ; #cb0c
         ret
 
 .l_0:
-        ld iy, partA
+        ld iy, sectA
         ld ix, ayChA
-        call .l_1
+        call .proccessChannel
 
-        ld iy, partB
+        ld iy, sectB
         ld ix, ayChB
-        call .l_1
+        call .proccessChannel
 
-        ld iy, partC
+        ld iy, sectC
         ld ix, ayChC
-.l_1:
+        
+.proccessChannel:
         call p_cc95
-        ld a, (iy+Part.i_11)
+        
+        ld a, (iy+Sect.i_11)
         and a
         jr Z, .l_10
 .l_2:
-        dec (iy+Part.i_9)
+        dec (iy+Sect.i_9)
         jr Z, .l_3
-        ld a, (iy+Part.i_3+0)
-        ld (iy+Part.i_5+0), a
-        ld a, (iy+Part.i_3+1)
-        ld (iy+Part.i_5+1), a
-        ld (iy+Part.i_11), 0
+        
+        ld a, (iy+Sect.scoreAddr+0)
+        ld (iy+Sect.noteAddr+0), a
+        ld a, (iy+Sect.scoreAddr+1)
+        ld (iy+Sect.noteAddr+1), a
+        ld (iy+Sect.i_11), 0
         jr .l_10
 
 .l_3:
-        ld (iy+Part.i_9), 1
-        ld l, (iy+Part.i_1+0)
-        ld h, (iy+Part.i_1+1)
+        ld (iy+Sect.i_9), 1
+        ld l, (iy+Sect.i_1+0)
+        ld h, (iy+Sect.i_1+1)
 .l_4:
         ld a, (hl)
         cp #80
         jr C, .l_9
+        
         cp #FE
         jr NZ, .l_5
+        
         inc hl
         ld a, (hl)
-        ld (iy+Part.i_10), a
+        ld (iy+Sect.transpose), a
         inc hl
         jp .l_4
+        
 .l_5:
-        cp #FF
+        cp #FF                  ; end marker
         jr NZ, .l_6
+        
+        ; end music
         xor a
-        ld (iy+Part.i_13), a
+        ld (iy+Sect.isPlaying), a
         ret
+        
 .l_6:
         cp #C0
         jr NC, .l_7
-        and #1F
-        ld (iy+Part.i_9), a
+        
+        and %00011111
+        ld (iy+Sect.i_9), a
         inc hl
         jp .l_4
+        
 .l_7:
-        and #07
-        add (iy+Part.i_0)
+        and %00000111
+        add (iy+Sect.i_0)
         ld de, p_ca6c
         add e
         ld e, a
@@ -919,50 +858,62 @@ aySoundFrame:  ; #cb0c
         inc d
 .l_8:
         inc hl
-        ldi
+        ldi                     ; copy val to 0..70 table
         jp .l_4
+        
 .l_9:
-        ld (iy+Part.i_11), #00
+        ld (iy+Sect.i_11), 0
         inc hl
-        ld (iy+Part.i_1+0), l
-        ld (iy+Part.i_1+1), h
+        ld (iy+Sect.i_1+0), l
+        ld (iy+Sect.i_1+1), h
         ld c, a
-        ld b, #00
-        ld hl, p_c520
+        ld b, 0
+        ld hl, scorePartAddrsLow
         add hl, bc
+        ; `hl`: addr in p_c520 table (low)
         ld e, (hl)
-        ld hl, p_c53e
+        ld hl, scorePartAddrsHigh
         add hl, bc
+        ; `hl`: addr in p_c53e table (high)
         ld d, (hl)
-        ld (iy+Part.i_3+0), e
-        ld (iy+Part.i_3+1), d
+        ; `de`: addr in score?
+        ld (iy+Sect.scoreAddr+0), e
+        ld (iy+Sect.scoreAddr+1), d
         jr .l_11
+        
 .l_10:
-        ld e, (iy+Part.i_5+0)
-        ld d, (iy+Part.i_5+1)
+        ld e, (iy+Sect.noteAddr+0)
+        ld d, (iy+Sect.noteAddr+1)
+        
 .l_11:
-        dec (iy+Part.i_12)
-        jr Z, .l_12
+        dec (iy+Sect.duration)
+        jr Z, .zeroDuration
+        
         ld a, (de)
         cp #80
         call NC, p_cc5b
-        ld (iy+Part.i_5+0), e
-        ld (iy+Part.i_5+1), d
+        ld (iy+Sect.noteAddr+0), e
+        ld (iy+Sect.noteAddr+1), d
         ret
-.l_12:
+        
+.zeroDuration:
         ld a, (de)
         cp #80
         jr C, .l_13
+        
         call p_cc5b
-        ld a, (iy+Part.i_11)
+        ld a, (iy+Sect.i_11)
         and a
-        jr Z, .l_12
+        jr Z, .zeroDuration
         jp .l_2
+        
 .l_13:
         cp #7F
-        jr Z, .l_16
-        cp #7E
+        jr Z, .l_16             ; pause?
+        
+        cp #7E                  ; jump in score?
         jr NZ, .l_14
+        
         inc de
         ld a, (de)
         ld l, a
@@ -970,45 +921,51 @@ aySoundFrame:  ; #cb0c
         ld a, (de)
         ld h, a
         jp .l_15
+        
 .l_14:
-        add (iy+Part.i_10)
-        add #0C
-        ld (iy+Part.i_14), a
-        ld hl, p_c697
+        add (iy+Sect.transpose)
+        add 12                  ; octave
+        ld (iy+Sect.note), a
+        ld hl, noteTable
         add a
         ld c, a
-        ld b, #00
+        ld b, 0
         add hl, bc
+        ; `hl` : addr in `noteTable`
         ld a, (hl)
         inc hl
         ld h, (hl)
         ld l, a
+        ; `hl`: note period
 .l_15:
-        ld a, (iy+Part.i_15)
-        or #C0
-        ld (iy+Part.i_20), a
+        ld a, (iy+Sect.i_15)
+        or %11000000
+        ld (iy+Sect.i_20), a
         inc de
-        ld a, (de)
+        ld a, (de)              ; duration
         inc de
-        ld (iy+Part.i_12), a
+        ld (iy+Sect.duration), a
         ld c, a
-        ld (iy+Part.i_5+0), e
-        ld (iy+Part.i_5+1), d
-        ld e, (iy+Part.effectAddr+0)
-        ld a, (iy+Part.effectAddr+1)
+        ld (iy+Sect.noteAddr+0), e
+        ld (iy+Sect.noteAddr+1), d
+        
+        ld e, (iy+Sect.effectAddr+0)
+        ld a, (iy+Sect.effectAddr+1)
         ld iyh, a
         ld iyl, e
+        ; `iy`: effect addr
         bit 7, (ix+Ch.flags)
         ret NZ
+        
         jp playEffect
 
 .l_16:
         inc de
         ld a, (de)
         inc de
-        ld (iy+Part.i_12), a
-        ld (iy+Part.i_5+0), e
-        ld (iy+Part.i_5+1), d
+        ld (iy+Sect.duration), a
+        ld (iy+Sect.noteAddr+0), e
+        ld (iy+Sect.noteAddr+1), d
         ret
 
 
@@ -1016,8 +973,8 @@ p_cc5b:  ; #cc5b
         ld a, (de)
         cp #88
         jr NC, .l_0
-        and #07
-        add (iy+Part.i_0)
+        and %00000111
+        add (iy+Sect.i_0)
         ld c, a
         ld b, #00
         ld hl, p_ca6c
@@ -1025,20 +982,20 @@ p_cc5b:  ; #cc5b
         ld c, (hl)
         ld hl, p_c584
         add hl, bc
-        ld (iy+Part.effectAddr+0), l
-        ld (iy+Part.effectAddr+1), h
+        ld (iy+Sect.effectAddr+0), l
+        ld (iy+Sect.effectAddr+1), h
         inc de
         ret
 .l_0:
         cp #FF
         jr NZ, .l_1
-        ld (iy+Part.i_11), #FF
+        ld (iy+Sect.i_11), #FF
         ret
 .l_1:
         cp #C0
         jr NC, .l_2
         and #0F
-        ld (iy+Part.i_15), a
+        ld (iy+Sect.i_15), a
         inc de
         ret
 .l_2:
@@ -1055,81 +1012,82 @@ p_cc95:  ; #cc95
         bit 7, (ix+Ch.flags)
         ret NZ
 
-        ld a, (iy+Part.i_20)
+        ld a, (iy+Sect.i_20)
         bit 7, a
         ret Z
 
-        and mixOff
+        and %00111111
         jr NZ, .l_0
-        res 7, (iy+Part.i_20)
+        res 7, (iy+Sect.i_20)
         ret
 
 .l_0:
         ld d, %00000111
-        bit 6, (iy+Part.i_20)
+        bit 6, (iy+Sect.i_20)
         jr NZ, .l_2
-        dec (iy+Part.i_18)
+        
+        dec (iy+Sect.i_18)
         ret NZ
 
-        dec (iy+Part.i_19)
+        dec (iy+Sect.i_19)
         jp Z, .l_2
 
-        ld l, (iy+Part.i_16+0)
-        ld h, (iy+Part.i_16+1)
+        ld l, (iy+Sect.i_16+0)
+        ld h, (iy+Sect.i_16+1)
         inc l
-        ld (iy+Part.i_16+0), l
+        ld (iy+Sect.i_16+0), l
         jp NZ, .l_1
         inc h
-        ld (iy+Part.i_16+1), h
+        ld (iy+Sect.i_16+1), h
 .l_1:
         ld a, (hl)
         and d
-        ld (iy+Part.i_18), a
+        ld (iy+Sect.i_18), a
         ld a, (hl)
     .3  rrca
         and %00011111
-        add (iy+Part.i_14)
-        jp .l_4
+        add (iy+Sect.note)
+        jp .setPeriodByNote
 
 .l_2:
         ld hl, #BE54            ; #C554 - #0700
-        ld a, (iy+Part.i_20)
+        ld a, (iy+Sect.i_20)
     .3  add a
         ld e, a
-        add hl, de              ; `hl`: #C554 + 8 * Part.i_20
+        add hl, de              ; `hl`: #C554 + 8 * Sect.i_20
 
         bit 7, (hl)
         jr NZ, .l_3
 
-        bit 6, (iy+Part.i_20)
+        bit 6, (iy+Sect.i_20)
         jr NZ, .l_3
 
-        ld (iy+Part.i_19), 1
+        ld (iy+Sect.i_19), 1
         ret
 
 .l_3:
-        res 6, (iy+Part.i_20)
+        res 6, (iy+Sect.i_20)
         ld a, (hl)
     .3  rrca
         and d
-        ld (iy+Part.i_18), a
+        ld (iy+Sect.i_18), a
 
         ld a, (hl)
         and d
         inc a
-        ld (iy+Part.i_19), a
-        ld (iy+Part.i_16+0), l
-        ld (iy+Part.i_16+1), h
+        ld (iy+Sect.i_19), a
+        ld (iy+Sect.i_16+0), l
+        ld (iy+Sect.i_16+1), h
 
-        ld a, (iy+Part.i_14)
-.l_4:
+        ld a, (iy+Sect.note)
+.setPeriodByNote:
         add a
-        ld hl, p_c697
+        ld hl, noteTable
         add l
         ld l, a
-        jr NC, .l_5
+        jr NC, .noCarry
         inc h
-.l_5:
+.noCarry:
         ld a, (hl)
         ld (ix+Ch.period+0), a
         inc hl
