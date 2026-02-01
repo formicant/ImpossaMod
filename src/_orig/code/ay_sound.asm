@@ -582,8 +582,9 @@ p_c9a3:  ; # c9a3
         and a
         ret Z
 
-        jp P, .positive
-        ld (ix+Ch.ch_7), -1
+        jp P, .positive         ; always true?
+        
+        ld (ix+Ch.ch_7), -1     ; never happens?
         ret
 
 .positive:
@@ -639,7 +640,7 @@ callAySoundFrame:  ; #c9f7
 isPlaying:  ; #c9fa
         db 0
 
-; (unused ?)
+; (unused ? 50 bytes)
 p_c9fb:  ; #c9fb
         dh C3 05 CA AF 32 FA C9 C3
         dh FE C7 F3 6F 5F 26 00 54
@@ -655,12 +656,13 @@ sectA:  Sect #00, #646F, #0D65, #090A, #646C, #20, #28, #69, #78, #2B, #73, #70,
 sectB:  Sect #08, #3137, #0909, #733B, #7465, #20, #63, #6F, #6C, #6F, #75, #72, #7420, #6F, #20, #77
 sectC:  Sect #10, #7469, #0D65, #090A, #6572, #74, #0D, #0A, #0D, #0A, #3B, #2D, #2D2D, #2D, #2D, #2D
 
-; 3 × 8 bytes
-; Initialized as 0, 10, 20, 30, 40, 50, 60, 70
-p_ca6c:  ; #ca6c
-        dh 2D 2D 2D 2D 20 63 6F 69
-        dh 6E 20 6A 75 6D 70 69 6E
-        dh 67 20 2D 2D 2D 2D 2D 2D
+
+; Table containing offsets in the `instruments` table pointing to instruments
+; 3 × 8 bytes. Initialized at runtime as 0, 10, 20, 30, 40, 50, 60, 70
+instrOffsets:  ; #ca6c
+        dh 2D 2D 2D 2D 20 63 6F 69  ; junk values
+        dh 6E 20 6A 75 6D 70 69 6E  ; junk values
+        dh 67 20 2D 2D 2D 2D 2D 2D  ; junk values
 
 
 ; Initializes menu AY music
@@ -725,7 +727,7 @@ playMenuMusic:  ; #ca84
         ld (sectC.duration), a
 
         ; init with (0, 10, 20, …, 70)
-        ld hl, p_ca6c
+        ld hl, instrOffsets
         ld bc, #030A  ; `b`= 3, `c`= 10
 .l_1:
         xor a
@@ -850,7 +852,7 @@ aySoundFrame:  ; #cb0c
 .l_7:
         and %00000111
         add (iy+Sect.i_0)
-        ld de, p_ca6c
+        ld de, instrOffsets
         add e
         ld e, a
         jr NC, .l_8
@@ -977,7 +979,7 @@ p_cc5b:  ; #cc5b
         add (iy+Sect.i_0)
         ld c, a
         ld b, 0
-        ld hl, p_ca6c
+        ld hl, instrOffsets
         add hl, bc
         ld c, (hl)
         ld hl, instruments
