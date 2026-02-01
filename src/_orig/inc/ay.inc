@@ -36,24 +36,27 @@ ch_7        byte    ; some time. e_5
 vibrCounter byte
 vibrValue   word
 vibrSlope   word
-phaseAddr   word    ; phase procedure addr (onset, decay, sustain, release)
-effectAddr  word
+phaseAddr   word    ; phase procedure addr (attack, decay, sustain, release)
+instrAddr   word
 flags       byte    ; bit 1: noise, 7: ?
     ENDS
 
-    STRUCT Effect   ; length: 13
-envShape    byte
+    STRUCT Instr    ; length: 10
+attackSpd   byte    ; also, envelope shape
 decaySpd    byte    ; < 0
 sustainLev  byte
 releaseSpd  byte    ; < 0
-envPeriod   byte
+attackLev   byte    ; also, envelope period
 e_5         byte    ; some time. ch_7
 vibrPeriod  byte
 vibrSlope   word
 flags       byte
+    ENDS
+
+    STRUCT Effect   ; length: 13
+instrument  Instr
 period      word
 duration    byte
-
     ENDS
 
     STRUCT Sect     ; length: 21
@@ -61,7 +64,7 @@ i_0         byte    ; = chan index * 8 (const?)
 i_1         word    ; musicInitAddrs
 scoreAddr   word
 noteAddr    word
-effectAddr  word
+instrAddr   word
 i_9         byte    ; init with 1, 5 bits when #80 <= v <#C0
 transpose   byte    ; init with 0, marked by #FE
 i_11        byte    ; init with -1
@@ -69,9 +72,9 @@ duration    byte    ; init with 1
 isPlaying   byte    ; init with -1
 note        byte
 i_15        byte    ; init with 0
-i_16        word    ; section length addr?
-i_18        byte    ; remaining section length?
-i_19        byte    ; remaining notes in section?
+i_16        word    ; addr in p_c55c?
+i_18        byte    ; bits 3..5 of p_c55c value?
+i_19        byte    ; length in p_c55c?
 i_20        byte    ; bit 7: ?, 6: ?, 5..0: ?
     ENDS
 

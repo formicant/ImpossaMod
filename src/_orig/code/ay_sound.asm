@@ -66,7 +66,7 @@ score:  ; #c000
 
 
 ; used in playMenuMusic
-musicInitAddrs:
+musicInitAddrs: ; #C4CB
 .start: dw startA, startB, startC
 .stop:  dw stopCh, stopCh, stopCh
 
@@ -86,7 +86,7 @@ startC:
         dh 0E 0F 10 16 0E 0F 10 10
         dh 11 12 13 14 15 FF
 stopCh:
-        dh 01 FF
+        db 1, -1
 
 scorePartAddrsLow:
         db low(score.part0),   low(score.part1),   low(score.part2)
@@ -111,45 +111,44 @@ scorePartAddrsHigh:
         db high(score.part24), high(score.part25), high(score.part26)
         db high(score.part27), high(score.part28), high(score.part29)
         
-        dh 8A 21 49 00
-        dh 00 00 00 00 8A 19 41 00
-        dh 00 00 00 00 8A 29 49 00
-        dh 00 00 00 00 8A 21 39 00
-        dh 00 00 00 00 A1 31 00 00
-        dh 00 00 00 00
+p_c55c: ; #C55C
+        db (1<<7)|(1<<3)|2, (4<<3)|1, (9<<3)|1, 0, 0, 0, 0, 0
+        db (1<<7)|(1<<3)|2, (3<<3)|1, (8<<3)|1, 0, 0, 0, 0, 0
+        db (1<<7)|(1<<3)|2, (5<<3)|1, (9<<3)|1, 0, 0, 0, 0, 0
+        db (1<<7)|(1<<3)|2, (4<<3)|1, (7<<3)|1, 0, 0, 0, 0, 0
+        db (1<<7)|(4<<3)|1, (6<<3)|1,        0, 0, 0, 0, 0, 0
 
-; effect
-p_c584:
-        dh 60 FF 30 FF 30 10 06 01 00 01 7F FD 00
+; Instruments used in the music (8 × 10 bytes)
+instruments: ; #C584
+        ;     env  dec sus rel envP  ?  viP viS flag 
+.i0:    Instr #60, -1, 48, -1, #30, #10, 6,  1, %001
+.i1:    Instr #7F, -3,  0, -2, #37, #00, 0,  0, %001
+.i2:    Instr #7F, -6,  0, -1, #28, #00, 1, 24, %010
+.i3:    Instr #7F, -4,  0, -1, #28, #00, 1, 24, %010
+.i4:    Instr #7F, -2, 50, -1, #3E, #20, 3,  2, %001
+.i5:    Instr #7F, -1, 50, -1, #40, #00, 0,  1, %001
+.i6:    Instr #7F, -2,  0, -1, #00, #20, 3,  2, %001
+.i7:    Instr #60, -1,  0, -1, #30, #10, 6,  1, %001
 
-        dh FE 37 00 00 00 00 01
-        dh 7F FA 00 FF 28 00 01 18
-        dh 00 02 7F FC 00 FF 28 00
-        dh 01 18 00 02 7F FE 32 FF
-        dh 3E 20 03 02 00 01 7F FF
-        dh 32 FF 40 00 00 01 00 01
-        dh 7F FE 00 FF 00 20 03 02
-        dh 00 01 60 FF 00 FF 30 10
-        dh 06 01 00 01
 
-; AY sound effects (15 × 13 bytes)
+; Game sound effects (15 × 13 bytes)
 aySounds:  ; #c5d4
-        ;      env  decS sust relS envP  ?   vibP vibSl  flag period dur
-        Effect #7F, #E9, #01, #FF, #7F, #00, #00, #00A3, #01, #05DA, #01
-        Effect #1B, #FF, #01, #FF, #50, #00, #00, #0001, #01, #002F, #01
-        Effect #7F, #E9, #01, #FF, #7F, #00, #00, #FF29, #01, #034E, #01
-        Effect #08, #F2, #01, #F9, #6B, #FF, #00, #0000, #05, #0F3C, #02
-        Effect #0E, #F2, #01, #F9, #29, #FF, #00, #0000, #02, #0058, #01
-        Effect #7F, #FC, #01, #FF, #44, #00, #00, #FFEC, #01, #086A, #01
-        Effect #7F, #FD, #01, #FF, #60, #00, #00, #FF00, #02, #00F0, #01
-        Effect #0C, #00, #00, #00, #71, #00, #00, #009C, #05, #0FBB, #0F
-        Effect #0A, #FA, #01, #F6, #00, #00, #00, #FFFF, #05, #0023, #1C
-        Effect #14, #EC, #01, #FF, #7F, #01, #00, #0000, #02, #007C, #0A
-        Effect #7F, #FD, #01, #FF, #7F, #04, #00, #FFE0, #01, #096D, #01
-        Effect #7F, #FA, #01, #FF, #7F, #00, #00, #FFF2, #01, #027D, #01
-        Effect #7F, #F6, #01, #FF, #7F, #00, #00, #0000, #01, #0D84, #01
-        Effect #7F, #F9, #01, #FF, #7F, #00, #00, #0000, #01, #00C8, #01
-        Effect #7F, #FD, #08, #DD, #7E, #00, #00, #FCDD, #01, #03F2, #01
+        ;        env  dec sus  rel envP  ?  viP  viS  flag   period dur
+        Effect { #7F, -23, 1,  -1, #7F, #00, 0,  163, %001 }, 1498,  1
+        Effect { #1B,  -1, 1,  -1, #50, #00, 0,    1, %001 },   47,  1
+        Effect { #7F, -23, 1,  -1, #7F, #00, 0, -215, %001 },  846,  1
+        Effect { #08, -14, 1,  -7, #6B, #FF, 0,    0, %101 }, 3900,  2
+        Effect { #0E, -14, 1,  -7, #29, #FF, 0,    0, %010 },   88,  1
+        Effect { #7F,  -4, 1,  -1, #44, #00, 0,  -20, %001 }, 2154,  1
+        Effect { #7F,  -3, 1,  -1, #60, #00, 0, -256, %010 },  240,  1
+        Effect { #0C,   0, 0,   0, #71, #00, 0,  156, %101 }, 4027, 15
+        Effect { #0A,  -6, 1, -10, #00, #00, 0,   -1, %101 },   35, 28
+        Effect { #14, -20, 1,  -1, #7F, #01, 0,    0, %010 },  124, 10
+        Effect { #7F,  -3, 1,  -1, #7F, #04, 0,  -32, %001 }, 2413,  1
+        Effect { #7F,  -6, 1,  -1, #7F, #00, 0,  -14, %001 },  637,  1
+        Effect { #7F, -10, 1,  -1, #7F, #00, 0,    0, %001 }, 3460,  1
+        Effect { #7F,  -7, 1,  -1, #7F, #00, 0,    0, %001 },  200,  1
+        Effect { #7F,  -3, 8, -35, #7E, #00, 0, -803, %001 }, 1010,  1
 
 
 ; Period value for each note
@@ -253,27 +252,27 @@ noisePeriod:  ; #c778
         db 0
 
 
-; Play sound effect
+; Play tone
 ;   `ix`: channel addr
-;   `iy`: effect addr
+;   `iy`: instrument addr
 ;   `hl`: period
 ;   `c`: duration
 ; Used by p_cb0c and p_cd25.
-playEffect:  ; #c779
+playTone:  ; #c779
         di
         ld a, iyl
-        ld (ix+Ch.effectAddr+0), a
+        ld (ix+Ch.instrAddr+0), a
         ld a, iyh
-        ld (ix+Ch.effectAddr+1), a
+        ld (ix+Ch.instrAddr+1), a
 
         ld (ix+Ch.period+0), l
         ld (ix+Ch.period+1), h
         ld (ix+Ch.duration), c
 
-        ld a, (iy+Effect.e_5)
+        ld a, (iy+Instr.e_5)
         ld (ix+Ch.ch_7), a
 
-        ld a, (iy+Effect.vibrPeriod)
+        ld a, (iy+Instr.vibrPeriod)
         and %01111111
         srl a
         jr NZ, .l_0
@@ -281,9 +280,9 @@ playEffect:  ; #c779
 .l_0:
         ld (ix+Ch.vibrCounter), a
 
-        ld a, (iy+Effect.vibrSlope+0)
+        ld a, (iy+Instr.vibrSlope+0)
         ld (ix+Ch.vibrSlope+0), a
-        ld a, (iy+Effect.vibrSlope+1)
+        ld a, (iy+Instr.vibrSlope+1)
         ld (ix+Ch.vibrSlope+1), a
 
         xor a
@@ -292,7 +291,7 @@ playEffect:  ; #c779
 
         ld a, (mixerValue)
         or (ix+Ch.mixMask)
-        ld c, (iy+Effect.flags)
+        ld c, (iy+Instr.flags)
         ld (ix+Ch.flags), c
         bit 0, c
         jr Z, .l_1
@@ -306,7 +305,7 @@ playEffect:  ; #c779
         bit 2, c
         jr NZ, .l_3
 
-        ld hl, onsetPhase
+        ld hl, attackPhase
         ld (ix+Ch.phaseAddr+0), l
         ld (ix+Ch.phaseAddr+1), h
         ret
@@ -315,11 +314,11 @@ playEffect:  ; #c779
         ; set envelope
         call doNothing
 
-        ld a, (iy+Effect.envShape)
+        ld a, (iy+Instr.attackSpd)  ; here, envelope shape
         ld c, regEnvShape
         call setAyReg
 
-        ld a, (iy+Effect.envPeriod)
+        ld a, (iy+Instr.attackLev)  ; here, envelope period
         ld c, regEnvPer
         call setAyReg
         inc c
@@ -464,9 +463,9 @@ applyEffect:  ; #c8fb
         cp (ix+Ch.mixMask)
         ret Z
 
-        ld a, (ix+Ch.effectAddr+0)
+        ld a, (ix+Ch.instrAddr+0)
         ld iyl, a
-        ld a, (ix+Ch.effectAddr+1)
+        ld a, (ix+Ch.instrAddr+1)
         ld iyh, a
 
         ld a, (ix+Ch.duration)
@@ -478,25 +477,25 @@ applyEffect:  ; #c8fb
 .l_0:
         call p_c9a3
 
-        bit 2, (iy+Effect.flags)
+        bit 2, (iy+Instr.flags)
         jp NZ, p_c99c
 
         ld l, (ix+Ch.phaseAddr+0)
         ld h, (ix+Ch.phaseAddr+1)
         jp hl
         ; possible jumps:
-        ; onsetPhase, decayPhase, sustainPhase, releasePhase
+        ; attackPhase, decayPhase, sustainPhase, releasePhase
 
 
-onsetPhase:  ; #c92d
+attackPhase:  ; #c92d
         ld a, (ix+Ch.volume)
-        add (iy+Effect.envShape)
-        cp (iy+Effect.envPeriod)
+        add (iy+Instr.attackSpd)
+        cp (iy+Instr.attackLev)
         jr NC, .end
         ld (ix+Ch.volume), a
         ret
 .end:
-        ld a, (iy+Effect.envPeriod)
+        ld a, (iy+Instr.attackLev)
         ld (ix+Ch.volume), a
         ld hl, decayPhase
         ld (ix+Ch.phaseAddr+0), l
@@ -506,14 +505,14 @@ onsetPhase:  ; #c92d
 
 decayPhase:  ; #c94c
         ld a, (ix+Ch.volume)
-        add (iy+Effect.decaySpd)
+        add (iy+Instr.decaySpd)
         jp M, .end
-        cp (iy+Effect.sustainLev)
+        cp (iy+Instr.sustainLev)
         jr C, .end
         ld (ix+Ch.volume), a
         ret
 .end:
-        ld a, (iy+Effect.sustainLev)
+        ld a, (iy+Instr.sustainLev)
         ld (ix+Ch.volume), a
         ld hl, sustainPhase
         ld (ix+Ch.phaseAddr+0), l
@@ -534,7 +533,7 @@ sustainPhase:  ; #c96e
 
 releasePhase: ; #c967d
         ld a, (ix+Ch.volume)
-        add (iy+Effect.releaseSpd)
+        add (iy+Instr.releaseSpd)
         jp M, switchOff
         ld (ix+Ch.volume), a
         ret
@@ -579,7 +578,7 @@ p_c9a3:  ; # c9a3
         dec (ix+Ch.vibrCounter)
         ret NZ
 
-        ld a, (iy+Effect.vibrPeriod)
+        ld a, (iy+Instr.vibrPeriod)
         and a
         ret Z
 
@@ -742,10 +741,10 @@ playMenuMusic:  ; #ca84
         djnz .l_1
 
         ; init with some addr(?)
-        ld hl, p_c584
-        ld (sectA.effectAddr), hl
-        ld (sectB.effectAddr), hl
-        ld (sectC.effectAddr), hl
+        ld hl, instruments.i0
+        ld (sectA.instrAddr), hl
+        ld (sectB.instrAddr), hl
+        ld (sectC.instrAddr), hl
 
         ; init with -1
         ld a, -1
@@ -949,15 +948,15 @@ aySoundFrame:  ; #cb0c
         ld (iy+Sect.noteAddr+0), e
         ld (iy+Sect.noteAddr+1), d
         
-        ld e, (iy+Sect.effectAddr+0)
-        ld a, (iy+Sect.effectAddr+1)
+        ld e, (iy+Sect.instrAddr+0)
+        ld a, (iy+Sect.instrAddr+1)
         ld iyh, a
         ld iyl, e
         ; `iy`: effect addr
         bit 7, (ix+Ch.flags)
         ret NZ
         
-        jp playEffect
+        jp playTone
 
 .l_16:
         inc de
@@ -973,19 +972,21 @@ p_cc5b:  ; #cc5b
         ld a, (de)
         cp #88
         jr NC, .l_0
+        
         and %00000111
         add (iy+Sect.i_0)
         ld c, a
-        ld b, #00
+        ld b, 0
         ld hl, p_ca6c
         add hl, bc
         ld c, (hl)
-        ld hl, p_c584
+        ld hl, instruments
         add hl, bc
-        ld (iy+Sect.effectAddr+0), l
-        ld (iy+Sect.effectAddr+1), h
+        ld (iy+Sect.instrAddr+0), l
+        ld (iy+Sect.instrAddr+1), h
         inc de
         ret
+        
 .l_0:
         cp #FF
         jr NZ, .l_1
@@ -1050,11 +1051,11 @@ p_cc95:  ; #cc95
         jp .setPeriodByNote
 
 .l_2:
-        ld hl, #BE54            ; #C554 - #0700
+        ld hl, p_c55c - #0708   ; `d`= 7 is added to `h`, `a`&%00011111: 1..5
         ld a, (iy+Sect.i_20)
     .3  add a
         ld e, a
-        add hl, de              ; `hl`: #C554 + 8 * Sect.i_20
+        add hl, de              ; `hl`: #p_c55c + 8 * (Sect.i_20 - 1)
 
         bit 7, (hl)
         jr NZ, .l_3
@@ -1138,7 +1139,7 @@ playAySound:  ; #cd25
         ld l, (iy+Effect.period+0)
         ld h, (iy+Effect.period+1)
         ld c, (iy+Effect.duration)
-        call playEffect
+        call playTone
 
         pop iy, ix, bc, de, hl
         ret
