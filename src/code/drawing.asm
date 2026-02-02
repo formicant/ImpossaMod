@@ -1007,17 +1007,26 @@ setScrTileUpd:  ; #c636
         ret
 
 
-; Life indicator attributes (3 red, 4 green, 10 blue)
-lifeIndicatorAttrs:  ; #c660
-        dh 42 42 42 44 44 44 44 41 41 41 41 41 41 41 41 41 41
-
-; Copy life indicator attributes to the screen
-; Used by c_d04e.
-applyLifeIndicatorAttrs:  ; #c671
-        ld hl, lifeIndicatorAttrs
-        ld de, Screen.attrs + 15
-        ld bc, 17
-        ldir
+; Apply life indicator attributes (3 red, 4 green, 10 blue)
+applyLifeIndicatorAttrs:
+        ld hl, Screen.attrs + 15
+        ld c, #42               ; bright red
+    DUP 3
+        ld (hl), c
+        inc l
+    EDUP
+        ld c, #44               ; bright green
+    DUP 4
+        ld (hl), c
+        inc l
+    EDUP
+        ld bc, #0541            ; `b`: 5, `c`: bright blue
+.loop:
+        ld (hl), c
+        inc l
+        ld (hl), c
+        inc l
+        djnz .loop
         ret
 
 
@@ -1025,89 +1034,93 @@ applyLifeIndicatorAttrs:  ; #c671
 ;   `de`: string address
 ;   `h`: y, `l`: x
 ;   `c`: attribute
-; Used by c_c76f, c_c9ac, c_cd22, c_cd5c, c_cf85, c_cfe6, c_d026,
-; c_d04e, c_d553, c_d62c, c_d6c0 and c_e9b1.
-printString:  ; #c67d
-        push bc
-        ld a, h
-        and %00011000
-        or  high(Screen.pixels)
-        ld b, h
-        ld h, a
-        ; `h`: screen pixel addr high byte
+printString:
+        push ix
+        ld a, c
+        ld (.attr), a
 
-        ld a, b
-        and %00000111
+        ; coords to screen and attr address
+        ld a, h
     .3  rrca
+        ld b, a
+        and %11100000
         or l
         ld l, a
-        ; `l`: screen pixel and attr addr low byte
-
-        push hl
-        exx
-        pop hl
+        ld ixl, a
+        ld a, b
+        and %00000011
+        add high(Screen.attrs)
+        ld ixh, a
         ld a, h
         and %00011000
-    .3  rrca
-        add high(Screen.attrs)
+        add high(Screen.start)
         ld h, a
-        pop bc
-        exx
-        ; `h'`: screen attr addr high byte
+        ; `hl`: screen addr
+        ; `ix`: attr addr
 
-.l_0:
-        push de, hl
+.char:
         ld a, (de)
-        res 7, a
-        ; `a`: ASCII char code
+        and %01111111           ; `a`: ASCII char code
 
-        ex de, hl
         cp ' '
-        jr NZ, .l_1
-        xor a
-        jr .l_2
-.l_1:
+        jr Z, .printSpace
+        ; TODO: modify the encoding to eliminate this
         sub 39
         cp 21
-        jr C, .l_2
+        jr C, .printChar
         sub 5
-.l_2:
+
+.printChar:
         ; `a`: font char code
-        ld l, a
-        ld h, 0
-    .3  add hl, hl
-        ld de, Common.font
-        add hl, de
-        ex de, hl
-        ; `de`: addr in font
-
-        pop hl
-        push hl
-
-        ; draw char
-        ld b, 8
-.l_3:
-        ld a, (de)
+    .3  add a
+        ld b, 0
+        rl b
+        add low(Common.font)
+        ld c, a
+        ld a, b
+        adc high(Common.font)
+        ld b, a
+    DUP 7
+        ld a, (bc)
         ld (hl), a
+        inc c
         inc h
-        inc de
-        djnz .l_3
+    EDUP
+        ld a, (bc)
+        ld (hl), a
 
-        ; set attr
-        exx
-        ld (hl), c
+.afterPrint:
+        ; move back to the top pixel row
+        ld a, h
+        sub 7
+        ld h, a
+
+        ; apply attr
+.attr+* ld (ix), -0
+
+        ; check string end
+        ld a, (de)
+        and %10000000
+        jr NZ, .end
 
         ; next char
-        inc hl
-        exx
-        pop hl
-        inc hl
-        pop de
-        ld a, (de)
-        bit 7, a
-        ret NZ
+        inc l
+        inc ixl
         inc de
-        jr .l_0
+        jp .char
+
+.printSpace:
+        xor a
+    DUP 7
+        ld (hl), a
+        inc h
+    EDUP
+        ld (hl), a
+        jp .afterPrint
+
+.end:
+        pop ix
+        ret
 
 
     ENDMODULE
