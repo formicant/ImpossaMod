@@ -60,7 +60,12 @@ codeStart:
     INCLUDE "data/font.asm"
     ORG #CC25
     INCLUDE "code/entry_point.asm"
+    INCLUDE "code/game_loop.asm"
     INCLUDE "code/code.asm"
+    INCLUDE "code/panel.asm"
+    INCLUDE "code/logic_0.asm"
+    INCLUDE "code/level_select_menu.asm"
+    INCLUDE "code/game_win.asm"
     INCLUDE "code/logic_1.asm"
     INCLUDE "code/select_sprite.asm"
     INCLUDE "code/logic_2.asm"

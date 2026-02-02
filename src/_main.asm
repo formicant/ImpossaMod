@@ -25,7 +25,12 @@
 ; Code
     ORG #6200   ; #BEFC
 codeStart:
+    INCLUDE "_orig/code/game_loop.asm"
     INCLUDE "_orig/code/code.asm"
+    INCLUDE "_orig/code/panel.asm"
+    INCLUDE "_orig/code/logic_0.asm"
+    INCLUDE "_orig/code/level_select_menu.asm"
+    INCLUDE "_orig/code/game_win.asm"
     INCLUDE "_orig/code/game_menu.asm"
     INCLUDE "_orig/code/utils.asm"
     INCLUDE "_orig/code/logic_1.asm"
