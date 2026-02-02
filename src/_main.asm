@@ -53,11 +53,11 @@ codeStart:
     _NEXT_ORG #9191
     INCLUDE "code/interrupt.asm"
 
-    INCLUDE "_orig/code/drawing.asm"
     INCLUDE "_orig/code/select_sprite.asm"
     INCLUDE "_orig/code/logic_2.asm"
     INCLUDE "_orig/code/beeper_sound.asm"
     INCLUDE "_orig/code/level_loading.asm"
+    INCLUDE "code/drawing.asm"
 
     DISPLAY "Fast free: ", stackTop - $
 
