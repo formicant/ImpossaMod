@@ -101,11 +101,13 @@ generateRandom:  ; #d0fc
 randomSeed:  ; #d11b
         dw 0
 
+
+    IFNDEF _MOD
+
 ; 32-bit frame counter, used in random number generation
 longFrameCounter:  ; #d11d
 .low:   dw 0
 .high:  dw 0
-
 
 ; Increments the 32-bit frame counter
 ; Called in every interrupt
@@ -121,6 +123,8 @@ incrementLongFrameCounter:  ; #d121
         inc hl
         ld (longFrameCounter.high), hl
         ret
+
+    ENDIF
 
 
 ; Clears something before the game
@@ -212,10 +216,14 @@ initLevel:  ; #d1c1
         ld (State.weapon), a
 
         ; panel info
+    IFDEF _MOD
+        call printPanel
+    ELSE
         call printCoinCount
         call printScore
         call printEnergy
         call printSoupCans
+    ENDIF
 
         xor a
         ld (State.s_54), a

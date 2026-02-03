@@ -1,17 +1,49 @@
     MODULE Code
 
 
-; Score string (6 decimal digits in ASCII with a stop bit)
-scoreString:  ; #cf51
-        block 6
+panelAttrs:
+        db #47,  6              ; score  - bright white
+        db #07,  1              ; smart  - dark white
+        db #43,  3              ; soup   - bright magenta
+        db #46,  4              ; coins  - bright yellow
+        db #03,  1              ; diary  - dark magenta
+        db #42,  3              ; energy - bright red
+        db #44,  4              ; energy - bright green
+        db #41, 10              ; energy - bright blue
+        db 0
+
+printPanel:
+        ld de, Screen.attrs
+        ld hl, panelAttrs
+        ld a, (hl)
+.part:
+        inc hl
+        ld b, (hl)
+        inc hl
+.attr:
+        ld (de), a
+        inc e
+        djnz .attr
+        
+        ld a, (hl)
+        or a
+        jr NZ, .part
+        
+        ld hl, Screen.pixels.row0 + 0
+        call printScore
+        call printSoupCans
+        call printCoinCount
+        jp printEnergy
+
 
 ; Score (6 decimal digits)
-score:  ; #cf57
+score:
         block 6
+.end:
 
 ; Score table (decimal)
 ; (sub-labels point to the last digit)
-scoreTable:  ; #cf5d
+scoreTable:
 .walk+4 db 0, 0, 0, 6, 3        ; advance in map
         db 0, 0, 1, 0, 0
         db 0, 0, 2, 0, 0
@@ -23,27 +55,21 @@ scoreTable:  ; #cf5d
 
 ; Add score by index
 ;   `a`: index in the score table (1..6)
-; Used by c_e4fc and c_e6e1.
-addScore:  ; #cf85
+addScore:
         or a
         ret Z
-        ld l, a
+        ld e, a
     .2  add a
-        add l
-        ld l, a
-        ld h, 0
+        add e
+        add 4
         ld de, scoreTable
-        add hl, de
-        ld de, 4
-        add hl, de
-        ex de, hl
-        jr addScoreRaw
+        _ADD_DE_A
+        ; continue
 
 ; Add score by addr
 ;   `de`: addr of the last digit in the score table
-; This entry point is used by c_cdae and c_ec00.
 addScoreRaw:
-        ld hl, score + 5
+        ld hl, score + 5        ; last digit
         or a
         ld b, 5
 .l_0:
@@ -54,52 +80,66 @@ addScoreRaw:
         or a
 .l_1:
         ld (hl), a
+        ; next digit
         dec hl
         dec de
         djnz .l_0
-        ld a, (hl)
+
+        ld a, (hl)              ; first digit
         adc a, 0
         cp 10
         jp C, .l_2
-        xor a
+        xor a                   ; overflow
+        ; TODO: if overflow is possible, set 999999 here
+        ;   if impossible, remove the check
 .l_2:
         ld (hl), a
 
+        ld hl, Screen.pixels.row0 + 0
+        ; continue
+
 ; Print score number
-; This entry point is used by c_c76f and c_d1c1.
+;   `hl`: screen address
 printScore:
-        ld hl, score
-        ld de, scoreString
-        ld b, 6
-.l_0:
-        ld a, (hl)
-        add '0'
-        ld (de), a
-        inc hl
+        ld de, score
+.digit:
+        ld a, (de)
+        call printChar
         inc de
-        djnz .l_0
-        dec de
-        ex de, hl
-        set 7, (hl)
-.yx+*   ld hl, -0               ; `h`: y coord, `l`: x coord
-        ld de, scoreString
-        ld c, #47               ; bright white
-        jp printString
+        inc l
+        ld a, e
+        cp low(score.end)
+        jr NZ, .digit
+        ret
 
 addScoreSetCarry:
         sub 10
         scf
         jp addScoreRaw.l_1
 
+
 ; Clear score at #CF57?
-; Used by c_d133.
-clearScore:  ; #cfdb
+clearScore:
         ld hl, score
-        ld b, #06
-.l_0:
-        ld (hl), #00
+        ld b, 6
+.digit:
+        ld (hl), 0
         inc hl
-        djnz .l_0
+        djnz .digit
+        ret
+
+
+; Print soup cans in the panel
+printSoupCans:
+        ld hl, Screen.pixels.row0 + 7
+        ld a, (State.soupCans)
+        ld e, a
+.can:
+        ld a, ':' - '0'         ; soup can char code
+        call printChar
+        inc l
+        dec e
+        jp NZ, .can
         ret
 
 
@@ -136,29 +176,6 @@ printNumber:
         ld (State.coinDigits + 0), a
         pop bc
         ld de, State.coinDigits
-        jp printString
-
-
-soupCanStrings:
-.one:   db ":  "C
-.two:   db ":: "C
-.three: db ":::"C
-
-; Print soup cans in the panel
-; Used by c_d1c1, c_e6e1 and c_e9b1.
-printSoupCans:  ; #d026
-        ld a, (State.soupCans)
-        dec a
-        ld l, a
-        add a
-        add l
-        ld l, a
-        ld h, #00
-        ld de, soupCanStrings
-        add hl, de
-        ex de, hl
-        ld hl, #0007
-        ld c, #43
         jp printString
 
 

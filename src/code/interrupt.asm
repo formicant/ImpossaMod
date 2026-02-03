@@ -60,7 +60,12 @@ waitFrames:
 
 ; measures frames inside one game progression unit
 shortFrameCounter:
-        db -0
+        db 0
+
+; 32-bit frame counter, used in random number generation
+longFrameCounter:
+.low:   dw 0
+.high:  dw 0
 
 
     ENDMODULE
