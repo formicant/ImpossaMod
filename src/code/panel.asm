@@ -140,9 +140,9 @@ printNumber:
 
 
 soupCanStrings:
-.one:   db "/  "C
-.two:   db "// "C
-.three: db "///"C
+.one:   db ":  "C
+.two:   db ":: "C
+.three: db ":::"C
 
 ; Print soup cans in the panel
 ; Used by c_d1c1, c_e6e1 and c_e9b1.
@@ -164,7 +164,7 @@ printSoupCans:  ; #d026
 
 ; Energy characters
 energyChars:  ; #d03d
-        db ",,,,,,,,,,,,,,,,,"  ; energy full, they look all the same
+        db "[[[[[[[[[[[[[[[[["  ; energy full
 
 ; Print energy in the panel
 ; Used by c_d09a, c_d0af, c_d1c1, c_e9b1 and c_f618.
@@ -209,7 +209,7 @@ printEnergy:  ; #d04e
 
         ld b, a
 .l_4:
-        ld (hl), "."            ; energy empty
+        ld (hl), "]"            ; energy empty
         inc hl
         djnz .l_4
 .l_5:

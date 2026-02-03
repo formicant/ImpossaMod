@@ -1061,32 +1061,8 @@ printString:
 .char:
         ld a, (de)
         and %01111111           ; `a`: ASCII char code
-        sub 44
-        jr C, .printSpace
-        
-        ; `a`: font char code
-    .3  add a
-        ld b, 0
-        rl b
-        add low(Common.font)
-        ld c, a
-        ld a, b
-        adc high(Common.font)
-        ld b, a
-    DUP 7
-        ld a, (bc)
-        ld (hl), a
-        inc c
-        inc h
-    EDUP
-        ld a, (bc)
-        ld (hl), a
-
-.afterPrint:
-        ; move back to the top pixel row
-        ld a, h
-        sub 7
-        ld h, a
+        sub '0'                 ; `a`: font char code
+        call printChar
 
         ; apply attr
 .attr+* ld (ix), -0
@@ -1102,18 +1078,45 @@ printString:
         inc de
         jp .char
 
-.printSpace:
+.end:
+        pop ix
+        ret
+
+
+; Print a single character without attrs
+;   `hl`: screen address
+;   `a`: font char code (ASCII - 48)
+;       (space is printed if `a` >= #B0)
+;   spoils: `af`, `bc`
+printChar:
+        add a
+        jr C, .space
+    .2  add a
+        ld c, a
+        ld b, high(Common.font) / 2
+        rl b
+        ; `bc`: char addr in the font
+    DUP 7
+        ld a, (bc)
+        ld (hl), a
+        inc h
+        inc c
+    EDUP
+        ld a, (bc)
+.last:
+        ld (hl), a
+        ld a, h
+        sub 7
+        ld h, a
+        ret
+
+.space:
         xor a
     DUP 7
         ld (hl), a
         inc h
     EDUP
-        ld (hl), a
-        jp .afterPrint
-
-.end:
-        pop ix
-        ret
+        jp .last
 
 
     ENDMODULE

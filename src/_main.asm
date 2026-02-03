@@ -23,8 +23,10 @@
     INCLUDE "basic_loader.asm"
 
 ; Code
-    ORG #6200   ; #BEFC
+    ORG #6000
 codeStart:
+    INCLUDE "data/font.asm"
+    
     INCLUDE "_orig/code/game_loop.asm"
     INCLUDE "_orig/code/code.asm"
     INCLUDE "_orig/code/logic_0.asm"
@@ -38,11 +40,7 @@ codeStart:
     INCLUDE "code/controls.asm"
     INCLUDE "code/sound.asm"
 
-    DISPLAY "Slow free: ", Common.font - $
-
-    _NEXT_ORG #7E80
-    INCLUDE "data/font.asm"
-
+    DISPLAY "Slow free: ", #8000 - $
 
 ; Fast memory
     _NEXT_ORG #8000

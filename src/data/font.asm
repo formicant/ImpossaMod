@@ -2,12 +2,7 @@
 
 
 ; Character font
-font:
-        ; ASCII - 44:
-        dh EE EE EE EE EE EE EE 00  ; , energy full
-        dh E0 EE E8 E8 E8 E8 E0 00  ; - energy half
-        dh 00 EE 88 88 88 88 00 00  ; . energy empty
-        dh FF 42 5E 42 7A 42 FF 00  ; / soup can
+font:   ; ASCII - 48
         dh 7C C6 C6 C6 C6 C6 7C 00  ; 0
         dh 30 70 30 30 30 30 78 00  ; 1
         dh 7C C6 06 7C C0 C6 FE 00  ; 2
@@ -18,10 +13,10 @@ font:
         dh FE C6 06 06 06 06 06 00  ; 7
         dh 7C C6 C6 7C C6 C6 7C 00  ; 8
         dh 7C C6 C6 7E 06 C6 7C 00  ; 9
-        dh 00 00 00 00 00 00 00 00  ; :
-        dh 00 00 00 00 00 00 00 00  ; ;
+        dh FF 42 5E 42 7A 42 FF 00  ; : soup can
+        dh 18 30 60 7C 0C 18 10 00  ; ; smart
         dh 00 00 00 00 00 00 00 00  ; <
-        dh 00 00 00 00 00 00 00 00  ; =
+        dh BA BC A2 BE A2 BC BA 00  ; = diary
         dh 00 00 00 00 00 00 00 00  ; >
         dh 7C C6 06 3C 30 00 30 00  ; ?
         dh 7E C3 DB D3 DB C3 7E 00  ; @ ©
@@ -51,7 +46,11 @@ font:
         dh C6 C6 6C 38 6C C6 C6 00  ; X
         dh CC CC CC 78 30 30 30 00  ; Y
         dh FE C6 0C 18 30 66 FE 00  ; Z
-        dh 10 18 FC FE FC 18 10 00  ; [ →
+        dh EE EE EE EE EE EE EE 00  ; [ energy full
+        dh E0 EE E8 E8 E8 E8 E0 00  ; \ energy half
+        dh 00 EE 88 88 88 88 00 00  ; ] energy empty
+        dh 00 00 00 00 00 00 00 00  ; ^
+        dh 00 00 00 00 00 00 00 00  ; _
 
 
     ENDMODULE
