@@ -1061,16 +1061,9 @@ printString:
 .char:
         ld a, (de)
         and %01111111           ; `a`: ASCII char code
-
-        cp ' '
-        jr Z, .printSpace
-        ; TODO: modify the encoding to eliminate this
-        sub 39
-        cp 21
-        jr C, .printChar
-        sub 5
-
-.printChar:
+        sub 44
+        jr C, .printSpace
+        
         ; `a`: font char code
     .3  add a
         ld b, 0
