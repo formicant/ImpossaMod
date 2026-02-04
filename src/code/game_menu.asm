@@ -148,9 +148,9 @@ printGameMenuText:  ; #c76f
         ld de, textLastScore
         ld c, #43               ; bright magenta
         call printString
-        
+
         ld hl, Screen.pixels.row15 + 18
-        jp printScore
+        jp printScoreAt
 
 
 ; Checks attributes of the active menu item

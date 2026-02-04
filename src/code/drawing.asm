@@ -1007,29 +1007,6 @@ setScrTileUpd:  ; #c636
         ret
 
 
-; Apply life indicator attributes (3 red, 4 green, 10 blue)
-applyLifeIndicatorAttrs:
-        ld hl, Screen.attrs + 15
-        ld c, #42               ; bright red
-    DUP 3
-        ld (hl), c
-        inc l
-    EDUP
-        ld c, #44               ; bright green
-    DUP 4
-        ld (hl), c
-        inc l
-    EDUP
-        ld bc, #0541            ; `b`: 5, `c`: bright blue
-.loop:
-        ld (hl), c
-        inc l
-        ld (hl), c
-        inc l
-        djnz .loop
-        ret
-
-
 ; Print string
 ;   `de`: string address
 ;   `h`: y, `l`: x

@@ -567,9 +567,17 @@ c_e9b1:  ; #e9b1
         ld (State.shopPrice), a
         or a
         jr Z, .l_2
+
+    IFDEF _MOD
+        ; TODO: set attrs
+        ld hl, Screen.pixels.row0 + 30
+        call printCoinCountAt
+    ELSE
         ld hl, #001C            ; at 0, 28
         ld c, #47               ; bright white
         call printNumber
+    ENDIF
+
 .l_2:
         ld a, (controlState)
         bit 4, a

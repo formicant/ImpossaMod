@@ -24,12 +24,11 @@ printPanel:
         ld (de), a
         inc e
         djnz .attr
-        
+
         ld a, (hl)
         or a
         jr NZ, .part
-        
-        ld hl, Screen.pixels.row0 + 0
+
         call printScore
         call printSoupCans
         call printCoinCount
@@ -98,9 +97,14 @@ addScoreRaw:
         ld hl, Screen.pixels.row0 + 0
         ; continue
 
-; Print score number
-;   `hl`: screen address
+; Print score number in the panel
 printScore:
+        ld hl, Screen.pixels.row0 + 0
+        ; continue
+
+; Print score number
+;   `hl`: screen address of the first digit
+printScoreAt:
         ld de, score
 .digit:
         ld a, (de)
@@ -143,101 +147,94 @@ printSoupCans:
         ret
 
 
-; Print coins in the panel
-; Used by c_d1c1, c_e6e1 and c_e9b1.
-printCoinCount:  ; #cfe6
-        ld a, (State.coins)
-        ld hl, #000B            ; at 0, 12
-        ld c, #46               ; bright yellow
-        jp printNumber
+; Print number of coins multiplied by 25 in the panel
+printCoinCount:
+        ld hl, Screen.pixels.row0 + 13
+        ld a, (State.coins)     ; 0 <= `a` < 128
+        ; continue
 
-printNumber:
-        push bc
-        ld bc, 0
-.hundreds:
-        sub 100
-        inc c
-        jr NC, .hundreds
-        add 100
-        dec c
-.tens:
-        sub 10
-        inc b
-        jr NC, .tens
-        add 10
-        dec b
-        add '0'|#80
-        ld (State.coinDigits + 2), a
+; Print number of coins multiplied by 25
+;   `a`: number of coins
+;   `hl`: screen addr of the last digit
+printCoinCountAt:
+        ; instead of multiplying by 25, we interpret `a` as a 6.2 fixed point
+        ; and then, we interpret the decimal value as multiplied by 100
+        ld b, a
+        ; convert integer part to decimal
+        rlca
+        ld c, a
+        xor a
+        sla c : adc a
+        sla c : adc a
+        sla c : adc a
+        sla c : adc a : daa
+        sla c : adc a : daa
+        ld d, a                 ; two digits in BCD
+
+        ; convert fractional part to decimal
         ld a, b
-        add '0'
-        ld (State.coinDigits + 1), a
-        ld a, c
-        add '0'
-        ld (State.coinDigits + 0), a
-        pop bc
-        ld de, State.coinDigits
-        jp printString
+        sla c : adc a
+        and %00000111
+        ld e, a
+        sla c : adc a
+        and %00000101
+        ; `e`, `a`: two fractional part digits
 
+        ; print number
+        call printChar          ; units
+        dec l
+        ld a, e
+        call printChar          ; tens
+        dec l
+        ld a, d
+        and %00001111
+        call printChar          ; hundreds
+        dec l
+        ld a, d
+    .4  rrca
+        and %00001111
+        jp printChar            ; thousands
 
-; Energy characters
-energyChars:  ; #d03d
-        db "[[[[[[[[[[[[[[[[["  ; energy full
 
 ; Print energy in the panel
-; Used by c_d09a, c_d0af, c_d1c1, c_e9b1 and c_f618.
-printEnergy:  ; #d04e
-        ld hl, State.energyText
-        push hl
-        ld b, 17
-.l_0:
-        ld (hl), " "
-        inc hl
-        djnz .l_0
+printEnergy:
+        ld hl, Screen.pixels.row0 + 15
+        ld e, 0
 
-        pop hl
-        ld de, energyChars
         ld a, (State.energy)
-        ld c, a
-        cp 2
-        jr C, .l_2
-
-        srl a
-        ld b, a
-.l_1:
-        ld a, (de)
-        ld (hl), a
-        inc hl
-        inc de
-        djnz .l_1
-.l_2:
-        bit 0, c
-        jr Z, .l_3
-        ld a, (de)
+        ld d, a
+.fullChar:
+        ld a, e
+        sub d
+        jr Z, .empty
         inc a
-        ld (hl), a
-        inc hl
-.l_3:
-        ld a, (State.energy)
-        ld b, a
+        jr Z, .half
+
+        ld a, '[' - '0'         ; energy full (font char code)
+        call printChar
+        inc l
+    .2  inc e
+        jp .fullChar
+
+.half:
+        ld a, '\' - '0'         ; energy half (font char code)
+        call printChar
+        inc l
+    .2  inc e
+
+.empty:
         ld a, (State.maxEnergy)
-        sub b
-        srl a
-        jr Z, .l_5
+        ld d, a
+.emptyChar:
+        ld a, e
+        cp d
+        ret Z
 
-        ld b, a
-.l_4:
-        ld (hl), "]"            ; energy empty
-        inc hl
-        djnz .l_4
-.l_5:
-        ld hl, State.energyText + 16
-        set 7, (hl)
-
-        ld hl, #000F            ; at 0, 15
-        ld de, State.energyText
-        call printString
-        call applyLifeIndicatorAttrs
-        ret
+        ld a, ']' - '0'         ; energy empty (font char code)
+        call printChar
+        inc l
+    .2  inc e
+        jp .emptyChar
 
 
     ENDMODULE
