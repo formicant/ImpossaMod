@@ -149,13 +149,13 @@ printSoupCans:
 
 ; Print number of coins multiplied by 25 in the panel
 printCoinCount:
-        ld hl, Screen.pixels.row0 + 13
+        ld hl, Screen.pixels.row0 + 10
         ld a, (State.coins)     ; 0 <= `a` < 128
         ; continue
 
 ; Print number of coins multiplied by 25
 ;   `a`: number of coins
-;   `hl`: screen addr of the last digit
+;   `hl`: screen addr
 printCoinCountAt:
         ; instead of multiplying by 25, we interpret `a` as a 6.2 fixed point
         ; and then, we interpret the decimal value as multiplied by 100
@@ -178,22 +178,45 @@ printCoinCountAt:
         ld e, a
         sla c : adc a
         and %00000101
-        ; `e`, `a`: two fractional part digits
+        exa
+        ; `e`, `a'`: two fractional part digits
 
         ; print number
-        call printChar          ; units
-        dec l
-        ld a, e
-        call printChar          ; tens
-        dec l
-        ld a, d
-        and %00001111
-        call printChar          ; hundreds
-        dec l
         ld a, d
     .4  rrca
         and %00001111
-        jp printChar            ; thousands
+        jr NZ, .thousands
+        ; leading spaces
+        dec a                   ; space
+        call printChar
+        inc l
+        ld a, d
+        and %00001111
+        jr NZ, .hundreds
+        dec a                   ; space
+        call printChar
+        inc l
+        ld a, e
+        or a
+        jr NZ, .tens
+        dec a                   ; space
+        jp .tens
+        
+.thousands:
+        call printChar
+        inc l
+        ld a, d
+        and %00001111
+.hundreds:
+        call printChar
+        inc l
+        ld a, e
+.tens:
+        call printChar
+        inc l
+        exa
+.units:
+        jp printChar
 
 
 ; Print energy in the panel
