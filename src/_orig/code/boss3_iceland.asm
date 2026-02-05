@@ -4,7 +4,7 @@
 ; Iceland boss logic
 ; Used by c_f8cb.
 bossLogicIceland:  ; #fad3
-        ld a, (State.s_54)
+        ld a, (State.bossFight)
         cp #01
         jr NZ, .l_0
         ld a, (State.s_57)
@@ -27,7 +27,7 @@ bossLogicIceland:  ; #fad3
         add (ix+Obj.y)
         ld (iy+Obj.y), a
         ld a, #02
-        ld (State.s_54), a
+        ld (State.bossFight), a
         xor a
         ld (State.s_56), a
         ld a, #3C

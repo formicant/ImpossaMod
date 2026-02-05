@@ -2,6 +2,7 @@
 
 
 ; Add energy
+;   `a`: energy points to add
 ; Used by c_cc25, c_cd5c, c_e6e1 and c_e9b1.
 addEnergy:  ; #d09a
         exa
@@ -12,28 +13,31 @@ addEnergy:  ; #d09a
         ld a, (State.energy)
         add c
         cp b
-        jr C, .l_0
+        jr C, .skip
         ld a, b
-.l_0:
+.skip:
         ld (State.energy), a
         jp printEnergy
 
-; Decrement energy
+
+; Decrement energy by one point
+;   `ix`: scene.hero
 ; Used by c_d709 and c_e6e1.
 decEnergy:  ; #d0af
         ld a, (ix+Obj.blinkTime)
         or a
-        ret NZ
+        ret NZ                  ; don't decrement if still blinking
+
         ld a, (State.energy)
         sub 1
-        jr NC, .l_0
+        jr NC, .skip
         ld a, #FF
-        ld (State.s_1F), a
+        ld (State.isDead), a
         xor a
-.l_0:
+.skip:
         ld (State.energy), a
         ld (ix+Obj.blinkTime), #07
-        ld a, #0C
+        ld a, 12                ; energy loss
         call playSound
         jp printEnergy
 
@@ -42,10 +46,10 @@ decEnergy:  ; #d0af
 ; Used by c_cc25.
 decBlinkTime:  ; #d0d0
         ld ix, scene
-        ld b, 8
-        ld de, Obj
+        ld b, 8                 ; object count
+        ld de, Obj              ; object size
 .object:
-        ld a, (ix+Obj.blinkTime)           ; blink time
+        ld a, (ix+Obj.blinkTime)
         or a
         jr Z, .skip
 
@@ -53,7 +57,7 @@ decBlinkTime:  ; #d0d0
         ld (ix+Obj.blinkTime), a
         and 1                   ; even/odd
         jr NZ, .skip
-        set 4, (ix+Obj.flags)           ; blink flag
+        set 4, (ix+Obj.flags)   ; blink flag
 .skip:
         add ix, de
         djnz .object
@@ -97,19 +101,18 @@ generateRandom:  ; #d0fc
         pop de, hl
         ret
 
-; (possibly, rnd seed?)
 randomSeed:  ; #d11b
         dw 0
 
 
-    IFNDEF _MOD
+    IFNDEF _MOD                 ; moved to the interrupt routine
 
 ; 32-bit frame counter, used in random number generation
 longFrameCounter:  ; #d11d
 .low:   dw 0
 .high:  dw 0
 
-; Increments the 32-bit frame counter
+; Increment the 32-bit frame counter
 ; Called in every interrupt
 incrementLongFrameCounter:  ; #d121
         ld hl, (longFrameCounter.low)
@@ -127,7 +130,7 @@ incrementLongFrameCounter:  ; #d121
     ENDIF
 
 
-; Clears something before the game
+; Clear the game state before the start of the game
 ; Used by c_cc25.
 clearGameState:  ; #d133
         ld hl, State.start
@@ -142,11 +145,12 @@ clearGameState:  ; #d133
         call clearScore
         ld b, 5
         ld hl, State.levelsDone
-.l_0:
+.level:
         ld (hl), 0
         inc hl
-        djnz .l_0
+        djnz .level
         ret
+
 
 ; Initialize the hero object and place it to the start position
 ;   `bc`: hero's position (x, y), blocks
@@ -159,12 +163,12 @@ initHero:  ; #d153
         ld de, 32
         add hl, de              ; `hl` = `b` × 32 + 32
         ld (ix+Obj.x+0), l
-        ld (ix+Obj.x+1), h            ; set x coord in pixels
+        ld (ix+Obj.x+1), h      ; set x coord in pixels
 
         ld a, c
     .5  add a
         add 40                  ; `a` = `c` × 32 + 40
-        ld (ix+Obj.y), a            ; set y coord in pixels
+        ld (ix+Obj.y), a        ; set y coord in pixels
 
         ld hl, cS.heroStands
         ld a, (State.weapon)
@@ -173,15 +177,15 @@ initHero:  ; #d153
         ld hl, cS.armedHeroStands
 .noGun:
         ld (ix+Obj.sprite+0), l
-        ld (ix+Obj.sprite+1), h            ; set sprite addr
+        ld (ix+Obj.sprite+1), h ; set sprite addr
 
-        ld (ix+Obj.o_21), 1           ; mirror (?)
-        ld (ix+Obj.flags), %00000011    ; flags: exists, big
-        ld (ix+Obj.o_10), #10         ; ?
-        ld (ix+Obj.o_11), #15         ; ?
-        ld (ix+Obj.o_7), 0            ; ?
-        ld (ix+Obj.color), #47          ; attr: bright white
-        ld (ix+Obj.o_8), #FF          ; ?
+        ld (ix+Obj.o_21), 1     ; mirror (?)
+        ld (ix+Obj.flags), %11  ; flags: exists, big
+        ld (ix+Obj.o_10), #10   ; ?
+        ld (ix+Obj.o_11), #15   ; ?
+        ld (ix+Obj.o_7), 0      ; ?
+        ld (ix+Obj.color), #47  ; attr: bright white
+        ld (ix+Obj.o_8), #FF    ; ?
         xor a
         ld (State.s_28), a      ; ?
         ld (State.s_41), a      ; ?
@@ -198,7 +202,6 @@ startPositions:  ; #d1ab
 .lev4:  db 1, 3,  0,  40
 
 
-; (used in #C884 and #D213)
 conveyorTileIndices:  ; #d1bf
 .left:  db #73
 .right: db #74
@@ -215,8 +218,8 @@ initLevel:  ; #d1c1
         ld (State.coins), a
         ld (State.weapon), a
 
-        ; panel info
     IFNDEF _MOD
+        ; panel info
         call printCoinCount
         call printScore
         call printEnergy
@@ -224,12 +227,12 @@ initLevel:  ; #d1c1
     ENDIF
 
         xor a
-        ld (State.s_54), a
+        ld (State.bossFight), a
         ld (State.s_46), a
         ld (State.s_57), a
         inc a
         ld (State.hasSmart), a
-        
+
     IFDEF _MOD
         call printPanel
     ENDIF
@@ -265,7 +268,7 @@ initLevel:  ; #d1c1
         ret
 
 
-; Finds conveyors in the screen tiles
+; Find conveyors among the screen tiles
 ; Used by c_cecc.
 findConveyors:  ; #d213
         ld a, (conveyorTileIndices.left)
@@ -345,85 +348,95 @@ updateConveyors:  ; #d278
 ; Used by c_cc25.
 clearScene:  ; #d29a
         ld hl, 0
-        ld de, Obj
-        ld b, 8
-.l_0:
+        ld de, Obj              ; object size
+        ld b, 8                 ; object count
+.multiplyLoop:
         add hl, de
-        djnz .l_0
+        djnz .multiplyLoop
         ld c, l
         ld b, h
+        ; `bc`: number of bytes to clear
+
         ld hl, scene
-.l_1:
+.clearByte:
         ld (hl), 0
         inc hl
         dec bc
         ld a, b
         or c
-        jr NZ, .l_1
+        jr NZ, .clearByte
         ret
 
 
-; (Some game logic?)
+; Turn a defeated enemy into a coin
+;   `iy`: enemy object
 ; Used by c_ec00.
-c_d2b3:  ; #d2b3
-        bit 1, (iy+Obj.flags)
-        jr Z, .l_0
-        res 1, (iy+Obj.flags)
+turnIntoCoin:  ; #d2b3
+        bit 1, (iy+Obj.flags)   ; is big? (actually, always big)
+        jr Z, .small
+
+        res 1, (iy+Obj.flags)   ; make small
+        ; adjust coords so that the center is at the same point
         ld l, (iy+Obj.x+0)
         ld h, (iy+Obj.x+1)
-        ld de, #0004
+        ld de, 4
         add hl, de
         ld (iy+Obj.x+0), l
         ld (iy+Obj.x+1), h
         ld a, (iy+Obj.y)
-        add #04
+        add 4
         ld (iy+Obj.y), a
-.l_0:
+.small:
         ld hl, cS.coin
         ld (iy+Obj.sprite+0), l
         ld (iy+Obj.sprite+1), h
-        ld (iy+Obj.o_7), #00
-        ld (iy+Obj.o_23), #06
-        ld (iy+Obj.o_8), #06
-        ld (iy+Obj.o_21), #00
-        ld (iy+Obj.o_15), #00
-        ld (iy+Obj.o_12), #FE
-        ld (iy+Obj.color), #46
+
+        ld (iy+Obj.o_7), 0
+        ld (iy+Obj.o_23), 6
+        ld (iy+Obj.o_8), 6
+        ld (iy+Obj.o_21), 0     ; some flags (?)
+        ld (iy+Obj.o_15), 0
+        ld (iy+Obj.health), -2    ; vertical speed (?)
+        ld (iy+Obj.color), #46  ; bright yellow
         res 5, (iy+Obj.flags)
         res 3, (iy+Obj.flags)
         res 2, (iy+Obj.flags)
         xor a
         ret
 
+
 ; (Some game logic?)
 ; Used by c_cc25.
 c_d308:  ; #d308
-        ld ix, scene
+        ld ix, scene.hero
         bit 0, (ix+Obj.o_24)
         jp NZ, .l_3
+
         ld a, (State.s_28)
-        cp #03
+        cp 3
         jr Z, .l_0
-        cp #02
+        cp 2
         ret NZ
+
         ld a, (State.s_37)
         or a
         ret M
 .l_0:
         ld iy, scene.obj2
-        ld b, #06
-.l_1:
+        ld b, 6                 ; object count
+.object:
         call c_d3bb
         jr NZ, .l_2
-        ld de, Obj
+        ld de, Obj              ; object size
         add iy, de
-        djnz .l_1
+        djnz .object
         ret
+
 .l_2:
         xor a
         ld (State.s_28), a
         ld (State.s_41), a
-        ld (ix+Obj.o_19), #00
+        ld (ix+Obj.o_19), 0
         set 0, (ix+Obj.o_24)
         push iy
         pop hl
@@ -435,10 +448,11 @@ c_d308:  ; #d308
         push hl
         pop iy
         call c_d3bb
-        jr NZ, .l_4
+        jr NZ, .setSprite
         res 0, (ix+Obj.o_24)
         ret
-.l_4:
+
+.setSprite:
         ld hl, cS.heroStands
         ld a, (State.weapon)
         cp 2
@@ -447,24 +461,26 @@ c_d308:  ; #d308
 .l_5:
         ld (ix+Obj.sprite+0), l
         ld (ix+Obj.sprite+1), h
+
         ld a, (iy+Obj.y)
         sub (ix+Obj.o_11)
         ld (ix+Obj.y), a
         ld c, (iy+Obj.o_21)
         ld a, (iy+Obj.o_23)
-        cp #03
+        cp 3
         jr Z, .l_6
         ld c, (iy+Obj.o_18)
 .l_6:
         ld a, c
-        and #03
+        and %00000011
         ret Z
+
         ld a, (iy+Obj.o_19)
-        ld d, #00
+        ld d, 0
         bit 0, c
         jr NZ, .l_7
         neg
-        ld d, #FF
+        ld d, -1
 .l_7:
         ld e, a
         push de
@@ -487,39 +503,42 @@ c_d308:  ; #d308
         ld (ix+Obj.x+1), h
         ret
 
+
 ; (Some game logic?)
+;   `ix`: object ?
+;   `iy`: object ?
 ; Used by c_d308.
 c_d3bb:  ; #d3bb
-        bit 0, (iy+Obj.flags)
+        bit 0, (iy+Obj.flags)   ; exists
         ret Z
         bit 0, (iy+Obj.o_24)
         ret Z
+
         ld a, (ix+Obj.y)
         add (ix+Obj.o_11)
         sub (iy+Obj.y)
         jp P, .l_0
         neg
 .l_0:
-        cp #05
+        cp 5
         jr NC, .l_1
+
         ld l, (ix+Obj.x+0)
         ld h, (ix+Obj.x+1)
-        ld de, #0014
+        ld de, 20
         add hl, de
         ld e, (iy+Obj.x+0)
         ld d, (iy+Obj.x+1)
         xor a
         sbc hl, de
         jr C, .l_1
+
         ld l, (iy+Obj.o_10)
-        ld h, #00
+        ld h, 0
         add hl, de
         ld e, (ix+Obj.x+0)
         ld d, (ix+Obj.x+1)
-        inc de
-        inc de
-        inc de
-        inc de
+    .4  inc de
         xor a
         sbc hl, de
         jr C, .l_1
@@ -530,101 +549,116 @@ c_d3bb:  ; #d3bb
         xor a
         ret
 
-; ?
+
+; Return flag C if object is in the visible area or to the right of it
+;   `ix`: object
 ; Used by c_ef72 and c_f37e.
-c_d407:  ; #d407
-        ld hl, #0160
-        ld (.de), hl
-        jr .l_1
-; This entry point is used by c_df85 and c_f618.
-.l_0:
-        ld hl, #0120
-        ld (.de), hl
-.l_1:
+isObjectVisibleOrWaiting:  ; #d407
+        ld hl, 352
+        ld (isObjectVisibleRaw.de), hl
+        jr isObjectVisibleRaw
+
+; Return flag C if object is in the visible area
+;   `ix`: object
+; used by c_df85 and c_f618.
+isObjectVisible:
+        ld hl, 288
+        ld (isObjectVisibleRaw.de), hl
+        ; continue
+
+isObjectVisibleRaw:
         ld a, (ix+Obj.y)
-        cp #E0
-        jr NC, .l_2
+        cp 224                  ; screen bottom
+        jr NC, .offScreen
         ld c, (ix+Obj.o_11)
         add c
-        cp #20
-        jr C, .l_2
+        cp 32                   ; screen top
+        jr C, .offScreen
+
         ld l, (ix+Obj.x+0)
         ld h, (ix+Obj.x+1)
         push hl
-        ld d, #00
+        ld d, 0
         ld e, (ix+Obj.o_10)
         add hl, de
-        ld de, #0020
+        ld de, 32
         xor a
         sbc hl, de
         pop hl
-        jr C, .l_2
-.de+*   ld de, #0120
+        jr C, .offScreen
+
+.de+*   ld de, 288              ; or 352
         xor a
         sbc hl, de
         ret C
-.l_2:
+
+.offScreen:
         xor a
         ret
 
-; Subtracts constants from some object properies?
+
+; Make object big
+;   `ix`: object
 ; Used by c_ec00 and c_ed08.
-c_d443:  ; #d443
+makeObjectBig:  ; #d443
+        ; adjust coords
         ld l, (ix+Obj.x+0)
         ld h, (ix+Obj.x+1)
         ld de, -4
         add hl, de
         ld (ix+Obj.x+0), l
         ld (ix+Obj.x+1), h
-        ld a, #FE
+        ld a, -2
         add (ix+Obj.y)
         ld (ix+Obj.y), a
-        set 1, (ix+Obj.flags)
+
+        set 1, (ix+Obj.flags)   ; is big
         ret
 
-; ?
-; Used by c_dce1, c_dd09, c_dd46, c_dd73, c_df85, c_f1d7, c_f2e7 and
-; c_f618.
-c_d460:  ; #d460
+
+; Get addr in `scrTiles` for object
+;   `ix`: object
+; Used by c_dce1, c_dd09, c_dd46, c_dd73, c_df85, c_f1d7, c_f2e7 and  c_f618.
+getScrTileAddr:  ; #d460
         push bc
         push de
         ld a, (ix+Obj.y)
-        cp #20
+        cp 32
         jr NC, .l_0
-        ld a, #21
+        ld a, 33
         jr .l_1
 .l_0:
-        cp #E0
+        cp 224
         jr C, .l_1
-        ld a, #DF
+        ld a, 223
 .l_1:
-        and #F8
+        and %11111000           ; `a`: y coord floored to tiles
         ld l, a
-        ld h, #00
+        ld h, 0
         ld e, a
         ld d, h
         srl d
         rr e
         ld c, a
         ld b, h
-        add hl, hl
-        add hl, hl
+    .2  add hl, hl
         add hl, bc
         add hl, de
-        ld (.hl), hl
+        ld (.hl), hl            ; `a`/ 8 * 44 (row offset in scrTiles)
+
         ld l, (ix+Obj.x+0)
         ld h, (ix+Obj.x+1)
         ld a, (ix+Obj.o_8)
-        cp #0E
+        cp 14
         jr Z, .l_4
-        ld de, #0020
+        ld de, 32
         xor a
         sbc hl, de
         jr NC, .l_2
-        ld hl, #0020
+        ld hl, 32
         jr .l_4
 .l_2:
-        ld de, #0100
+        ld de, 256
         xor a
         sbc hl, de
         jp P, .l_3
@@ -632,14 +666,12 @@ c_d460:  ; #d460
         ld h, (ix+Obj.x+1)
         jr .l_4
 .l_3:
-        ld hl, #0120
+        ld hl, 288
 .l_4:
+    DUP 3
         srl h
         rr l
-        srl h
-        rr l
-        srl h
-        rr l
+    EDUP
         ex de, hl
 .hl+*   ld hl, -0
         add hl, de
@@ -649,19 +681,20 @@ c_d460:  ; #d460
         pop bc
         ret
 
-; (Set some object properties?)
+
+; Remove objects from the scene that should be removed (?)
 ; Used by c_cc25.
-c_d4cd:  ; #d4cd
+cleanUpScene:  ; #d4cd
         ld ix, scene.obj1
-        ld b, #07
-        ld de, Obj
-.l_0:
-        bit 7, (ix+Obj.flags)
-        jr Z, .l_1
-        ld (ix+Obj.flags), #00
-.l_1:
+        ld b, 7                 ; object count
+        ld de, Obj              ; object size
+.object:
+        bit 7, (ix+Obj.flags)   ; ?
+        jr Z, .skip
+        ld (ix+Obj.flags), 0    ; mark as non-existent
+.skip:
         add ix, de
-        djnz .l_0
+        djnz .object
         ret
 
 
@@ -672,32 +705,37 @@ performSmartIfSmartKeyPressed:  ; #d4e5
         ld a, (State.hasSmart)
         or a
         ret Z
-
-        ; perform smart
-        ld a, (State.s_54)
+        ld a, (State.bossFight)
         or a
         ret NZ
+
+        ; perform smart
         ld iy, scene.obj2
-        ld b, #06
-.l_0:
+        ld b, 6                 ; object count
+.object:
         push bc
-        bit 3, (iy+Obj.o_24)
-        jr NZ, .l_1
+        bit 3, (iy+Obj.o_24)    ; can be killed by smart
+        jr NZ, .next
+
+        ; check if object is visible
         ld l, (iy+Obj.x+0)
         ld h, (iy+Obj.x+1)
-        ld de, #0120
+        ld de, 288
         xor a
         sbc hl, de
-        jr NC, .l_1
-        call c_ec00.l_0
-.l_1:
-        ld de, Obj
+        jr NC, .next
+
+        call damageEnemy.kill
+
+.next:
+        ld de, Obj              ; object size
         add iy, de
         pop bc
-        djnz .l_0
+        djnz .object
+
         xor a
         ld (State.hasSmart), a
-    
+
     IFDEF _MOD
         jp printSmart
     ELSE

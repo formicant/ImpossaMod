@@ -31,14 +31,14 @@ ot_25       db
 x           dw      ; x coord in pixels (from -32 ?)
 y           db      ; y coord in pixels (from -32 ?)
 sprite      dw      ; base sprite addr
-flags       db      ; bit 0: exists, 1: is big, 4: blink once, 6: mirror(?)
+flags       db      ; bit 0: exists, 1: is big, 4: blink once, 6: mirror(?), 7: should be removed(?)
 o_6         db
 o_7         db
 o_8         db
 color       db      ; object color attribute
-o_10        db
-o_11        db
-o_12        db
+o_10        db      ; width(?)
+o_11        db      ; gravity (?)
+health      db      ; enemy's health
 o_13        db
 blinkTime   db      ; time during which the object will blink
 o_15        db
@@ -50,13 +50,13 @@ o_20        db
 o_21        db      ; bit 1: mirror(?)
 o_22        db
 o_23        db      ; ? (possibly, value 1 means that object moves horizontally)
-o_24        db
+o_24        db      ; bit 0: ?, 3: smart-killable, 4: gives coin
 o_25        db
 o_26        db
 o_27        db
 o_28        db
 o_29        db
-o_30        dw      ; ? (possible, horizontal trajectory limit)
+o_30        dw      ; ? (possibly, horizontal trajectory limit; possibly, addr of some scene object ?)
 o_32        db
 o_33        db
 o_34        db

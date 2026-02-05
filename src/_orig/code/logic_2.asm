@@ -323,7 +323,7 @@ c_e6e1:  ; #e6e1
         jr NZ, .l_10
         ld (iy+Obj.flags), #00
         ld a, #FF
-        ld (State.s_20), a
+        ld (State.hasDiary), a
         ret
 .l_10:
         cp #0A
@@ -364,7 +364,7 @@ c_e6e1:  ; #e6e1
         ret Z
         bit 0, (iy+Obj.o_24)
         ret NZ
-        ld a, (iy+Obj.o_12)
+        ld a, (iy+Obj.health)
         cp #FE
         ret Z
         jp decEnergy
@@ -514,7 +514,7 @@ c_e920:  ; #e920
         ld (ix+Obj.o_11), #15
         ld (ix+Obj.o_8), #09
         ld (ix+Obj.flags), #03
-        ld (ix+Obj.o_12), #FE
+        ld (ix+Obj.health), #FE
         ld (ix+Obj.o_24), #00
         ld (ix+Obj.o_49), #00
         ld (ix+Obj.o_23), #00
@@ -676,7 +676,7 @@ c_e9b1:  ; #e9b1
         ret NZ
         ld (iy+Obj.flags), #00
         ld a, #FF
-        ld (State.s_20), a
+        ld (State.hasDiary), a
         ret
 
 ; (Init ix+Obj.o_0, 1, 2 from (hl)?)
@@ -734,15 +734,15 @@ c_eb00:  ; #eb00
 c_eb19:  ; #eb19
         ld a, (iy+Obj.o_8)
         or a
-        jp Z, c_ec00.l_3
+        jp Z, damageEnemy.notDamaged
         bit 0, (iy+Obj.flags)
-        jp Z, c_ec00.l_3
-        ld a, (iy+Obj.o_12)
+        jp Z, damageEnemy.notDamaged
+        ld a, (iy+Obj.health)
         cp #FE
-        jp Z, c_ec00.l_3
+        jp Z, damageEnemy.notDamaged
         ld a, (iy+Obj.blinkTime)
         or a
-        jp NZ, c_ec00.l_3
+        jp NZ, damageEnemy.notDamaged
         ld a, (State.weapon)
         or a
         jr NZ, .l_1
@@ -784,7 +784,7 @@ c_eb19:  ; #eb19
         ld (ix+Obj.x+1), h
         ret C
         set 0, (ix+Obj.flags)
-        jr c_ec00
+        jr damageEnemy
 .l_1:
         cp #01
         jr NZ, .l_3
@@ -838,136 +838,161 @@ c_eb19:  ; #eb19
         ld (ix+Obj.x+0), l
         ld (ix+Obj.x+1), h
         ret C
-        jr c_ec00
+        jr damageEnemy
 .l_3:
         call c_e80a
         ret C
-        jr c_ec00
+        jr damageEnemy
 
-; Weapon damage table (4 weapons * 3 soup cans)?
-c_ebf4:  ; #ebf4
-        db #FF, #FE, #FD, #FF, #FE, #FE, #FF, #FE
-        db #FD, #FE, #FD, #FC
+; Weapon damage table (4 weapons × 3 soup cans)
+weaponDamageTable:  ; #ebf4
+        ;   s  ss  sss
+.kick:  db -1, -2, -3
+.bomb:  db -1, -2, -2
+.pGun:  db -1, -2, -3
+.lGun:  db -2, -3, -4
 
 ; Damage/kill enemy?
 ; Used by c_eb19.
-c_ec00:  ; #ec00
+damageEnemy:  ; #ec00
         ld a, (iy+Obj.o_7)
-        cp #FF
-        jr Z, .l_3
-        ld a, (iy+Obj.o_12)
-        cp #FF
-        jr Z, .l_3
+        cp -1
+        jr Z, .notDamaged
+        ld a, (iy+Obj.health)
+        cp -1
+        jr Z, .notDamaged
+
+        ; look up damage points
         ld a, (State.weapon)
         ld l, a
         add a
         add l
         ld l, a
-        ld h, #00
-        ld de, c_ebf4
+        ld h, 0
+        ld de, weaponDamageTable
         add hl, de
         ld a, (State.soupCans)
         dec a
         ld e, a
-        ld d, #00
+        ld d, 0
         add hl, de
-        ld a, (hl)
+        ld a, (hl)              ; damage points
+
         ld b, a
-        ld a, (State.s_54)
+        ld a, (State.bossFight)
         or a
-        jr NZ, .l_4
+        jr NZ, .boss
+
+        ; apply damage
         ld a, b
-        add (iy+Obj.o_12)
-        jr Z, .l_0
-        jr NC, .l_0
-        ld (iy+Obj.o_12), a
-        ld (iy+Obj.blinkTime), #04
-        ld a, #03
+        add (iy+Obj.health)
+        jr Z, .kill
+        jr NC, .kill
+        ld (iy+Obj.health), a
+        ld (iy+Obj.blinkTime), 4
+
+        ld a, 3                 ; damage enemy
         call playSound
-        jr .l_2
+        jr .damaged
+
 ; This entry point is used by c_d4e5.
-.l_0:
-        bit 4, (iy+Obj.o_24)
-        jp NZ, c_d2b3
-        bit 1, (iy+Obj.flags)
-        jr NZ, .l_1
+.kill:
+        bit 4, (iy+Obj.o_24)    ; gives coin
+        jp NZ, turnIntoCoin
+
+        ; turn into cloud
+        bit 1, (iy+Obj.flags)   ; is big
+        jr NZ, .big
         push ix
         push iy
         push iy
         pop ix
-        call c_d443
+        call makeObjectBig
         pop iy
         pop ix
-.l_1:
-        ld (iy+Obj.o_6), #00
-        ld (iy+Obj.o_7), #FF
-        ld (iy+Obj.color), #47
-        ld a, #06
+.big:
+        ld (iy+Obj.o_6), 0
+        ld (iy+Obj.o_7), -1
+        ld (iy+Obj.color), #47  ; bright white
+        ld a, 6                 ; kill enemy
         call playSound
-.l_2:
+
+.damaged:
         xor a
         ret
+
 ; This entry point is used by c_eb19.
-.l_3:
+.notDamaged:
         scf
         ret
-.l_4:
+
+.boss:
         ld a, (State.s_56)
         or a
-        jr NZ, .l_2
+        jr NZ, .damaged
         ld a, (State.s_55)
         add b
         jr NC, .l_7
+
         ld (State.s_55), a
-        ld a, #03
+        ld a, 3                 ; damage enemy
         call playSound
+
         push ix
         push de
         ld ix, scene.obj2
-        ld b, #04
-        ld de, Obj
-.l_5:
+        ld b, 4                 ; object count
+        ld de, Obj              ; object size
+.bossPartLoop1:
         bit 1, (ix+Obj.flags)
         jr Z, .l_6
-        ld (ix+Obj.blinkTime), #04
+        ld (ix+Obj.blinkTime), 4
 .l_6:
         add ix, de
-        djnz .l_5
+        djnz .bossPartLoop1
+
         pop de
         pop ix
-        jr .l_2
+        jr .damaged
+
 .l_7:
         push ix
         push de
         ld ix, scene.obj2
-        ld b, #04
-        ld de, Obj
-.l_8:
+        ld b, 4                 ; object count
+        ld de, Obj              ; object size
+.bossPartLoop2:
         bit 0, (ix+Obj.flags)
         jr Z, .l_9
         bit 1, (ix+Obj.flags)
         jr Z, .l_9
-        ld (ix+Obj.o_6), #00
-        ld (ix+Obj.o_7), #FF
-        ld (ix+Obj.color), #47
+        ; turn into cloud
+        ld (ix+Obj.o_6), 0
+        ld (ix+Obj.o_7), -1
+        ld (ix+Obj.color), #47  ; bright white
 .l_9:
         add ix, de
-        djnz .l_8
+        djnz .bossPartLoop2
+
         pop de
         pop ix
-        ld a, #FF
+        ld a, -1
         ld (State.s_57), a
+
+        ; level complete
         ld de, scoreTable.done
         call addScoreRaw
         ld a, (State.level)
         ld hl, State.levelsDone
         ld e, a
-        ld d, #00
+        ld d, 0
         add hl, de
-        ld (hl), #01
-        ld a, #06
+        ld (hl), 1
+
+        ld a, 6                 ; kill enemy
         call playSound
-        jr .l_2
+        jr .damaged
+
 
 ; (Modifies some object properties?)
 ; Used by c_cc25.
@@ -1037,7 +1062,7 @@ c_ed08:  ; #ed08
         ret C
         bit 1, (ix+Obj.flags)
         jr NZ, .l_3
-        call c_d443
+        call makeObjectBig
 .l_3:
         ld a, (ix+Obj.o_8)
         cp #28
@@ -1428,7 +1453,7 @@ c_ef72:  ; #ef72
         jp .l_23
 ; This entry point is used by c_f0f3 and c_f518.
 .l_23:
-        call c_d407
+        call isObjectVisibleOrWaiting
         ret C
         ld (ix+Obj.flags), #00
         ret
@@ -1545,7 +1570,7 @@ c_f1d7:  ; #f1d7
         ld a, (ix+Obj.x+1)
         adc a, #00
         ld (ix+Obj.x+1), a
-        call c_d460
+        call getScrTileAddr
         ld a, (hl)
         call c_eaee
         ld (State.s_49), a
@@ -1560,7 +1585,7 @@ c_f1d7:  ; #f1d7
         ld a, (ix+Obj.x+1)
         adc a, #FF
         ld (ix+Obj.x+1), a
-        call c_d460
+        call getScrTileAddr
         ld de, #002C
         add hl, de
         ld a, (hl)
@@ -1589,7 +1614,7 @@ c_f1d7:  ; #f1d7
         ld a, (ix+Obj.x+1)
         adc a, #00
         ld (ix+Obj.x+1), a
-        call c_d460
+        call getScrTileAddr
         ld a, (ix+Obj.x+0)
         add #F4
         ld (ix+Obj.x+0), a
@@ -1619,7 +1644,7 @@ c_f1d7:  ; #f1d7
         ld a, (State.s_4A)
         or c
         ld (State.s_4A), a
-        call c_d460
+        call getScrTileAddr
         ld a, (ix+Obj.o_8)
         cp #82
         jr Z, .l_3
@@ -1685,7 +1710,7 @@ c_f2e7:  ; #f2e7
         ld a, (ix+Obj.y)
         and #07
         jr NZ, .l_4
-        call c_d460
+        call getScrTileAddr
         inc hl
         ld (hl), 0
         inc hl
@@ -1698,7 +1723,7 @@ c_f2e7:  ; #f2e7
         jr .l_4
 .l_2:
         inc (ix+Obj.o_6)
-        call c_d460
+        call getScrTileAddr
         ld c, #BD
         ld a, (State.level)
         cp #03
@@ -1718,7 +1743,7 @@ c_f2e7:  ; #f2e7
         ld a, (ix+Obj.y)
         and %00000111
         jr NZ, .l_4
-        call c_d460
+        call getScrTileAddr
         ld de, 45
         add hl, de
         ld a, (hl)
@@ -1886,7 +1911,7 @@ c_f37e:  ; #f37e
         ld (ix+Obj.o_16), #00
         ld (ix+Obj.o_17), #00
 .l_15:
-        call c_d407
+        call isObjectVisibleOrWaiting
         ret C
         ld (ix+Obj.flags), #00
         ret
@@ -2034,7 +2059,7 @@ c_f564:  ; #f564
         ld (iy+Obj.o_20), #03
         ld (iy+Obj.o_10), #06
         ld (iy+Obj.o_11), #06
-        ld (iy+Obj.o_12), #01
+        ld (iy+Obj.health), #01
         ld (iy+Obj.flags), #01
         ld (iy+Obj.o_8), #00
         ld (iy+Obj.o_23), #01
@@ -2094,7 +2119,7 @@ c_f618:  ; #f618
         call c_e80a
         jr C, .l_1
         ld (ix+Obj.flags), #00
-        ld b, (ix+Obj.o_12)
+        ld b, (ix+Obj.health)
         ld a, (iy+Obj.blinkTime)
         or a
         ret NZ
@@ -2102,7 +2127,7 @@ c_f618:  ; #f618
         sub b
         jr NC, .l_0
         ld a, #FF
-        ld (State.s_1F), a
+        ld (State.isDead), a
         xor a
 .l_0:
         ld (State.energy), a
@@ -2112,11 +2137,11 @@ c_f618:  ; #f618
         ld a, (State.level)
         or a
         jr NZ, .l_2
-        ld a, (State.s_54)
+        ld a, (State.bossFight)
         or a
         jr NZ, .l_3
 .l_2:
-        call c_d460
+        call getScrTileAddr
         ld a, (hl)
         call c_eaee
         cp #04
@@ -2124,7 +2149,7 @@ c_f618:  ; #f618
         ld (ix+Obj.flags), #00
         ret
 .l_3:
-        call c_d407.l_0
+        call isObjectVisible
         ret C
         ld (ix+Obj.flags), #00
         ret
@@ -2348,7 +2373,7 @@ putObjectToScene:  ; #f74a
         ld (ix+Obj.o_11), a
         inc hl
         ld a, (hl)
-        ld (ix+Obj.o_12), a
+        ld (ix+Obj.health), a
         inc hl
         ld a, (hl)
         or a
@@ -2461,7 +2486,7 @@ putObjectToScene:  ; #f74a
         ld (ix+Obj.flags), #00
         ret
 .l_8:
-        ld a, (State.s_54)
+        ld a, (State.bossFight)
         or a
         ret NZ
         ld a, (ix+Obj.o_8)
@@ -2486,7 +2511,7 @@ putObjectToScene:  ; #f74a
         ret
 .l_10:
         ld a, #01
-        ld (State.s_54), a
+        ld (State.bossFight), a
         ld a, #3C
         ld (State.s_55), a
         ret

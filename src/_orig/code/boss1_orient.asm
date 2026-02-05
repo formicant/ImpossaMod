@@ -8,7 +8,7 @@ c_f99e:  ; #f99e
 ; Orient boss logic
 ; Used by c_f8cb.
 bossLogicOrient:  ; #f9a4
-        ld a, (State.s_54)
+        ld a, (State.bossFight)
         cp #01
         jr NZ, .l_1
         ld a, (State.s_57)
@@ -50,7 +50,7 @@ bossLogicOrient:  ; #f9a4
         pop bc
         djnz .l_0
         ld a, #02
-        ld (State.s_54), a
+        ld (State.bossFight), a
         xor a
         ld (State.s_56), a
         ld a, #3C

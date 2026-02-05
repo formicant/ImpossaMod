@@ -714,7 +714,7 @@ c_dce1:  ; #dce1
         ld a, (ix+Obj.y)
         add #15
         ld (ix+Obj.y), a
-        call c_d460
+        call getScrTileAddr
         ld a, (hl)
         ld (State.s_34), a
         ld a, (ix+Obj.x)
@@ -737,7 +737,7 @@ c_dd09:  ; #dd09
         ld a, (ix+Obj.y)
         add #18
         ld (ix+Obj.y), a
-        call c_d460
+        call getScrTileAddr
         ld a, (hl)
         ld (State.s_31), a
         inc hl
@@ -763,7 +763,7 @@ c_dd46:  ; #dd46
         ld a, (ix+Obj.y)
         add #FF
         ld (ix+Obj.y), a
-        call c_d460
+        call getScrTileAddr
         ld a, (hl)
         ld (State.s_35), a
         inc hl
@@ -781,92 +781,106 @@ c_dd46:  ; #dd46
 ; Used by c_d709.
 c_dd73:  ; #dd73
         ld a, (ix+Obj.x)
-        add #04
+        add 4
         ld (ix+Obj.x), a
         ld a, (ix+Obj.x+1)
-        adc a, #00
+        adc a, 0
         ld (ix+Obj.x+1), a
-        call c_d460
-        ld bc, #002C
+
+        call getScrTileAddr
+        ld bc, 44
         ld a, (hl)
         ld (State.s_29), a
-        add hl, bc
+        add hl, bc              ; move down
         ld a, (hl)
         ld (State.s_2A), a
-        add hl, bc
+        add hl, bc              ; move down
         ld a, (hl)
         ld (State.s_2B), a
-        add hl, bc
+        add hl, bc              ; move down
         ld a, (hl)
         ld (State.s_2C), a
+
         ld a, (ix+Obj.x)
-        add #0C
+        add 12
         ld (ix+Obj.x), a
         ld a, (ix+Obj.x+1)
-        adc a, #00
+        adc a, 0
         ld (ix+Obj.x+1), a
-        call c_d460
-        ld bc, #002C
+
+        call getScrTileAddr
+        ld bc, 44
         ld a, (hl)
         ld (State.s_2D), a
-        add hl, bc
+        add hl, bc              ; move down
         ld a, (hl)
         ld (State.s_2E), a
-        add hl, bc
+        add hl, bc              ; move down
         ld a, (hl)
         ld (State.s_2F), a
-        add hl, bc
+        add hl, bc              ; move down
         ld a, (hl)
         ld (State.s_30), a
+
         ld a, (ix+Obj.x)
-        add #F6
+        add -10
         ld (ix+Obj.x), a
         ld a, (ix+Obj.x+1)
-        adc a, #FF
+        adc a, -1
         ld (ix+Obj.x+1), a
+
         ld a, (ix+Obj.y)
-        add #15
+        add 21
         ld (ix+Obj.y), a
-        call c_d460
+
+        call getScrTileAddr
         ld a, (hl)
         ld (State.s_31), a
-        inc hl
+        inc hl                  ; move right
         ld a, (hl)
         ld (State.s_32), a
+
         ld a, (ix+Obj.x)
-        add #06
+        add 6
         ld (ix+Obj.x), a
         ld a, (ix+Obj.x+1)
-        adc a, #00
+        adc a, 0
         ld (ix+Obj.x+1), a
+
         ld a, (ix+Obj.y)
-        add #F8
+        add -8
         ld (ix+Obj.y), a
-        call c_d460
+
+        call getScrTileAddr
         ld a, (hl)
         ld (State.s_33), a
-        add hl, bc
+        add hl, bc              ; move down
         ld a, (hl)
         ld (State.s_34), a
+
         ld a, (ix+Obj.x)
-        add #F4
+        add -12
         ld (ix+Obj.x), a
         ld a, (ix+Obj.x+1)
-        adc a, #FF
+        adc a, -1
         ld (ix+Obj.x+1), a
+
         ld a, (ix+Obj.y)
-        add #F3
+        add -13
         ld (ix+Obj.y), a
+
         ld a, (ix+Obj.y)
-        and #07
-        cp #03
+        and 7
+        cp 3
         jr NZ, .l_0
+
         xor a
         ld (State.s_2C), a
         ld (State.s_30), a
         ret
 .l_0:
         ret
+
 
 ; (Checks something?)
 ; Used by c_d308, c_d709, c_d7f6, c_d94c, c_da95, c_db4e and c_dbfc.
@@ -876,6 +890,7 @@ c_de37:  ; #de37
         ld de, -32
         add hl, de
         jr NC, .l_2
+
         ld a, (State.s_28)
         cp #04
         jr NZ, .l_0
@@ -1305,7 +1320,7 @@ c_df85:  ; #df85
         ld a, (ix+Obj.o_20)
         add (ix+Obj.y)
         ld (ix+Obj.y), a
-        call c_d407.l_0
+        call isObjectVisible
         jp NC, .l_18
         ld a, (ix+Obj.x)
         add #04
@@ -1313,7 +1328,7 @@ c_df85:  ; #df85
         ld a, (ix+Obj.x+1)
         adc a, #00
         ld (ix+Obj.x+1), a
-        call c_d460
+        call getScrTileAddr
         ld a, (ix+Obj.x)
         add #FC
         ld (ix+Obj.x), a
@@ -1385,7 +1400,7 @@ c_df85:  ; #df85
         ld (c_e308), a
         ret
 .l_19:
-        call c_d407.l_0
+        call isObjectVisible
         jr NC, .l_18
         ld a, (ix+Obj.x)
         add #04
@@ -1396,7 +1411,7 @@ c_df85:  ; #df85
         ld a, (ix+Obj.y)
         add #08
         ld (ix+Obj.y), a
-        call c_d460
+        call getScrTileAddr
         ld a, (ix+Obj.x)
         add #FC
         ld (ix+Obj.x), a
@@ -1450,7 +1465,7 @@ c_e31c:  ; #e31c
         jr Z, .l_2
         bit 7, (iy+Obj.flags)
         jr NZ, .l_2
-        ld a, (iy+Obj.o_12)
+        ld a, (iy+Obj.health)
         cp #FE
         jr Z, .l_2
         cp #FF

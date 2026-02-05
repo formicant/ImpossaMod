@@ -14,8 +14,8 @@ energy:     db -0       ; 0..34
 maxEnergy:  db -0       ; 18, 22, 26, 30, 34
 energyText: block 17    ; characters representing energy indicator bars
 level:      db -0       ; 0..4
-s_1F:       db -0
-s_20:       db -0
+isDead:     db -0       ; 0|#FF
+hasDiary:   db -0
 hasSmart:   db -0       ; 0|1
 levelsDone: block 5     ; 0|1 for each level
 s_27:       db -0
@@ -61,7 +61,7 @@ s_4F:       db -0
 s_50:       db -0
 s_51:       db -0       ; (60..1, some counter?)
 nextObject: dw -0       ; addr of the next object in level object table
-s_54:       db -0
+bossFight:  db -0       ; 0 if no boss, 1 or higher when fighting a boss
 s_55:       db -0
 s_56:       db -0
 s_57:       db -0

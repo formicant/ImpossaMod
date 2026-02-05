@@ -8,7 +8,7 @@ c_f8ec:  ; #f8ec
 ; Klondike boss logic
 ; Used by c_f8cb.
 bossLogicKlondike:  ; #f8f4
-        ld a, (State.s_54)
+        ld a, (State.bossFight)
         cp #01
         jr NZ, .l_1
         ld a, (State.s_57)
@@ -47,14 +47,14 @@ bossLogicKlondike:  ; #f8f4
         add ix, de
         djnz .l_0
         ld a, #02
-        ld (State.s_54), a
+        ld (State.bossFight), a
         xor a
         ld (State.s_56), a
         ld a, #FF
         ld (State.s_51), a
         ret
 .l_1:
-        ld hl, State.s_54
+        ld hl, State.bossFight
         inc (hl)
         ld a, (hl)
         cp #41
@@ -86,7 +86,7 @@ bossLogicKlondike:  ; #f8f4
         ld (ix+Obj.flags), #00
         djnz .l_5
         ld a, #01
-        ld (State.s_54), a
+        ld (State.bossFight), a
         ret
 
 

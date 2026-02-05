@@ -8,7 +8,7 @@ c_fa61:  ; #fa61
 ; Amazon boss logic
 ; Used by c_f8cb.
 bossLogicAmazon:  ; #fa65
-        ld a, (State.s_54)
+        ld a, (State.bossFight)
         cp #01
         jr NZ, .l_0
         ld a, (State.s_57)
@@ -40,7 +40,7 @@ bossLogicAmazon:  ; #fa65
         add #18
         ld (iy+Obj.y), a
         ld a, #02
-        ld (State.s_54), a
+        ld (State.bossFight), a
         xor a
         ld (State.s_56), a
         ld a, #3C

@@ -35,7 +35,7 @@ gameStart:  ; #cc5a
 
 .l_5:
         call performSmartIfSmartKeyPressed ; TODO: replace
-        call c_d4cd             ; TODO: can be inlined
+        call cleanUpScene             ; TODO: can be inlined
         call c_f553             ; TODO: can be inlined
         call c_ecee             ; TODO: can be inlined (time: long)
         call c_e56f             ; TODO: can be inlined (time: medium)
@@ -74,16 +74,16 @@ gameStart:  ; #cc5a
         call checkQuitKey       ; TODO: remove
         jp Z, gameStart
 
-        ld a, (State.s_1F)
+        ld a, (State.isDead)
         or a
         jr Z, .l_8
         xor a
-        ld (State.s_1F), a
-        ld a, (State.s_20)
+        ld (State.isDead), a
+        ld a, (State.hasDiary)
         or a
         jr Z, .l_7
         xor a
-        ld (State.s_20), a
+        ld (State.hasDiary), a
         ld a, #32
         call addEnergy
         jr .l_8
