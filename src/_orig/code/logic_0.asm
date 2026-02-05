@@ -216,9 +216,7 @@ initLevel:  ; #d1c1
         ld (State.weapon), a
 
         ; panel info
-    IFDEF _MOD
-        call printPanel
-    ELSE
+    IFNDEF _MOD
         call printCoinCount
         call printScore
         call printEnergy
@@ -231,6 +229,10 @@ initLevel:  ; #d1c1
         ld (State.s_57), a
         inc a
         ld (State.hasSmart), a
+        
+    IFDEF _MOD
+        call printPanel
+    ENDIF
 
         ; set hero's start position
         ld a, (State.level)
@@ -695,7 +697,12 @@ performSmartIfSmartKeyPressed:  ; #d4e5
         djnz .l_0
         xor a
         ld (State.hasSmart), a
+    
+    IFDEF _MOD
+        jp printSmart
+    ELSE
         ret
+    ENDIF
 
 
     ENDMODULE

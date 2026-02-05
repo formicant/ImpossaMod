@@ -30,6 +30,7 @@ printPanel:
         jr NZ, .part
 
         call printScore
+        call printSmart
         call printSoupCans
         call printCoinCount
         jp printEnergy
@@ -131,6 +132,17 @@ clearScore:
         inc hl
         djnz .digit
         ret
+
+
+; print if there is smart capability
+printSmart:
+        ld hl, Screen.pixels.row0 + 6
+        ld a, (State.hasSmart)
+        or a
+        ld a, -1                ; space
+        jp Z, printChar
+        ld a, ';' - '0'         ; smart (font char code)
+        jp printChar
 
 
 ; Print soup cans in the panel
