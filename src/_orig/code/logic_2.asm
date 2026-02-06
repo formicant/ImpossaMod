@@ -302,7 +302,11 @@ c_e6e1:  ; #e6e1
         jr NZ, .l_7
         ld (iy+Obj.flags), #00
         ld a, (State.coins)
-        add #19
+    IFDEF _MOD
+        inc a                   ; coin denomination
+    ELSE
+        add 25
+    ENDIF
         ld (State.coins), a
         jp printCoinCount
 .l_7:
@@ -433,7 +437,11 @@ c_e85f:  ; #e85f
 
 ; Item prices in the shop
 c_e89b:  ; #e89b
+    IFDEF _MOD
+        db 5, 6, 7, 10, 3, 1, 8, 4, 0   ; coin denomination
+    ELSE
         db 125, 150, 175, 250, 75, 1, 200, 100, 0
+    ENDIF
 
 ; Item names in the shop
 c_e8a4:  ; #e8a4

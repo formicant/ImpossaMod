@@ -14,7 +14,7 @@ font:   ; ASCII - 48
         dh 7C C6 C6 7C C6 C6 7C 00  ; 8
         dh 7C C6 C6 7E 06 C6 7C 00  ; 9
         dh FF 42 5E 42 7A 42 FF 00  ; : soup can
-        dh 18 30 60 7C 0C 18 10 00  ; ; smart
+        dh 08 10 3C 08 10 00 00 00  ; ; smart
         dh 00 00 00 00 00 00 00 00  ; <
         dh BA BC A2 BE A2 BC BA 00  ; = diary
         dh 00 00 00 00 00 00 00 00  ; >

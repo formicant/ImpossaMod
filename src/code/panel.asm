@@ -197,22 +197,22 @@ printCoinCountAt:
         ld a, d
     .4  rrca
         and %00001111
-        jr NZ, .thousands
-        ; leading spaces
-        dec a                   ; space
-        call printChar
-        inc l
-        ld a, d
-        and %00001111
-        jr NZ, .hundreds
-        dec a                   ; space
-        call printChar
-        inc l
-        ld a, e
-        or a
-        jr NZ, .tens
-        dec a                   ; space
-        jp .tens
+        ; jr NZ, .thousands
+        ; ; leading spaces
+        ; dec a                   ; space
+        ; call printChar
+        ; inc l
+        ; ld a, d
+        ; and %00001111
+        ; jr NZ, .hundreds
+        ; dec a                   ; space
+        ; call printChar
+        ; inc l
+        ; ld a, e
+        ; or a
+        ; jr NZ, .tens
+        ; dec a                   ; space
+        ; jp .tens
         
 .thousands:
         call printChar
