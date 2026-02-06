@@ -194,28 +194,33 @@ c_e60a:  ; #e60a
         xor a
         ret
 
-; (Checks some object properties?)
+
+; Get address for a new object in `scene`
+;   ret `ix`: object addr
+;       `C` flag iff there is place for a new object
 ; Used by c_f564 and c_f74a.
-c_e6c2:  ; #e6c2
+allocateObject:  ; #e6c2
         push de
         push bc
-        ld b, #06
+        ld b, 6                 ; object count
         ld ix, scene.obj2
-        ld de, Obj
-.l_0:
-        bit 0, (ix+Obj.flags)
-        jr Z, .l_1
+        ld de, Obj              ; object size
+.object:
+        bit 0, (ix+Obj.flags)   ; exists
+        jr Z, .free
         add ix, de
-        djnz .l_0
+        djnz .object
+
         xor a
         pop bc
         pop de
         ret
-.l_1:
+.free:
         scf
         pop bc
         pop de
         ret
+
 
 ; (Some variable?)
 c_e6df:  ; #e6df
@@ -255,7 +260,7 @@ c_e6e1:  ; #e6e1
         ld hl, (c_e6df)
         ld (ix+Obj.x+0), l
         ld (ix+Obj.x+1), h
-        ld a, (iy+Obj.o_8)
+        ld a, (iy+Obj.objType)
         cp #0E
         jp NC, .l_12
         or a
@@ -348,7 +353,7 @@ c_e6e1:  ; #e6e1
         jr NZ, .l_14
         bit 3, (iy+Obj.o_21)
         ret NZ
-        ld a, (State.s_45)
+        ld a, (State.pressTime)
         or a
         ret NZ
         ld a, (State.s_28)
@@ -361,7 +366,7 @@ c_e6e1:  ; #e6e1
         ret NZ
 .l_13:
         ld a, #32
-        ld (State.s_45), a
+        ld (State.pressTime), a
 .l_14:
         ld a, (iy+Obj.o_7)
         cp #FF
@@ -381,10 +386,10 @@ c_e80a:  ; #e80a
         scf
         ret
 .l_0:
-        ld d, (ix+Obj.o_11)
-        ld e, (ix+Obj.o_10)
-        ld b, (iy+Obj.o_11)
-        ld c, (iy+Obj.o_10)
+        ld d, (ix+Obj.height)
+        ld e, (ix+Obj.width)
+        ld b, (iy+Obj.height)
+        ld c, (iy+Obj.width)
         ld a, (ix+Obj.y)
         ld l, a
         add d
@@ -402,7 +407,7 @@ c_e80a:  ; #e80a
         add hl, de
         ld e, (iy+Obj.x+0)
         ld d, (iy+Obj.x+1)
-        ld a, (iy+Obj.o_8)
+        ld a, (iy+Obj.objType)
         cp #0E
         jr NZ, .l_1
         ld a, e
@@ -415,7 +420,7 @@ c_e80a:  ; #e80a
         ret C
         ex de, hl
         ld b, #00
-        ld a, (iy+Obj.o_8)
+        ld a, (iy+Obj.objType)
         cp #0E
         jr NZ, .l_2
         ld a, c
@@ -499,7 +504,7 @@ c_e920:  ; #e920
         ld b, #06
         ld de, Obj
 .l_0:
-        ld a, (ix+Obj.o_8)
+        ld a, (ix+Obj.objType)
         or a
         jr Z, .l_1
         add ix, de
@@ -518,9 +523,9 @@ c_e920:  ; #e920
         ld (ix+Obj.sprite+1), h
         ld (ix+Obj.color), #47
         ld (ix+Obj.o_21), #00
-        ld (ix+Obj.o_10), #18
-        ld (ix+Obj.o_11), #15
-        ld (ix+Obj.o_8), #09
+        ld (ix+Obj.width), #18
+        ld (ix+Obj.height), #15
+        ld (ix+Obj.objType), #09
         ld (ix+Obj.flags), #03
         ld (ix+Obj.health), #FE
         ld (ix+Obj.o_24), #00
@@ -547,7 +552,7 @@ c_e9b1:  ; #e9b1
         djnz .l_0
         jp printEnergy
 .l_1:
-        ld a, (iy+Obj.o_8)
+        ld a, (iy+Obj.objType)
         or a
         ret Z
         dec a
@@ -577,9 +582,7 @@ c_e9b1:  ; #e9b1
         jr Z, .l_2
 
     IFDEF _MOD
-        ; TODO: set attrs
-        ld hl, Screen.pixels.row0 + 27
-        call printCoinCountAt
+        call printPrice
     ELSE
         ld hl, #001C            ; at 0, 28
         ld c, #47               ; bright white
@@ -690,7 +693,7 @@ c_e9b1:  ; #e9b1
 ; (Init ix+Obj.o_0, 1, 2 from (hl)?)
 ; Used by c_e920 and c_e9b1.
 c_eace:  ; #eace
-        ld ix, scene
+        ld ix, scene.hero
         ld a, (hl)
     .5  add a
         add 32
@@ -703,22 +706,27 @@ c_eace:  ; #eace
         ld (ix+Obj.y), a
         ret
 
-; Get tile type without bit 7
+
+; Get tile type
+;   arg `a`: tile index
+;   ret `a`: tile type without fg/bg bit
 ; Used by c_d709, c_d7f6, c_d94c, c_da95, c_db4e, c_dbfc, c_de37,
 ; c_deb1, c_df85, c_f1d7, c_f2e7 and c_f618.
-c_eaee:  ; #eaee
+getTileType:  ; #eaee
         push hl
         ld h, high(Level.tileTypes)
         ld l, a
         ld a, (hl)
-        and #7F
+        and %01111111           ; remove fg/bg bit
         pop hl
         ret
 
+
 ; (Some damage table (3 something * 3 soup cans)?)
 c_eaf7:  ; #eaf7
-        db #04, #10, #10, #02, #14, #14, #00, #18
-        db #18
+        db #04, #10, #10
+        db #02, #14, #14
+        db #00, #18, #18
 
 ; Check enemies for damaging?
 ; Used by c_df85.
@@ -740,7 +748,7 @@ c_eb00:  ; #eb00
 ; Logic for damaging enemies?
 ; Used by c_eb00.
 c_eb19:  ; #eb19
-        ld a, (iy+Obj.o_8)
+        ld a, (iy+Obj.objType)
         or a
         jp Z, damageEnemy.notDamaged
         bit 0, (iy+Obj.flags)
@@ -766,7 +774,7 @@ c_eb19:  ; #eb19
         add a
         add l
         ld l, a
-        ld h, #00
+        ld h, 0
         ld de, c_eaf7
         add hl, de
         ld c, l
@@ -783,9 +791,9 @@ c_eb19:  ; #eb19
         ld (ix+Obj.x+1), h
         ld a, (bc)
         inc bc
-        ld (ix+Obj.o_10), a
+        ld (ix+Obj.width), a
         ld a, (bc)
-        ld (ix+Obj.o_11), a
+        ld (ix+Obj.height), a
         call c_e80a
         pop hl
         ld (ix+Obj.x+0), l
@@ -838,9 +846,9 @@ c_eb19:  ; #eb19
         ld (ix+Obj.x+1), h
         ld a, (bc)
         inc bc
-        ld (ix+Obj.o_10), a
+        ld (ix+Obj.width), a
         ld a, (bc)
-        ld (ix+Obj.o_11), a
+        ld (ix+Obj.height), a
         call c_e80a
         pop hl
         ld (ix+Obj.x+0), l
@@ -938,11 +946,12 @@ damageEnemy:  ; #ec00
         ld a, (State.s_56)
         or a
         jr NZ, .damaged
-        ld a, (State.s_55)
-        add b
-        jr NC, .l_7
 
-        ld (State.s_55), a
+        ld a, (State.bossHealth)
+        add b                   ; `b`: damage points
+        jr NC, .bossKilled
+
+        ld (State.bossHealth), a
         ld a, 3                 ; damage enemy
         call playSound
 
@@ -951,25 +960,25 @@ damageEnemy:  ; #ec00
         ld ix, scene.obj2
         ld b, 4                 ; object count
         ld de, Obj              ; object size
-.bossPartLoop1:
+.bossPartBlink:
         bit 1, (ix+Obj.flags)
         jr Z, .l_6
         ld (ix+Obj.blinkTime), 4
 .l_6:
         add ix, de
-        djnz .bossPartLoop1
+        djnz .bossPartBlink
 
         pop de
         pop ix
         jr .damaged
 
-.l_7:
+.bossKilled:
         push ix
         push de
         ld ix, scene.obj2
         ld b, 4                 ; object count
         ld de, Obj              ; object size
-.bossPartLoop2:
+.bossPartCloud:
         bit 0, (ix+Obj.flags)
         jr Z, .l_9
         bit 1, (ix+Obj.flags)
@@ -980,7 +989,7 @@ damageEnemy:  ; #ec00
         ld (ix+Obj.color), #47  ; bright white
 .l_9:
         add ix, de
-        djnz .bossPartLoop2
+        djnz .bossPartCloud
 
         pop de
         pop ix
@@ -1002,22 +1011,23 @@ damageEnemy:  ; #ec00
         jr .damaged
 
 
-; (Modifies some object properties?)
+; Do something with all objects (?)
 ; Used by c_cc25.
 c_ecee:  ; #ecee
         ld ix, scene.obj2
-        ld b, 6
+        ld b, 6                 ; object count
 .object:
         push bc
         push ix
         call c_f488
         call c_ed08
         pop ix
-        ld bc, Obj
+        ld bc, Obj              ; object size
         add ix, bc
         pop bc
         djnz .object
         ret
+
 
 ; (Modifies some object properties?)
 ; Used by c_ecee.
@@ -1030,7 +1040,7 @@ c_ed08:  ; #ed08
         jp Z, c_f618
         bit 5, (ix+Obj.flags)
         ret NZ
-        ld a, (ix+Obj.o_8)
+        ld a, (ix+Obj.objType)
         cp #0E
         jp Z, c_f2e7
         call c_f4e9
@@ -1072,7 +1082,7 @@ c_ed08:  ; #ed08
         jr NZ, .l_3
         call makeObjectBig
 .l_3:
-        ld a, (ix+Obj.o_8)
+        ld a, (ix+Obj.objType)
         cp #28
         jr NZ, .l_4
         ld a, (ix+Obj.x+0)
@@ -1091,7 +1101,7 @@ c_ed08:  ; #ed08
         ret C
         ld (ix+Obj.o_23), #00
         set 5, (ix+Obj.flags)
-        ld a, (ix+Obj.o_8)
+        ld a, (ix+Obj.objType)
         cp #6E
         ret NZ
         ld hl, Lev2Amazon.lS.sittingMonkey
@@ -1115,7 +1125,7 @@ c_edc0:  ; #edc0
         ld iy, scene
         ld l, (iy+Obj.x+0)
         ld h, (iy+Obj.x+1)
-        ld a, (iy+Obj.o_10)
+        ld a, (iy+Obj.width)
         srl a
         sub #03
         ld e, a
@@ -1124,7 +1134,7 @@ c_edc0:  ; #edc0
         ld (ix+Obj.o_34), l
         ld (ix+Obj.o_35), h
         push hl
-        ld a, (iy+Obj.o_11)
+        ld a, (iy+Obj.height)
         srl a
         sub #03
         add (iy+Obj.y)
@@ -1314,7 +1324,7 @@ c_ef72:  ; #ef72
 .l_1:
         cp #04
         jr NC, .l_3
-        ld a, (ix+Obj.o_8)
+        ld a, (ix+Obj.objType)
         cp #82
         jr Z, .l_4
         ld a, (State.s_4E)
@@ -1341,7 +1351,7 @@ c_ef72:  ; #ef72
         jp .l_23
 .l_5:
         ld d, #00
-        ld e, (ix+Obj.o_10)
+        ld e, (ix+Obj.width)
         add hl, de
         ld de, #0120
         xor a
@@ -1382,7 +1392,7 @@ c_ef72:  ; #ef72
         res 2, (ix+Obj.o_21)
         jp .l_23
 .l_10:
-        bit 0, (ix+Obj.o_15)
+        bit 0, (ix+Obj.trajectory)
         jr Z, .l_11
         call generateRandom
         cp #0A
@@ -1391,7 +1401,7 @@ c_ef72:  ; #ef72
         xor #0C
         ld (ix+Obj.o_21), a
 .l_11:
-        bit 1, (ix+Obj.o_15)
+        bit 1, (ix+Obj.trajectory)
         jr Z, .l_12
         call generateRandom
         cp #0A
@@ -1437,13 +1447,13 @@ c_ef72:  ; #ef72
 .l_18:
         jp .l_23
 .l_19:
-        ld a, (ix+Obj.o_15)
+        ld a, (ix+Obj.trajectory)
         cp (ix+Obj.o_16)
         jr Z, .l_20
-        inc (ix+Obj.o_15)
+        inc (ix+Obj.trajectory)
         jp .l_23
 .l_20:
-        ld (ix+Obj.o_15), #00
+        ld (ix+Obj.trajectory), 0
         ld c, (ix+Obj.o_21)
         ld a, c
         and #03
@@ -1463,14 +1473,14 @@ c_ef72:  ; #ef72
 .l_23:
         call isObjectVisibleOrWaiting
         ret C
-        ld (ix+Obj.flags), #00
+        ld (ix+Obj.flags), 0
         ret
 
 ; (Some game logic?)
 ; Used by c_ed08.
 c_f0f3:  ; #f0f3
-        ld (ix+Obj.o_19), #02
-        ld (ix+Obj.o_20), #02
+        ld (ix+Obj.o_19), 2
+        ld (ix+Obj.o_20), 2
         res 2, (ix+Obj.flags)
         res 3, (ix+Obj.flags)
         bit 0, (ix+Obj.o_22)
@@ -1484,14 +1494,14 @@ c_f0f3:  ; #f0f3
         ld iy, scene
         ld l, (ix+Obj.x+0)
         ld h, (ix+Obj.x+1)
-        ld c, (ix+Obj.o_10)
+        ld c, (ix+Obj.width)
         srl c
         ld b, #00
         add hl, bc
         ex de, hl
         ld l, (iy+Obj.x+0)
         ld h, (iy+Obj.x+1)
-        ld c, (iy+Obj.o_10)
+        ld c, (iy+Obj.width)
         srl c
         ld b, #00
         add hl, bc
@@ -1516,12 +1526,12 @@ c_f0f3:  ; #f0f3
         set 2, (ix+Obj.flags)
 .l_3:
         ld a, (ix+Obj.y)
-        ld c, (ix+Obj.o_11)
+        ld c, (ix+Obj.height)
         srl c
         add c
         ld c, a
         ld a, (iy+Obj.y)
-        ld b, (iy+Obj.o_11)
+        ld b, (iy+Obj.height)
         srl b
         add b
         sub c
@@ -1580,12 +1590,12 @@ c_f1d7:  ; #f1d7
         ld (ix+Obj.x+1), a
         call getScrTileAddr
         ld a, (hl)
-        call c_eaee
+        call getTileType
         ld (State.s_49), a
         ld de, #0058
         add hl, de
         ld a, (hl)
-        call c_eaee
+        call getTileType
         ld (State.s_4A), a
         ld a, (ix+Obj.x+0)
         add #F8
@@ -1597,22 +1607,22 @@ c_f1d7:  ; #f1d7
         ld de, #002C
         add hl, de
         ld a, (hl)
-        call c_eaee
+        call getTileType
         ld (State.s_4B), a
         inc hl
         inc hl
         ld a, (hl)
-        call c_eaee
+        call getTileType
         ld (State.s_4C), a
         ld de, #002A
         add hl, de
         ld a, (hl)
-        call c_eaee
+        call getTileType
         ld (State.s_4D), a
         inc hl
         inc hl
         ld a, (hl)
-        call c_eaee
+        call getTileType
         ld (State.s_4E), a
         ret
 .l_0:
@@ -1634,12 +1644,12 @@ c_f1d7:  ; #f1d7
         dec hl
 .l_1:
         ld a, (hl)
-        call c_eaee
+        call getTileType
         ld (State.s_49), a
         ld de, #0084
         add hl, de
         ld a, (hl)
-        call c_eaee
+        call getTileType
         ld (State.s_4A), a
         inc hl
         bit 1, (ix+Obj.o_21)
@@ -1647,29 +1657,29 @@ c_f1d7:  ; #f1d7
         dec hl
 .l_2:
         ld a, (hl)
-        call c_eaee
+        call getTileType
         ld c, a
         ld a, (State.s_4A)
         or c
         ld (State.s_4A), a
         call getScrTileAddr
-        ld a, (ix+Obj.o_8)
+        ld a, (ix+Obj.objType)
         cp #82
         jr Z, .l_3
         ld de, #0058
         add hl, de
 .l_3:
         ld a, (hl)
-        call c_eaee
+        call getTileType
         ld (State.s_4B), a
         inc hl
         inc hl
         inc hl
         ld a, (hl)
-        call c_eaee
+        call getTileType
         ld (State.s_4C), a
         ld de, #0029
-        ld a, (ix+Obj.o_8)
+        ld a, (ix+Obj.objType)
         cp #11
         jr Z, .l_4
         cp #12
@@ -1679,13 +1689,13 @@ c_f1d7:  ; #f1d7
 .l_5:
         add hl, de
         ld a, (hl)
-        call c_eaee
+        call getTileType
         ld (State.s_4D), a
         inc hl
         inc hl
         inc hl
         ld a, (hl)
-        call c_eaee
+        call getTileType
         ld (State.s_4E), a
         ret
 
@@ -1709,9 +1719,9 @@ c_f2e7:  ; #f2e7
         ld a, (ix+Obj.o_6)
         or a
         jr NZ, .l_1
-        ld (ix+Obj.o_21), #04
-        ld (ix+Obj.o_20), #00
-        ld (ix+Obj.o_19), #20
+        ld (ix+Obj.o_21), 4
+        ld (ix+Obj.o_20), 0
+        ld (ix+Obj.o_19), 32
         ret
 .l_1:
         dec (ix+Obj.o_6)
@@ -1755,7 +1765,7 @@ c_f2e7:  ; #f2e7
         ld de, 45
         add hl, de
         ld a, (hl)
-        call c_eaee
+        call getTileType
         or a
         jr NZ, .l_5
 .l_4:
@@ -1768,8 +1778,8 @@ c_f2e7:  ; #f2e7
         ld (ix+Obj.o_20), a
         ret
 .l_5:
-        ld (ix+Obj.o_21), #08
-        ld (ix+Obj.o_20), #00
+        ld (ix+Obj.o_21), 8
+        ld (ix+Obj.o_20), 0
         ret
 
 ; (Direction transform?)
@@ -1785,7 +1795,7 @@ c_f37e:  ; #f37e
         xor a
         ld (State.s_4F), a
         ld (State.s_50), a
-        ld a, (ix+Obj.o_15)
+        ld a, (ix+Obj.trajectory)
         add a
         ld l, a
         ld h, #00
@@ -1794,7 +1804,7 @@ c_f37e:  ; #f37e
         ld e, (hl)
         inc hl
         ld d, (hl)
-        ld a, (ix+Obj.o_15)
+        ld a, (ix+Obj.trajectory)
         add a
         ld l, a
         ld h, #00
@@ -1916,12 +1926,12 @@ c_f37e:  ; #f37e
 .l_14:
         dec (ix+Obj.o_16)
         jp P, .l_15
-        ld (ix+Obj.o_16), #00
-        ld (ix+Obj.o_17), #00
+        ld (ix+Obj.o_16), 0
+        ld (ix+Obj.o_17), 0
 .l_15:
         call isObjectVisibleOrWaiting
         ret C
-        ld (ix+Obj.flags), #00
+        ld (ix+Obj.flags), 0
         ret
 
 ; (Modifies some object properties?)
@@ -1930,7 +1940,7 @@ c_f488:  ; #f488
         ld a, (ix+Obj.o_27)
         or a
         ret Z
-        ld iy, scene
+        ld iy, scene.hero
         ld a, (ix+Obj.o_26)
         neg
         add (ix+Obj.y)
@@ -1939,26 +1949,26 @@ c_f488:  ; #f488
         cp (iy+Obj.y)
         ret C
         ld a, (iy+Obj.y)
-        add (iy+Obj.o_11)
+        add (iy+Obj.height)
         cp c
         ret C
         ld l, (ix+Obj.x+0)
         ld h, (ix+Obj.x+1)
         ld e, (ix+Obj.o_25)
-        ld d, #00
+        ld d, 0
         xor a
         sbc hl, de
         ex de, hl
         ld l, (iy+Obj.x+0)
         ld h, (iy+Obj.x+1)
-        ld c, (iy+Obj.o_10)
-        ld b, #00
+        ld c, (iy+Obj.width)
+        ld b, 0
         add hl, bc
         xor a
         sbc hl, de
         ret C
         ld l, (ix+Obj.o_27)
-        ld h, #00
+        ld h, 0
         add hl, de
         ld e, (iy+Obj.x+0)
         ld d, (iy+Obj.x+1)
@@ -1968,36 +1978,35 @@ c_f488:  ; #f488
         res 5, (ix+Obj.flags)
         res 2, (ix+Obj.flags)
         res 3, (ix+Obj.flags)
-        ld (ix+Obj.o_27), #00
+        ld (ix+Obj.o_27), 0
         ret
 
-; (Modifies some object properties?)
+; Decide whether to blow up a dynamite (?)
 ; Used by c_ed08.
 c_f4e9:  ; #f4e9
-        ld a, (ix+Obj.o_8)
-        cp #0F
-        jr Z, .l_0
-        cp #10
+        ld a, (ix+Obj.objType)
+        cp 15                   ; dynamite
+        jr Z, .isDynamite
+        cp 16                   ; dynamite
         ret NZ
-.l_0:
+.isDynamite:
         call generateRandom
-        cp #02
+        cp 2
         ret NC
-        ld (ix+Obj.o_6), #00
-        ld (ix+Obj.o_7), #FF
-        ld (ix+Obj.color), #47
+        ld (ix+Obj.o_6), 0
+        ld (ix+Obj.o_7), -1
+        ld (ix+Obj.color), #47  ; bright white
         ret
 
 ; Data block at F506
 c_f506:  ; #f506
-        db #FA, #FB, #FC, #FD, #FE, #FE, #FF, #FF
-        db #00, #01, #01, #02, #02, #03, #04, #05
-        db #06, #7F
+        db -6, -5, -4, -3, -2, -2, -1, -1, 0, 1, 1, 2, 2, 3, 4, 5, 6
+        db #7F
 
 ; (Modifies some object properties?)
 ; Used by c_ed08.
 c_f518:  ; #f518
-        ld a, (ix+Obj.o_15)
+        ld a, (ix+Obj.trajectory)
         ld l, a
         ld h, #00
         ld de, c_f506
@@ -2005,7 +2014,7 @@ c_f518:  ; #f518
         ld a, (hl)
         cp #7F
         jr NZ, .l_0
-        dec (ix+Obj.o_15)
+        dec (ix+Obj.trajectory)
         ld a, #08
 .l_0:
         add (ix+Obj.y)
@@ -2022,10 +2031,10 @@ c_f518:  ; #f518
         ld (ix+Obj.y), a
         ld (ix+Obj.o_23), #00
 .l_1:
-        inc (ix+Obj.o_15)
+        inc (ix+Obj.trajectory)
         jp c_ef72.l_23
 
-; Decrements some counter at State.s_51
+; Bullet timer (?)
 ; Used by c_cc25.
 c_f553:  ; #f553
         ld a, (State.s_51)
@@ -2035,84 +2044,92 @@ c_f553:  ; #f553
         ld (State.s_51), a
         ret
 .l_0:
-        ld a, #3C
+        ld a, 60
         ld (State.s_51), a
         ret
 
-; (Modifies some object properties?)
+; Create bullet (?)
 ; Used by c_ed08.
 c_f564:  ; #f564
         ld a, (State.s_51)
         or a
         ret NZ
         ld a, (ix+Obj.o_23)
-        cp #01
+        cp 1
         ret Z
         ld a, (ix+Obj.o_49)
         or a
         ret Z
+
         push ix
-        call c_e6c2
+        call allocateObject
         push ix
         pop iy
         pop ix
-        ret NC
+        ret NC                  ; ret if no place for new object
+        ; `iy`: new object addr
+
         ld hl, cS.powerBullet1
         ld (iy+Obj.sprite+0), l
         ld (iy+Obj.sprite+1), h
-        ld (iy+Obj.o_7), #00
-        ld (iy+Obj.color), #47
-        ld (iy+Obj.o_21), #00
-        ld (iy+Obj.o_19), #05
-        ld (iy+Obj.o_20), #03
-        ld (iy+Obj.o_10), #06
-        ld (iy+Obj.o_11), #06
-        ld (iy+Obj.health), #01
-        ld (iy+Obj.flags), #01
-        ld (iy+Obj.o_8), #00
-        ld (iy+Obj.o_23), #01
-        ld (iy+Obj.o_24), #00
+        ld (iy+Obj.o_7), 0
+        ld (iy+Obj.color), #47  ; bright white
+        ld (iy+Obj.o_21), 0
+        ld (iy+Obj.o_19), 5
+        ld (iy+Obj.o_20), 3
+        ld (iy+Obj.width), 6
+        ld (iy+Obj.height), 6
+        ld (iy+Obj.health), 1
+        ld (iy+Obj.flags), %1   ; small
+        ld (iy+Obj.objType), 0
+        ld (iy+Obj.o_23), 1
+        ld (iy+Obj.o_24), 0
         ld a, (ix+Obj.o_49)
         ld (iy+Obj.o_49), a
-        ld a, (ix+Obj.o_10)
-        sub (iy+Obj.o_10)
+
+        ; adjust x coord
+        ld a, (ix+Obj.width)
+        sub (iy+Obj.width)
         srl a
         ld e, a
-        ld d, #00
+        ld d, 0
         ld l, (ix+Obj.x+0)
         ld h, (ix+Obj.x+1)
         add hl, de
         ld (iy+Obj.x+0), l
         ld (iy+Obj.x+1), h
-        ld a, (ix+Obj.o_11)
-        sub (iy+Obj.o_11)
+        ld a, (ix+Obj.height)
+        sub (iy+Obj.height)
+
+        ; adjust y coord
         srl a
         add (ix+Obj.y)
         ld (iy+Obj.y), a
+
         ld a, (iy+Obj.o_49)
-        cp #01
+        cp 1
         jr Z, .l_2
-        cp #02
+        cp 2
         jr NZ, .l_0
         ld a, (ix+Obj.o_21)
-        and #03
+        and %00000011
         ld (iy+Obj.o_21), a
         ret
 .l_0:
-        cp #03
+        cp 3
         jr NZ, .l_1
-        ld (iy+Obj.o_21), #08
+        ld (iy+Obj.o_21), 8
         ret
 .l_1:
-        cp #04
+        cp 4
         ret NZ
-        ld (iy+Obj.o_21), #04
+        ld (iy+Obj.o_21), 4
         ret
 .l_2:
         push ix
         push iy
         pop ix
-        ld a, #04
+        ld a, 4
         call c_edc0
         pop ix
         ret
@@ -2121,12 +2138,12 @@ c_f564:  ; #f564
 ; Used by c_ed08.
 c_f618:  ; #f618
         ld a, (ix+Obj.o_49)
-        cp #01
+        cp 1
         call Z, c_ee93
         ld iy, scene
         call c_e80a
         jr C, .l_1
-        ld (ix+Obj.flags), #00
+        ld (ix+Obj.flags), 0
         ld b, (ix+Obj.health)
         ld a, (iy+Obj.blinkTime)
         or a
@@ -2139,7 +2156,7 @@ c_f618:  ; #f618
         xor a
 .l_0:
         ld (State.energy), a
-        ld (iy+Obj.blinkTime), #07
+        ld (iy+Obj.blinkTime), 7
         jp printEnergy
 .l_1:
         ld a, (State.level)
@@ -2151,15 +2168,15 @@ c_f618:  ; #f618
 .l_2:
         call getScrTileAddr
         ld a, (hl)
-        call c_eaee
-        cp #04
+        call getTileType
+        cp 4
         jr C, .l_3
-        ld (ix+Obj.flags), #00
+        ld (ix+Obj.flags), 0
         ret
 .l_3:
         call isObjectVisible
         ret C
-        ld (ix+Obj.flags), #00
+        ld (ix+Obj.flags), 0
         ret
 
 ; (Some game logic?)
@@ -2168,18 +2185,18 @@ c_f670:  ; #f670
         bit 5, (ix+Obj.o_24)
         ret Z
         call generateRandom
-        cp #08
+        cp 8
         ret NC
-        bit 1, (ix+Obj.o_15)
+        bit 1, (ix+Obj.trajectory)
         jr Z, .l_0
         ld a, (ix+Obj.o_21)
-        xor #03
+        xor %00000011
         ld (ix+Obj.o_21), a
 .l_0:
-        bit 0, (ix+Obj.o_15)
+        bit 0, (ix+Obj.trajectory)
         ret Z
         ld a, (ix+Obj.o_21)
-        xor #0C
+        xor %00001100
         ld (ix+Obj.o_21), a
         ret
 
@@ -2195,16 +2212,17 @@ c_f697:  ; #f697
         ret
 .l_0:
         call generateRandom
-        cp #04
+        cp 4
         ret NC
         call generateRandom
-        and #1F
+        and %00011111
         ld (ix+Obj.o_48), a
         ret
 
+
 ; Object type offset by level
-c_f6b5:  ; #f6b5
-        db #00, #31, #5F, #88, #BC
+levelObjTypeOffests:  ; #f6b5
+        db 0, 49, 95, 136, 188
 
 
 ; Find position in level object table and put objects to the scene
@@ -2228,7 +2246,7 @@ findAndPutObjectsToScene:  ; #f6ba
         xor a
         sbc hl, de
         pop hl
-        jr NC, .l_2             ; object is not yet visible
+        jr NC, .end             ; object is not yet visible
 
         call putObjectToScene
         jr .object
@@ -2237,111 +2255,129 @@ findAndPutObjectsToScene:  ; #f6ba
     .2  inc bc
         jr .object
 
-.l_2:
+.end:
     .2  dec bc
         ld (State.nextObject), bc
-        jr putObjectsToScene
+        jr setWaitingFlags
 
 
 ; Get next objects from the object table
 ; Used by c_cc25.
 putNextObjectsToScene:  ; #f6e7
         ld bc, (State.nextObject)
-.l_0:
+.object:
         ld de, (State.screenX)
         ld a, (bc)
         ld h, a
         inc bc
         ld a, (bc)
-        ld l, a
+        ld l, a                 ; `hl`: x coord on map
         inc bc
         xor a
-        sbc hl, de
-        jr C, .l_1
+        sbc hl, de              ; `hl`: x coord on screen
+        jr C, .skipObject
+
         push hl
-        ld de, #0028
+        ld de, 40
         xor a
         sbc hl, de
         pop hl
-        jr NC, .l_2
+        jr NC, .end
+
         push bc
         call putObjectToScene
         pop bc
-        inc bc
-        inc bc
-        jr .l_0
-.l_1:
-        inc bc
-        inc bc
-        jr .l_0
-.l_2:
-        dec bc
-        dec bc
+    .2  inc bc
+        jr .object
+
+.skipObject:
+    .2  inc bc
+        jr .object
+
+.end:
+    .2  dec bc
         ld (State.nextObject), bc
         ; continue
 
 
-putObjectsToScene:
+; Set waiting flags in objects that are not visible yet
+; and reset in already visible objects
+setWaitingFlags:
         ld ix, scene.obj2
-        ld b, #06
-.l_4:
-        bit 0, (ix+Obj.flags)
-        jr Z, .l_6
+        ld b, 6                 ; object count
+.object:
+        bit 0, (ix+Obj.flags)   ; exists
+        jr Z, .skip
         ld l, (ix+Obj.x+0)
         ld h, (ix+Obj.x+1)
-        ld de, #0120
+        ld de, 288
         xor a
         sbc hl, de
-        jp C, .l_5
-        set 5, (ix+Obj.flags)
-        jr .l_6
-.l_5:
+        jp C, .visible
+        set 5, (ix+Obj.flags)   ; waiting
+        jr .skip
+.visible:
         ld a, (ix+Obj.o_27)
         or a
-        jr NZ, .l_6
-        res 5, (ix+Obj.flags)
-.l_6:
-        ld de, Obj
+        jr NZ, .skip
+        res 5, (ix+Obj.flags)   ; visible
+.skip:
+        ld de, Obj              ; object size
         add ix, de
-        djnz .l_4
+        djnz .object
         ret
 
+
 ; Initialize object from the object type
+;   arg `bc`: object addr in `objectTable` + 2 (points to y coord)
+;       `hl`: x coord on screen in tiles
 ; Used by c_f6ba and c_f6e7.
 putObjectToScene:  ; #f74a
-        call c_e6c2
-        ret NC
+        call allocateObject     ; `ix`: new object addr in the scene
+        ret NC                  ; ret if no place for new object
 
     .3  add hl, hl
         ld de, 32
-        add hl, de
+        add hl, de              ; `hl`: x coord in pixels
         ld (ix+Obj.x+0), l
         ld (ix+Obj.x+1), h
-        ld a, (bc)
+
+        ld a, (bc)              ; y coord in tiles
     .3  add a
-        add 32
+        add 32                  ; y coord in pixels (bottom of the sprite)
         ld (ix+Obj.y), a
+
         inc bc
-        ld a, (bc)
+        ld a, (bc)              ; object type
         cp 10
-        jr C, .l_0
+        jr C, .commonObjType
+
+        ; for a level-specific object type
+        ; subtract the indexing offset
+        ; (why was it added in the first place?)
         exa
         ld a, (State.level)
         ld l, a
         ld h, 0
-        ld de, c_f6b5
+        ld de, levelObjTypeOffests
         add hl, de
         ld l, (hl)
         exa
         sub l
-.l_0:
-        inc bc
-; This entry point is used by c_f8f4, c_f9a4, c_fa65, c_fad3 and
-; c_fb45.
-.l_1:
+
+.commonObjType:
+        ; `a`: index in `objectTypes`
+        inc bc                  ; addr of the next object in `objectTable`
+        ; continue
+
+; Create a new object of the given type
+;   arg `a`: object type (index in `objectTypes`)
+;       `ix`: object addr in the scene
+; used by c_f8f4, c_f9a4, c_fa65, c_fad3 and c_fb45.
+createObject:
         exx
         ld l, a
-        ld h, #00
+        ld h, 0
         add hl, hl
         ld c, l
         ld b, h
@@ -2353,52 +2389,54 @@ putObjectToScene:  ; #f74a
         add hl, bc
         push hl
         exx
-        pop hl
+        pop hl                  ; `hl` = `a` * 26
         ld de, Common.objectTypes
-        add hl, de
-        ld (ix+Obj.o_6), #00
-        ld (ix+Obj.o_48), #00
-        ld (ix+Obj.o_21), #02
-        ld a, (hl)
+        add hl, de              ; `hl`: object type addr
+
+        ; fill object properties
+        ld (ix+Obj.o_6), 0
+        ld (ix+Obj.o_48), 0
+        ld (ix+Obj.o_21), %0000010
+        ld a, (hl)              ; spriteAddr (low)
         ld (ix+Obj.sprite+0), a
-        inc hl
-        ld a, (hl)
+        inc hl                  ; +1
+        ld a, (hl)              ; spriteAddr (high)
         ld (ix+Obj.sprite+1), a
-        inc hl
-        ld a, (hl)
+        inc hl                  ; +2
+        ld a, (hl)              ; attr
         ld (ix+Obj.color), a
-        inc hl
+        inc hl                  ; +3
         ld a, (hl)
         ld (ix+Obj.o_7), a
-        inc hl
-        ld a, (hl)
+        inc hl                  ; +4
+        ld a, (hl)              ; flags
         ld (ix+Obj.flags), a
-        inc hl
-        ld a, (hl)
-        ld (ix+Obj.o_10), a
-        inc hl
-        ld a, (hl)
-        ld (ix+Obj.o_11), a
-        inc hl
-        ld a, (hl)
+        inc hl                  ; +5
+        ld a, (hl)              ; width
+        ld (ix+Obj.width), a
+        inc hl                  ; +6
+        ld a, (hl)              ; height
+        ld (ix+Obj.height), a
+        inc hl                  ; +7
+        ld a, (hl)              ; health
         ld (ix+Obj.health), a
-        inc hl
+        inc hl                  ; +8
         ld a, (hl)
         or a
         jr Z, .l_2
         ld a, (ix+Obj.flags)
-        or #2C
+        or %00101100
         ld (ix+Obj.flags), a
 .l_2:
-        inc hl
+        inc hl                  ; +9
         ld a, (hl)
         ld (ix+Obj.o_13), a
-        inc hl
+        inc hl                  ; +10
         ld a, (hl)
         ld (ix+Obj.o_24), a
-        inc hl
-        ld a, (hl)
-        ld (ix+Obj.o_8), a
+        inc hl                  ; +11
+        ld a, (hl)              ; objType (with offset)
+        ld (ix+Obj.objType), a
         or a
         jr NZ, .l_3
         ld a, (State.s_46)
@@ -2407,121 +2445,136 @@ putObjectToScene:  ; #f74a
         ld (ix+Obj.flags), #00
         ret
 .l_3:
-        inc hl
+        inc hl                  ; +12
         ld a, (hl)
         ld (ix+Obj.o_49), a
-        inc hl
-        ld a, (hl)
-        ld (ix+Obj.o_15), a
-        inc hl
+        inc hl                  ; +13
+        ld a, (hl)              ; trajectory
+        ld (ix+Obj.trajectory), a
+        inc hl                  ; +14
         ld a, (hl)
         ld (ix+Obj.o_16), a
-        inc hl
+        inc hl                  ; +15
         ld a, (hl)
         ld (ix+Obj.o_17), a
-        inc hl
+        inc hl                  ; +16
         ld a, (hl)
         ld (ix+Obj.o_18), a
-        inc hl
-        ld a, (hl)
+        inc hl                  ; +17
+        ld a, (hl)              ; mirror (?)
         ld (ix+Obj.o_19), a
-        inc hl
+        inc hl                  ; +18
         ld a, (hl)
         ld (ix+Obj.o_20), a
-        inc hl
+        inc hl                  ; +19
         ld a, (hl)
         ld (ix+Obj.o_21), a
-        inc hl
+        inc hl                  ; +20
         ld a, (hl)
         ld (ix+Obj.o_22), a
-        inc hl
+        inc hl                  ; +21
         ld a, (hl)
         ld (ix+Obj.o_23), a
-        inc hl
+        inc hl                  ; +22
         ld a, (hl)
         ld (ix+Obj.o_25), a
-        inc hl
+        inc hl                  ; +23
         ld a, (hl)
         ld (ix+Obj.o_26), a
-        inc hl
+        inc hl                  ; +24
         ld a, (hl)
         ld (ix+Obj.o_27), a
-        inc hl
+        inc hl                  ; +25
         ld a, (hl)
         ld (ix+Obj.o_28), a
+
+        ; direction transform (?)
         ld a, (ix+Obj.o_21)
         ld l, a
-        ld h, #00
+        ld h, 0
         ld de, c_f373
         add hl, de
         ld a, (hl)
         ld (ix+Obj.o_21), a
-        bit 1, (ix+Obj.flags)
-        jr NZ, .l_4
+
+        ; get top by bottom and height
+        bit 1, (ix+Obj.flags)   ; is big
+        jr NZ, .big             ; why? same code for both cases
+.small:
         ld a, (ix+Obj.y)
-        sub (ix+Obj.o_11)
+        sub (ix+Obj.height)
         ld (ix+Obj.y), a
         jr .l_5
-.l_4:
+.big:
         ld a, (ix+Obj.y)
-        sub (ix+Obj.o_11)
+        sub (ix+Obj.height)
         ld (ix+Obj.y), a
+
 .l_5:
-        ld a, (ix+Obj.o_8)
-        cp #0E
-        jr NZ, .l_6
+        ld a, (ix+Obj.objType)
+        cp 14                   ; press/platform
+        jr NZ, .notPress
+
+        ; adjust coords for a press/platform
         ld l, (ix+Obj.x+0)
         ld h, (ix+Obj.x+1)
-        ld de, #0004
+        ld de, 4
         add hl, de
         ld (ix+Obj.x+0), l
         ld (ix+Obj.x+1), h
         ld a, (ix+Obj.y)
-        and #F8
+        and -8
         ld (ix+Obj.y), a
         ret
-.l_6:
-        cp #01
-        jr NZ, .l_7
+
+.notPress:
+        cp 1                    ; shatterbomb
+        jr NZ, .notShatterBomb
         ld a, (ix+Obj.y)
-        add #06
+        add 6
         ld (ix+Obj.y), a
         ret
-.l_7:
-        ld a, (ix+Obj.o_8)
-        cp #A3
-        jr NZ, .l_8
-        ld (ix+Obj.flags), #00
+
+.notShatterBomb:
+        ld a, (ix+Obj.objType)
+        cp 163                  ; one of three snowBall types in Iceland (?)
+        jr NZ, .notSnowBall
+        ld (ix+Obj.flags), 0    ; remove object (?)
         ret
-.l_8:
+
+.notSnowBall:
         ld a, (State.bossFight)
         or a
         ret NZ
-        ld a, (ix+Obj.o_8)
-        cp #35
-        jr Z, .l_9
-        cp #5E
-        jr Z, .l_10
-        cp #8A
-        jr Z, .l_10
-        cp #BF
-        jr Z, .l_10
-        cp #ED
-        jr Z, .l_10
+
+        ld a, (ix+Obj.objType)
+        cp 53                   ; Klondike boss
+        jr Z, .possiblyBoss
+        cp 94                   ; Orient boss
+        jr Z, .boss
+        cp 138                  ; Amazon boss
+        jr Z, .boss
+        cp 191                  ; Iceland boss
+        jr Z, .boss
+        cp 237                  ; Bermuda boss
+        jr Z, .boss
         ret
-.l_9:
+
+.possiblyBoss:
+        ; check that the hero is in the room with the boss, not near it
         ld hl, (State.screenX)
-        ld de, #05D4
+        ld de, 1492
         xor a
         sbc hl, de
-        jr NC, .l_10
-        ld (ix+Obj.flags), #00
+        jr NC, .boss
+        ld (ix+Obj.flags), 0    ; remove object
         ret
-.l_10:
-        ld a, #01
+
+.boss:
+        ld a, 1
         ld (State.bossFight), a
-        ld a, #3C
-        ld (State.s_55), a
+        ld a, 60
+        ld (State.bossHealth), a
         ret
 
 

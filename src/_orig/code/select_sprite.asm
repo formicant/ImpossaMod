@@ -13,7 +13,7 @@ getSpriteAddr:  ; #e47a
         jr NZ, .l_0
         ld de, 16 * 4           ; small sprite size in bytes
 .l_0:
-        ld a, (ix+Obj.o_8)
+        ld a, (ix+Obj.objType)
         cp -1
         ret Z
 
@@ -148,7 +148,7 @@ c_e54f:  ; #e54f
         ld hl, cS.shopMole
         ld (ix+Obj.sprite+0), l
         ld (ix+Obj.sprite+1), h
-        ld (ix+Obj.o_8), #09
+        ld (ix+Obj.objType), #09
         ret
 
 ; (Modifies some object properties?)

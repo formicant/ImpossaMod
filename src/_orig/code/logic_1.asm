@@ -45,23 +45,23 @@ c_d709:  ; #d709
         jp .l_6
 .l_0:
         ld a, (State.s_31)
-        call c_eaee
+        call getTileType
         cp #05
         jp Z, .l_6
         cp #06
         jp Z, .l_7
         ld a, (State.s_32)
-        call c_eaee
+        call getTileType
         cp #05
         jp Z, .l_6
         cp #06
         jp Z, .l_7
         ld a, (State.s_31)
-        call c_eaee
+        call getTileType
         cp #09
         jr Z, .l_1
         ld a, (State.s_32)
-        call c_eaee
+        call getTileType
         cp #09
         jr NZ, .l_4
 .l_1:
@@ -129,7 +129,7 @@ c_d7f6:  ; #d7f6
         bit 3, a
         jr Z, .l_0
         ld a, (State.s_33)
-        call c_eaee
+        call getTileType
         cp #01
         jp Z, .l_12
         cp #02
@@ -139,7 +139,7 @@ c_d7f6:  ; #d7f6
         bit 2, a
         jr Z, .l_1
         ld a, (State.s_34)
-        call c_eaee
+        call getTileType
         cp #02
         jp Z, .l_12
 .l_1:
@@ -151,28 +151,28 @@ c_d7f6:  ; #d7f6
         bit 0, (ix+Obj.o_24)
         ret NZ
         ld a, (State.s_31)
-        call c_eaee
+        call getTileType
         cp #02
         jr NC, .l_2
         ld a, (State.s_32)
-        call c_eaee
+        call getTileType
         cp #02
         jp C, c_d94c.l_13
 .l_2:
         ld a, (State.s_31)
-        call c_eaee
+        call getTileType
         cp #07
         jr Z, .l_3
         ld a, (State.s_32)
-        call c_eaee
+        call getTileType
         cp #07
         jr Z, .l_3
         ld a, (State.s_31)
-        call c_eaee
+        call getTileType
         cp #05
         ret NC
         ld a, (State.s_32)
-        call c_eaee
+        call getTileType
         cp #05
         jp C, c_d94c.l_11
         ret
@@ -224,7 +224,7 @@ c_d7f6:  ; #d7f6
         res 1, (ix+Obj.o_21)
         ret
 .l_9:
-        ld a, (State.s_45)
+        ld a, (State.pressTime)
         or a
         ret NZ
         res 0, (ix+Obj.o_24)
@@ -257,7 +257,7 @@ c_d7f6:  ; #d7f6
         jp c_da95
 ; This entry point is used by c_d94c, c_da95 and c_db4e.
 .l_12:
-        ld a, (State.s_45)
+        ld a, (State.pressTime)
         or a
         ret NZ
         ld a, #04
@@ -281,11 +281,11 @@ c_d94c:  ; #d94c
         bit 0, (ix+Obj.o_24)
         jr NZ, .l_0
         ld a, (State.s_31)
-        call c_eaee
+        call getTileType
         cp #02
         jr NC, .l_0
         ld a, (State.s_32)
-        call c_eaee
+        call getTileType
         cp #02
         jp C, .l_13
 .l_0:
@@ -295,7 +295,7 @@ c_d94c:  ; #d94c
         bit 2, a
         jr Z, .l_1
         ld a, (State.s_34)
-        call c_eaee
+        call getTileType
         cp #02
         jp Z, c_d7f6.l_12
 .l_1:
@@ -305,11 +305,11 @@ c_d94c:  ; #d94c
         or a
         jp NZ, .l_11
         ld a, (State.s_31)
-        call c_eaee
+        call getTileType
         cp #08
         jr Z, .l_2
         ld a, (State.s_32)
-        call c_eaee
+        call getTileType
         cp #08
         jr NZ, .l_3
 .l_2:
@@ -338,11 +338,11 @@ c_d94c:  ; #d94c
         or a
         jp NZ, .l_11
         ld a, (State.s_31)
-        call c_eaee
+        call getTileType
         cp #08
         jr Z, .l_6
         ld a, (State.s_32)
-        call c_eaee
+        call getTileType
         cp #08
         jr NZ, .l_7
 .l_6:
@@ -367,11 +367,11 @@ c_d94c:  ; #d94c
         jp Z, .l_11
 .l_9:
         ld a, (State.s_31)
-        call c_eaee
+        call getTileType
         cp #07
         jr Z, .l_10
         ld a, (State.s_32)
-        call c_eaee
+        call getTileType
         cp #07
         ret NZ
 .l_10:
@@ -402,7 +402,7 @@ c_d94c:  ; #d94c
 ; This entry point is used by c_d7f6, c_da95, c_dbfc and c_e6e1.
 .l_13:
         xor a
-        ld (State.s_45), a
+        ld (State.pressTime), a
         ld a, #03
         ld (State.s_28), a
         xor a
@@ -443,7 +443,7 @@ c_da95:  ; #da95
         bit 3, a
         jr Z, .l_1
         ld a, (State.s_33)
-        call c_eaee
+        call getTileType
         cp #01
         jp Z, c_d7f6.l_12
         cp #02
@@ -489,22 +489,22 @@ c_da95:  ; #da95
         exa
         call c_dd46
         ld a, (State.s_35)
-        call c_eaee
+        call getTileType
         cp #04
         jr NC, .l_5
         ld a, (State.s_36)
-        call c_eaee
+        call getTileType
         cp #04
         jr NC, .l_5
         ret
 .l_4:
         call c_dd09
         ld a, (State.s_31)
-        call c_eaee
+        call getTileType
         cp #02
         jp NC, c_d94c.l_11
         ld a, (State.s_32)
-        call c_eaee
+        call getTileType
         cp #02
         jp NC, c_d94c.l_11
         ret
@@ -523,7 +523,7 @@ c_db4e:  ; #db4e
         bit 3, a
         jr Z, .l_0
         ld a, (State.s_33)
-        call c_eaee
+        call getTileType
         cp #01
         jp Z, c_d7f6.l_12
         cp #02
@@ -569,11 +569,11 @@ c_db4e:  ; #db4e
         ld (ix+Obj.x+1), h
         exx
         ld a, (State.s_31)
-        call c_eaee
+        call getTileType
         cp #02
         jp NC, c_d94c.l_11
         ld a, (State.s_32)
-        call c_eaee
+        call getTileType
         cp #02
         jp NC, c_d94c.l_11
         ld a, (controlState)
@@ -601,21 +601,21 @@ c_dbfc:  ; #dbfc
         bit 3, a
         jr Z, .l_1
         ld a, (State.s_33)
-        call c_eaee
+        call getTileType
         or a
         jr NZ, .l_0
         ld a, (State.s_34)
-        call c_eaee
+        call getTileType
         or a
         jp Z, c_d94c.l_13
 .l_0:
         call c_dd46
         ld a, (State.s_35)
-        call c_eaee
+        call getTileType
         cp #04
         jr NC, .l_1
         ld a, (State.s_36)
-        call c_eaee
+        call getTileType
         cp #04
         jr NC, .l_1
         call c_dcce
@@ -627,11 +627,11 @@ c_dbfc:  ; #dbfc
         bit 2, a
         jr Z, .l_3
         ld a, (State.s_33)
-        call c_eaee
+        call getTileType
         or a
         jr NZ, .l_2
         ld a, (State.s_34)
-        call c_eaee
+        call getTileType
         or a
         jp Z, c_d94c.l_13
 .l_2:
@@ -648,7 +648,7 @@ c_dbfc:  ; #dbfc
         jr NZ, .l_4
         call c_dce1
         ld a, (State.s_34)
-        call c_eaee
+        call getTileType
         cp #02
         jp NC, c_d94c.l_11
 .l_4:
@@ -656,11 +656,11 @@ c_dbfc:  ; #dbfc
         bit 1, a
         jr Z, .l_6
         ld a, (State.s_33)
-        call c_eaee
+        call getTileType
         or a
         jr NZ, .l_5
         ld a, (State.s_34)
-        call c_eaee
+        call getTileType
         or a
         jp Z, c_d94c.l_13
 .l_5:
@@ -675,11 +675,11 @@ c_dbfc:  ; #dbfc
         bit 0, a
         jr Z, .l_8
         ld a, (State.s_33)
-        call c_eaee
+        call getTileType
         or a
         jr NZ, .l_7
         ld a, (State.s_34)
-        call c_eaee
+        call getTileType
         or a
         jp Z, c_d94c.l_13
 .l_7:
@@ -895,33 +895,33 @@ c_de37:  ; #de37
         cp #04
         jr NZ, .l_0
         ld a, (State.s_29)
-        call c_eaee
+        call getTileType
         cp #03
         jr NC, .l_2
         ld a, (State.s_2A)
-        call c_eaee
+        call getTileType
         cp #03
         jr NC, .l_2
         ld a, (State.s_2B)
-        call c_eaee
+        call getTileType
         cp #03
         jr NC, .l_2
         ld a, (State.s_2C)
-        call c_eaee
+        call getTileType
         cp #03
         jr NC, .l_2
         jp .l_1
 .l_0:
         ld a, (State.s_29)
-        call c_eaee
+        call getTileType
         cp #04
         jr NC, .l_2
         ld a, (State.s_2A)
-        call c_eaee
+        call getTileType
         cp #04
         jr NC, .l_2
         ld a, (State.s_2B)
-        call c_eaee
+        call getTileType
         cp #04
         jr NC, .l_2
         ld a, (State.s_28)
@@ -931,7 +931,7 @@ c_de37:  ; #de37
         or a
         jp M, .l_1
         ld a, (State.s_30)
-        call c_eaee
+        call getTileType
         cp #04
         jr NC, .l_2
 .l_1:
@@ -954,33 +954,33 @@ c_deb1:  ; #deb1
         cp #04
         jr NZ, .l_0
         ld a, (State.s_2D)
-        call c_eaee
+        call getTileType
         cp #03
         jr NC, .l_2
         ld a, (State.s_2E)
-        call c_eaee
+        call getTileType
         cp #03
         jr NC, .l_2
         ld a, (State.s_2F)
-        call c_eaee
+        call getTileType
         cp #03
         jr NC, .l_2
         ld a, (State.s_30)
-        call c_eaee
+        call getTileType
         cp #03
         jr NC, .l_2
         jp .l_1
 .l_0:
         ld a, (State.s_2D)
-        call c_eaee
+        call getTileType
         cp #04
         jr NC, .l_2
         ld a, (State.s_2E)
-        call c_eaee
+        call getTileType
         cp #04
         jr NC, .l_2
         ld a, (State.s_2F)
-        call c_eaee
+        call getTileType
         cp #04
         jr NC, .l_2
         ld a, (State.s_28)
@@ -990,7 +990,7 @@ c_deb1:  ; #deb1
         or a
         jp M, .l_1
         ld a, (State.s_30)
-        call c_eaee
+        call getTileType
         cp #04
         jr NC, .l_2
 .l_1:
@@ -1035,7 +1035,7 @@ powerBulletTable:  ; #df76
 ; (Some logic for enemies?)
 ; Used by c_cc25.
 c_df85:  ; #df85
-        ld a, (State.s_45)
+        ld a, (State.pressTime)
         or a
         ret NZ
         ld a, (State.s_46)
@@ -1125,8 +1125,8 @@ c_df85:  ; #df85
         ld (iy+Obj.flags), #01
         ld (iy+Obj.color), #45
         ld (iy+Obj.o_7), #00
-        ld (iy+Obj.o_10), #08
-        ld (iy+Obj.o_11), #08
+        ld (iy+Obj.width), #08
+        ld (iy+Obj.height), #08
         ld l, (ix+Obj.x+0)
         ld h, (ix+Obj.x+1)
         ld de, #0008
@@ -1173,10 +1173,10 @@ c_df85:  ; #df85
         ld (iy+Obj.sprite+1), b
         inc hl
         ld a, (hl)
-        ld (iy+Obj.o_10), a
+        ld (iy+Obj.width), a
         inc hl
         ld a, (hl)
-        ld (iy+Obj.o_11), a
+        ld (iy+Obj.height), a
         inc hl
         ld a, (hl)
         add (ix+Obj.y)
@@ -1227,10 +1227,10 @@ c_df85:  ; #df85
         ld (iy+Obj.sprite+1), b
         inc hl
         ld a, (hl)
-        ld (iy+Obj.o_10), a
+        ld (iy+Obj.width), a
         inc hl
         ld a, (hl)
-        ld (iy+Obj.o_11), a
+        ld (iy+Obj.height), a
         inc hl
         ld a, (hl)
         add (ix+Obj.y)
@@ -1336,7 +1336,7 @@ c_df85:  ; #df85
         adc a, #FF
         ld (ix+Obj.x+1), a
         ld a, (hl)
-        call c_eaee
+        call getTileType
         cp #02
         ret C
 .l_15:
@@ -1422,7 +1422,7 @@ c_df85:  ; #df85
         add #F8
         ld (ix+Obj.y), a
         ld a, (hl)
-        call c_eaee
+        call getTileType
         cp #02
         jp NC, .l_18
         call c_eb00
@@ -1562,7 +1562,7 @@ c_e31c:  ; #e31c
         ld (c_e308), a
         ret
 
-; (Some data on weapons?)
+
 heroWalkPhases:  ; #e401
         dw cS.heroWalks1
         dw cS.heroWalks2
@@ -1578,14 +1578,15 @@ heroWalkPhases:  ; #e401
         dw cS.armedHeroWalks4
         dw cS.armedHeroStands
 
+
 ; (Some game logic with weapons?)
 ; Used by c_d709.
 c_e419:  ; #e419
-        ld a, (State.s_45)
+        ld a, (State.pressTime)
         or a
         jr Z, .l_1
         dec a
-        ld (State.s_45), a
+        ld (State.pressTime), a
         ld de, cS.heroSmallWalks
         ld a, (State.s_41)
         or a

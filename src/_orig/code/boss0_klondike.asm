@@ -16,16 +16,16 @@ bossLogicKlondike:  ; #f8f4
         ret NZ
         ld ix, scene.obj2
         ld a, #36
-        call putObjectToScene.l_1
+        call createObject
         ld ix, scene.obj3
         ld a, #34
-        call putObjectToScene.l_1
+        call createObject
         ld ix, scene.obj4
         ld a, #35
-        call putObjectToScene.l_1
+        call createObject
         ld ix, scene.obj5
         ld a, #33
-        call putObjectToScene.l_1
+        call createObject
         call generateRandom
         and #03
         add a

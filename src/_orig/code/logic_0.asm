@@ -181,11 +181,11 @@ initHero:  ; #d153
 
         ld (ix+Obj.o_21), 1     ; mirror (?)
         ld (ix+Obj.flags), %11  ; flags: exists, big
-        ld (ix+Obj.o_10), #10   ; ?
-        ld (ix+Obj.o_11), #15   ; ?
+        ld (ix+Obj.width), #10   ; ?
+        ld (ix+Obj.height), #15   ; ?
         ld (ix+Obj.o_7), 0      ; ?
         ld (ix+Obj.color), #47  ; attr: bright white
-        ld (ix+Obj.o_8), #FF    ; ?
+        ld (ix+Obj.objType), #FF    ; ?
         xor a
         ld (State.s_28), a      ; ?
         ld (State.s_41), a      ; ?
@@ -393,9 +393,9 @@ turnIntoCoin:  ; #d2b3
 
         ld (iy+Obj.o_7), 0
         ld (iy+Obj.o_23), 6
-        ld (iy+Obj.o_8), 6
+        ld (iy+Obj.objType), 6
         ld (iy+Obj.o_21), 0     ; some flags (?)
-        ld (iy+Obj.o_15), 0
+        ld (iy+Obj.trajectory), 0
         ld (iy+Obj.health), -2    ; vertical speed (?)
         ld (iy+Obj.color), #46  ; bright yellow
         res 5, (iy+Obj.flags)
@@ -463,7 +463,7 @@ c_d308:  ; #d308
         ld (ix+Obj.sprite+1), h
 
         ld a, (iy+Obj.y)
-        sub (ix+Obj.o_11)
+        sub (ix+Obj.height)
         ld (ix+Obj.y), a
         ld c, (iy+Obj.o_21)
         ld a, (iy+Obj.o_23)
@@ -515,7 +515,7 @@ c_d3bb:  ; #d3bb
         ret Z
 
         ld a, (ix+Obj.y)
-        add (ix+Obj.o_11)
+        add (ix+Obj.height)
         sub (iy+Obj.y)
         jp P, .l_0
         neg
@@ -533,7 +533,7 @@ c_d3bb:  ; #d3bb
         sbc hl, de
         jr C, .l_1
 
-        ld l, (iy+Obj.o_10)
+        ld l, (iy+Obj.width)
         ld h, 0
         add hl, de
         ld e, (ix+Obj.x+0)
@@ -570,7 +570,7 @@ isObjectVisibleRaw:
         ld a, (ix+Obj.y)
         cp 224                  ; screen bottom
         jr NC, .offScreen
-        ld c, (ix+Obj.o_11)
+        ld c, (ix+Obj.height)
         add c
         cp 32                   ; screen top
         jr C, .offScreen
@@ -579,7 +579,7 @@ isObjectVisibleRaw:
         ld h, (ix+Obj.x+1)
         push hl
         ld d, 0
-        ld e, (ix+Obj.o_10)
+        ld e, (ix+Obj.width)
         add hl, de
         ld de, 32
         xor a
@@ -632,7 +632,7 @@ getScrTileAddr:  ; #d460
         jr C, .l_1
         ld a, 223
 .l_1:
-        and %11111000           ; `a`: y coord floored to tiles
+        and %11111000           ; `a`: y coord clamped and floored to tiles
         ld l, a
         ld h, 0
         ld e, a
@@ -648,7 +648,7 @@ getScrTileAddr:  ; #d460
 
         ld l, (ix+Obj.x+0)
         ld h, (ix+Obj.x+1)
-        ld a, (ix+Obj.o_8)
+        ld a, (ix+Obj.objType)
         cp 14
         jr Z, .l_4
         ld de, 32

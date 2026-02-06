@@ -16,10 +16,10 @@ bossLogicAmazon:  ; #fa65
         ret NZ
         ld ix, scene.obj2
         ld a, #2B
-        call putObjectToScene.l_1
+        call createObject
         ld ix, scene.obj3
         ld a, #2C
-        call putObjectToScene.l_1
+        call createObject
         call generateRandom
         and #01
         add a
