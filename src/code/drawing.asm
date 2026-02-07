@@ -1061,10 +1061,10 @@ printString:
 
 
 ; Print a single character without attrs
-;   `hl`: screen address
-;   `a`: font char code (ASCII - 48)
-;       (space is printed if `a` >= #B0)
-;   spoils: `af`, `bc`
+;   arg `hl`: screen address
+;       `a`: font char code (ASCII - 48)
+;           (space is printed if `a` >= #B0)
+;   spoils `af`, `bc`
 printChar:
         add a
         jr C, .space

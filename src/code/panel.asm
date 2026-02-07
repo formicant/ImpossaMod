@@ -38,8 +38,8 @@ printPanel:
 
 ; Score (6 decimal digits)
 score:
-        block 6
-.end:
+        block 5
+.last:  db -0
 
 ; Score table (decimal)
 ; (sub-labels point to the last digit)
@@ -69,7 +69,7 @@ addScore:
 ; Add score by addr
 ;   `de`: addr of the last digit in the score table
 addScoreRaw:
-        ld hl, score + 5        ; last digit
+        ld hl, score.last       ; last digit
         or a
         ld b, 5
 .l_0:
@@ -107,14 +107,20 @@ printScore:
 ;   `hl`: screen address of the first digit
 printScoreAt:
         ld de, score
+        xor a                   ; leading zero
+        exa
 .digit:
         ld a, (de)
-        call printChar
-        inc de
+        call printDigitWithoutLeadingZeros
         inc l
+        inc de
         ld a, e
-        cp low(score.end)
+        cp low(score.last)
         jr NZ, .digit
+        
+        ; last digit
+        ld a, (de)
+        call printChar
         ret
 
 addScoreSetCarry:
@@ -163,18 +169,18 @@ printSoupCans:
 ;   `a`: item price
 printPrice:
         ; TODO: set attrs
-        ld hl, Screen.pixels.row0 + 30
+        ld hl, Screen.pixels.row0 + 27
         jr printCoinCountAt
 
 ; Print number of coins (multiplied by 25) in the panel
 printCoinCount:
-        ld hl, Screen.pixels.row0 + 13
+        ld hl, Screen.pixels.row0 + 10
         ld a, (State.coins)     ; 0 <= `a` < 128
         ; continue
 
 ; Print number of coins multiplied by 25
 ;   `a`: number of coins
-;   `hl`: screen addr of the last digit
+;   `hl`: screen addr
 printCoinCountAt:
         ; instead of multiplying by 25, we interpret `a` as a 6.2 fixed point
         ; and then, we interpret the decimal value as multiplied by 100
@@ -197,51 +203,27 @@ printCoinCountAt:
         ld e, a
         sla c : adc a
         and %00000101
-        ; `e`, `a`: two fractional part digits
-
-        call printChar          ; units
-        dec l
-        ld a, e
-        call printChar          ; tens
-        dec l
-        ld a, d
-        and %00001111
-        call printChar          ; hundreds
-        dec l
+        ld c, a
+        ; `e`, `c`: two fractional part digits
+        
+        xor a                   ; leading zero
+        exa
+        push bc
         ld a, d
     .4  rrca
-        and %00001111
-        call printChar          ; thousands
-
-        ; make leading zeros dark
-        ld h, high(Screen.attrs)
-        ld a, d
-        and %11110000
-        jr NZ, .brThousands
-        res 6, (hl)
+        and %00001111           ; thousands
+        call printDigitWithoutLeadingZeros
         inc l
         ld a, d
-        or a
-        jr NZ, .brHundreds
-        res 6, (hl)
+        and %00001111           ; hundreds
+        call printDigitWithoutLeadingZeros
         inc l
-        ld a, e
-        or a
-        jr NZ, .brTens
-        res 6, (hl)
-        ret
-
-        ; make significant digits bright
-.brThousands:
-        set 6, (hl)
+        ld a, e                 ; tens
+        call printDigitWithoutLeadingZeros
         inc l
-.brHundreds:
-        set 6, (hl)
-        inc l
-.brTens:
-        set 6, (hl)
-        ; units are always bright
-        ret
+        pop bc
+        ld a, c                 ; units
+        jp printChar
 
 
 ; Print energy in the panel
@@ -284,5 +266,28 @@ printEnergy:
     .2  inc e
         jp .emptyChar
 
+
+; Print digit or space in case of a leading zero
+;   arg `a`: digit (0..9)
+;       `a'`: 0 if there were only leading zeros before
+;   ret `a'`: 0 if leading zero
+;   spoils `af`, `bc`
+printDigitWithoutLeadingZeros:
+        exa
+        or a
+        jr NZ, .significant
+        exa
+        or a
+        jp NZ, .firstSignificant
+        
+        dec a                   ; space
+        jp printChar
+        
+.firstSignificant:
+        exa
+        dec a                   ; not a leading zero
+.significant:
+        exa
+        jp printChar
 
     ENDMODULE
