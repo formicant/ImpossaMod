@@ -2,8 +2,8 @@
 
 
 panelAttrs:
-        db #47,  6              ; score  - bright white
         db #07,  1              ; smart  - dark white
+        db #47,  6              ; score  - bright white
         db #43,  3              ; soup   - bright magenta
         db #46,  4              ; coins  - bright yellow
         db #03,  1              ; diary  - dark magenta
@@ -94,13 +94,11 @@ addScoreRaw:
         ;   if impossible, remove the check
 .l_2:
         ld (hl), a
-
-        ld hl, Screen.pixels.row0 + 0
         ; continue
 
 ; Print score number in the panel
 printScore:
-        ld hl, Screen.pixels.row0 + 0
+        ld hl, Screen.pixels.row0 + 1
         ; continue
 
 ; Print score number
@@ -142,7 +140,7 @@ clearScore:
 
 ; print if there is smart capability
 printSmart:
-        ld hl, Screen.pixels.row0 + 6
+        ld hl, Screen.pixels.row0 + 0
         ld a, (State.hasSmart)
         or a
         ld a, -1                ; space
@@ -151,15 +149,15 @@ printSmart:
         jp printChar
 
 
-; Print soup cans in the panel
+; Print soup cans in the panel (right to left)
 printSoupCans:
-        ld hl, Screen.pixels.row0 + 7
+        ld hl, Screen.pixels.row0 + 9
         ld a, (State.soupCans)
         ld e, a
 .can:
         ld a, ':' - '0'         ; soup can char code
         call printChar
-        inc l
+        dec l
         dec e
         jp NZ, .can
         ret
