@@ -229,7 +229,7 @@ c_e6df:  ; #e6df
 ; (Process collision?)
 ; Used by c_cc25.
 c_e6e1:  ; #e6e1
-        ld a, (State.s_46)
+        ld a, (State.inShop)
         or a
         ret NZ
         ld ix, scene
@@ -273,8 +273,8 @@ c_e6e1:  ; #e6e1
         ret NZ
         exa
         ld (State.weapon), a
-        ld hl, #02EE
-        ld (State.s_3A), hl
+        ld hl, 750
+        ld (State.weaponTime), hl
         ld (iy+Obj.flags), #00
         ld a, #0D
         jp playSound
@@ -338,11 +338,11 @@ c_e6e1:  ; #e6e1
         cp #0A
         jr NC, .l_11
         ld a, (controlState)
-        bit 2, a
+        bit 2, a                ; down key
         ret Z
         ld (iy+Obj.flags), #00
         ld a, #FF
-        ld (State.s_46), a
+        ld (State.inShop), a
         ret
 .l_11:
         ld (iy+Obj.flags), #00
@@ -432,16 +432,18 @@ c_e80a:  ; #e80a
         sbc hl, de
         ret
 
+
 ; (Some table, 5 levels * 6 words)
-c_e85f:  ; #e85f
-.lev0:  dw #0668, #0668, #0404, #03AC, #0414, #0102
-.lev1:  dw #0668, #0688, #0405, #02B4, #0378, #0405
-.lev2:  dw #0668, #0688, #0405, #04D8, #04F8, #020B
-.lev3:  dw #066C, #068C, #0403, #04F8, #0530, #0402
-.lev4:  dw #066C, #068C, #0405, #0580, #0640, #0304
+shopTransits:     ;   shop entrance       shop exit
+                  ; start  end  x  y  start  end   x  y
+.lev0:  ShopTransit 1640, 1640, 4, 4,  940, 1044,  2, 1
+.lev1:  ShopTransit 1640, 1672, 5, 4,  692,  888,  5, 4
+.lev2:  ShopTransit 1640, 1672, 5, 4, 1240, 1272, 11, 2
+.lev3:  ShopTransit 1644, 1676, 3, 4, 1272, 1328,  2, 4
+.lev4:  ShopTransit 1644, 1676, 5, 4, 1408, 1600,  4, 3
 
 ; Item prices in the shop
-c_e89b:  ; #e89b
+shopItemPrices:  ; #e89b
     IFDEF _MOD
         db 5, 6, 7, 10, 3, 1, 8, 4, 0   ; coin denomination
     ELSE
@@ -449,7 +451,7 @@ c_e89b:  ; #e89b
     ENDIF
 
 ; Item names in the shop
-c_e8a4:  ; #e8a4
+shopItemNames:  ; #e8a4
         db "SHATTERBOMB "C
         db "POWER GUN   "C
         db "LAZER GUN   "C
@@ -461,125 +463,148 @@ c_e8a4:  ; #e8a4
         db "   EXIT SHOP"C
 
 ; "TOO MUCH"
-c_e910:  ; #e910
+textTooMuch:  ; #e910
         db "   TOO MUCH     "C
 
-; (Init something?)
+
+; Place the hero into the shop
 ; Used by c_cc25.
-c_e920:  ; #e920
-        ld a, (State.s_46)
+enterShop:  ; #e920
+        ld a, (State.inShop)
         bit 7, a
         ret Z
+        
         call removeObjects
+        
         ld a, (State.level)
-        add a
-        add a
+    .2  add a
         ld l, a
         add a
         add l
         ld l, a
-        ld h, #00
-        ld de, c_e85f
+        ld h, 0
+        ld de, shopTransits
         add hl, de
+        
         ld e, (hl)
         inc hl
         ld d, (hl)
-        push de
+        push de                 ; shop span start
         inc hl
         ld e, (hl)
         inc hl
         ld d, (hl)
-        dec de
-        dec de
-        dec de
-        dec de
+    .4  dec de                  ; shop span end
         inc hl
-        call c_eace
+        call placeHero
         pop hl
         call moveToMapSpan
+        
         ld a, #7F
-        ld (State.s_46), a
+        ld (State.inShop), a
+        
         call findAndPutObjectsToScene
+        
+        ; find shop mole
         ld ix, scene.obj2
-        ld b, #06
-        ld de, Obj
-.l_0:
+        ld b, 6                 ; object count
+        ld de, Obj              ; object size
+.object:
         ld a, (ix+Obj.objType)
         or a
-        jr Z, .l_1
+        jr Z, .initShopMole
         add ix, de
-        djnz .l_0
-.l_1:
-        ld iy, scene
+        djnz .object
+        
+.initShopMole:
+        ld iy, scene.hero
         ld a, (iy+Obj.x+0)
-        add #20
+        add 32
         ld (ix+Obj.x+0), a
-        ld (ix+Obj.x+1), #00
+        ld (ix+Obj.x+1), 0
+        
         ld a, (iy+Obj.y)
-        add #0B
+        add 11
         ld (ix+Obj.y), a
+        
         ld hl, cS.shopMole
         ld (ix+Obj.sprite+0), l
         ld (ix+Obj.sprite+1), h
-        ld (ix+Obj.color), #47
-        ld (ix+Obj.o_21), #00
-        ld (ix+Obj.width), #18
-        ld (ix+Obj.height), #15
-        ld (ix+Obj.objType), #09
-        ld (ix+Obj.flags), #03
-        ld (ix+Obj.health), #FE
-        ld (ix+Obj.o_24), #00
-        ld (ix+Obj.o_49), #00
-        ld (ix+Obj.o_23), #00
+        ld (ix+Obj.color), #47  ; bright white
+        
+        ld (ix+Obj.o_21), 0
+        ld (ix+Obj.width), 24
+        ld (ix+Obj.height), 21
+        ld (ix+Obj.objType), 9
+        ld (ix+Obj.flags), %00000011
+        ld (ix+Obj.health), -2
+        ld (ix+Obj.o_24), 0
+        ld (ix+Obj.o_49), 0
+        ld (ix+Obj.o_23), 0
         ret
 
 ; Shop logic
 ; Used by c_cc25.
-c_e9b1:  ; #e9b1
-        ld a, (State.s_46)
+shopLogic:  ; #e9b1
+        ld a, (State.inShop)
         cp #7F
         ret NZ
-        ld ix, scene
+        
+        ; find item where hero stands
+        ld ix, scene.hero
         ld iy, scene.obj2
-        ld b, #06
-.l_0:
+        ld b, 6                 ; object count
+.object:
         push bc
         call c_e80a
         pop bc
-        jr NC, .l_1
-        ld de, Obj
+        jr NC, .found
+        ld de, Obj              ; object size
         add iy, de
-        djnz .l_0
+        djnz .object
+    IFDEF _MOD
+        jp restoreEnergy
+    ELSE
         jp printEnergy
-.l_1:
+    ENDIF
+        
+.found:
+    IFDEF _MOD
+        call clearEnergy
+    ENDIF
+        
         ld a, (iy+Obj.objType)
         or a
         ret Z
+        
+        ; get item name
         dec a
         ld (State.shopItem), a
         ld l, a
-        ld h, #00
-        add hl, hl
-        add hl, hl
+        ld h, 0
+    .2  add hl, hl
         ld e, l
         ld d, h
         add hl, hl
         add hl, de
-        ld de, c_e8a4
+        ld de, shopItemNames
         add hl, de
         ex de, hl
-        ld c, #47
-        ld hl, #000F
+        ; `hl`: item name
+        ld c, #47               ; bright white
+        ld hl, #000F            ; at 0, 15
         call printString
+        
+        ; get item price
         ld a, (State.shopItem)
         ld l, a
-        ld h, #00
-        ld de, c_e89b
+        ld h, 0
+        ld de, shopItemPrices
         add hl, de
         ld a, (hl)
         ld (State.shopPrice), a
         or a
-        jr Z, .l_2
+        jr Z, .skipPrice
 
     IFDEF _MOD
         call printPrice
@@ -589,13 +614,16 @@ c_e9b1:  ; #e9b1
         call printNumber
     ENDIF
 
-.l_2:
+.skipPrice:
         ld a, (controlState)
-        bit 4, a
+        bit 4, a                ; fire key
         ret Z
+        
         ld a, (State.shopPrice)
         or a
-        jr NZ, .l_3
+        jr NZ, .buyItem
+        
+        ; exit shop
         call removeObjects
         ld a, (State.level)
     .2  add a
@@ -603,96 +631,112 @@ c_e9b1:  ; #e9b1
         add a
         add l
         ld l, a
-        ld h, #00
-        ld de, c_e85f
+        ld h, 0
+        ld de, shopTransits
         add hl, de
-        ld de, #0006
+        ld de, 6
         add hl, de
+        ; `hl` = c_e85f + level * 12 * 6
         ld e, (hl)
         inc hl
         ld d, (hl)
-        push de
+        push de                 ; span start
         inc hl
         ld e, (hl)
         inc hl
         ld d, (hl)
-    .4  dec de
+    .4  dec de                 ; span end
         inc hl
-        call c_eace
-        pop hl
+        call placeHero
+        pop hl                 ; span start
         call moveToMapSpan
         xor a
-        ld (State.s_46), a
+        ld (State.inShop), a
         ld (State.s_28), a
+        
+    IFDEF _MOD
+        jp restoreEnergy
+    ELSE
         jp printEnergy
-.l_3:
+    ENDIF
+        
+.buyItem:
         ld a, (State.shopPrice)
         ld b, a
         ld a, (State.coins)
         sub b
-        jr NC, .l_5
-        ld hl, #000F
-        ld de, c_e910
-        ld c, #47
+        jr NC, .canBuy
+        ld hl, #000F            ; at 0, 15
+        ld de, textTooMuch
+        ld c, #47               ; bright white
         call printString
-.l_4:
+.waitFireRelease:
         ld a, (controlState)
-        bit 4, a
-        jr NZ, .l_4
+        bit 4, a                ; fire key
+        jr NZ, .waitFireRelease
         ret
-.l_5:
+        
+.canBuy:
         ld (State.coins), a
         call printCoinCount
-        ld (iy+Obj.flags), #00
+        ld (iy+Obj.flags), 0    ; remove item
+        
         ld a, (State.shopItem)
         inc a
-        cp #04
-        jr NC, .l_6
+        cp 4
+        jr NC, .notWeapon
         ld (State.weapon), a
-        ld hl, #02EE
-        ld (State.s_3A), hl
+        ld hl, 750
+        ld (State.weaponTime), hl
         ret
-.l_6:
-        cp #04
-        jr NZ, .l_8
+        
+.notWeapon:
+        cp 4                    ; soup can
+        jr NZ, .notSoupCan
         ld a, (State.soupCans)
-        cp #03
-        jr Z, .l_7
+        cp 3
+        jr Z, .tooMuchSoup
         inc a
         ld (State.soupCans), a
-.l_7:
-        ld (iy+Obj.flags), #00
+.tooMuchSoup:
+        ld (iy+Obj.flags), 0
         jp printSoupCans
-.l_8:
-        cp #05
-        jr NZ, .l_9
-        ld (iy+Obj.flags), #00
-        ld a, #04
+        
+.notSoupCan:
+        cp 5                    ; slimy worms
+        jr NZ, .notSlimyWorms
+        ld (iy+Obj.flags), 0
+        ld a, 4
         jp addEnergy
-.l_9:
-        cp #07
-        jr NZ, .l_11
-        ld (iy+Obj.flags), #00
+        
+.notSlimyWorms:
+        cp 7
+        jr NZ, .notPintaADay
+        ld (iy+Obj.flags), 0
         ld a, (State.maxEnergy)
-        add #04
-        cp #22
-        jr C, .l_10
-        ld a, #22
-.l_10:
+        add 4
+        cp 34
+        jr C, .canIncrease
+        ld a, 34
+.canIncrease:
         ld (State.maxEnergy), a
-        ld a, #04
+        ld a, 4
         jp addEnergy
-.l_11:
-        cp #08
+        
+.notPintaADay:
+        cp 8                    ; diary
         ret NZ
-        ld (iy+Obj.flags), #00
+        
+        ld (iy+Obj.flags), 0
         ld a, #FF
         ld (State.hasDiary), a
         ret
 
-; (Init ix+Obj.o_0, 1, 2 from (hl)?)
+
+; Place hero by the coords from (hl)
+;   arg `hl`: addr pointing to coords (x, y) in tiles relative to screen
 ; Used by c_e920 and c_e9b1.
-c_eace:  ; #eace
+placeHero:  ; #eace
         ld ix, scene.hero
         ld a, (hl)
     .5  add a
@@ -2439,7 +2483,7 @@ createObject:
         ld (ix+Obj.objType), a
         or a
         jr NZ, .l_3
-        ld a, (State.s_46)
+        ld a, (State.inShop)
         cp #7F
         jr NZ, .l_3
         ld (ix+Obj.flags), #00

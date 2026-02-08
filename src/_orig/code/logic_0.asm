@@ -228,7 +228,7 @@ initLevel:  ; #d1c1
 
         xor a
         ld (State.bossFight), a
-        ld (State.s_46), a
+        ld (State.inShop), a
         ld (State.s_57), a
         inc a
         ld (State.hasSmart), a

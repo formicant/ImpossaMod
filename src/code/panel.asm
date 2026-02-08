@@ -7,14 +7,15 @@ panelAttrs:
         db #43,  3              ; soup   - bright magenta
         db #46,  4              ; coins  - bright yellow
         db #03,  1              ; diary  - dark magenta
-        db #42,  3              ; energy - bright red
+.energ: db #42,  3              ; energy - bright red
         db #44,  4              ; energy - bright green
         db #41, 10              ; energy - bright blue
         db 0
 
 printPanel:
-        ld de, Screen.attrs
+        ld de, Screen.attrs.row0
         ld hl, panelAttrs
+.apply:
         ld a, (hl)
 .part:
         inc hl
@@ -263,6 +264,34 @@ printEnergy:
         inc l
     .2  inc e
         jp .emptyChar
+
+
+; Used in the shop before printing item name and price
+clearEnergy:
+        ld hl, Screen.pixels.row0 + 15
+        ld e, 17
+.space:
+        call printChar.space
+        inc l
+        dec e
+        jr NZ, .space
+        dec l
+        
+        ld h, high(Screen.attrs)
+        ld b, 17
+        ld a, #47               ; bright white
+.attr:
+        ld (hl), a
+        dec l
+        djnz .attr
+        ret
+
+; Used in the shop after printing item name and price
+restoreEnergy:
+        call clearEnergy
+        ld de, Screen.attrs.row0 + 15
+        ld hl, panelAttrs.energ
+        jp printPanel.apply
 
 
 ; Print digit or space in case of a leading zero

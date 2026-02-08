@@ -1038,13 +1038,13 @@ c_df85:  ; #df85
         ld a, (State.pressTime)
         or a
         ret NZ
-        ld a, (State.s_46)
+        ld a, (State.inShop)
         or a
         ret NZ
         ld a, (State.weapon)
         or a
         jr Z, .l_1
-        ld hl, (State.s_3A)
+        ld hl, (State.weaponTime)
         ld a, h
         or l
         jr NZ, .l_0
@@ -1056,7 +1056,7 @@ c_df85:  ; #df85
         ret
 .l_0:
         dec hl
-        ld (State.s_3A), hl
+        ld (State.weaponTime), hl
 .l_1:
         ld a, (State.s_3D)
         or a

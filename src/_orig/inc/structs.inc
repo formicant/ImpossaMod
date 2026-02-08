@@ -87,6 +87,18 @@ toX         db      ; exit x block coord (relative to span start)
     ENDS
 
 
+    STRUCT ShopTransit
+shopStart   dw      ; shop map span start in tiles
+shopEnd     dw      ; shop map span end in tiles
+shopX       db      ; shop x block coord (relative to span start)
+shopY       db      ; shop y block coord
+exitStart   dw      ; exit map span start in tiles
+exitEnd     dw      ; exit map span end in tiles
+exitX       db      ; exit x block coord (relative to span start)
+exitY       db      ; exit y block coord
+    ENDS
+
+
     STRUCT Conveyor ; length: 3
 start       dw      ; addr in `scrTiles` of the first conveyor tile
 length      db      ; number of consequent conveyor tiles

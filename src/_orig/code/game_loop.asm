@@ -46,8 +46,8 @@ gameStart:  ; #cc5a
         call c_e6e1             ; TODO: can be inlined (time: medium)
         call c_d308             ; TODO: can be inlined
         call c_d709             ; TODO: can be inlined (time: long)
-        call c_e920             ; TODO: can be inlined
-        call c_e9b1             ; TODO: can be inlined
+        call enterShop          ; TODO: can be inlined
+        call shopLogic          ; TODO: can be inlined
         call c_df85             ; TODO: can be inlined (time: medium)
         call updateConveyors    ; TODO: can be inlined
         call rollConveyorTiles  ; TODO: can be inlined

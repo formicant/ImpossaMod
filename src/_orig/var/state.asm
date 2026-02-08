@@ -37,7 +37,7 @@ s_36:       db -0
 s_37:       db -0
 s_38:       db -0
 s_39:       db -0
-s_3A:       dw -0
+weaponTime: dw -0
 weapon:     db -0       ; 0..4
 s_3D:       db -0
 s_3E:       db -0
@@ -48,8 +48,8 @@ s_42:       db -0
 s_43:       db -0
 s_44:       db -0
 pressTime:  db -0       ; time during which the hero is small after a press
-s_46:       db -0
-shopItem:   db -0       ; active item in the shop
+inShop:     db -0       ; 0: not in shop, #FF: entering shop, #7F in shop
+shopItem:   db -0       ; active item in the shop (objType - 1)
 shopPrice:  db -0       ; active item price in the shop
 s_49:       db -0
 s_4A:       db -0
