@@ -20,20 +20,20 @@ hasSmart:   db -0       ; 0|1
 levelsDone: block 5     ; 0|1 for each level
 s_27:       db -0
 s_28:       db -0       ; (0..4, index of call table #D6E7 ?)
-s_29:       db -0
-s_2A:       db -0
-s_2B:       db -0
-s_2C:       db -0
-s_2D:       db -0
-s_2E:       db -0
-s_2F:       db -0
-s_30:       db -0
-s_31:       db -0
-s_32:       db -0
-s_33:       db -0
-s_34:       db -0
-s_35:       db -0
-s_36:       db -0
+tileLfTop:  db -0       ;
+tileLfMid:  db -0       ;      LA       RA
+tileLfBot:  db -0       ; ┌───LT─────────RT──────┐
+tileLfUndr: db -0       ; │                      │
+tileRgTop:  db -0       ; │                      │
+tileRgMid:  db -0       ; │   LM         RM      │
+tileRgBot:  db -0       ; │                      │
+tileRgUndr: db -0       ; │           Ce         │
+tileLfFoot: db -0       ; │   LB         RB      │
+tileRgFoot: db -0       ; │                      │
+tileCenter: db -0       ; └──────────────────────┘
+tileCnFoot: db -0       ;      LF     CFRF
+tileLfAbov: db -0       ;     LU         RU
+tileRgAbov: db -0       ;
 s_37:       db -0
 s_38:       db -0
 s_39:       db -0

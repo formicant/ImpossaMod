@@ -44,23 +44,23 @@ c_d709:  ; #d709
         jp NZ, .l_7
         jp .l_6
 .l_0:
-        ld a, (State.s_31)
+        ld a, (State.tileLfFoot)
         call getTileType
         cp #05
         jp Z, .l_6
         cp #06
         jp Z, .l_7
-        ld a, (State.s_32)
+        ld a, (State.tileRgFoot)
         call getTileType
         cp #05
         jp Z, .l_6
         cp #06
         jp Z, .l_7
-        ld a, (State.s_31)
+        ld a, (State.tileLfFoot)
         call getTileType
         cp #09
         jr Z, .l_1
-        ld a, (State.s_32)
+        ld a, (State.tileRgFoot)
         call getTileType
         cp #09
         jr NZ, .l_4
@@ -128,7 +128,7 @@ c_d7f6:  ; #d7f6
         ld a, (controlState)
         bit 3, a
         jr Z, .l_0
-        ld a, (State.s_33)
+        ld a, (State.tileCenter)
         call getTileType
         cp #01
         jp Z, .l_12
@@ -138,7 +138,7 @@ c_d7f6:  ; #d7f6
 .l_0:
         bit 2, a
         jr Z, .l_1
-        ld a, (State.s_34)
+        ld a, (State.tileCnFoot)
         call getTileType
         cp #02
         jp Z, .l_12
@@ -150,28 +150,28 @@ c_d7f6:  ; #d7f6
         jp NZ, .l_8
         bit 0, (ix+Obj.o_24)
         ret NZ
-        ld a, (State.s_31)
+        ld a, (State.tileLfFoot)
         call getTileType
         cp #02
         jr NC, .l_2
-        ld a, (State.s_32)
+        ld a, (State.tileRgFoot)
         call getTileType
         cp #02
         jp C, c_d94c.l_13
 .l_2:
-        ld a, (State.s_31)
+        ld a, (State.tileLfFoot)
         call getTileType
         cp #07
         jr Z, .l_3
-        ld a, (State.s_32)
+        ld a, (State.tileRgFoot)
         call getTileType
         cp #07
         jr Z, .l_3
-        ld a, (State.s_31)
+        ld a, (State.tileLfFoot)
         call getTileType
         cp #05
         ret NC
-        ld a, (State.s_32)
+        ld a, (State.tileRgFoot)
         call getTileType
         cp #05
         jp C, c_d94c.l_11
@@ -280,11 +280,11 @@ c_d7f6:  ; #d7f6
 c_d94c:  ; #d94c
         bit 0, (ix+Obj.o_24)
         jr NZ, .l_0
-        ld a, (State.s_31)
+        ld a, (State.tileLfFoot)
         call getTileType
         cp #02
         jr NC, .l_0
-        ld a, (State.s_32)
+        ld a, (State.tileRgFoot)
         call getTileType
         cp #02
         jp C, .l_13
@@ -294,7 +294,7 @@ c_d94c:  ; #d94c
         jp NZ, .l_11
         bit 2, a
         jr Z, .l_1
-        ld a, (State.s_34)
+        ld a, (State.tileCnFoot)
         call getTileType
         cp #02
         jp Z, c_d7f6.l_12
@@ -304,11 +304,11 @@ c_d94c:  ; #d94c
         call c_de37
         or a
         jp NZ, .l_11
-        ld a, (State.s_31)
+        ld a, (State.tileLfFoot)
         call getTileType
         cp #08
         jr Z, .l_2
-        ld a, (State.s_32)
+        ld a, (State.tileRgFoot)
         call getTileType
         cp #08
         jr NZ, .l_3
@@ -337,11 +337,11 @@ c_d94c:  ; #d94c
         call c_deb1
         or a
         jp NZ, .l_11
-        ld a, (State.s_31)
+        ld a, (State.tileLfFoot)
         call getTileType
         cp #08
         jr Z, .l_6
-        ld a, (State.s_32)
+        ld a, (State.tileRgFoot)
         call getTileType
         cp #08
         jr NZ, .l_7
@@ -366,11 +366,11 @@ c_d94c:  ; #d94c
         bit 0, a
         jp Z, .l_11
 .l_9:
-        ld a, (State.s_31)
+        ld a, (State.tileLfFoot)
         call getTileType
         cp #07
         jr Z, .l_10
-        ld a, (State.s_32)
+        ld a, (State.tileRgFoot)
         call getTileType
         cp #07
         ret NZ
@@ -442,7 +442,7 @@ c_da95:  ; #da95
         ld a, (controlState)
         bit 3, a
         jr Z, .l_1
-        ld a, (State.s_33)
+        ld a, (State.tileCenter)
         call getTileType
         cp #01
         jp Z, c_d7f6.l_12
@@ -488,22 +488,22 @@ c_da95:  ; #da95
         jp P, .l_4
         exa
         call c_dd46
-        ld a, (State.s_35)
+        ld a, (State.tileLfAbov)
         call getTileType
         cp #04
         jr NC, .l_5
-        ld a, (State.s_36)
+        ld a, (State.tileRgAbov)
         call getTileType
         cp #04
         jr NC, .l_5
         ret
 .l_4:
         call c_dd09
-        ld a, (State.s_31)
+        ld a, (State.tileLfFoot)
         call getTileType
         cp #02
         jp NC, c_d94c.l_11
-        ld a, (State.s_32)
+        ld a, (State.tileRgFoot)
         call getTileType
         cp #02
         jp NC, c_d94c.l_11
@@ -522,7 +522,7 @@ c_db4e:  ; #db4e
         ld a, (controlState)
         bit 3, a
         jr Z, .l_0
-        ld a, (State.s_33)
+        ld a, (State.tileCenter)
         call getTileType
         cp #01
         jp Z, c_d7f6.l_12
@@ -568,11 +568,11 @@ c_db4e:  ; #db4e
         ld (ix+Obj.x+0), l
         ld (ix+Obj.x+1), h
         exx
-        ld a, (State.s_31)
+        ld a, (State.tileLfFoot)
         call getTileType
         cp #02
         jp NC, c_d94c.l_11
-        ld a, (State.s_32)
+        ld a, (State.tileRgFoot)
         call getTileType
         cp #02
         jp NC, c_d94c.l_11
@@ -600,21 +600,21 @@ c_dbfc:  ; #dbfc
         ld a, (controlState)
         bit 3, a
         jr Z, .l_1
-        ld a, (State.s_33)
+        ld a, (State.tileCenter)
         call getTileType
         or a
         jr NZ, .l_0
-        ld a, (State.s_34)
+        ld a, (State.tileCnFoot)
         call getTileType
         or a
         jp Z, c_d94c.l_13
 .l_0:
         call c_dd46
-        ld a, (State.s_35)
+        ld a, (State.tileLfAbov)
         call getTileType
         cp #04
         jr NC, .l_1
-        ld a, (State.s_36)
+        ld a, (State.tileRgAbov)
         call getTileType
         cp #04
         jr NC, .l_1
@@ -626,11 +626,11 @@ c_dbfc:  ; #dbfc
         ld a, (controlState)
         bit 2, a
         jr Z, .l_3
-        ld a, (State.s_33)
+        ld a, (State.tileCenter)
         call getTileType
         or a
         jr NZ, .l_2
-        ld a, (State.s_34)
+        ld a, (State.tileCnFoot)
         call getTileType
         or a
         jp Z, c_d94c.l_13
@@ -647,7 +647,7 @@ c_dbfc:  ; #dbfc
         cp #03
         jr NZ, .l_4
         call c_dce1
-        ld a, (State.s_34)
+        ld a, (State.tileCnFoot)
         call getTileType
         cp #02
         jp NC, c_d94c.l_11
@@ -655,11 +655,11 @@ c_dbfc:  ; #dbfc
         ld a, (controlState)
         bit 1, a
         jr Z, .l_6
-        ld a, (State.s_33)
+        ld a, (State.tileCenter)
         call getTileType
         or a
         jr NZ, .l_5
-        ld a, (State.s_34)
+        ld a, (State.tileCnFoot)
         call getTileType
         or a
         jp Z, c_d94c.l_13
@@ -674,11 +674,11 @@ c_dbfc:  ; #dbfc
         ld a, (controlState)
         bit 0, a
         jr Z, .l_8
-        ld a, (State.s_33)
+        ld a, (State.tileCenter)
         call getTileType
         or a
         jr NZ, .l_7
-        ld a, (State.s_34)
+        ld a, (State.tileCnFoot)
         call getTileType
         or a
         jp Z, c_d94c.l_13
@@ -691,6 +691,7 @@ c_dbfc:  ; #dbfc
         ld (ix+Obj.x), a
 .l_8:
         ret
+
 
 ; ?
 ; Used by c_dbfc.
@@ -705,23 +706,26 @@ c_dcce:  ; #dcce
         ld (ix+Obj.o_21), a
         ret
 
-; ?
+
+; Get tile under a big sprite (centered by x coord)
 ; Used by c_dbfc.
 c_dce1:  ; #dce1
         ld a, (ix+Obj.x)
-        add #0C
+        add 12
         ld (ix+Obj.x), a
         ld a, (ix+Obj.y)
-        add #15
+        add 21
         ld (ix+Obj.y), a
+        
         call getScrTileAddr
         ld a, (hl)
-        ld (State.s_34), a
+        ld (State.tileCnFoot), a
+        
         ld a, (ix+Obj.x)
-        add #F4
+        add -12
         ld (ix+Obj.x), a
         ld a, (ix+Obj.y)
-        add #EB
+        add -21
         ld (ix+Obj.y), a
         ret
 
@@ -729,28 +733,30 @@ c_dce1:  ; #dce1
 ; Used by c_da95 and c_db4e.
 c_dd09:  ; #dd09
         ld a, (ix+Obj.x)
-        add #06
+        add 6
         ld (ix+Obj.x), a
         ld a, (ix+Obj.x+1)
-        adc a, #00
+        adc a, 0
         ld (ix+Obj.x+1), a
         ld a, (ix+Obj.y)
-        add #18
+        add 24
         ld (ix+Obj.y), a
+        
         call getScrTileAddr
         ld a, (hl)
-        ld (State.s_31), a
+        ld (State.tileLfFoot), a
         inc hl
         ld a, (hl)
-        ld (State.s_32), a
+        ld (State.tileRgFoot), a
+        
         ld a, (ix+Obj.x)
-        add #FA
+        add -6
         ld (ix+Obj.x), a
         ld a, (ix+Obj.x+1)
-        adc a, #FF
+        adc a, -1
         ld (ix+Obj.x+1), a
         ld a, (ix+Obj.y)
-        add #E8
+        add -24
         ld (ix+Obj.y), a
         ret
 
@@ -758,22 +764,24 @@ c_dd09:  ; #dd09
 ; Used by c_da95 and c_dbfc.
 c_dd46:  ; #dd46
         ld a, (ix+Obj.x)
-        add #06
+        add 6
         ld (ix+Obj.x), a
         ld a, (ix+Obj.y)
-        add #FF
+        add -1
         ld (ix+Obj.y), a
+        
         call getScrTileAddr
         ld a, (hl)
-        ld (State.s_35), a
+        ld (State.tileLfAbov), a
         inc hl
         ld a, (hl)
-        ld (State.s_36), a
+        ld (State.tileRgAbov), a
+        
         ld a, (ix+Obj.x)
-        add #FA
+        add -6
         ld (ix+Obj.x), a
         ld a, (ix+Obj.y)
-        add #01
+        add 1
         ld (ix+Obj.y), a
         ret
 
@@ -790,16 +798,16 @@ c_dd73:  ; #dd73
         call getScrTileAddr
         ld bc, 44
         ld a, (hl)
-        ld (State.s_29), a
+        ld (State.tileLfTop), a
         add hl, bc              ; move down
         ld a, (hl)
-        ld (State.s_2A), a
+        ld (State.tileLfMid), a
         add hl, bc              ; move down
         ld a, (hl)
-        ld (State.s_2B), a
+        ld (State.tileLfBot), a
         add hl, bc              ; move down
         ld a, (hl)
-        ld (State.s_2C), a
+        ld (State.tileLfUndr), a
 
         ld a, (ix+Obj.x)
         add 12
@@ -811,16 +819,16 @@ c_dd73:  ; #dd73
         call getScrTileAddr
         ld bc, 44
         ld a, (hl)
-        ld (State.s_2D), a
+        ld (State.tileRgTop), a
         add hl, bc              ; move down
         ld a, (hl)
-        ld (State.s_2E), a
+        ld (State.tileRgMid), a
         add hl, bc              ; move down
         ld a, (hl)
-        ld (State.s_2F), a
+        ld (State.tileRgBot), a
         add hl, bc              ; move down
         ld a, (hl)
-        ld (State.s_30), a
+        ld (State.tileRgUndr), a
 
         ld a, (ix+Obj.x)
         add -10
@@ -835,10 +843,10 @@ c_dd73:  ; #dd73
 
         call getScrTileAddr
         ld a, (hl)
-        ld (State.s_31), a
+        ld (State.tileLfFoot), a
         inc hl                  ; move right
         ld a, (hl)
-        ld (State.s_32), a
+        ld (State.tileRgFoot), a
 
         ld a, (ix+Obj.x)
         add 6
@@ -853,10 +861,10 @@ c_dd73:  ; #dd73
 
         call getScrTileAddr
         ld a, (hl)
-        ld (State.s_33), a
+        ld (State.tileCenter), a
         add hl, bc              ; move down
         ld a, (hl)
-        ld (State.s_34), a
+        ld (State.tileCnFoot), a
 
         ld a, (ix+Obj.x)
         add -12
@@ -875,8 +883,8 @@ c_dd73:  ; #dd73
         jr NZ, .l_0
 
         xor a
-        ld (State.s_2C), a
-        ld (State.s_30), a
+        ld (State.tileLfUndr), a
+        ld (State.tileRgUndr), a
         ret
 .l_0:
         ret
@@ -894,33 +902,33 @@ c_de37:  ; #de37
         ld a, (State.s_28)
         cp #04
         jr NZ, .l_0
-        ld a, (State.s_29)
+        ld a, (State.tileLfTop)
         call getTileType
         cp #03
         jr NC, .l_2
-        ld a, (State.s_2A)
+        ld a, (State.tileLfMid)
         call getTileType
         cp #03
         jr NC, .l_2
-        ld a, (State.s_2B)
+        ld a, (State.tileLfBot)
         call getTileType
         cp #03
         jr NC, .l_2
-        ld a, (State.s_2C)
+        ld a, (State.tileLfUndr)
         call getTileType
         cp #03
         jr NC, .l_2
         jp .l_1
 .l_0:
-        ld a, (State.s_29)
+        ld a, (State.tileLfTop)
         call getTileType
         cp #04
         jr NC, .l_2
-        ld a, (State.s_2A)
+        ld a, (State.tileLfMid)
         call getTileType
         cp #04
         jr NC, .l_2
-        ld a, (State.s_2B)
+        ld a, (State.tileLfBot)
         call getTileType
         cp #04
         jr NC, .l_2
@@ -930,7 +938,7 @@ c_de37:  ; #de37
         ld a, (State.s_37)
         or a
         jp M, .l_1
-        ld a, (State.s_30)
+        ld a, (State.tileRgUndr)
         call getTileType
         cp #04
         jr NC, .l_2
@@ -953,33 +961,33 @@ c_deb1:  ; #deb1
         ld a, (State.s_28)
         cp #04
         jr NZ, .l_0
-        ld a, (State.s_2D)
+        ld a, (State.tileRgTop)
         call getTileType
         cp #03
         jr NC, .l_2
-        ld a, (State.s_2E)
+        ld a, (State.tileRgMid)
         call getTileType
         cp #03
         jr NC, .l_2
-        ld a, (State.s_2F)
+        ld a, (State.tileRgBot)
         call getTileType
         cp #03
         jr NC, .l_2
-        ld a, (State.s_30)
+        ld a, (State.tileRgUndr)
         call getTileType
         cp #03
         jr NC, .l_2
         jp .l_1
 .l_0:
-        ld a, (State.s_2D)
+        ld a, (State.tileRgTop)
         call getTileType
         cp #04
         jr NC, .l_2
-        ld a, (State.s_2E)
+        ld a, (State.tileRgMid)
         call getTileType
         cp #04
         jr NC, .l_2
-        ld a, (State.s_2F)
+        ld a, (State.tileRgBot)
         call getTileType
         cp #04
         jr NC, .l_2
@@ -989,7 +997,7 @@ c_deb1:  ; #deb1
         ld a, (State.s_37)
         or a
         jp M, .l_1
-        ld a, (State.s_30)
+        ld a, (State.tileRgUndr)
         call getTileType
         cp #04
         jr NC, .l_2
@@ -1023,7 +1031,7 @@ explosionBubbles:  ; #df5f
         dw cS.explosion3
         dw cS.explosion4
 
-lazerBulletTable:  ; #df67            w   h
+lazerBulletTable:  ; #df67       w   h
         dw cS.lazerBullet1 : db 16,  7, 8
         dw cS.lazerBullet2 : db 16, 11, 6
         dw cS.lazerBullet3 : db 16, 15, 4
@@ -1031,6 +1039,7 @@ powerBulletTable:  ; #df76
         dw cS.powerBullet1 : db  4,  4, 9
         dw cS.powerBullet2 : db  4, 16, 4
         dw cS.powerBullet3 : db  8,  8, 8
+
 
 ; (Some logic for enemies?)
 ; Used by c_cc25.
