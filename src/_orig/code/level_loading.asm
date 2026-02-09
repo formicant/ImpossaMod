@@ -20,9 +20,9 @@ loadLevel:  ; #c9ac
         call clearScreenPixels
         ld hl, #0C09            ; at 12, 9
         ld de, textFound
-        ld c, #47               ; bright white
+        ld c, Colour.white
         call printString
-        
+
         ld a, (Level.start)     ; found level
     .3  add a
         ld l, a
@@ -30,17 +30,17 @@ loadLevel:  ; #c9ac
         ld de, levelNames
         add hl, de
         ex de, hl               ; `de`: level name
-        
+
         ld hl, #0C0F            ; at 12, 15
-        ld c, #46               ; bright yellow
+        ld c, Colour.yellow
         call printString
-        
+
         ld a, (Level.start)     ; found level
         ld b, a
         ld a, (State.level)     ; selected level
         cp b
         jr NZ, loadLevel        ; don't load
-        
+
         ld ix, Level.start
         ld de, Level.length
         scf

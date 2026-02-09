@@ -346,7 +346,7 @@ c_e6e1:  ; #e6e1
         ret
 .l_11:
         ld (iy+Obj.flags), #00
-        ld a, (iy+Obj.o_13)
+        ld a, (iy+Obj.score)
         jp addScore
 .l_12:
         cp #0E
@@ -473,9 +473,9 @@ enterShop:  ; #e920
         ld a, (State.inShop)
         bit 7, a
         ret Z
-        
+
         call removeObjects
-        
+
         ld a, (State.level)
     .2  add a
         ld l, a
@@ -485,7 +485,7 @@ enterShop:  ; #e920
         ld h, 0
         ld de, shopTransits
         add hl, de
-        
+
         ld e, (hl)
         inc hl
         ld d, (hl)
@@ -499,12 +499,12 @@ enterShop:  ; #e920
         call placeHero
         pop hl
         call moveToMapSpan
-        
+
         ld a, #7F
         ld (State.inShop), a
-        
+
         call findAndPutObjectsToScene
-        
+
         ; find shop mole
         ld ix, scene.obj2
         ld b, 6                 ; object count
@@ -515,23 +515,23 @@ enterShop:  ; #e920
         jr Z, .initShopMole
         add ix, de
         djnz .object
-        
+
 .initShopMole:
         ld iy, scene.hero
         ld a, (iy+Obj.x+0)
         add 32
         ld (ix+Obj.x+0), a
         ld (ix+Obj.x+1), 0
-        
+
         ld a, (iy+Obj.y)
         add 11
         ld (ix+Obj.y), a
-        
+
         ld hl, cS.shopMole
         ld (ix+Obj.sprite+0), l
         ld (ix+Obj.sprite+1), h
-        ld (ix+Obj.color), #47  ; bright white
-        
+        ld (ix+Obj.colour), Colour.white
+
         ld (ix+Obj.o_21), 0
         ld (ix+Obj.width), 24
         ld (ix+Obj.height), 21
@@ -549,7 +549,7 @@ shopLogic:  ; #e9b1
         ld a, (State.inShop)
         cp #7F
         ret NZ
-        
+
         ; find item where hero stands
         ld ix, scene.hero
         ld iy, scene.obj2
@@ -563,20 +563,20 @@ shopLogic:  ; #e9b1
         add iy, de
         djnz .object
     IFDEF _MOD
-        jp restoreEnergy
+        jp printPanel
     ELSE
         jp printEnergy
     ENDIF
-        
+
 .found:
     IFDEF _MOD
         call clearEnergy
     ENDIF
-        
+
         ld a, (iy+Obj.objType)
         or a
         ret Z
-        
+
         ; get item name
         dec a
         ld (State.shopItem), a
@@ -591,10 +591,10 @@ shopLogic:  ; #e9b1
         add hl, de
         ex de, hl
         ; `hl`: item name
-        ld c, #47               ; bright white
+        ld c, Colour.white
         ld hl, #000F            ; at 0, 15
         call printString
-        
+
         ; get item price
         ld a, (State.shopItem)
         ld l, a
@@ -610,7 +610,7 @@ shopLogic:  ; #e9b1
         call printPrice
     ELSE
         ld hl, #001C            ; at 0, 28
-        ld c, #47               ; bright white
+        ld c, Colour.white
         call printNumber
     ENDIF
 
@@ -618,11 +618,11 @@ shopLogic:  ; #e9b1
         ld a, (controlState)
         bit 4, a                ; fire key
         ret Z
-        
+
         ld a, (State.shopPrice)
         or a
         jr NZ, .buyItem
-        
+
         ; exit shop
         call removeObjects
         ld a, (State.level)
@@ -653,13 +653,13 @@ shopLogic:  ; #e9b1
         xor a
         ld (State.inShop), a
         ld (State.s_28), a
-        
+
     IFDEF _MOD
-        jp restoreEnergy
+        jp printPanel
     ELSE
         jp printEnergy
     ENDIF
-        
+
 .buyItem:
         ld a, (State.shopPrice)
         ld b, a
@@ -668,19 +668,19 @@ shopLogic:  ; #e9b1
         jr NC, .canBuy
         ld hl, #000F            ; at 0, 15
         ld de, textTooMuch
-        ld c, #47               ; bright white
+        ld c, Colour.white
         call printString
 .waitFireRelease:
         ld a, (controlState)
         bit 4, a                ; fire key
         jr NZ, .waitFireRelease
         ret
-        
+
 .canBuy:
         ld (State.coins), a
         call printCoinCount
         ld (iy+Obj.flags), 0    ; remove item
-        
+
         ld a, (State.shopItem)
         inc a
         cp 4
@@ -689,7 +689,7 @@ shopLogic:  ; #e9b1
         ld hl, 750
         ld (State.weaponTime), hl
         ret
-        
+
 .notWeapon:
         cp 4                    ; soup can
         jr NZ, .notSoupCan
@@ -701,14 +701,14 @@ shopLogic:  ; #e9b1
 .tooMuchSoup:
         ld (iy+Obj.flags), 0
         jp printSoupCans
-        
+
 .notSoupCan:
         cp 5                    ; slimy worms
         jr NZ, .notSlimyWorms
         ld (iy+Obj.flags), 0
         ld a, 4
         jp addEnergy
-        
+
 .notSlimyWorms:
         cp 7
         jr NZ, .notPintaADay
@@ -722,11 +722,11 @@ shopLogic:  ; #e9b1
         ld (State.maxEnergy), a
         ld a, 4
         jp addEnergy
-        
+
 .notPintaADay:
         cp 8                    ; diary
         ret NZ
-        
+
         ld (iy+Obj.flags), 0
         ld a, #FF
         ld (State.hasDiary), a
@@ -973,7 +973,7 @@ damageEnemy:  ; #ec00
 .big:
         ld (iy+Obj.o_6), 0
         ld (iy+Obj.o_7), -1
-        ld (iy+Obj.color), #47  ; bright white
+        ld (iy+Obj.colour), Colour.white
         ld a, 6                 ; kill enemy
         call playSound
 
@@ -1030,7 +1030,7 @@ damageEnemy:  ; #ec00
         ; turn into cloud
         ld (ix+Obj.o_6), 0
         ld (ix+Obj.o_7), -1
-        ld (ix+Obj.color), #47  ; bright white
+        ld (ix+Obj.colour), Colour.white
 .l_9:
         add ix, de
         djnz .bossPartCloud
@@ -1135,7 +1135,7 @@ c_ed08:  ; #ed08
 .l_4:
         ld (ix+Obj.o_6), #00
         ld (ix+Obj.o_7), #FF
-        ld (ix+Obj.color), #47
+        ld (ix+Obj.colour), Colour.white
         ld a, #06
         jp playSound
 .l_5:
@@ -1164,9 +1164,10 @@ c_edc0:  ; #edc0
         ld (ix+Obj.o_30+1), h
         push hl
         ld a, (ix+Obj.y)
-        ld (ix+Obj.o_32), a
-        ld (ix+Obj.o_33), #00
-        ld iy, scene
+        ld (ix+Obj.o_32+0), a
+        ld (ix+Obj.o_32+1), 0
+
+        ld iy, scene.hero
         ld l, (iy+Obj.x+0)
         ld h, (iy+Obj.x+1)
         ld a, (iy+Obj.width)
@@ -1175,34 +1176,34 @@ c_edc0:  ; #edc0
         ld e, a
         ld d, #00
         add hl, de
-        ld (ix+Obj.o_34), l
-        ld (ix+Obj.o_35), h
+        ld (ix+Obj.o_34+0), l   ; never used again(?)
+        ld (ix+Obj.o_34+1), h   ; never used again(?)
         push hl
         ld a, (iy+Obj.height)
         srl a
         sub #03
         add (iy+Obj.y)
-        ld (ix+Obj.o_36), a
-        ld (ix+Obj.o_37), #00
+        ld (ix+Obj.o_36+0), a
+        ld (ix+Obj.o_36+1), 0
         pop hl
         pop de
         xor a
         sbc hl, de
         ex de, hl
-        ld c, (ix+Obj.o_32)
-        ld b, (ix+Obj.o_33)
-        ld l, (ix+Obj.o_36)
-        ld h, (ix+Obj.o_37)
+        ld c, (ix+Obj.o_32+0)
+        ld b, (ix+Obj.o_32+1)
+        ld l, (ix+Obj.o_36+0)
+        ld h, (ix+Obj.o_36+1)
         xor a
         sbc hl, bc
         bit 7, d
         jp M, .l_0
-        ld (ix+Obj.o_42), #01
-        ld (ix+Obj.o_43), #00
+        ld (ix+Obj.o_42+0), 1
+        ld (ix+Obj.o_42+1), 0
         jr .l_1
 .l_0:
-        ld (ix+Obj.o_42), #FF
-        ld (ix+Obj.o_43), #FF
+        ld (ix+Obj.o_42+0), #FF
+        ld (ix+Obj.o_42+1), #FF
         ld a, d
         cpl
         ld d, a
@@ -1211,29 +1212,29 @@ c_edc0:  ; #edc0
         ld e, a
         inc de
 .l_1:
-        ld (ix+Obj.o_38), e
-        ld (ix+Obj.o_39), d
+        ld (ix+Obj.o_38+0), e
+        ld (ix+Obj.o_38+1), d
         ld a, h
         or l
         jr Z, .l_2
         bit 7, h
         jp M, .l_3
-        ld (ix+Obj.o_44), #01
-        ld (ix+Obj.o_45), #00
-        ld (ix+Obj.o_46), #00
-        ld (ix+Obj.o_47), #00
+        ld (ix+Obj.o_44+0), 1
+        ld (ix+Obj.o_44+1), 0
+        ld (ix+Obj.o_46+0), 0
+        ld (ix+Obj.o_46+1), 0
         jr .l_4
 .l_2:
-        ld (ix+Obj.o_44), #01
-        ld (ix+Obj.o_45), #00
-        ld (ix+Obj.o_46), #FF
-        ld (ix+Obj.o_47), #FF
+        ld (ix+Obj.o_44+0), 1
+        ld (ix+Obj.o_44+1), 0
+        ld (ix+Obj.o_46+0), #FF
+        ld (ix+Obj.o_46+1), #FF
         jr .l_4
 .l_3:
-        ld (ix+Obj.o_44), #FF
-        ld (ix+Obj.o_45), #FF
-        ld (ix+Obj.o_46), #00
-        ld (ix+Obj.o_47), #00
+        ld (ix+Obj.o_44+0), #FF
+        ld (ix+Obj.o_44+1), #FF
+        ld (ix+Obj.o_46+0), 0
+        ld (ix+Obj.o_46+1), 0
         ld a, h
         cpl
         ld h, a
@@ -1242,10 +1243,10 @@ c_edc0:  ; #edc0
         ld l, a
         inc hl
 .l_4:
-        ld (ix+Obj.o_40), l
-        ld (ix+Obj.o_41), h
-        ld (ix+Obj.o_36), #00
-        ld (ix+Obj.o_37), #00
+        ld (ix+Obj.o_40+0), l
+        ld (ix+Obj.o_40+1), h
+        ld (ix+Obj.o_36+0), 0
+        ld (ix+Obj.o_36+1), 0
         ret
 
 ; (Modifies some object properties?)
@@ -1255,91 +1256,91 @@ c_ee93:  ; #ee93
         cp #FF
         ret Z
         ld b, (ix+Obj.o_29)
-        ld e, (ix+Obj.o_38)
-        ld d, (ix+Obj.o_39)
-        ld l, (ix+Obj.o_40)
-        ld h, (ix+Obj.o_41)
+        ld e, (ix+Obj.o_38+0)
+        ld d, (ix+Obj.o_38+1)
+        ld l, (ix+Obj.o_40+0)
+        ld h, (ix+Obj.o_40+1)
         xor a
         sbc hl, de
         jr NC, .l_2
 .l_0:
-        ld a, (ix+Obj.o_46)
+        ld a, (ix+Obj.o_46+0)
         or a
         jp M, .l_1
-        ld l, (ix+Obj.o_32)
-        ld h, (ix+Obj.o_33)
-        ld e, (ix+Obj.o_44)
-        ld d, (ix+Obj.o_45)
+        ld l, (ix+Obj.o_32+0)
+        ld h, (ix+Obj.o_32+1)
+        ld e, (ix+Obj.o_44+0)
+        ld d, (ix+Obj.o_44+1)
         add hl, de
-        ld (ix+Obj.o_32), l
-        ld (ix+Obj.o_33), h
-        ld e, (ix+Obj.o_38)
-        ld d, (ix+Obj.o_39)
-        ld l, (ix+Obj.o_46)
-        ld h, (ix+Obj.o_47)
+        ld (ix+Obj.o_32+0), l
+        ld (ix+Obj.o_32+1), h
+        ld e, (ix+Obj.o_38+0)
+        ld d, (ix+Obj.o_38+1)
+        ld l, (ix+Obj.o_46+0)
+        ld h, (ix+Obj.o_46+1)
         xor a
         sbc hl, de
-        ld (ix+Obj.o_46), l
-        ld (ix+Obj.o_47), h
+        ld (ix+Obj.o_46+0), l
+        ld (ix+Obj.o_46+1), h
 .l_1:
         ld l, (ix+Obj.o_30+0)
         ld h, (ix+Obj.o_30+1)
-        ld e, (ix+Obj.o_42)
-        ld d, (ix+Obj.o_43)
+        ld e, (ix+Obj.o_42+0)
+        ld d, (ix+Obj.o_42+1)
         add hl, de
         ld (ix+Obj.o_30+0), l
         ld (ix+Obj.o_30+1), h
-        ld l, (ix+Obj.o_40)
-        ld h, (ix+Obj.o_41)
-        ld e, (ix+Obj.o_46)
-        ld d, (ix+Obj.o_47)
+        ld l, (ix+Obj.o_40+0)
+        ld h, (ix+Obj.o_40+1)
+        ld e, (ix+Obj.o_46+0)
+        ld d, (ix+Obj.o_46+1)
         add hl, de
-        ld (ix+Obj.o_46), l
-        ld (ix+Obj.o_47), h
+        ld (ix+Obj.o_46+0), l
+        ld (ix+Obj.o_46+1), h
         djnz .l_0
         jr .l_4
 .l_2:
-        ld a, (ix+Obj.o_46)
+        ld a, (ix+Obj.o_46+0)
         or a
         jp P, .l_3
         ld l, (ix+Obj.o_30+0)
         ld h, (ix+Obj.o_30+1)
-        ld e, (ix+Obj.o_42)
-        ld d, (ix+Obj.o_43)
+        ld e, (ix+Obj.o_42+0)
+        ld d, (ix+Obj.o_42+1)
         add hl, de
         ld (ix+Obj.o_30+0), l
         ld (ix+Obj.o_30+1), h
-        ld l, (ix+Obj.o_40)
-        ld h, (ix+Obj.o_41)
-        ld e, (ix+Obj.o_46)
-        ld d, (ix+Obj.o_47)
+        ld l, (ix+Obj.o_40+0)
+        ld h, (ix+Obj.o_40+1)
+        ld e, (ix+Obj.o_46+0)
+        ld d, (ix+Obj.o_46+1)
         xor a
         add hl, de
-        ld (ix+Obj.o_46), l
-        ld (ix+Obj.o_47), h
+        ld (ix+Obj.o_46+0), l
+        ld (ix+Obj.o_46+1), h
 .l_3:
-        ld l, (ix+Obj.o_32)
-        ld h, (ix+Obj.o_33)
-        ld e, (ix+Obj.o_44)
-        ld d, (ix+Obj.o_45)
+        ld l, (ix+Obj.o_32+0)
+        ld h, (ix+Obj.o_32+1)
+        ld e, (ix+Obj.o_44+0)
+        ld d, (ix+Obj.o_44+1)
         add hl, de
-        ld (ix+Obj.o_32), l
-        ld (ix+Obj.o_33), h
-        ld e, (ix+Obj.o_38)
-        ld d, (ix+Obj.o_39)
-        ld l, (ix+Obj.o_46)
-        ld h, (ix+Obj.o_47)
+        ld (ix+Obj.o_32+0), l
+        ld (ix+Obj.o_32+1), h
+        ld e, (ix+Obj.o_38+0)
+        ld d, (ix+Obj.o_38+1)
+        ld l, (ix+Obj.o_46+0)
+        ld h, (ix+Obj.o_46+1)
         xor a
         sbc hl, de
-        ld (ix+Obj.o_46), l
-        ld (ix+Obj.o_47), h
+        ld (ix+Obj.o_46+0), l
+        ld (ix+Obj.o_46+1), h
         djnz .l_2
 .l_4:
         ld l, (ix+Obj.o_30+0)
         ld h, (ix+Obj.o_30+1)
         ld (ix+Obj.x+0), l
         ld (ix+Obj.x+1), h
-        ld a, (ix+Obj.o_32)
+        ld a, (ix+Obj.o_32+0)
         ld (ix+Obj.y), a
         xor a
         ret
@@ -2039,7 +2040,7 @@ c_f4e9:  ; #f4e9
         ret NC
         ld (ix+Obj.o_6), 0
         ld (ix+Obj.o_7), -1
-        ld (ix+Obj.color), #47  ; bright white
+        ld (ix+Obj.colour), Colour.white
         ret
 
 ; Data block at F506
@@ -2117,7 +2118,7 @@ c_f564:  ; #f564
         ld (iy+Obj.sprite+0), l
         ld (iy+Obj.sprite+1), h
         ld (iy+Obj.o_7), 0
-        ld (iy+Obj.color), #47  ; bright white
+        ld (iy+Obj.colour), Colour.white
         ld (iy+Obj.o_21), 0
         ld (iy+Obj.o_19), 5
         ld (iy+Obj.o_20), 3
@@ -2372,7 +2373,7 @@ setWaitingFlags:
         ret
 
 
-; Initialize object from the object type
+; Initialise object from the object type
 ;   arg `bc`: object addr in `objectTable` + 2 (points to y coord)
 ;       `hl`: x coord on screen in tiles
 ; Used by c_f6ba and c_f6e7.
@@ -2448,7 +2449,7 @@ createObject:
         ld (ix+Obj.sprite+1), a
         inc hl                  ; +2
         ld a, (hl)              ; attr
-        ld (ix+Obj.color), a
+        ld (ix+Obj.colour), a
         inc hl                  ; +3
         ld a, (hl)
         ld (ix+Obj.o_7), a
@@ -2474,7 +2475,7 @@ createObject:
 .l_2:
         inc hl                  ; +9
         ld a, (hl)
-        ld (ix+Obj.o_13), a
+        ld (ix+Obj.score), a
         inc hl                  ; +10
         ld a, (hl)
         ld (ix+Obj.o_24), a

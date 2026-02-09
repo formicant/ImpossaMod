@@ -152,7 +152,7 @@ clearGameState:  ; #d133
         ret
 
 
-; Initialize the hero object and place it to the start position
+; Initialise the hero object and place it to the start position
 ;   `bc`: hero's position (x, y), blocks
 ; Used by c_d1c1.
 initHero:  ; #d153
@@ -181,11 +181,11 @@ initHero:  ; #d153
 
         ld (ix+Obj.o_21), 1     ; mirror (?)
         ld (ix+Obj.flags), %11  ; flags: exists, big
-        ld (ix+Obj.width), #10   ; ?
-        ld (ix+Obj.height), #15   ; ?
+        ld (ix+Obj.width), 16
+        ld (ix+Obj.height), 21
         ld (ix+Obj.o_7), 0      ; ?
-        ld (ix+Obj.color), #47  ; attr: bright white
-        ld (ix+Obj.objType), #FF    ; ?
+        ld (ix+Obj.colour), Colour.white
+        ld (ix+Obj.objType), -1
         xor a
         ld (State.s_28), a      ; ?
         ld (State.s_41), a      ; ?
@@ -376,7 +376,7 @@ turnIntoCoin:  ; #d2b3
         jr Z, .small
 
         res 1, (iy+Obj.flags)   ; make small
-        ; adjust coords so that the center is at the same point
+        ; adjust coords so that the centre is at the same point
         ld l, (iy+Obj.x+0)
         ld h, (iy+Obj.x+1)
         ld de, 4
@@ -397,7 +397,7 @@ turnIntoCoin:  ; #d2b3
         ld (iy+Obj.o_21), 0     ; some flags (?)
         ld (iy+Obj.trajectory), 0
         ld (iy+Obj.health), -2    ; vertical speed (?)
-        ld (iy+Obj.color), #46  ; bright yellow
+        ld (iy+Obj.colour), Colour.yellow
         res 5, (iy+Obj.flags)
         res 3, (iy+Obj.flags)
         res 2, (iy+Obj.flags)

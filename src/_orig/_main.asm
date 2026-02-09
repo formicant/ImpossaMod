@@ -4,6 +4,7 @@
 ; Definitions
     INCLUDE "inc/macros.inc"
     INCLUDE "inc/basic.inc"
+    INCLUDE "inc/colour.inc"
     INCLUDE "inc/structs.inc"
     INCLUDE "inc/level.inc"
     INCLUDE "inc/ay.inc"

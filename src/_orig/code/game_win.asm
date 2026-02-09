@@ -11,11 +11,11 @@ epilogueText:  ; #d679
 ; Successful end of the game
 ; Used by c_d553.
 gameWin:  ; #d6c0
-        ld hl, #0806
+        ld hl, #0806            ; at 8, 6
         ld de, epilogueText
-        ld c, #42
-        ld b, #04
-.l_0:
+        ld c, Colour.red
+        ld b, 4
+.line:
         push bc
         push hl
         call printString
@@ -25,13 +25,14 @@ gameWin:  ; #d6c0
         inc h
         pop bc
         inc c
-        djnz .l_0
+        djnz .line
+
         ld bc, 30000
         call delay
-.l_1:
+.waitKey:
         ld a, (controlState)
         or a
-        jr Z, .l_1
+        jr Z, .waitKey
         pop hl
         jp gameStart
 

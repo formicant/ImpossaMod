@@ -7,7 +7,7 @@ gameStart:  ; #cc5a
 .l_2:
         call levelSelectionMenu
         call clearScreenPixels
-        ld a, #47               ; bright white ink, black paper
+        ld a, Colour.white      ; bright white ink, black paper
         call fillScreenAttrs
         call clearScene
         call removeObjects      ; not needed (?)

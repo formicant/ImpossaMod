@@ -111,7 +111,7 @@ c_e4fc:  ; #e4fc
         ret C
         set 7, (ix+Obj.flags)
         push hl
-        ld a, (ix+Obj.o_13)
+        ld a, (ix+Obj.score)
         call addScore
         pop hl
         ret
@@ -144,7 +144,7 @@ c_e52d:  ; #e52d
 c_e54f:  ; #e54f
         bit 5, (ix+Obj.flags)
         ret NZ
-        ld (ix+Obj.color), #47
+        ld (ix+Obj.colour), Colour.white
         ld hl, cS.shopMole
         ld (ix+Obj.sprite+0), l
         ld (ix+Obj.sprite+1), h

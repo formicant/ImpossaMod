@@ -7,11 +7,11 @@ textGameOver:  ; #cd19
 ; Used by c_cc25.
 showGameOver:  ; #cd22
         call clearScreenPixels
-        ld a, #47
+        ld a, Colour.white      ; bright white ink, black paper
         call fillScreenAttrs
         ld hl, #0A0B
         ld de, textGameOver
-        ld c, #46
+        ld c, Colour.yellow
         call printString
 .l_0:
         ld a, (controlState)
@@ -48,7 +48,7 @@ pauseGameIfPauseKeyPressed:  ; #cd5c
         jr Z, .l_0
         ld hl, #1700            ; at 23, 0
         ld de, textPaused
-        ld c, #47               ; bright white
+        ld c, Colour.white
         call printString
 .l_1:
         call checkPauseKey
@@ -279,31 +279,32 @@ fillScrTiles:
 ; Advance scene objects in map
 ; Used by c_cdae.
 advanceObjectsInMap:  ; #cf17
-        ld b, 8
+        ld b, 8                 ; object count
         ld ix, scene
 .object:
         ld l, (ix+Obj.x+0)
-        ld h, (ix+Obj.x+1)            ; `hl`: x coord in pixels
+        ld h, (ix+Obj.x+1)      ; `hl`: x coord in pixels
         ld de, -64
         add hl, de
         bit 7, h
         jr Z, .skip             ; if x >= 64, skip
-        ld (ix+Obj.flags), 0            ; else, mark as non-existent
+        ld (ix+Obj.flags), 0    ; else, remove object
 .skip:
         ld (ix+Obj.x+0), l
         ld (ix+Obj.x+1), h
 
-        ld a, (ix+Obj.o_23)           ; ? (possibly, horizontal moving)
+        ld a, (ix+Obj.o_23)     ; ? (possibly, horizontal moving)
         cp 1
-        jr NZ, .l_2
+        jr NZ, .nextObject
 
         ld l, (ix+Obj.o_30+0)
         ld h, (ix+Obj.o_30+1)
         add hl, de
         ld (ix+Obj.o_30+0), l
         ld (ix+Obj.o_30+1), h
-.l_2:
-        ld de, Obj               ; next scene object
+
+.nextObject:
+        ld de, Obj              ; object size
         add ix, de
         djnz .object
         ret

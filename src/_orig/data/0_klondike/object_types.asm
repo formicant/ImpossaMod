@@ -3,7 +3,7 @@
 
 ; #B4BB
 levObjectTypes:
-        ;       spriteAddr        attr 3  4  w  h  7  8  9 10  ot 12 tr 14 15 16 mr 18 19 20 21 22  23  24 25
+        ;       spriteAddr        attr 3  4  w  h  7  8 sc 10  ot 12 tr 14 15 16 mr 18 19 20 21 22  23  24 25
         ObjType lS.gem          , #43,  , 1,16,16,-2,  , 3, 8, 10,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,   ,   ,   ; #A59E
         ObjType lS.gold         , #46,  , 1,16,16,-2,  , 4, 8, 11,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,   ,   ,   ; #A5DE
         ObjType lS.diamond      , #45,  , 1,16,16,-2,  , 5, 8, 12,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,   ,   ,   ; #A61E

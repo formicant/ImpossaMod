@@ -16,11 +16,11 @@ levelNames:  ; #d52b
 ; Used by c_cc25.
 levelSelectionMenu:  ; #d553
         call clearScreenPixels
-        ld a, #47
+        ld a, Colour.white      ; bright white ink, black paper
         call fillScreenAttrs
         ld hl, #0809
         ld de, textSelectLevel
-        ld c, #46
+        ld c, Colour.yellow
         call printString
         ld hl, State.levelsDone
         ld b, #05
@@ -35,7 +35,7 @@ levelSelectionMenu:  ; #d553
         jr NZ, .l_3
         ld de, levelNames.bermuda
         ld hl, #0B0C
-        ld c, #47
+        ld c, Colour.white
         call printString
         ld a, #04
         ld (State.level), a
@@ -84,7 +84,7 @@ levelSelectionMenu:  ; #d553
         add hl, de
         ex de, hl
         ld hl, #0B0C
-        ld c, #47
+        ld c, Colour.white
         call printString
         ld bc, #00FA
         call delay
@@ -99,7 +99,7 @@ levelSelectionMenu:  ; #d553
         call clearScreenPixels
         ld hl, #0E0B
         ld de, textPressFire
-        ld c, #47
+        ld c, Colour.white
         call printString
 .l_8:
         ld a, (controlState)
@@ -132,7 +132,7 @@ loadLevelIfNeeded:  ; #d62c
         call clearScreenPixels
         ld de, textStartTape
         ld hl, #0C0B
-        ld c, #47
+        ld c, Colour.white
         call printString
         call loadLevel
         jr NC, .l_1
@@ -147,11 +147,11 @@ loadLevelIfNeeded:  ; #d62c
         call clearScreenPixels
         ld hl, #0C0B
         ld de, textLoadError
-        ld c, #46
+        ld c, Colour.yellow
         call printString
         inc de
         ld hl, #0E0B
-        ld c, #47
+        ld c, Colour.white
         call printString
 .l_2:
         ld a, (controlState)

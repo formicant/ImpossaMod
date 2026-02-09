@@ -7,6 +7,7 @@
 ; Definitions
     INCLUDE "_orig/inc/macros.inc"
     INCLUDE "_orig/inc/basic.inc"
+    INCLUDE "_orig/inc/colour.inc"
     INCLUDE "_orig/inc/structs.inc"
     INCLUDE "_orig/inc/ay.inc"
     INCLUDE "inc/memory.inc"
@@ -26,7 +27,7 @@
     ORG #6000
 codeStart:
     INCLUDE "data/font.asm"
-    
+
     INCLUDE "_orig/code/game_loop.asm"
     INCLUDE "_orig/code/code.asm"
     INCLUDE "_orig/code/logic_0.asm"
@@ -153,7 +154,7 @@ codeLength = $ - codeStart
                                     INCLUDE "_orig/data/4_bermuda/trajectories.asm"
                                     INCLUDE "_orig/code/boss4_bermuda.asm"
     _NEXT_ORG Level.end
-    
+
     PAGE 0
 
 

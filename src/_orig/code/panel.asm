@@ -83,7 +83,7 @@ printScore:
         set 7, (hl)
 .yx+*   ld hl, -0               ; `h`: y coord, `l`: x coord
         ld de, scoreString
-        ld c, #47               ; bright white
+        ld c, Colour.white
         jp printString
 
 addScoreSetCarry:
@@ -108,7 +108,7 @@ clearScore:  ; #cfdb
 printCoinCount:  ; #cfe6
         ld a, (State.coins)
         ld hl, #000B            ; at 0, 12
-        ld c, #46               ; bright yellow
+        ld c, Colour.yellow
         jp printNumber
 
 printNumber:
@@ -158,7 +158,7 @@ printSoupCans:  ; #d026
         add hl, de
         ex de, hl
         ld hl, #0007
-        ld c, #43
+        ld c, Colour.magenta
         jp printString
 
 

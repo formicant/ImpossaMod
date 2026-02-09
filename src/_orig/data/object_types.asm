@@ -3,7 +3,7 @@
 
 ; #B3B7
 objectTypes:
-        ;       spriteAddr       attr 3  4  w  h  7  8  9 10  ot 12 tr 14 15 16 mr 18 19 20 21 22 23 24 25
+        ;       spriteAddr       attr 3  4  w  h  7  8 sc 10  ot 12 tr 14 15 16 mr 18 19 20 21 22 23 24 25
         ObjType cS.powerBullet1, #47,  , 1,16,16,-1,  ,  ,  , 0,  ,  ,  ,  ,  ,  ,  ,  ,  , 1,  ,  ,  ,   ; [0] #9EEE
         ObjType cS.shatterbomb , #45,  , 1,16,16,-2,  ,  , 8, 1,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,   ; [1] #9FAE
         ObjType cS.powerGun    , #47,  , 1,16,16,-2,  ,  , 8, 2,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,   ; [2] #9FEE

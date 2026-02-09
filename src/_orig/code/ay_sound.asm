@@ -330,7 +330,7 @@ playTone:  ; #c779
         jp justReturn
 
 
-; Initialize AY registers and some struct fields
+; Initialise AY registers and some struct fields
 initAy:  ; #c7fe
         call doNothing
 
@@ -658,14 +658,14 @@ sectC:  Sect #10, #7469, #0D65, #090A, #6572, #74, #0D, #0A, #0D, #0A, #3B, #2D,
 
 
 ; Table containing offsets in the `instruments` table pointing to instruments
-; 3 × 8 bytes. Initialized at runtime as 0, 10, 20, 30, 40, 50, 60, 70
+; 3 × 8 bytes. Initialised at runtime as 0, 10, 20, 30, 40, 50, 60, 70
 instrOffsets:  ; #ca6c
         dh 2D 2D 2D 2D 20 63 6F 69  ; junk values
         dh 6E 20 6A 75 6D 70 69 6E  ; junk values
         dh 67 20 2D 2D 2D 2D 2D 2D  ; junk values
 
 
-; Initializes menu AY music
+; Initialises menu AY music
 ;   `a`: 0 - start, 1 - stop
 playMenuMusic:  ; #ca84
         push af
@@ -1099,7 +1099,7 @@ p_cc95:  ; #cc95
         ret
 
 
-; Initializes an AY sound effect
+; Initialises an AY sound effect
 ;   `a`: sound index (0..14)
 playAySound:  ; #cd25
         push hl, de, bc, ix, iy

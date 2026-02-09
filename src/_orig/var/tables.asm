@@ -93,7 +93,7 @@ objTiles: ; #6600
 
 
     ALIGN 256
-; Bit mirroring. Initialized in the code
+; Bit mirroring. Initialised in the code
 mirrorTable: ; #6A00
         block 256
 

@@ -1,105 +1,97 @@
     STRUCT ObjType  ; length: 26
-spriteAddr  dw
-attr        db
-ot_3        db
-flags       db
-width       db
-height      db
-health      db
-ot_8        db
-ot_9        db      ; o_13
-ot_10       db      ; o_24
-objType     db      ; object type with offset
-ot_12       db      ; o_49
-trajectory  db
-ot_14       db      ; o_16
-ot_15       db      ; o_17
-ot_16       db      ; o_18
-mirror      db      ; o_19
-ot_18       db      ; o_20
-ot_19       db      ; o_21
-ot_20       db      ; o_22
-ot_21       db      ; o_23
-ot_22       db      ; o_25
-ot_23       db      ; o_26
-ot_24       db      ; o_27
-ot_25       db      ; o_28
+spriteAddr  word
+attr        byte
+ot_3        byte
+flags       byte
+width       byte
+height      byte
+health      byte
+ot_8        byte
+score       byte    ; index 1..6 in `scoreTable`
+ot_10       byte    ; o_24
+objType     byte    ; object type with offset
+ot_12       byte    ; o_49
+trajectory  byte
+ot_14       byte    ; o_16
+ot_15       byte    ; o_17
+ot_16       byte    ; o_18
+mirror      byte    ; o_19
+ot_18       byte    ; o_20
+ot_19       byte    ; o_21
+ot_20       byte    ; o_22
+ot_21       byte    ; o_23
+ot_22       byte    ; o_25
+ot_23       byte    ; o_26
+ot_24       byte    ; o_27
+ot_25       byte    ; o_28
     ENDS
 
 
     STRUCT Obj      ; length: 50
-x           dw      ; x coord in pixels (from -32 ?)
-y           db      ; y coord in pixels (from -32 ?)
-sprite      dw      ; base sprite addr
-flags       db      ; bit 0: exists, 1: is big, 4: blink once, 5: waiting, 6: mirror(?), 7: should be removed(?)
-o_6         db
-o_7         db
-objType     db      ; object type with offset
-color       db      ; object color attribute
-width       db      ; width(?)
-height      db      ; gravity (?)
-health      db      ; enemy's health
-o_13        db      ; ot_9
-blinkTime   db      ; time during which the object will blink
-trajectory  db
-o_16        db      ; ot_14
-o_17        db      ; ot_15
-o_18        db      ; ot_16
-o_19        db      ; ot_17
-o_20        db      ; ot_18
-o_21        db      ; ot_19, bit 1: mirror(?)
-o_22        db      ; ot_20
-o_23        db      ; ot_21, ? (possibly, value 1 means that object moves horizontally)
-o_24        db      ; ot_10, bit 0: ?, 1: ? 3: smart-killable, 4: gives coin; 5: ?
-o_25        db      ; ot_22
-o_26        db      ; ot_23
-o_27        db      ; ot_24
-o_28        db      ; ot_25
-o_29        db
-o_30        dw      ; ? (possibly, horizontal trajectory limit; possibly, addr of some scene object ?)
-o_32        db
-o_33        db
-o_34        db
-o_35        db
-o_36        db
-o_37        db
-o_38        db
-o_39        db
-o_40        db
-o_41        db
-o_42        db
-o_43        db
-o_44        db
-o_45        db
-o_46        db
-o_47        db
-o_48        db
-o_49        db      ; ot_12
+x           word    ; x coord in pixels (from -32 ?)
+y           byte    ; y coord in pixels (from -32 ?)
+sprite      word    ; base sprite addr
+flags       byte    ; bit 0: exists, 1: is big, 4: blink once, 5: waiting, 6: mirror(?), 7: should be removed(?)
+o_6         byte
+o_7         byte
+objType     byte    ; object type with offset
+colour      byte    ; object colour attribute
+width       byte    ; width(?)
+height      byte    ; gravity (?)
+health      byte    ; enemy's health
+score       byte    ; index 1..6 in `scoreTable`
+blinkTime   byte    ; time during which the object will blink
+trajectory  byte
+o_16        byte    ; ot_14
+o_17        byte    ; ot_15
+o_18        byte    ; ot_16
+o_19        byte    ; ot_17
+o_20        byte    ; ot_18
+o_21        byte    ; ot_19, bit 1: mirror(?)
+o_22        byte    ; ot_20
+o_23        byte    ; ot_21, ? (possibly, value 1 means that object moves horizontally)
+o_24        byte    ; ot_10, bit 0: ?, 1: ? 3: smart-killable, 4: gives coin; 5: ?
+o_25        byte    ; ot_22
+o_26        byte    ; ot_23
+o_27        byte    ; ot_24
+o_28        byte    ; ot_25
+o_29        byte
+o_30        word
+o_32        word
+o_34        word    ; unused(?)
+o_36        word
+o_38        word
+o_40        word
+o_42        word
+o_44        word
+o_46        word
+o_48        byte
+o_49        byte    ; ot_12
     ENDS
 
 
     STRUCT Transit  ; length: 8
-isDown      db      ; 0: upward, 1: downward
-fromX       dw      ; x block coord of the entrance
-toStart     dw      ; exit map span start
-toEnd       dw      ; exit map span end
-toX         db      ; exit x block coord (relative to span start)
+isDown      byte    ; 0: upward, 1: downward
+fromX       word    ; x block coord of the entrance
+toStart     word    ; exit map span start
+toEnd       word    ; exit map span end
+toX         byte    ; exit x block coord (relative to span start)
     ENDS
 
 
-    STRUCT ShopTransit
-shopStart   dw      ; shop map span start in tiles
-shopEnd     dw      ; shop map span end in tiles
-shopX       db      ; shop x block coord (relative to span start)
-shopY       db      ; shop y block coord
-exitStart   dw      ; exit map span start in tiles
-exitEnd     dw      ; exit map span end in tiles
-exitX       db      ; exit x block coord (relative to span start)
-exitY       db      ; exit y block coord
+    STRUCT ShopTransit  ; length: 12
+shopStart   word    ; shop map span start in tiles
+shopEnd     word    ; shop map span end in tiles
+shopX       byte    ; shop x block coord (relative to span start)
+shopY       byte    ; shop y block coord
+exitStart   word    ; exit map span start in tiles
+exitEnd     word    ; exit map span end in tiles
+exitX       byte    ; exit x block coord (relative to span start)
+exitY       byte    ; exit y block coord
     ENDS
 
 
     STRUCT Conveyor ; length: 3
-start       dw      ; addr in `scrTiles` of the first conveyor tile
-length      db      ; number of consequent conveyor tiles
+start       word    ; addr in `scrTiles` of the first conveyor tile
+length      byte    ; number of consequent conveyor tiles
     ENDS

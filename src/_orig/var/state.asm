@@ -30,7 +30,7 @@ tileRgBot:  db -0       ; │                      │
 tileRgUndr: db -0       ; │           Ce         │
 tileLfFoot: db -0       ; │   LB         RB      │
 tileRgFoot: db -0       ; │                      │
-tileCenter: db -0       ; └──────────────────────┘
+tileCentre: db -0       ; └──────────────────────┘
 tileCnFoot: db -0       ;      LF     CFRF
 tileLfAbov: db -0       ;     LU         RU
 tileRgAbov: db -0       ;

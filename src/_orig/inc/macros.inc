@@ -5,13 +5,13 @@
     ENDM
 
 
-; In debug mode, set border color
+; In debug mode, set border colour
 ;   spoils: `a`
 ;   time: debug 18, release 0
 ;   size: debug 4, release 0
-    MACRO _DEBUG_BORDER color?
+    MACRO _DEBUG_BORDER colour?
     IFDEF _DEBUG
-        ld a, color?
+        ld a, colour?
         out (#FE), a
     ENDIF
     ENDM
@@ -27,7 +27,7 @@
         sub regL?
         ld regH?, a
     ENDM
-    
+
 ; `bc <- bc + a` (unsigned)
 ;   spoils: `af`
 ;   time: 20, length: 5

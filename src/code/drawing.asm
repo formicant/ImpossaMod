@@ -173,7 +173,7 @@ drawObject:
         push hl
         push de
         push bc
-        ld a, (ix+Obj.color)            ; object attr
+        ld a, (ix+Obj.colour)            ; object attr
         ld (.attr), a
         exx
         ld a, (objTileIndex)

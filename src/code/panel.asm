@@ -1,35 +1,39 @@
     MODULE Code
 
 
+; Attributes used for items on the panel
+; (number of chars, colour)
 panelAttrs:
-        db #07,  1              ; smart  - dark white
-        db #47,  6              ; score  - bright white
-        db #43,  3              ; soup   - bright magenta
-        db #46,  4              ; coins  - bright yellow
-        db #03,  1              ; diary  - dark magenta
-.energ: db #42,  3              ; energy - bright red
-        db #44,  4              ; energy - bright green
-        db #41, 10              ; energy - bright blue
-        db 0
+        db  1, Colour.gray      ; smart
+        db  6, Colour.white     ; score
+        db  3, Colour.magenta   ; soup cans
+        db  4, Colour.yellow    ; coins
+        db  1, Colour.purple    ; diary
+.energ: db  3, Colour.red       ; energy
+        db  4, Colour.green     ; energy
+        db 10, Colour.blue      ; energy
+.end:   db  0
 
+
+; Display all panel items
 printPanel:
+        ; set attributes
         ld de, Screen.attrs.row0
         ld hl, panelAttrs
-.apply:
-        ld a, (hl)
-.part:
-        inc hl
+.item:
         ld b, (hl)
+        inc hl
+        ld a, (hl)
         inc hl
 .attr:
         ld (de), a
         inc e
         djnz .attr
 
-        ld a, (hl)
-        or a
-        jr NZ, .part
+        bit 5, e
+        jr Z, .item             ; if `e` < 32
 
+        ; print items
         call printScore
         call printSmart
         call printSoupCans
@@ -42,17 +46,19 @@ score:
         block 5
 .last:  db -0
 
+
 ; Score table (decimal)
 ; (sub-labels point to the last digit)
 scoreTable:
 .walk+4 db 0, 0, 0, 6, 3        ; advance in map
-        db 0, 0, 1, 0, 0
-        db 0, 0, 2, 0, 0
-        db 0, 0, 4, 0, 0
-        db 0, 0, 8, 0, 0
-        db 0, 1, 6, 0, 0
-        db 0, 3, 2, 0, 0
+        db 0, 0, 1, 0, 0        ; 1
+        db 0, 0, 2, 0, 0        ; 2
+        db 0, 0, 4, 0, 0        ; 3
+        db 0, 0, 8, 0, 0        ; 4
+        db 0, 1, 6, 0, 0        ; 5
+        db 0, 3, 2, 0, 0        ; 6
 .done+4 db 2, 0, 0, 0, 0        ; level complete
+
 
 ; Add score by index
 ;   `a`: index in the score table (1..6)
@@ -116,7 +122,7 @@ printScoreAt:
         ld a, e
         cp low(score.last)
         jr NZ, .digit
-        
+
         ; last digit
         ld a, (de)
         call printChar
@@ -128,7 +134,7 @@ addScoreSetCarry:
         jp addScoreRaw.l_1
 
 
-; Clear score at #CF57?
+; Set score to zero
 clearScore:
         ld hl, score
         ld b, 6
@@ -139,7 +145,7 @@ clearScore:
         ret
 
 
-; print if there is smart capability
+; Display an icon on the panel if there is smart capability
 printSmart:
         ld hl, Screen.pixels.row0 + 0
         ld a, (State.hasSmart)
@@ -150,7 +156,7 @@ printSmart:
         jp printChar
 
 
-; Print soup cans in the panel (right to left)
+; Display soup cans in the panel (right to left)
 printSoupCans:
         ld hl, Screen.pixels.row0 + 9
         ld a, (State.soupCans)
@@ -204,7 +210,7 @@ printCoinCountAt:
         and %00000101
         ld c, a
         ; `e`, `c`: two fractional part digits
-        
+
         xor a                   ; leading zero
         exa
         push bc
@@ -225,7 +231,7 @@ printCoinCountAt:
         jp printChar
 
 
-; Print energy in the panel
+; Display energy in the panel
 printEnergy:
         ld hl, Screen.pixels.row0 + 15
         ld e, 0
@@ -276,22 +282,19 @@ clearEnergy:
         dec e
         jr NZ, .space
         dec l
-        
+
         ld h, high(Screen.attrs)
         ld b, 17
-        ld a, #47               ; bright white
+        ld a, Colour.white
 .attr:
         ld (hl), a
         dec l
         djnz .attr
         ret
 
-; Used in the shop after printing item name and price
-restoreEnergy:
-        call clearEnergy
-        ld de, Screen.attrs.row0 + 15
-        ld hl, panelAttrs.energ
-        jp printPanel.apply
+; Print name and price of a shop item
+;   arg `a`: item type
+;printShopItem:
 
 
 ; Print digit or space in case of a leading zero
@@ -306,15 +309,16 @@ printDigitWithoutLeadingZeros:
         exa
         or a
         jp NZ, .firstSignificant
-        
+
         dec a                   ; space
         jp printChar
-        
+
 .firstSignificant:
         exa
         dec a                   ; not a leading zero
 .significant:
         exa
         jp printChar
+
 
     ENDMODULE

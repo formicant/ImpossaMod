@@ -19,7 +19,7 @@ c_d6f1:  ; #d6f1
 ; Used by c_cc25.
 c_d709:  ; #d709
         ld ix, scene
-        call c_dd73
+        call collectStateTiles
         ld a, (State.s_28)
         add a
         ld l, a
@@ -128,7 +128,7 @@ c_d7f6:  ; #d7f6
         ld a, (controlState)
         bit 3, a
         jr Z, .l_0
-        ld a, (State.tileCenter)
+        ld a, (State.tileCentre)
         call getTileType
         cp #01
         jp Z, .l_12
@@ -442,7 +442,7 @@ c_da95:  ; #da95
         ld a, (controlState)
         bit 3, a
         jr Z, .l_1
-        ld a, (State.tileCenter)
+        ld a, (State.tileCentre)
         call getTileType
         cp #01
         jp Z, c_d7f6.l_12
@@ -487,7 +487,7 @@ c_da95:  ; #da95
         or a
         jp P, .l_4
         exa
-        call c_dd46
+        call collectTilesAbove
         ld a, (State.tileLfAbov)
         call getTileType
         cp #04
@@ -498,7 +498,7 @@ c_da95:  ; #da95
         jr NC, .l_5
         ret
 .l_4:
-        call c_dd09
+        call collectTwoTilesBelow
         ld a, (State.tileLfFoot)
         call getTileType
         cp #02
@@ -522,7 +522,7 @@ c_db4e:  ; #db4e
         ld a, (controlState)
         bit 3, a
         jr Z, .l_0
-        ld a, (State.tileCenter)
+        ld a, (State.tileCentre)
         call getTileType
         cp #01
         jp Z, c_d7f6.l_12
@@ -563,7 +563,7 @@ c_db4e:  ; #db4e
         ld a, (ix+Obj.y)
         add #04
         ld (ix+Obj.y), a
-        call c_dd09
+        call collectTwoTilesBelow
         exx
         ld (ix+Obj.x+0), l
         ld (ix+Obj.x+1), h
@@ -600,7 +600,7 @@ c_dbfc:  ; #dbfc
         ld a, (controlState)
         bit 3, a
         jr Z, .l_1
-        ld a, (State.tileCenter)
+        ld a, (State.tileCentre)
         call getTileType
         or a
         jr NZ, .l_0
@@ -609,7 +609,7 @@ c_dbfc:  ; #dbfc
         or a
         jp Z, c_d94c.l_13
 .l_0:
-        call c_dd46
+        call collectTilesAbove
         ld a, (State.tileLfAbov)
         call getTileType
         cp #04
@@ -626,7 +626,7 @@ c_dbfc:  ; #dbfc
         ld a, (controlState)
         bit 2, a
         jr Z, .l_3
-        ld a, (State.tileCenter)
+        ld a, (State.tileCentre)
         call getTileType
         or a
         jr NZ, .l_2
@@ -646,7 +646,7 @@ c_dbfc:  ; #dbfc
         and #07
         cp #03
         jr NZ, .l_4
-        call c_dce1
+        call collectCentreTileBelow
         ld a, (State.tileCnFoot)
         call getTileType
         cp #02
@@ -655,7 +655,7 @@ c_dbfc:  ; #dbfc
         ld a, (controlState)
         bit 1, a
         jr Z, .l_6
-        ld a, (State.tileCenter)
+        ld a, (State.tileCentre)
         call getTileType
         or a
         jr NZ, .l_5
@@ -674,7 +674,7 @@ c_dbfc:  ; #dbfc
         ld a, (controlState)
         bit 0, a
         jr Z, .l_8
-        ld a, (State.tileCenter)
+        ld a, (State.tileCentre)
         call getTileType
         or a
         jr NZ, .l_7
@@ -707,20 +707,20 @@ c_dcce:  ; #dcce
         ret
 
 
-; Get tile under a big sprite (centered by x coord)
+; Get one central tile below the object and store it in the state
 ; Used by c_dbfc.
-c_dce1:  ; #dce1
+collectCentreTileBelow:  ; #dce1
         ld a, (ix+Obj.x)
         add 12
         ld (ix+Obj.x), a
         ld a, (ix+Obj.y)
         add 21
         ld (ix+Obj.y), a
-        
+
         call getScrTileAddr
         ld a, (hl)
         ld (State.tileCnFoot), a
-        
+
         ld a, (ix+Obj.x)
         add -12
         ld (ix+Obj.x), a
@@ -729,9 +729,9 @@ c_dce1:  ; #dce1
         ld (ix+Obj.y), a
         ret
 
-; ?
+; Get two tiles below the object and store them in the state
 ; Used by c_da95 and c_db4e.
-c_dd09:  ; #dd09
+collectTwoTilesBelow:  ; #dd09
         ld a, (ix+Obj.x)
         add 6
         ld (ix+Obj.x), a
@@ -741,14 +741,14 @@ c_dd09:  ; #dd09
         ld a, (ix+Obj.y)
         add 24
         ld (ix+Obj.y), a
-        
+
         call getScrTileAddr
         ld a, (hl)
         ld (State.tileLfFoot), a
         inc hl
         ld a, (hl)
         ld (State.tileRgFoot), a
-        
+
         ld a, (ix+Obj.x)
         add -6
         ld (ix+Obj.x), a
@@ -760,23 +760,24 @@ c_dd09:  ; #dd09
         ld (ix+Obj.y), a
         ret
 
-; ?
+; Get tiles above the object and store them in the state
+;   arg `ix`: object
 ; Used by c_da95 and c_dbfc.
-c_dd46:  ; #dd46
+collectTilesAbove:  ; #dd46
         ld a, (ix+Obj.x)
         add 6
         ld (ix+Obj.x), a
         ld a, (ix+Obj.y)
         add -1
         ld (ix+Obj.y), a
-        
+
         call getScrTileAddr
         ld a, (hl)
         ld (State.tileLfAbov), a
         inc hl
         ld a, (hl)
         ld (State.tileRgAbov), a
-        
+
         ld a, (ix+Obj.x)
         add -6
         ld (ix+Obj.x), a
@@ -785,9 +786,10 @@ c_dd46:  ; #dd46
         ld (ix+Obj.y), a
         ret
 
-; ?
+; Get tiles behind different parts of the object and store them in the state
+;   arg `ix`: object
 ; Used by c_d709.
-c_dd73:  ; #dd73
+collectStateTiles:  ; #dd73
         ld a, (ix+Obj.x)
         add 4
         ld (ix+Obj.x), a
@@ -861,7 +863,7 @@ c_dd73:  ; #dd73
 
         call getScrTileAddr
         ld a, (hl)
-        ld (State.tileCenter), a
+        ld (State.tileCentre), a
         add hl, bc              ; move down
         ld a, (hl)
         ld (State.tileCnFoot), a
@@ -1087,7 +1089,7 @@ c_df85:  ; #df85
         ld (ix+Obj.sprite+0), l
         ld (ix+Obj.sprite+1), h
         ld (iy+Obj.flags), #02
-        ld (iy+Obj.color), #47
+        ld (iy+Obj.colour), Colour.white
         ld (iy+Obj.o_21), #01
         ld (iy+Obj.o_19), #00
         ld (iy+Obj.o_7), #00
@@ -1132,7 +1134,7 @@ c_df85:  ; #df85
         ld (iy+Obj.sprite+0), l
         ld (iy+Obj.sprite+1), h
         ld (iy+Obj.flags), #01
-        ld (iy+Obj.color), #45
+        ld (iy+Obj.colour), Colour.cyan
         ld (iy+Obj.o_7), #00
         ld (iy+Obj.width), #08
         ld (iy+Obj.height), #08
@@ -1201,7 +1203,7 @@ c_df85:  ; #df85
         ld (iy+Obj.x+0), l
         ld (iy+Obj.x+1), h
         ld (iy+Obj.flags), #01
-        ld (iy+Obj.color), #47
+        ld (iy+Obj.colour), Colour.white
         ld (iy+Obj.o_19), #08
         ld (iy+Obj.o_20), #08
         ld (iy+Obj.o_7), #00
@@ -1256,7 +1258,7 @@ c_df85:  ; #df85
         ld (iy+Obj.x+1), h
         ld (iy+Obj.o_7), #00
         ld (iy+Obj.flags), #01
-        ld (iy+Obj.color), #45
+        ld (iy+Obj.colour), Colour.cyan
         ld (iy+Obj.o_19), #08
         ld a, (ix+Obj.o_21)
         and #03
@@ -1399,7 +1401,7 @@ c_df85:  ; #df85
         ld h, (hl)
         ld (ix+Obj.sprite+0), a
         ld (ix+Obj.sprite+1), h
-        ld (ix+Obj.color), #47
+        ld (ix+Obj.colour), Colour.white
         jp c_eb00
 .l_18:
         xor a

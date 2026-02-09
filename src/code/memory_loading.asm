@@ -20,7 +20,7 @@ loadLevelFromMemory:
         ld l, a
         ld a, (hl)
         exa                     ; `a'`: level page
-        
+
         ; data to copy
         ld hl, Level.start
         ld bc, Level.length
