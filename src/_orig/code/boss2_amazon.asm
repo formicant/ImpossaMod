@@ -11,7 +11,7 @@ bossLogicAmazon:  ; #fa65
         ld a, (State.bossFight)
         cp #01
         jr NZ, .l_0
-        ld a, (State.s_57)
+        ld a, (State.bossKilled)
         or a
         ret NZ
         ld ix, scene.obj2
@@ -44,7 +44,7 @@ bossLogicAmazon:  ; #fa65
         xor a
         ld (State.s_56), a
         ld a, #3C
-        ld (State.s_51), a
+        ld (State.bulletTime), a
         ret
 .l_0:
         ld a, (State.s_58)

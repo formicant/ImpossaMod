@@ -11,7 +11,7 @@ bossLogicKlondike:  ; #f8f4
         ld a, (State.bossFight)
         cp #01
         jr NZ, .l_1
-        ld a, (State.s_57)
+        ld a, (State.bossKilled)
         or a
         ret NZ
         ld ix, scene.obj2
@@ -51,7 +51,7 @@ bossLogicKlondike:  ; #f8f4
         xor a
         ld (State.s_56), a
         ld a, #FF
-        ld (State.s_51), a
+        ld (State.bulletTime), a
         ret
 .l_1:
         ld hl, State.bossFight
@@ -66,13 +66,13 @@ bossLogicKlondike:  ; #f8f4
         ld a, #FF
         ld (State.s_56), a
         ld a, #02
-        ld (State.s_51), a
+        ld (State.bulletTime), a
         ret
 .l_2:
         cp #69
         jr NZ, .l_3
         ld a, #01
-        ld (State.s_51), a
+        ld (State.bulletTime), a
         ret
 .l_3:
         cp #96

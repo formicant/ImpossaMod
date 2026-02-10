@@ -57,9 +57,9 @@ codeStart:
     INCLUDE "code/utils.asm"
     INCLUDE "code/controls.asm"
     INCLUDE "code/level_loading.asm"
-    ORG #CAA5
+
     INCLUDE "data/font.asm"
-    ORG #CC25
+
     INCLUDE "code/entry_point.asm"
     INCLUDE "code/game_loop.asm"
     INCLUDE "code/code.asm"

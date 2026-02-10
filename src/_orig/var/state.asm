@@ -59,12 +59,12 @@ s_4D:       db -0
 s_4E:       db -0
 s_4F:       db -0
 s_50:       db -0
-s_51:       db -0       ; (60..1, some counter?)
+bulletTime: db -0       ; enemy bullet emission timer
 nextObject: dw -0       ; addr of the next object in level object table
 bossFight:  db -0       ; 0 if no boss, 1 or higher when fighting a boss
 bossHealth: db -0
 s_56:       db -0       ; boss is invincible (?)
-s_57:       db -0
+bossKilled: db -0
 s_58:       db -0
 s_59:       db -0
 conveyors:  block 48    ; 16 × 3 (addr, length)

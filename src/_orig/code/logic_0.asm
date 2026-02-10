@@ -229,7 +229,7 @@ initLevel:  ; #d1c1
         xor a
         ld (State.bossFight), a
         ld (State.inShop), a
-        ld (State.s_57), a
+        ld (State.bossKilled), a
         inc a
         ld (State.hasSmart), a
 
@@ -697,7 +697,7 @@ cleanUpScene:  ; #d4cd
 .object:
         bit 7, (ix+Obj.flags)   ; ?
         jr Z, .skip
-        ld (ix+Obj.flags), 0    ; mark as non-existent
+        ld (ix+Obj.flags), 0    ; remove object
 .skip:
         add ix, de
         djnz .object

@@ -4,7 +4,8 @@
 gameStart:  ; #cc5a
         call gameMenu
         call clearGameState
-.l_2:
+        
+.selectLevel:
         call levelSelectionMenu
         call clearScreenPixels
         ld a, Colour.white      ; bright white ink, black paper
@@ -15,31 +16,35 @@ gameStart:  ; #cc5a
         ; continue
 
 .gameLoop:
-        ld a, (State.s_57)      ; ?
+        ld a, (State.bossKilled)
         or a
-        jr Z, .l_5
+        jr Z, .normal
 
+        ; wait until all clouds disappear
         ld ix, scene.obj1
-        ld de, Obj
-        ld b, 7
-.l_4:
-        bit 0, (ix+Obj.flags)
-        jr NZ, .l_5
-
+        ld de, Obj              ; object size
+        ld b, 7                 ; object count
+.object:
+        bit 0, (ix+Obj.flags)   ; exists
+        jr NZ, .normal
         add ix, de
-        djnz .l_4
-
+        djnz .object
+        ; level complete
         ld bc, 5000
         call delay              ; 5 s delay
-        jp .l_2
+        jp .selectLevel
 
-.l_5:
+.normal:
         call performSmartIfSmartKeyPressed ; TODO: replace
-        call cleanUpScene             ; TODO: can be inlined
-        call c_f553             ; TODO: can be inlined
+        call cleanUpScene       ; TODO: can be inlined
+        call enemyBulletTimer   ; TODO: can be inlined
+        _DEBUG_BORDER Colour.blue
         call c_ecee             ; TODO: can be inlined (time: long)
+        _DEBUG_BORDER Colour.red
         call c_e56f             ; TODO: can be inlined (time: medium)
+        _DEBUG_BORDER Colour.magenta
         call putNextObjectsToScene  ; (time: medium)
+        _DEBUG_BORDER Colour.black
         call boss_logic         ; TODO: can be inlined
         call c_e60a             ; TODO: can be inlined
         call decBlinkTime       ; TODO: can be inlined

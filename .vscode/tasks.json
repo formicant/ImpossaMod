@@ -19,6 +19,22 @@
       ]
     },
     {
+      "label": "BuildOrigDebug",
+      "group": {
+        "kind": "build",
+        "isDefault": false
+      },
+      "type": "shell",
+      "command": "sjasmplus",
+      "args": [
+        "--syntax=b",
+        "--fullpath=rel",
+        "--outprefix=build/",
+        "--sld=build/orig_debug.sld",
+        "src/_orig/_debug.asm"
+      ]
+    },
+    {
       "label": "CheckOrig",
       "group": {
         "kind": "test",

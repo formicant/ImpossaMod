@@ -161,7 +161,7 @@ c_e60a:  ; #e60a
         ret
 .l_5:
         ld a, #3C
-        ld (State.s_51), a
+        ld (State.bulletTime), a
         call removeObjects
         ld hl, #0005
         add hl, de
@@ -1038,7 +1038,7 @@ damageEnemy:  ; #ec00
         pop de
         pop ix
         ld a, -1
-        ld (State.s_57), a
+        ld (State.bossKilled), a
 
         ; level complete
         ld de, scoreTable.done
@@ -1063,7 +1063,7 @@ c_ecee:  ; #ecee
 .object:
         push bc
         push ix
-        call c_f488
+        call checkStillEnemyActivation
         call c_ed08
         pop ix
         ld bc, Obj              ; object size
@@ -1078,7 +1078,7 @@ c_ecee:  ; #ecee
 c_ed08:  ; #ed08
         bit 0, (ix+Obj.flags)
         ret Z
-        call c_f564
+        call emitEnemyBullet
         ld a, (ix+Obj.o_23)
         cp #01
         jp Z, c_f618
@@ -1979,12 +1979,15 @@ c_f37e:  ; #f37e
         ld (ix+Obj.flags), 0
         ret
 
+
 ; (Modifies some object properties?)
 ; Used by c_ecee.
-c_f488:  ; #f488
+checkStillEnemyActivation:  ; #f488
         ld a, (ix+Obj.o_27)
         or a
         ret Z
+        
+        ; test y coord
         ld iy, scene.hero
         ld a, (ix+Obj.o_26)
         neg
@@ -1997,6 +2000,8 @@ c_f488:  ; #f488
         add (iy+Obj.height)
         cp c
         ret C
+        
+        ; test x coord
         ld l, (ix+Obj.x+0)
         ld h, (ix+Obj.x+1)
         ld e, (ix+Obj.o_25)
@@ -2020,11 +2025,13 @@ c_f488:  ; #f488
         xor a
         sbc hl, de
         ret C
-        res 5, (ix+Obj.flags)
+        
+        res 5, (ix+Obj.flags)   ; remove waiting flag
         res 2, (ix+Obj.flags)
         res 3, (ix+Obj.flags)
         ld (ix+Obj.o_27), 0
         ret
+
 
 ; Decide whether to blow up a dynamite (?)
 ; Used by c_ed08.
@@ -2079,24 +2086,27 @@ c_f518:  ; #f518
         inc (ix+Obj.trajectory)
         jp c_ef72.l_23
 
-; Bullet timer (?)
+
+; Tick the enemy bullet emission timer
 ; Used by c_cc25.
-c_f553:  ; #f553
-        ld a, (State.s_51)
+enemyBulletTimer:  ; #f553
+        ld a, (State.bulletTime)
         or a
-        jr Z, .l_0
+        jr Z, .setPeriod
         dec a
-        ld (State.s_51), a
+        ld (State.bulletTime), a
         ret
-.l_0:
+        
+.setPeriod:
         ld a, 60
-        ld (State.s_51), a
+        ld (State.bulletTime), a
         ret
 
-; Create bullet (?)
+
+; Emit enemy bullet
 ; Used by c_ed08.
-c_f564:  ; #f564
-        ld a, (State.s_51)
+emitEnemyBullet:  ; #f564
+        ld a, (State.bulletTime)
         or a
         ret NZ
         ld a, (ix+Obj.o_23)
@@ -2132,7 +2142,7 @@ c_f564:  ; #f564
         ld a, (ix+Obj.o_49)
         ld (iy+Obj.o_49), a
 
-        ; adjust x coord
+        ; set x coord
         ld a, (ix+Obj.width)
         sub (iy+Obj.width)
         srl a
@@ -2146,7 +2156,7 @@ c_f564:  ; #f564
         ld a, (ix+Obj.height)
         sub (iy+Obj.height)
 
-        ; adjust y coord
+        ; set y coord
         srl a
         add (ix+Obj.y)
         ld (iy+Obj.y), a
