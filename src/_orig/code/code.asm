@@ -7,11 +7,11 @@ textGameOver:  ; #cd19
 ; Used by c_cc25.
 showGameOver:  ; #cd22
         call clearScreenPixels
-        ld a, Colour.white      ; bright white ink, black paper
+        ld a, Colour.brWhite    ; bright white ink, black paper
         call fillScreenAttrs
         ld hl, #0A0B
         ld de, textGameOver
-        ld c, Colour.yellow
+        ld c, Colour.brYellow
         call printString
 .l_0:
         ld a, (controlState)
@@ -48,7 +48,7 @@ pauseGameIfPressed:  ; #cd5c
         jr Z, .l_0
         ld hl, #1700            ; at 23, 0
         ld de, textPaused
-        ld c, Colour.white
+        ld c, Colour.brWhite
         call printString
 .l_1:
         call checkPauseKey
@@ -293,8 +293,8 @@ advanceObjectsInMap:  ; #cf17
         ld (ix+Obj.x+0), l
         ld (ix+Obj.x+1), h
 
-        ld a, (ix+Obj.behaviour)     ; ? (possibly, horizontal moving)
-        cp 1
+        ld a, (ix+Obj.behaviour)
+        cp Behaviour.be_1
         jr NZ, .nextObject
 
         ld l, (ix+Obj.o_30+0)

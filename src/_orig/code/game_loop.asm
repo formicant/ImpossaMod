@@ -8,7 +8,7 @@ gameStart:  ; #cc5a
 .levelStart:
         call levelSelectionMenu
         call clearScreenPixels
-        ld a, Colour.white      ; bright white ink, black paper
+        ld a, Colour.brWhite    ; bright white ink, black paper
         call fillScreenAttrs
         call clearScene
         call removeObjects      ; not needed (?)
@@ -24,7 +24,7 @@ gameStart:  ; #cc5a
         ld de, Obj              ; object size
         ld b, 7                 ; object count
 .bossPart:
-        bit 0, (ix+Obj.flags)   ; exists
+        bit Flag.exists, (ix+Obj.flags)
         jr NZ, .normal
         add ix, de
         djnz .bossPart
@@ -67,7 +67,7 @@ gameStart:  ; #cc5a
         xor a
         ld (State.s_05), a
         ld ix, scene.hero
-        set 0, (ix+Obj.flags)   ; set that hero exists (why not?)
+        set Flag.exists, (ix+Obj.flags)
 
         call advanceInMap       ; TODO: can be inlined
         call putNextObjsToScene

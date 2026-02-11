@@ -11,7 +11,7 @@
 ;   size: debug 4, release 0
     MACRO _DEBUG_BORDER colour?
     IFDEF _DEBUG
-        ld a, (colour?) & %111
+        ld a, colour?
         out (#FE), a
     ENDIF
     ENDM

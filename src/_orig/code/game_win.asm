@@ -13,7 +13,7 @@ epilogueText:  ; #d679
 gameWin:  ; #d6c0
         ld hl, #0806            ; at 8, 6
         ld de, epilogueText
-        ld c, Colour.red
+        ld c, Colour.brRed
         ld b, 4
 .line:
         push bc

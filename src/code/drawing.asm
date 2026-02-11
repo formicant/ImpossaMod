@@ -45,7 +45,7 @@ drawObjectChecked:  ; #c07c
         ld l, (ix+Obj.x+0)
         ld h, (ix+Obj.x+1)            ; `hl`: x coord
 
-        bit 1, (ix+Obj.flags)           ; is sprite big
+        bit Flag.isBig, (ix+Obj.flags)
         jr NZ, .big
 
 .small:
@@ -71,7 +71,7 @@ drawObjectChecked:  ; #c07c
         ret NC                  ; ret if y >= 224
 
         ld c, 21                ; big sprite height
-        bit 1, (ix+Obj.flags)           ; is sprite big
+        bit Flag.isBig, (ix+Obj.flags)
         jr NZ, .skip
         ld c, 16                ; small sprite height
 .skip:
@@ -85,12 +85,12 @@ drawObjectChecked:  ; #c07c
 ; Draw an object
 ; Used by c_c060.
 drawObject:
-        bit 0, (ix+Obj.flags)
+        bit Flag.exists, (ix+Obj.flags)
         ret Z
 
-        bit 4, (ix+Obj.flags)
+        bit Flag.blink, (ix+Obj.flags)
         jr Z, .start
-        res 4, (ix+Obj.flags)
+        res Flag.blink, (ix+Obj.flags)
         ret
 
 .start:
@@ -145,7 +145,7 @@ drawObject:
         ; `hl`: addr in `scrTiles`
 
         ld bc, #0303            ; big sprite size
-        bit 1, (ix+Obj.flags)           ; is sprite big
+        bit Flag.isBig, (ix+Obj.flags)
         jr NZ, .skip
         ld bc, #0202            ; small sprite size
 .skip:
@@ -155,7 +155,7 @@ drawObject:
         inc b                   ; 1 tile wider
 .skipWider:
         ld a, (ix+Obj.y)            ; y coord
-        bit 1, (ix+Obj.flags)           ; is sprite big
+        bit Flag.isBig, (ix+Obj.flags)
         jr NZ, .big
 .small:
         and %00000111           ; `a`: y pixel shift
@@ -288,7 +288,7 @@ drawObject:
         pop bc
         djnz .pixelTileColumn
 
-        bit 1, (ix+Obj.flags)           ; is sprite big
+        bit Flag.isBig, (ix+Obj.flags)
         jp NZ, drawBigSprite
         ; continue
 
@@ -304,9 +304,9 @@ drawSmallSprite:
 
         ld hl, #0000            ; `nop : nop`
         ld (.jrMir), hl
-        bit 1, (ix+Obj.direction)          ; mirror (?)
+        bit Dir.left, (ix+Obj.direction)
         jr NZ, .skip
-        bit 6, (ix+Obj.flags)           ; mirror (?)
+        bit Flag.mirror, (ix+Obj.flags)
         jr NZ, .skip
 
         ld hl, #0A18            ; `jr .skipMirror`
@@ -383,9 +383,9 @@ drawShiftedSmallSprite:  ; #c245
 
         ld hl, #0000            ; `nop : nop`
         ld (.jrMir), hl
-        bit 1, (ix+Obj.direction)          ; mirror (?)
+        bit Dir.left, (ix+Obj.direction)
         jr NZ, .skip
-        bit 6, (ix+Obj.flags)           ; mirror (?)
+        bit Flag.mirror, (ix+Obj.flags)
         jr NZ, .skip
 
         ld hl, #0F18            ; `jr .pixelShift`
@@ -488,9 +488,9 @@ drawBigSprite:  ; #c314
         jp NZ, drawShiftedBigSprite
 
         ld hl, #0000            ; `nop : nop`
-        bit 1, (ix+Obj.direction)          ; mirror (?)
+        bit Dir.left, (ix+Obj.direction)
         jr NZ, .skip
-        bit 6, (ix+Obj.flags)           ; mirror (?)
+        bit Flag.mirror, (ix+Obj.flags)
         jr NZ, .skip
 
         ld hl, #2718            ; `jr .skipMirror`
@@ -612,9 +612,9 @@ drawShiftedBigSprite:  ; #c3ac
 
         ld hl, #0000            ; `nop : nop`
         ld (.jrMir), hl
-        bit 1, (ix+Obj.direction)          ; mirror (?)
+        bit Dir.left, (ix+Obj.direction)
         jr NZ, .skip
-        bit 6, (ix+Obj.flags)           ; mirror (?)
+        bit Flag.mirror, (ix+Obj.flags)
         jr NZ, .skip
 
         ld hl, #1418            ; `jr .pixelShift`

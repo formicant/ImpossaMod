@@ -11,14 +11,19 @@ bossLogic:  ; #f8cb
         ld a, (State.level)
         or a
         jp Z, bossLogicKlondike
-        cp 1
+
+        cp Level.orient
         jp Z, bossLogicOrient
-        cp 2
+
+        cp Level.amazon
         jp Z, bossLogicAmazon
-        cp 3
+
+        cp Level.iceland
         jp Z, bossLogicIceland
-        cp 4
+
+        cp Level.bermuda
         jp Z, bossLogicBermuda
+
         ret
 
 

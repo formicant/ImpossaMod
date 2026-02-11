@@ -61,7 +61,7 @@ objectTable:
         db #02, #0A, 20, #93    ; x=522 icePop
         db #02, #14, 13, #06    ; x=532 coin
         db #02, #16, 15, #95    ; x=534 sundae
-        db #02, #1B,  8, #03    ; x=539 lazerGun
+        db #02, #1B,  8, #03    ; x=539 laserGun
         db #02, #22, 20, #94    ; x=546 snowman
         db #02, #28, 17, #96    ; x=552 pressPlatform
         db #02, #3D, 13, #96    ; x=573 pressPlatform
@@ -166,7 +166,7 @@ objectTable:
         db #05, #C8, 13, #9E    ; x=1480 bullfinch
         db #05, #CD, 12, #AE    ; x=1485 viking
         db #05, #D8,  8, #A4    ; x=1496 snowBall
-        db #05, #D9, 18, #03    ; x=1497 lazerGun
+        db #05, #D9, 18, #03    ; x=1497 laserGun
         db #05, #E5, 12, #9E    ; x=1509 bullfinch
         db #05, #EF, 19, #A0    ; x=1519 bullfinch
         db #05, #F8, 19, #A3    ; x=1528 snowBall
@@ -179,7 +179,7 @@ objectTable:
         db #06, #2E, 18, #AB    ; x=1582 penguin
         db #06, #58,  8, #BF    ; x=1624 bossIceCream0
         db #06, #71, 20, #05    ; x=1649 slimyWorms
-        db #06, #72, 16, #03    ; x=1650 lazerGun
+        db #06, #72, 16, #03    ; x=1650 laserGun
         db #06, #74,  8, #01    ; x=1652 shatterbomb
         db #06, #7D, 20, #00    ; x=1661 shopMole
         db #06, #7D, 12, #07    ; x=1661 pintaADay

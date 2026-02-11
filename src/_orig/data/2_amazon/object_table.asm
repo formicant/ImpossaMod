@@ -35,7 +35,7 @@ objectTable:
         db #00, #FE, 12, #6B    ; x=254 grape
         db #01, #06, 16, #7C    ; x=262 hummingbird
         db #01, #08, 20, #84    ; x=264 porcupine
-        db #01, #0F, 16, #03    ; x=271 lazerGun
+        db #01, #0F, 16, #03    ; x=271 laserGun
         db #01, #16, 16, #7F    ; x=278 snake
         db #01, #1E, 16, #7E    ; x=286 snake
         db #01, #26, 16, #7E    ; x=294 snake
@@ -160,7 +160,7 @@ objectTable:
         db #05, #48,  4, #6E    ; x=1352 hangingMonkey
         db #05, #49,  8, #6A    ; x=1353 apple
         db #05, #5C, 16, #80    ; x=1372 chameleon
-        db #05, #62, 16, #03    ; x=1378 lazerGun
+        db #05, #62, 16, #03    ; x=1378 laserGun
         db #05, #69,  4, #7E    ; x=1385 snake
         db #05, #6D,  4, #7A    ; x=1389 hummingbird
         db #05, #87, 12, #7E    ; x=1415 snake
@@ -191,7 +191,7 @@ objectTable:
         db #06, #5E, 20, #69    ; x=1630 banana
         db #06, #62, 12, #7D    ; x=1634 hummingbird
         db #06, #6D,  8, #01    ; x=1645 shatterbomb
-        db #06, #71, 16, #03    ; x=1649 lazerGun
+        db #06, #71, 16, #03    ; x=1649 laserGun
         db #06, #75,  8, #05    ; x=1653 slimyWorms
         db #06, #77, 20, #05    ; x=1655 slimyWorms
         db #06, #78, 12, #07    ; x=1656 pintaADay

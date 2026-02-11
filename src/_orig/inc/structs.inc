@@ -1,4 +1,4 @@
-    STRUCT ObjType  ; length: 26
+    STRUCT ObjTypeDescr  ; length: 26
 spriteAddr  word
 attr        byte
 ot_3        byte
@@ -31,7 +31,7 @@ stillActH   byte    ; still enemy activation zone height
 x           word    ; x coord in pixels
 y           byte    ; y coord in pixels
 sprite      word    ; base sprite addr
-flags       byte    ; bit 0: exists, 1: is big, 2: fixed horizontally, 3: fixed vertically, 4: blink once, 5: waiting, 6: mirror(?), 7: should be removed(?)
+flags       byte    ; values of `Flag` enum
 o_6         byte
 o_7         byte
 objType     byte    ; object type with offset
@@ -44,7 +44,7 @@ blinkTime   byte    ; time during which the object will blink
 trajectory  byte
 o_16        byte    ; ot_14
 o_17        byte    ; ot_15
-o_18        byte    ; ot_16
+o_18        byte    ; ot_16 (some direction ?)
 horizSpeed  byte
 vertSpeed   byte
 direction   byte    ; bit 0: right, 1: left, 2: down, 3: up

@@ -47,7 +47,7 @@ objectTable:
         db #01, #A1, 10, #4D    ; x=417 paperBird
         db #01, #A5, 18, #3D    ; x=421 umbrella
         db #01, #B5, 18, #06    ; x=437 coin
-        db #01, #BF, 22, #03    ; x=447 lazerGun
+        db #01, #BF, 22, #03    ; x=447 laserGun
         db #01, #C2, 10, #48    ; x=450 cloud
         db #01, #C9, 22, #3C    ; x=457 figurine
         db #01, #D5, 16, #3E    ; x=469 pepper
@@ -90,7 +90,7 @@ objectTable:
         db #03, #28, 20, #44    ; x=808 ninja
         db #03, #35,  4, #3D    ; x=821 umbrella
         db #03, #39,  3, #52    ; x=825 paperBird
-        db #03, #49, 12, #03    ; x=841 lazerGun
+        db #03, #49, 12, #03    ; x=841 laserGun
         db #03, #4B,  6, #51    ; x=843 paperBird
         db #03, #58,  3, #47    ; x=856 cloud
         db #03, #58, 20, #3C    ; x=856 figurine
@@ -178,7 +178,7 @@ objectTable:
         db #06, #31, 14, #4D    ; x=1585 paperBird
         db #06, #34, 16, #4A    ; x=1588 photographer
         db #06, #57, 14, #63    ; x=1623 bossDragon0
-        db #06, #71, 12, #03    ; x=1649 lazerGun
+        db #06, #71, 12, #03    ; x=1649 laserGun
         db #06, #73, 20, #04    ; x=1651 soupCan
         db #06, #75,  8, #05    ; x=1653 slimyWorms
         db #06, #7D, 16, #07    ; x=1661 pintaADay

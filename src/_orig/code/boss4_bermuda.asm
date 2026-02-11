@@ -43,12 +43,12 @@ bossLogicBermuda:  ; #fb45
         cp #05
         jr NZ, .l_2
 .l_1:
-        set 6, (ix+Obj.flags)
-        set 6, (iy+Obj.flags)
+        set Flag.mirror, (ix+Obj.flags)
+        set Flag.mirror, (iy+Obj.flags)
         ret
 .l_2:
-        res 6, (ix+Obj.flags)
-        res 6, (iy+Obj.flags)
+        res Flag.mirror, (ix+Obj.flags)
+        res Flag.mirror, (iy+Obj.flags)
         ret
 
 

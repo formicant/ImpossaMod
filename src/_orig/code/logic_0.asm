@@ -57,7 +57,7 @@ decBlinkTime:  ; #d0d0
         ld (ix+Obj.blinkTime), a
         and 1                   ; even/odd
         jr NZ, .skip
-        set 4, (ix+Obj.flags)   ; blink flag
+        set Flag.blink, (ix+Obj.flags)
 .skip:
         add ix, de
         djnz .object
@@ -179,13 +179,13 @@ initHero:  ; #d153
         ld (ix+Obj.sprite+0), l
         ld (ix+Obj.sprite+1), h ; set sprite addr
 
-        ld (ix+Obj.direction), 1     ; mirror (?)
-        ld (ix+Obj.flags), %11  ; flags: exists, big
+        ld (ix+Obj.direction), 1<<Dir.right
+        ld (ix+Obj.flags), (1<<Flag.exists) | (1<<Flag.isBig)
         ld (ix+Obj.width), 16
         ld (ix+Obj.height), 21
         ld (ix+Obj.o_7), 0      ; ?
-        ld (ix+Obj.colour), Colour.white
-        ld (ix+Obj.objType), -1
+        ld (ix+Obj.colour), Colour.brWhite
+        ld (ix+Obj.objType), ObjType.hero
         xor a
         ld (State.s_28), a      ; ?
         ld (State.s_41), a      ; ?
@@ -372,10 +372,10 @@ clearScene:  ; #d29a
 ;   `iy`: enemy object
 ; Used by c_ec00.
 turnIntoCoin:  ; #d2b3
-        bit 1, (iy+Obj.flags)   ; is big? (actually, always big)
-        jr Z, .small
+        bit Flag.isBig, (iy+Obj.flags)
+        jr Z, .small            ; never happens(?), always big
 
-        res 1, (iy+Obj.flags)   ; make small
+        res Flag.isBig, (iy+Obj.flags)  ; make small
         ; adjust coords so that the centre is at the same point
         ld l, (iy+Obj.x+0)
         ld h, (iy+Obj.x+1)
@@ -392,15 +392,15 @@ turnIntoCoin:  ; #d2b3
         ld (iy+Obj.sprite+1), h
 
         ld (iy+Obj.o_7), 0
-        ld (iy+Obj.behaviour), 6
-        ld (iy+Obj.objType), 6
-        ld (iy+Obj.direction), 0     ; some flags (?)
+        ld (iy+Obj.behaviour), Behaviour.be_6
+        ld (iy+Obj.objType), ObjType.coin
+        ld (iy+Obj.direction), 0
         ld (iy+Obj.trajectory), 0
         ld (iy+Obj.health), -2    ; vertical speed (?)
-        ld (iy+Obj.colour), Colour.yellow
-        res 5, (iy+Obj.flags)
-        res 3, (iy+Obj.flags)
-        res 2, (iy+Obj.flags)
+        ld (iy+Obj.colour), Colour.brYellow
+        res Flag.waiting, (iy+Obj.flags)
+        res Flag.fixedY, (iy+Obj.flags)
+        res Flag.fixedX, (iy+Obj.flags)
         xor a
         ret
 
@@ -409,7 +409,7 @@ turnIntoCoin:  ; #d2b3
 ; Used by c_cc25.
 c_d308:  ; #d308
         ld ix, scene.hero
-        bit 0, (ix+Obj.o_24)
+        bit Flag.fo_0, (ix+Obj.o_24)
         jp NZ, .l_3
 
         ld a, (State.s_28)
@@ -438,7 +438,7 @@ c_d308:  ; #d308
         ld (State.s_28), a
         ld (State.s_41), a
         ld (ix+Obj.horizSpeed), 0
-        set 0, (ix+Obj.o_24)
+        set Flag.fo_0, (ix+Obj.o_24)
         push iy
         pop hl
         ld (ix+Obj.o_30+0), l
@@ -450,7 +450,7 @@ c_d308:  ; #d308
         pop iy
         call c_d3bb
         jr NZ, .setSprite
-        res 0, (ix+Obj.o_24)
+        res Flag.fo_0, (ix+Obj.o_24)
         ret
 
 .setSprite:
@@ -468,24 +468,24 @@ c_d308:  ; #d308
         ld (ix+Obj.y), a
         ld c, (iy+Obj.direction)
         ld a, (iy+Obj.behaviour)
-        cp 3
+        cp Behaviour.be_3
         jr Z, .l_6
         ld c, (iy+Obj.o_18)
 .l_6:
         ld a, c
-        and %00000011
+        and Dir.horizontal
         ret Z
 
         ld a, (iy+Obj.horizSpeed)
         ld d, 0
-        bit 0, c
+        bit Dir.right, c
         jr NZ, .l_7
         neg
         ld d, -1
 .l_7:
         ld e, a
         push de
-        bit 0, c
+        bit Dir.right, c
         jr NZ, .l_8
         call c_de37
         pop de
@@ -510,9 +510,9 @@ c_d308:  ; #d308
 ;   `iy`: object ?
 ; Used by c_d308.
 c_d3bb:  ; #d3bb
-        bit 0, (iy+Obj.flags)   ; exists
+        bit Flag.exists, (iy+Obj.flags)
         ret Z
-        bit 0, (iy+Obj.o_24)
+        bit Flag.fo_0, (iy+Obj.o_24)
         ret Z
 
         ld a, (ix+Obj.y)
@@ -613,7 +613,7 @@ makeObjectBig:  ; #d443
         add (ix+Obj.y)
         ld (ix+Obj.y), a
 
-        set 1, (ix+Obj.flags)   ; is big
+        set Flag.isBig, (ix+Obj.flags)
         ret
 
 
@@ -652,7 +652,7 @@ getScrTileAddr:  ; #d460
         ld l, (ix+Obj.x+0)
         ld h, (ix+Obj.x+1)
         ld a, (ix+Obj.objType)
-        cp 14                   ; press/platform
+        cp ObjType.pressPlatf
         jr Z, .divideBy8        ; (why?)
 .checkLeftBound
         ld de, 32
@@ -696,7 +696,7 @@ cleanUpScene:  ; #d4cd
         ld b, 7                 ; object count
         ld de, Obj              ; object size
 .object:
-        bit 7, (ix+Obj.flags)   ; ?
+        bit Flag.cleanUp, (ix+Obj.flags)
         jr Z, .skip
         ld (ix+Obj.flags), 0    ; remove object
 .skip:
@@ -721,7 +721,7 @@ performSmartIfPressed:  ; #d4e5
         ld b, 6                 ; object count
 .object:
         push bc
-        bit 3, (iy+Obj.o_24)    ; can be killed by smart
+        bit Flag.destroyable, (iy+Obj.o_24)
         jr NZ, .next
 
         ; check if object is visible

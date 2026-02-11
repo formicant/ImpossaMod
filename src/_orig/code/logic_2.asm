@@ -19,20 +19,20 @@ moveObjects:  ; #e56f
 ; (Modifies some object properties?)
 ; Used by c_e56f.
 moveObject:  ; #e582
-        bit 0, (ix+Obj.flags)   ; exists
+        bit Flag.exists, (ix+Obj.flags)
         ret Z
 
         ld a, (ix+Obj.o_48)
         or a
         ret NZ
-        bit 5, (ix+Obj.flags)   ; waiting
+        bit Flag.waiting, (ix+Obj.flags)
         ret NZ
 
 .horizontal:
-        bit 2, (ix+Obj.flags)   ; fixed horizontally
+        bit Flag.fixedX, (ix+Obj.flags)
         jr NZ, .vertical
 
-        bit 0, (ix+Obj.direction)
+        bit Dir.right, (ix+Obj.direction)
         jr Z, .left
         ; move right
         ld e, (ix+Obj.horizSpeed)
@@ -44,7 +44,7 @@ moveObject:  ; #e582
         ld (ix+Obj.x+1), h
         jr .vertical
 .left:
-        bit 1, (ix+Obj.direction)
+        bit Dir.left, (ix+Obj.direction)
         jr Z, .vertical
         ; move left
         ld a, (ix+Obj.horizSpeed)
@@ -58,10 +58,10 @@ moveObject:  ; #e582
         ld (ix+Obj.x+1), h
 
 .vertical:
-        bit 3, (ix+Obj.flags)   ; fixed vertically
+        bit Flag.fixedY, (ix+Obj.flags)
         ret NZ
 
-        bit 3, (ix+Obj.direction)
+        bit Dir.up, (ix+Obj.direction)
         jr Z, .down
         ; move up
         ld a, (ix+Obj.vertSpeed)
@@ -70,7 +70,7 @@ moveObject:  ; #e582
         ld (ix+Obj.y), a
         ret
 .down:
-        bit 2, (ix+Obj.direction)
+        bit Dir.down, (ix+Obj.direction)
         ret Z
         ; move down
         ld a, (ix+Obj.vertSpeed)
@@ -88,7 +88,7 @@ removeObjects:  ; #e5f2
         ld ix, scene.obj1
         ld b, 7
 .object:
-        ld (ix+Obj.flags), 0
+        ld (ix+Obj.flags), 0    ; remove object
         add ix, de
         djnz .object
 
@@ -219,7 +219,7 @@ allocateObject:  ; #e6c2
         ld ix, scene.obj2
         ld de, Obj              ; object size
 .object:
-        bit 0, (ix+Obj.flags)   ; exists
+        bit Flag.exists, (ix+Obj.flags)
         jr Z, .free
         add ix, de
         djnz .object
@@ -276,12 +276,12 @@ processHeroCollisions:  ; #e6e1
         ld (ix+Obj.x+1), h
 
         ld a, (iy+Obj.objType)
-        cp 14                   ; press/platform
+        cp ObjType.pressPlatf
         jp NC, .levelSpecific
         or a                    ; no type
         ret Z
 
-        cp 4                    ; soupCan
+        cp ObjType.soupCan
         jr NC, .l_2
 
         ; weapon
@@ -298,7 +298,7 @@ processHeroCollisions:  ; #e6e1
         jp playSound
 
 .l_2:
-        cp 9                    ; shop mole
+        cp ObjType.shopMole
         jr Z, .skipSound
         push af
         ld a, 11                ; pick up item sound
@@ -306,7 +306,7 @@ processHeroCollisions:  ; #e6e1
         pop af
 .skipSound:
 
-        cp 4                    ; soupCan
+        cp ObjType.soupCan
         jr NZ, .notSoupCan
         ld a, (State.soupCans)
         cp 3
@@ -318,14 +318,14 @@ processHeroCollisions:  ; #e6e1
         jp printSoupCans
 
 .notSoupCan:
-        cp 5                    ; slimyWorms
+        cp ObjType.slimyWorms
         jr NZ, .notSlimyWorms
         ld (iy+Obj.flags), 0    ; remove object
         ld a, 4
         jp addEnergy
 
 .notSlimyWorms:
-        cp 6                    ; coin
+        cp ObjType.coin
         jr NZ, .notCoin
         ld (iy+Obj.flags), 0    ; remove object
         ld a, (State.coins)
@@ -338,7 +338,7 @@ processHeroCollisions:  ; #e6e1
         jp printCoinCount
 
 .notCoin:
-        cp 7                    ; pintaADay
+        cp ObjType.pintaADay
         jr NZ, .notPintaADay
         ld (iy+Obj.flags), 0    ; remove object
         ld a, (State.maxEnergy)
@@ -352,7 +352,7 @@ processHeroCollisions:  ; #e6e1
         jp addEnergy
 
 .notPintaADay:
-        cp 8                    ; diary
+        cp ObjType.diary
         jr NZ, .notDiary
         ld (iy+Obj.flags), 0    ; remove object
         ld a, #FF
@@ -360,7 +360,7 @@ processHeroCollisions:  ; #e6e1
         ret
 
 .notDiary:
-        cp 10                   ; score item
+        cp ObjType.scoreItem1
         jr NC, .scoreItem
 
         ; shop mole
@@ -378,11 +378,11 @@ processHeroCollisions:  ; #e6e1
         jp addScore
 
 .levelSpecific:
-        cp 14                   ; press/platform
+        cp ObjType.pressPlatf
         jr NZ, .notPress
 
         ; TODO: press logic
-        bit 3, (iy+Obj.direction)   ; up
+        bit Dir.up, (iy+Obj.direction)
         ret NZ
         ld a, (State.pressTime)
         or a
@@ -403,7 +403,7 @@ processHeroCollisions:  ; #e6e1
         ld a, (iy+Obj.o_7)      ; ?
         cp #FF
         ret Z
-        bit 0, (iy+Obj.o_24)    ; ?
+        bit Flag.fo_0, (iy+Obj.o_24)    ; ?
         ret NZ
         ld a, (iy+Obj.health)
         cp -2                   ; not an enemy (?)
@@ -417,7 +417,7 @@ processHeroCollisions:  ; #e6e1
 ;   ret flag C: no collision, NC: collision
 ; Used by c_e6e1, c_e9b1, c_eb19 and c_f618.
 checkObjectCollision:  ; #e80a
-        bit 0, (iy+Obj.flags)   ; object 2 exists
+        bit Flag.exists, (iy+Obj.flags)
         jr NZ, .obj2Exists
         scf
         ret
@@ -450,7 +450,7 @@ checkObjectCollision:  ; #e80a
         ld e, (iy+Obj.x+0)
         ld d, (iy+Obj.x+1)      ; `de`: object 2 left
         ld a, (iy+Obj.objType)
-        cp 14                   ; object 2 is press/platform
+        cp ObjType.pressPlatf
         jr NZ, .notPressLeft
         ld a, e
         add 6
@@ -464,7 +464,7 @@ checkObjectCollision:  ; #e80a
         ex de, hl
         ld b, 0
         ld a, (iy+Obj.objType)
-        cp 14                   ; object 2 is press/platform
+        cp ObjType.pressPlatf
         jr NZ, .notPressRight
         ld a, c                 ; object 2 width
         sub 12
@@ -497,7 +497,7 @@ shopItemPrices:  ; #e89b
 shopItemNames:  ; #e8a4
         db "SHATTERBOMB "C
         db "POWER GUN   "C
-        db "LAZER GUN   "C
+        db "LAZER GUN   "C      ; (typo)
         db "SOUP CAN    "C
         db "SLIMY WORMS "C
         db "            "C
@@ -573,17 +573,17 @@ enterShop:  ; #e920
         ld hl, cS.shopMole
         ld (ix+Obj.sprite+0), l
         ld (ix+Obj.sprite+1), h
-        ld (ix+Obj.colour), Colour.white
+        ld (ix+Obj.colour), Colour.brWhite
 
         ld (ix+Obj.direction), 0
         ld (ix+Obj.width), 24
         ld (ix+Obj.height), 21
-        ld (ix+Obj.objType), 9
-        ld (ix+Obj.flags), %00000011
+        ld (ix+Obj.objType), ObjType.shopMole
+        ld (ix+Obj.flags), (1<<Flag.exists) | (1<<Flag.isBig)
         ld (ix+Obj.health), -2
         ld (ix+Obj.o_24), 0
         ld (ix+Obj.o_49), 0
-        ld (ix+Obj.behaviour), 0
+        ld (ix+Obj.behaviour), Behaviour.be_0
         ret
 
 ; Shop logic
@@ -634,7 +634,7 @@ shopLogic:  ; #e9b1
         add hl, de
         ex de, hl
         ; `hl`: item name
-        ld c, Colour.white
+        ld c, Colour.brWhite
         ld hl, #000F            ; at 0, 15
         call printString
 
@@ -653,7 +653,7 @@ shopLogic:  ; #e9b1
         call printPrice
     ELSE
         ld hl, #001C            ; at 0, 28
-        ld c, Colour.white
+        ld c, Colour.brWhite
         call printNumber
     ENDIF
 
@@ -711,7 +711,7 @@ shopLogic:  ; #e9b1
         jr NC, .canBuy
         ld hl, #000F            ; at 0, 15
         ld de, textTooMuch
-        ld c, Colour.white
+        ld c, Colour.brWhite
         call printString
 .waitFireRelease:
         ld a, (controlState)
@@ -722,7 +722,7 @@ shopLogic:  ; #e9b1
 .canBuy:
         ld (State.coins), a
         call printCoinCount
-        ld (iy+Obj.flags), 0    ; remove item
+        ld (iy+Obj.flags), 0    ; remove object
 
         ld a, (State.shopItem)
         inc a
@@ -742,20 +742,20 @@ shopLogic:  ; #e9b1
         inc a
         ld (State.soupCans), a
 .tooMuchSoup:
-        ld (iy+Obj.flags), 0
+        ld (iy+Obj.flags), 0    ; remove object
         jp printSoupCans
 
 .notSoupCan:
         cp 5                    ; slimy worms
         jr NZ, .notSlimyWorms
-        ld (iy+Obj.flags), 0
+        ld (iy+Obj.flags), 0    ; remove object
         ld a, 4
         jp addEnergy
 
 .notSlimyWorms:
         cp 7
         jr NZ, .notPintaADay
-        ld (iy+Obj.flags), 0
+        ld (iy+Obj.flags), 0    ; remove object
         ld a, (State.maxEnergy)
         add 4
         cp 34
@@ -770,7 +770,7 @@ shopLogic:  ; #e9b1
         cp 8                    ; diary
         ret NZ
 
-        ld (iy+Obj.flags), 0
+        ld (iy+Obj.flags), 0    ; remove object
         ld a, #FF
         ld (State.hasDiary), a
         ret
@@ -804,7 +804,7 @@ getTileType:  ; #eaee
         ld h, high(Level.tileTypes)
         ld l, a
         ld a, (hl)
-        and %01111111           ; remove fg/bg bit
+        and TileType.typeMask   ; remove fg/bg bit
         pop hl
         ret
 
@@ -846,7 +846,7 @@ checkEnemyDamage:  ; #eb19
         or a
         jp Z, damageEnemy.notDamaged
 
-        bit 0, (iy+Obj.flags)
+        bit Flag.exists, (iy+Obj.flags)
         jp Z, damageEnemy.notDamaged
 
         ld a, (iy+Obj.health)
@@ -865,7 +865,7 @@ checkEnemyDamage:  ; #eb19
         ld a, (iy+Obj.o_7)
         cp -1
         jr NZ, .l_0
-        res 0, (ix+Obj.flags)   ; remove bubble
+        res Flag.exists, (ix+Obj.flags) ; remove bubble
         ret
 
 .l_0:
@@ -908,7 +908,7 @@ checkEnemyDamage:  ; #eb19
         ret C                   ; ret if no collision
 
         ; collision
-        set 0, (ix+Obj.flags)   ; remove bubble
+        set Flag.exists, (ix+Obj.flags)
         jr damageEnemy
 
 .weaponUsed:
@@ -916,7 +916,7 @@ checkEnemyDamage:  ; #eb19
         jr NZ, .gun
 
 .shatterbomb:
-        bit 1, (ix+Obj.flags)
+        bit Flag.isBig, (ix+Obj.flags)
         jr NZ, .l_2
         ld a, (ix+Obj.x+0)
         add #04
@@ -1030,11 +1030,11 @@ damageEnemy:  ; #ec00
 
 ; This entry point is used by c_d4e5.
 .kill:
-        bit 4, (iy+Obj.o_24)    ; gives coin
+        bit Flag.givesCoin, (iy+Obj.o_24)
         jp NZ, turnIntoCoin
 
         ; turn into cloud
-        bit 1, (iy+Obj.flags)   ; is big
+        bit Flag.isBig, (iy+Obj.flags)
         jr NZ, .big
         push ix
         push iy
@@ -1046,7 +1046,7 @@ damageEnemy:  ; #ec00
 .big:
         ld (iy+Obj.o_6), 0
         ld (iy+Obj.o_7), -1
-        ld (iy+Obj.colour), Colour.white
+        ld (iy+Obj.colour), Colour.brWhite
         ld a, 6                 ; kill enemy sound
         call playSound
 
@@ -1078,7 +1078,7 @@ damageEnemy:  ; #ec00
         ld b, 4                 ; object count
         ld de, Obj              ; object size
 .bossPartBlink:
-        bit 1, (ix+Obj.flags)
+        bit Flag.isBig, (ix+Obj.flags)
         jr Z, .l_6
         ld (ix+Obj.blinkTime), 4
 .l_6:
@@ -1096,14 +1096,14 @@ damageEnemy:  ; #ec00
         ld b, 4                 ; object count
         ld de, Obj              ; object size
 .bossPartCloud:
-        bit 0, (ix+Obj.flags)
+        bit Flag.exists, (ix+Obj.flags)
         jr Z, .l_9
-        bit 1, (ix+Obj.flags)
+        bit Flag.isBig, (ix+Obj.flags)
         jr Z, .l_9
         ; turn into cloud
         ld (ix+Obj.o_6), 0
         ld (ix+Obj.o_7), -1
-        ld (ix+Obj.colour), Colour.white
+        ld (ix+Obj.colour), Colour.brWhite
 .l_9:
         add ix, de
         djnz .bossPartCloud
@@ -1150,26 +1150,26 @@ processObjsBehaviour:  ; #ecee
 ;   arg `ix`: object
 ; Used by c_ecee.
 processObjectBehaviour:  ; #ed08
-        bit 0, (ix+Obj.flags)   ; exists
+        bit Flag.exists, (ix+Obj.flags)
         ret Z
 
         call emitEnemyBullet
 
         ld a, (ix+Obj.behaviour)
-        cp 1
+        cp Behaviour.be_1
         jp Z, c_f618
 
-        bit 5, (ix+Obj.flags)   ; waiting
+        bit Flag.waiting, (ix+Obj.flags)
         ret NZ
 
         ld a, (ix+Obj.objType)
-        cp 14                   ; press/platform
+        cp ObjType.pressPlatf
         jp Z, c_f2e7
 
         call c_f4e9
 
         ld a, (ix+Obj.behaviour)
-        cp 2
+        cp Behaviour.be_2
         jr NZ, .l_0
         call c_f37e
         jp .l_2
@@ -1180,19 +1180,19 @@ processObjectBehaviour:  ; #ed08
         ld a, (ix+Obj.behaviour)
         or a
         jp Z, .l_1
-        cp 3
+        cp Behaviour.be_3
         jp Z, c_ef72
-        cp 4
+        cp Behaviour.be_4
         jp Z, c_ef72
-        cp 5
+        cp Behaviour.be_5
         jp Z, c_f0f3
-        cp 6
+        cp Behaviour.be_6
         jp Z, c_f518
         ret
 
 .l_1:
-        set 2, (ix+Obj.flags)
-        set 3, (ix+Obj.flags)
+        set Flag.fixedX, (ix+Obj.flags)
+        set Flag.fixedY, (ix+Obj.flags)
         ret
 
 .l_2:
@@ -1202,18 +1202,18 @@ processObjectBehaviour:  ; #ed08
         cp -1
         ret NZ
 
-        call c_f1d7
+        call collectTileTypes
 
-        ld a, (State.s_4A)
+        ld a, (State.tTypeBot)
         cp 2
         ret C
 
-        bit 1, (ix+Obj.flags)
+        bit Flag.isBig, (ix+Obj.flags)
         jr NZ, .l_3
         call makeObjectBig
 .l_3:
         ld a, (ix+Obj.objType)
-        cp 40                   ; Klondike stalactite
+        cp ObjType.klondike.stalactite
         jr NZ, .l_4
         ld a, (ix+Obj.x+0)
         sub 8
@@ -1221,21 +1221,21 @@ processObjectBehaviour:  ; #ed08
 .l_4:
         ld (ix+Obj.o_6), 0
         ld (ix+Obj.o_7), -1
-        ld (ix+Obj.colour), Colour.white
+        ld (ix+Obj.colour), Colour.brWhite
         ld a, 6                 ; kill enemy
         jp playSound
 
 .l_5:
-        call c_f1d7
+        call collectTileTypes
 
-        ld a, (State.s_4A)
+        ld a, (State.tTypeBot)
         cp 4
         ret C
 
-        ld (ix+Obj.behaviour), 0
-        set 5, (ix+Obj.flags)   ; waiting
+        ld (ix+Obj.behaviour), Behaviour.be_0
+        set Flag.waiting, (ix+Obj.flags)
         ld a, (ix+Obj.objType)
-        cp 110                  ; Amazon hangingMonkey
+        cp ObjType.amazon.hangingMonkey
         ret NZ
         ld hl, Lev2Amazon.lS.sittingMonkey
         ld (ix+Obj.sprite+0), l
@@ -1451,33 +1451,33 @@ c_ef72:  ; #ef72
 .l_0:
         call c_f670
         call c_f697
-        call c_f1d7
-        ld a, (State.s_4C)
-        bit 0, (ix+Obj.direction)
+        call collectTileTypes
+        ld a, (State.tTypeRight)
+        bit Dir.right, (ix+Obj.direction)
         jr NZ, .l_1
-        ld a, (State.s_4B)
+        ld a, (State.tTypeLeft)
 .l_1:
         cp #04
         jr NC, .l_3
         ld a, (ix+Obj.objType)
-        cp #82
+        cp ObjType.amazon.crocodile
         jr Z, .l_4
-        ld a, (State.s_4E)
-        bit 0, (ix+Obj.direction)
+        ld a, (State.tTypeBotRg)
+        bit Dir.right, (ix+Obj.direction)
         jr NZ, .l_2
-        ld a, (State.s_4D)
+        ld a, (State.tTypeBotLf)
 .l_2:
         or a
         jr NZ, .l_4
 .l_3:
         ld a, (ix+Obj.direction)
-        xor #03
+        xor Dir.horizontal
         ld (ix+Obj.direction), a
         jp .l_23
 .l_4:
         ld l, (ix+Obj.x+0)
         ld h, (ix+Obj.x+1)
-        bit 0, (ix+Obj.direction)
+        bit Dir.right, (ix+Obj.direction)
         jr NZ, .l_5
         ld de, #0020
         xor a
@@ -1495,36 +1495,36 @@ c_ef72:  ; #ef72
         jp .l_23
 .l_6:
         ld (ix+Obj.vertSpeed), #08
-        call c_f1d7
-        bit 7, (ix+Obj.o_24)
+        call collectTileTypes
+        bit Flag.fo_7, (ix+Obj.o_24)
         jr NZ, .l_9
         call c_f670
         call c_f697
-        ld a, (State.s_4C)
-        bit 0, (ix+Obj.direction)
+        ld a, (State.tTypeRight)
+        bit Dir.right, (ix+Obj.direction)
         jr NZ, .l_7
-        ld a, (State.s_4B)
+        ld a, (State.tTypeLeft)
 .l_7:
         cp #04
         jr C, .l_8
         ld a, (ix+Obj.direction)
-        xor #03
+        xor Dir.horizontal
         ld (ix+Obj.direction), a
 .l_8:
-        ld a, (State.s_4A)
+        ld a, (State.tTypeBot)
         cp #02
         jp NC, .l_23
-        set 7, (ix+Obj.o_24)
-        set 2, (ix+Obj.flags)
-        set 2, (ix+Obj.direction)
+        set Flag.fo_7, (ix+Obj.o_24)
+        set Flag.fixedX, (ix+Obj.flags)
+        set Dir.down, (ix+Obj.direction)
         jp .l_23
 .l_9:
-        ld a, (State.s_4A)
+        ld a, (State.tTypeBot)
         cp #02
         jp C, .l_23
-        res 7, (ix+Obj.o_24)
-        res 2, (ix+Obj.flags)
-        res 2, (ix+Obj.direction)
+        res Flag.fo_7, (ix+Obj.o_24)
+        res Flag.fixedX, (ix+Obj.flags)
+        res Dir.down, (ix+Obj.direction)
         jp .l_23
 .l_10:
         bit 0, (ix+Obj.trajectory)
@@ -1533,7 +1533,7 @@ c_ef72:  ; #ef72
         cp #0A
         jr NC, .l_11
         ld a, (ix+Obj.direction)
-        xor #0C
+        xor Dir.vertical
         ld (ix+Obj.direction), a
 .l_11:
         bit 1, (ix+Obj.trajectory)
@@ -1542,42 +1542,42 @@ c_ef72:  ; #ef72
         cp #0A
         jr NC, .l_12
         ld a, (ix+Obj.direction)
-        xor #03
+        xor Dir.horizontal
         ld (ix+Obj.direction), a
 .l_12:
-        call c_f1d7
-        bit 0, (ix+Obj.direction)
+        call collectTileTypes
+        bit Dir.right, (ix+Obj.direction)
         jr Z, .l_13
-        ld a, (State.s_4C)
+        ld a, (State.tTypeRight)
         cp #02
         jr NC, .l_14
         jr .l_15
 .l_13:
-        bit 1, (ix+Obj.direction)
+        bit Dir.left, (ix+Obj.direction)
         jr Z, .l_15
-        ld a, (State.s_4B)
+        ld a, (State.tTypeLeft)
         cp #02
         jr C, .l_15
 .l_14:
         ld a, (ix+Obj.direction)
-        xor #03
+        xor Dir.horizontal
         ld (ix+Obj.direction), a
 .l_15:
-        bit 2, (ix+Obj.direction)
+        bit Dir.down, (ix+Obj.direction)
         jr Z, .l_16
-        ld a, (State.s_4A)
+        ld a, (State.tTypeBot)
         cp #02
         jr NC, .l_17
         jr .l_18
 .l_16:
-        bit 3, (ix+Obj.direction)
+        bit Dir.up, (ix+Obj.direction)
         jr Z, .l_18
-        ld a, (State.s_49)
+        ld a, (State.tTypeTop)
         cp #02
         jr C, .l_18
 .l_17:
         ld a, (ix+Obj.direction)
-        xor #0C
+        xor Dir.vertical
         ld (ix+Obj.direction), a
 .l_18:
         jp .l_23
@@ -1591,15 +1591,15 @@ c_ef72:  ; #ef72
         ld (ix+Obj.trajectory), 0
         ld c, (ix+Obj.direction)
         ld a, c
-        and #03
+        and Dir.horizontal
         jr Z, .l_21
-        xor #03
+        xor Dir.horizontal
 .l_21:
         ld b, a
         ld a, c
-        and #0C
+        and Dir.vertical
         jr Z, .l_22
-        xor #0C
+        xor Dir.vertical
 .l_22:
         or b
         ld (ix+Obj.direction), a
@@ -1608,7 +1608,7 @@ c_ef72:  ; #ef72
 .l_23:
         call isObjectVisibleOrWaiting
         ret C
-        ld (ix+Obj.flags), 0
+        ld (ix+Obj.flags), 0    ; remove object
         ret
 
 ; (Some game logic?)
@@ -1616,15 +1616,15 @@ c_ef72:  ; #ef72
 c_f0f3:  ; #f0f3
         ld (ix+Obj.horizSpeed), 2
         ld (ix+Obj.vertSpeed), 2
-        res 2, (ix+Obj.flags)
-        res 3, (ix+Obj.flags)
+        res Flag.fixedX, (ix+Obj.flags)
+        res Flag.fixedY, (ix+Obj.flags)
         bit 0, (ix+Obj.o_22)
         jr NZ, .l_0
-        set 3, (ix+Obj.flags)
+        set Flag.fixedY, (ix+Obj.flags)
 .l_0:
         bit 1, (ix+Obj.o_22)
         jr NZ, .l_1
-        set 2, (ix+Obj.flags)
+        set Flag.fixedX, (ix+Obj.flags)
 .l_1:
         ld iy, scene
         ld l, (ix+Obj.x+0)
@@ -1642,9 +1642,9 @@ c_f0f3:  ; #f0f3
         add hl, bc
         xor a
         sbc hl, de
-        ld (ix+Obj.direction), #01
+        ld (ix+Obj.direction), 1<<Dir.right
         jp P, .l_2
-        ld (ix+Obj.direction), #02
+        ld (ix+Obj.direction), 1<<Dir.left
         ld a, l
         cpl
         ld l, a
@@ -1658,7 +1658,7 @@ c_f0f3:  ; #f0f3
         xor a
         sbc hl, de
         jp P, .l_3
-        set 2, (ix+Obj.flags)
+        set Flag.fixedX, (ix+Obj.flags)
 .l_3:
         ld a, (ix+Obj.y)
         ld c, (ix+Obj.height)
@@ -1670,169 +1670,192 @@ c_f0f3:  ; #f0f3
         srl b
         add b
         sub c
-        set 2, (ix+Obj.direction)
-        res 3, (ix+Obj.direction)
+        set Dir.down, (ix+Obj.direction)
+        res Dir.up, (ix+Obj.direction)
         jp P, .l_4
         cpl
-        set 3, (ix+Obj.direction)
-        res 2, (ix+Obj.direction)
+        set Dir.up, (ix+Obj.direction)
+        res Dir.down, (ix+Obj.direction)
 .l_4:
         cp (ix+Obj.vertSpeed)
         jr NC, .l_5
-        set 3, (ix+Obj.flags)
+        set Flag.fixedY, (ix+Obj.flags)
 .l_5:
-        call c_f1d7
-        bit 0, (ix+Obj.direction)
+        call collectTileTypes
+        bit Dir.right, (ix+Obj.direction)
         jr Z, .l_6
-        ld a, (State.s_4C)
+        ld a, (State.tTypeRight)
         cp #04
         jr C, .l_6
-        set 2, (ix+Obj.flags)
+        set Flag.fixedX, (ix+Obj.flags)
 .l_6:
-        bit 1, (ix+Obj.direction)
+        bit Dir.left, (ix+Obj.direction)
         jr Z, .l_7
-        ld a, (State.s_4B)
+        ld a, (State.tTypeLeft)
         cp #04
         jr C, .l_7
-        set 2, (ix+Obj.flags)
+        set Flag.fixedX, (ix+Obj.flags)
 .l_7:
-        bit 2, (ix+Obj.direction)
+        bit Dir.down, (ix+Obj.direction)
         jr Z, .l_8
-        ld a, (State.s_4A)
+        ld a, (State.tTypeBot)
         cp #03
         jr C, .l_8
-        set 3, (ix+Obj.flags)
+        set Flag.fixedY, (ix+Obj.flags)
 .l_8:
-        bit 3, (ix+Obj.direction)
+        bit Dir.up, (ix+Obj.direction)
         jr Z, .l_9
-        ld a, (State.s_49)
+        ld a, (State.tTypeTop)
         cp #03
         jr C, .l_9
-        set 3, (ix+Obj.flags)
+        set Flag.fixedY, (ix+Obj.flags)
 .l_9:
         jp c_ef72.l_23
 
-; (Modifies some object properties?)
+; Get tile types behind different parts of the object and store them in the state
+;   arg `ix`: object
 ; Used by c_ed08, c_ef72, c_f0f3 and c_f518.
-c_f1d7:  ; #f1d7
-        bit 1, (ix+Obj.flags)
-        jr NZ, .l_0
+collectTileTypes:  ; #f1d7
+        bit Flag.isBig, (ix+Obj.flags)
+        jr NZ, .big
+
+.small:
+        ; x + 8, y
         ld a, (ix+Obj.x+0)
-        add #08
+        add 8
         ld (ix+Obj.x+0), a
         ld a, (ix+Obj.x+1)
-        adc a, #00
+        adc a, 0
         ld (ix+Obj.x+1), a
         call getScrTileAddr
         ld a, (hl)
         call getTileType
-        ld (State.s_49), a
-        ld de, #0058
+        ld (State.tTypeTop), a
+
+        ; x + 8, y + 16
+        ld de, 44 * 2           ; 2 tiles down
         add hl, de
         ld a, (hl)
         call getTileType
-        ld (State.s_4A), a
+        ld (State.tTypeBot), a
+
+        ; x, y + 8
         ld a, (ix+Obj.x+0)
-        add #F8
+        add -8
         ld (ix+Obj.x+0), a
         ld a, (ix+Obj.x+1)
-        adc a, #FF
+        adc a, -1
         ld (ix+Obj.x+1), a
         call getScrTileAddr
-        ld de, #002C
+        ld de, 44               ; 1 tile down
         add hl, de
         ld a, (hl)
         call getTileType
-        ld (State.s_4B), a
-        inc hl
-        inc hl
+        ld (State.tTypeLeft), a
+
+        ; x + 16, y + 8
+    .2  inc hl                  ; 2 tiles right
         ld a, (hl)
         call getTileType
-        ld (State.s_4C), a
-        ld de, #002A
+        ld (State.tTypeRight), a
+
+        ; x, y + 16
+        ld de, 44 - 2           ; 2 tiles down, 2 tiles left
         add hl, de
         ld a, (hl)
         call getTileType
-        ld (State.s_4D), a
-        inc hl
-        inc hl
+        ld (State.tTypeBotLf), a
+
+        ; x + 16, y + 16
+    .2  inc hl                  ; 2 tiles right
         ld a, (hl)
         call getTileType
-        ld (State.s_4E), a
+        ld (State.tTypeBotRg), a
+
         ret
-.l_0:
+
+.big:
+        ; x + 12|8, y
         ld a, (ix+Obj.x+0)
-        add #0C
+        add 12
         ld (ix+Obj.x+0), a
         ld a, (ix+Obj.x+1)
-        adc a, #00
+        adc a, 0
         ld (ix+Obj.x+1), a
         call getScrTileAddr
         ld a, (ix+Obj.x+0)
-        add #F4
+        add -12
         ld (ix+Obj.x+0), a
         ld a, (ix+Obj.x+1)
-        adc a, #FF
+        adc a, -1
         ld (ix+Obj.x+1), a
-        bit 1, (ix+Obj.direction)
+        bit Dir.left, (ix+Obj.direction)
         jr NZ, .l_1
-        dec hl
+        dec hl                  ; 1 tile left
 .l_1:
         ld a, (hl)
         call getTileType
-        ld (State.s_49), a
-        ld de, #0084
+        ld (State.tTypeTop), a
+
+        ; (x + 12|8)|(x + 20|8), y + 24 (?)
+        ld de, 44 * 3           ; 3 tiles down
         add hl, de
         ld a, (hl)
         call getTileType
-        ld (State.s_4A), a
-        inc hl
-        bit 1, (ix+Obj.direction)
+        ld (State.tTypeBot), a
+        inc hl                  ; 1 tile right
+        bit Dir.left, (ix+Obj.direction)
         jr NZ, .l_2
-        dec hl
+        dec hl                  ; 1 tile left
 .l_2:
         ld a, (hl)
         call getTileType
         ld c, a
-        ld a, (State.s_4A)
+        ld a, (State.tTypeBot)
         or c
-        ld (State.s_4A), a
+        ld (State.tTypeBot), a
+
+        ; x, y + 16
         call getScrTileAddr
         ld a, (ix+Obj.objType)
-        cp #82
+        cp ObjType.amazon.crocodile
         jr Z, .l_3
-        ld de, #0058
+        ld de, 44 * 2           ; 2 tiles down
         add hl, de
 .l_3:
         ld a, (hl)
         call getTileType
-        ld (State.s_4B), a
-        inc hl
-        inc hl
-        inc hl
+        ld (State.tTypeLeft), a
+
+        ; x + 24, y + 16
+    .3  inc hl                  ; 3 tiles right
         ld a, (hl)
         call getTileType
-        ld (State.s_4C), a
-        ld de, #0029
+        ld (State.tTypeRight), a
+
+        ; x, y + 24
+        ld de, 44 - 3           ; 1 tile down, 3 tiles left
         ld a, (ix+Obj.objType)
-        cp #11
+        cp ObjType.klondike.emptyMineCart
         jr Z, .l_4
-        cp #12
+        cp ObjType.klondike.fullMineCart
         jr NZ, .l_5
 .l_4:
-        ld de, #0055
+        ld de, 44 * 2 - 3       ; 2 tiles down, 3 tiles left
 .l_5:
         add hl, de
         ld a, (hl)
         call getTileType
-        ld (State.s_4D), a
-        inc hl
-        inc hl
-        inc hl
+        ld (State.tTypeBotLf), a
+
+        ; x + 24, y + 24
+    .3  inc hl                  ; 3 tiles right
         ld a, (hl)
         call getTileType
-        ld (State.s_4E), a
+        ld (State.tTypeBotRg), a
+
         ret
+
 
 ; Data block at F2D1
 c_f2d1:  ; #f2d1
@@ -1849,12 +1872,12 @@ c_f2e7:  ; #f2e7
         dec (ix+Obj.horizSpeed)
         ret
 .l_0:
-        bit 2, (ix+Obj.direction)
+        bit Dir.down, (ix+Obj.direction)
         jr NZ, .l_2
         ld a, (ix+Obj.o_6)
         or a
         jr NZ, .l_1
-        ld (ix+Obj.direction), 4
+        ld (ix+Obj.direction), 1<<Dir.down
         ld (ix+Obj.vertSpeed), 0
         ld (ix+Obj.horizSpeed), 32
         ret
@@ -1879,7 +1902,7 @@ c_f2e7:  ; #f2e7
         call getScrTileAddr
         ld c, #BD
         ld a, (State.level)
-        cp #03
+        cp Level.iceland
         jr NZ, .l_3
         dec c
 .l_3:
@@ -1913,7 +1936,7 @@ c_f2e7:  ; #f2e7
         ld (ix+Obj.vertSpeed), a
         ret
 .l_5:
-        ld (ix+Obj.direction), 8
+        ld (ix+Obj.direction), 1<<Dir.up
         ld (ix+Obj.vertSpeed), 0
         ret
 
@@ -1936,7 +1959,7 @@ directionTransform:  ; #f373
 ; (Moves object along trajectory?)
 ; Used by c_ed08.
 c_f37e:  ; #f37e
-        bit 5, (ix+Obj.flags)
+        bit Flag.waiting, (ix+Obj.flags)
         ret NZ
         xor a
         ld (State.s_4F), a
@@ -2011,42 +2034,42 @@ c_f37e:  ; #f37e
         or a
         jr Z, .l_8
         ld a, c
-        and #03
+        and Dir.horizontal
         jr Z, .l_6
-        xor #03
+        xor Dir.horizontal
 .l_6:
         ld b, a
         ld a, c
-        and #0C
+        and Dir.vertical
         jr Z, .l_7
-        xor #0C
+        xor Dir.vertical
 .l_7:
         or b
         ld c, a
 .l_8:
         ld (ix+Obj.o_18), c
         ld a, (State.s_4F)
-        bit 0, (ix+Obj.o_24)
+        bit Flag.fo_0, (ix+Obj.o_24)
         jr Z, .l_9
         ld (ix+Obj.horizSpeed), a
 .l_9:
         ld b, a
-        bit 2, c
+        bit Dir.down, c
         jr Z, .l_10
         ld a, (ix+Obj.y)
         add b
         ld (ix+Obj.y), a
         jr .l_11
 .l_10:
-        bit 3, c
+        bit Dir.up, c
         jr Z, .l_11
         ld a, (ix+Obj.y)
         sub b
         ld (ix+Obj.y), a
 .l_11:
         ld e, b
-        ld d, #00
-        bit 0, c
+        ld d, 0
+        bit Dir.right, c
         jr Z, .l_12
         ld l, (ix+Obj.x+0)
         ld h, (ix+Obj.x+1)
@@ -2055,7 +2078,7 @@ c_f37e:  ; #f37e
         ld (ix+Obj.x+1), h
         jr .l_13
 .l_12:
-        bit 1, c
+        bit Dir.left, c
         jr Z, .l_13
         ld l, (ix+Obj.x+0)
         ld h, (ix+Obj.x+1)
@@ -2077,7 +2100,7 @@ c_f37e:  ; #f37e
 .l_15:
         call isObjectVisibleOrWaiting
         ret C
-        ld (ix+Obj.flags), 0
+        ld (ix+Obj.flags), 0    ; remove object
         ret
 
 
@@ -2132,9 +2155,9 @@ checkStillEnemyActivation:  ; #f488
         ret C
 
         ; if in range, activate the enemy
-        res 5, (ix+Obj.flags)   ; remove waiting flag
-        res 2, (ix+Obj.flags)
-        res 3, (ix+Obj.flags)
+        res Flag.waiting, (ix+Obj.flags)
+        res Flag.fixedX, (ix+Obj.flags)
+        res Flag.fixedY, (ix+Obj.flags)
         ld (ix+Obj.stillActW), 0
         ret
 
@@ -2143,9 +2166,9 @@ checkStillEnemyActivation:  ; #f488
 ; Used by c_ed08.
 c_f4e9:  ; #f4e9
         ld a, (ix+Obj.objType)
-        cp 15                   ; dynamite
+        cp ObjType.klondike.dynamite1
         jr Z, .isDynamite
-        cp 16                   ; dynamite
+        cp ObjType.klondike.dynamite2
         ret NZ
 .isDynamite:
         call generateRandom
@@ -2153,7 +2176,7 @@ c_f4e9:  ; #f4e9
         ret NC
         ld (ix+Obj.o_6), 0
         ld (ix+Obj.o_7), -1
-        ld (ix+Obj.colour), Colour.white
+        ld (ix+Obj.colour), Colour.brWhite
         ret
 
 ; Data block at F506
@@ -2180,14 +2203,14 @@ c_f518:  ; #f518
         ld a, (hl)
         cp #7F
         jr NZ, .l_1
-        call c_f1d7
-        ld a, (State.s_4A)
+        call collectTileTypes
+        ld a, (State.tTypeBot)
         cp #04
         jr C, .l_1
         ld a, (ix+Obj.y)
         and #F8
         ld (ix+Obj.y), a
-        ld (ix+Obj.behaviour), #00
+        ld (ix+Obj.behaviour), Behaviour.be_0
 .l_1:
         inc (ix+Obj.trajectory)
         jp c_ef72.l_23
@@ -2216,7 +2239,7 @@ emitEnemyBullet:  ; #f564
         or a
         ret NZ
         ld a, (ix+Obj.behaviour)
-        cp 1
+        cp Behaviour.be_1
         ret Z
         ld a, (ix+Obj.o_49)
         or a
@@ -2234,16 +2257,16 @@ emitEnemyBullet:  ; #f564
         ld (iy+Obj.sprite+0), l
         ld (iy+Obj.sprite+1), h
         ld (iy+Obj.o_7), 0
-        ld (iy+Obj.colour), Colour.white
+        ld (iy+Obj.colour), Colour.brWhite
         ld (iy+Obj.direction), 0
         ld (iy+Obj.horizSpeed), 5
         ld (iy+Obj.vertSpeed), 3
         ld (iy+Obj.width), 6
         ld (iy+Obj.height), 6
         ld (iy+Obj.health), 1
-        ld (iy+Obj.flags), %1   ; small
-        ld (iy+Obj.objType), 0
-        ld (iy+Obj.behaviour), 1
+        ld (iy+Obj.flags), 1<<Flag.exists
+        ld (iy+Obj.objType), ObjType.bullet
+        ld (iy+Obj.behaviour), Behaviour.be_1
         ld (iy+Obj.o_24), 0
         ld a, (ix+Obj.o_49)
         ld (iy+Obj.o_49), a
@@ -2273,18 +2296,18 @@ emitEnemyBullet:  ; #f564
         cp 2
         jr NZ, .l_0
         ld a, (ix+Obj.direction)
-        and %00000011
+        and Dir.horizontal
         ld (iy+Obj.direction), a
         ret
 .l_0:
         cp 3
         jr NZ, .l_1
-        ld (iy+Obj.direction), 8
+        ld (iy+Obj.direction), 1<<Dir.up
         ret
 .l_1:
         cp 4
         ret NZ
-        ld (iy+Obj.direction), 4
+        ld (iy+Obj.direction), 1<<Dir.down
         ret
 .l_2:
         push ix
@@ -2304,7 +2327,7 @@ c_f618:  ; #f618
         ld iy, scene
         call checkObjectCollision
         jr C, .l_1
-        ld (ix+Obj.flags), 0
+        ld (ix+Obj.flags), 0    ; remove object
         ld b, (ix+Obj.health)
         ld a, (iy+Obj.blinkTime)
         or a
@@ -2330,20 +2353,20 @@ c_f618:  ; #f618
         call getScrTileAddr
         ld a, (hl)
         call getTileType
-        cp 4
+        cp TileType.wall
         jr C, .l_3
-        ld (ix+Obj.flags), 0
+        ld (ix+Obj.flags), 0    ; remove object
         ret
 .l_3:
         call isObjectVisible
         ret C
-        ld (ix+Obj.flags), 0
+        ld (ix+Obj.flags), 0    ; remove object
         ret
 
 ; (Some game logic?)
 ; Used by c_ef72.
 c_f670:  ; #f670
-        bit 5, (ix+Obj.o_24)
+        bit Flag.fo_5, (ix+Obj.o_24)
         ret Z
         call generateRandom
         cp 8
@@ -2351,20 +2374,20 @@ c_f670:  ; #f670
         bit 1, (ix+Obj.trajectory)
         jr Z, .l_0
         ld a, (ix+Obj.direction)
-        xor %00000011
+        xor Dir.horizontal
         ld (ix+Obj.direction), a
 .l_0:
         bit 0, (ix+Obj.trajectory)
         ret Z
         ld a, (ix+Obj.direction)
-        xor %00001100
+        xor Dir.vertical
         ld (ix+Obj.direction), a
         ret
 
 ; (Some game logic?)
 ; Used by c_ef72.
 c_f697:  ; #f697
-        bit 1, (ix+Obj.o_24)
+        bit Flag.fo_1, (ix+Obj.o_24)
         ret Z
         ld a, (ix+Obj.o_48)
         or a
@@ -2467,7 +2490,7 @@ setWaitingFlags:
         ld ix, scene.obj2
         ld b, 6                 ; object count
 .object:
-        bit 0, (ix+Obj.flags)   ; exists
+        bit Flag.exists, (ix+Obj.flags)
         jr Z, .skip
         ld l, (ix+Obj.x+0)
         ld h, (ix+Obj.x+1)
@@ -2475,13 +2498,13 @@ setWaitingFlags:
         xor a
         sbc hl, de
         jp C, .visible
-        set 5, (ix+Obj.flags)   ; waiting
+        set Flag.waiting, (ix+Obj.flags)
         jr .skip
 .visible:
         ld a, (ix+Obj.stillActW)
         or a
         jr NZ, .skip            ; visible, but still
-        res 5, (ix+Obj.flags)   ; remove waiting flag
+        res Flag.waiting, (ix+Obj.flags)
 .skip:
         ld de, Obj              ; object size
         add ix, de
@@ -2557,7 +2580,7 @@ createObject:
         ; fill object properties
         ld (ix+Obj.o_6), 0
         ld (ix+Obj.o_48), 0
-        ld (ix+Obj.direction), %0000010
+        ld (ix+Obj.direction), 1<<Dir.left
         ld a, (hl)              ; spriteAddr (low)
         ld (ix+Obj.sprite+0), a
         inc hl                  ; +1
@@ -2586,7 +2609,7 @@ createObject:
         or a
         jr Z, .l_2
         ld a, (ix+Obj.flags)
-        or %00101100
+        or  (1<<Flag.fixedX) | (1<<Flag.fixedY) | (1<<Flag.waiting)
         ld (ix+Obj.flags), a
 .l_2:
         inc hl                  ; +9
@@ -2603,7 +2626,7 @@ createObject:
         ld a, (State.inShop)
         cp #7F
         jr NZ, .l_3
-        ld (ix+Obj.flags), #00
+        ld (ix+Obj.flags), 0    ; remove object
         ret
 .l_3:
         inc hl                  ; +12
@@ -2659,7 +2682,7 @@ createObject:
         ld (ix+Obj.direction), a
 
         ; get top by bottom and height
-        bit 1, (ix+Obj.flags)   ; is big
+        bit Flag.isBig, (ix+Obj.flags)
         jr NZ, .big             ; why? same code for both cases
 .small:
         ld a, (ix+Obj.y)
@@ -2673,7 +2696,7 @@ createObject:
 
 .l_5:
         ld a, (ix+Obj.objType)
-        cp 14                   ; press/platform
+        cp ObjType.pressPlatf
         jr NZ, .notPress
 
         ; adjust coords for a press/platform
@@ -2689,7 +2712,7 @@ createObject:
         ret
 
 .notPress:
-        cp 1                    ; shatterbomb
+        cp ObjType.shatterbomb
         jr NZ, .notShatterBomb
         ld a, (ix+Obj.y)
         add 6
@@ -2698,9 +2721,9 @@ createObject:
 
 .notShatterBomb:
         ld a, (ix+Obj.objType)
-        cp 163                  ; one of three snowBall types in Iceland (?)
+        cp ObjType.iceland.snowBall1
         jr NZ, .notSnowBall
-        ld (ix+Obj.flags), 0    ; remove object (?)
+        ld (ix+Obj.flags), 0    ; remove object
         ret
 
 .notSnowBall:
@@ -2709,15 +2732,15 @@ createObject:
         ret NZ
 
         ld a, (ix+Obj.objType)
-        cp 53                   ; Klondike boss
+        cp ObjType.klondike.boss
         jr Z, .possiblyBoss
-        cp 94                   ; Orient boss
+        cp ObjType.orient.boss
         jr Z, .boss
-        cp 138                  ; Amazon boss
+        cp ObjType.amazon.boss
         jr Z, .boss
-        cp 191                  ; Iceland boss
+        cp ObjType.iceland.boss
         jr Z, .boss
-        cp 237                  ; Bermuda boss
+        cp ObjType.bermuda.boss
         jr Z, .boss
         ret
 

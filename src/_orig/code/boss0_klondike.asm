@@ -83,7 +83,7 @@ bossLogicKlondike:  ; #f8f4
         ld ix, scene.obj2
         ld de, Obj
 .l_5:
-        ld (ix+Obj.flags), #00
+        ld (ix+Obj.flags), 0    ; remove object
         djnz .l_5
         ld a, #01
         ld (State.bossFight), a

@@ -9,12 +9,12 @@ getSpriteAddr:  ; #e47a
         ld l, (ix+Obj.sprite+0)
         ld h, (ix+Obj.sprite+1)            ; `hl`: base sprite addr
         ld de, 21 * 6           ; big sprite size in bytes
-        bit 1, (ix+Obj.flags)           ; is sprite big
+        bit Flag.isBig, (ix+Obj.flags)
         jr NZ, .l_0
         ld de, 16 * 4           ; small sprite size in bytes
 .l_0:
         ld a, (ix+Obj.objType)
-        cp -1
+        cp ObjType.hero
         ret Z
 
         ld a, (ix+Obj.o_7)
@@ -92,9 +92,9 @@ c_e4ee:  ; #e4ee
 ; Get cloud sprite phase address
 ; Used by c_e47a.
 c_e4fc:  ; #e4fc
-        set 5, (ix+Obj.flags)
-        set 2, (ix+Obj.flags)
-        set 3, (ix+Obj.flags)
+        set Flag.waiting, (ix+Obj.flags)
+        set Flag.fixedX, (ix+Obj.flags)
+        set Flag.fixedY, (ix+Obj.flags)
         ld a, (ix+Obj.o_6)
         add a
         ld l, a
@@ -109,7 +109,7 @@ c_e4fc:  ; #e4fc
         ld a, (ix+Obj.o_6)
         cp #07
         ret C
-        set 7, (ix+Obj.flags)
+        set Flag.cleanUp, (ix+Obj.flags)
         push hl
         ld a, (ix+Obj.score)
         call addScore
@@ -131,31 +131,31 @@ c_e52d:  ; #e52d
         add hl, de
         add hl, de
 .l_1:
-        bit 0, (ix+Obj.o_18)
+        bit Dir.right, (ix+Obj.o_18)
         jr NZ, .l_2
-        set 6, (ix+Obj.flags)
+        set Flag.mirror, (ix+Obj.flags)
         ret
 .l_2:
-        res 6, (ix+Obj.flags)
+        res Flag.mirror, (ix+Obj.flags)
         ret
 
 ; (Get Mole sprite address?)
 ; Used by c_e47a.
 c_e54f:  ; #e54f
-        bit 5, (ix+Obj.flags)
+        bit Flag.waiting, (ix+Obj.flags)
         ret NZ
-        ld (ix+Obj.colour), Colour.white
+        ld (ix+Obj.colour), Colour.brWhite
         ld hl, cS.shopMole
         ld (ix+Obj.sprite+0), l
         ld (ix+Obj.sprite+1), h
-        ld (ix+Obj.objType), #09
+        ld (ix+Obj.objType), ObjType.shopMole
         ret
 
 ; (Modifies some object properties?)
 ; Used by c_e47a.
 c_e566:  ; #e566
         ld a, (ix+Obj.flags)
-        xor %01000000           ; bit 6: mirror (?)
+        xor 1<<Flag.mirror
         ld (ix+Obj.flags), a
         ret
 

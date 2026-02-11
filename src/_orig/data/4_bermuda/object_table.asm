@@ -128,7 +128,7 @@ objectTable:
         db #03, #B0,  7, #CB    ; x=944 ufo
         db #03, #BC, 10, #D8    ; x=956 parrot
         db #03, #C0, 13, #D7    ; x=960 parrot
-        db #03, #D8, 20, #03    ; x=984 lazerGun
+        db #03, #D8, 20, #03    ; x=984 laserGun
         db #03, #DC, 20, #D0    ; x=988 canon
         db #03, #E3,  7, #D0    ; x=995 canon
         db #03, #ED, 15, #D2    ; x=1005 parrot
@@ -199,7 +199,7 @@ objectTable:
         db #06, #3D,  4, #DE    ; x=1597 ghost
         db #06, #58, 17, #F4    ; x=1624 bossTornado0
         db #06, #71, 12, #05    ; x=1649 slimyWorms
-        db #06, #78, 17, #03    ; x=1656 lazerGun
+        db #06, #78, 17, #03    ; x=1656 laserGun
         db #06, #79,  8, #02    ; x=1657 powerGun
         db #06, #81, 12, #05    ; x=1665 slimyWorms
         db #06, #84, 20, #00    ; x=1668 shopMole

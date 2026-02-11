@@ -16,11 +16,11 @@ levelNames:  ; #d52b
 ; Used by c_cc25.
 levelSelectionMenu:  ; #d553
         call clearScreenPixels
-        ld a, Colour.white      ; bright white ink, black paper
+        ld a, Colour.brWhite    ; bright white ink, black paper
         call fillScreenAttrs
         ld hl, #0809
         ld de, textSelectLevel
-        ld c, Colour.yellow
+        ld c, Colour.brYellow
         call printString
         ld hl, State.levelsDone
         ld b, #05
@@ -34,10 +34,10 @@ levelSelectionMenu:  ; #d553
         cp 4
         jr NZ, .l_3
         ld de, levelNames.bermuda
-        ld hl, #0B0C
-        ld c, Colour.white
+        ld hl, #0B0C            ; at 11, 12
+        ld c, Colour.brWhite
         call printString
-        ld a, #04
+        ld a, Level.bermuda
         ld (State.level), a
 .l_1:
         ld a, (controlState)
@@ -64,7 +64,7 @@ levelSelectionMenu:  ; #d553
         and #03
         ld (State.level), a
         ld l, a
-        ld h, #00
+        ld h, 0
         ld de, State.levelsDone
         add hl, de
         ld a, (hl)
@@ -75,16 +75,14 @@ levelSelectionMenu:  ; #d553
         jr .l_5
 .l_6:
         ld a, (State.level)
-        add a
-        add a
-        add a
+    .3  add a
         ld l, a
-        ld h, #00
+        ld h, 0
         ld de, levelNames
         add hl, de
         ex de, hl
         ld hl, #0B0C
-        ld c, Colour.white
+        ld c, Colour.brWhite
         call printString
         ld bc, #00FA
         call delay
@@ -99,7 +97,7 @@ levelSelectionMenu:  ; #d553
         call clearScreenPixels
         ld hl, #0E0B
         ld de, textPressFire
-        ld c, Colour.white
+        ld c, Colour.brWhite
         call printString
 .l_8:
         ld a, (controlState)
@@ -132,7 +130,7 @@ loadLevelIfNeeded:  ; #d62c
         call clearScreenPixels
         ld de, textStartTape
         ld hl, #0C0B
-        ld c, Colour.white
+        ld c, Colour.brWhite
         call printString
         call loadLevel
         jr NC, .l_1
@@ -147,11 +145,11 @@ loadLevelIfNeeded:  ; #d62c
         call clearScreenPixels
         ld hl, #0C0B
         ld de, textLoadError
-        ld c, Colour.yellow
+        ld c, Colour.brYellow
         call printString
         inc de
         ld hl, #0E0B
-        ld c, Colour.white
+        ld c, Colour.brWhite
         call printString
 .l_2:
         ld a, (controlState)

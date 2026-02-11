@@ -51,12 +51,12 @@ pressTime:  db -0       ; time during which the hero is small after a press
 inShop:     db -0       ; 0: not in shop, #FF: entering shop, #7F in shop
 shopItem:   db -0       ; active item in the shop (objType - 1)
 shopPrice:  db -0       ; active item price in the shop
-s_49:       db -0
-s_4A:       db -0
-s_4B:       db -0
-s_4C:       db -0
-s_4D:       db -0
-s_4E:       db -0
+tTypeTop:   db -0
+tTypeBot:   db -0
+tTypeLeft:  db -0
+tTypeRight: db -0
+tTypeBotLf: db -0
+tTypeBotRg: db -0
 s_4F:       db -0
 s_50:       db -0
 bulletTime: db -0       ; enemy bullet emission timer

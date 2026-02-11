@@ -12,7 +12,7 @@ gameMenu:  ; #c6d5
         call callPlayMenuMusic
 
         call clearScreenPixels
-        ld a, Colour.white      ; bright white ink, black paper
+        ld a, Colour.brWhite    ; bright white ink, black paper
         call fillScreenAttrs
         ld a, 0
         out (#FE), a            ; set border black
@@ -78,9 +78,9 @@ gameMenu:  ; #c6d5
 .l_7:
         ld a, (hl)
         inc a                   ; next ink colour
-        cp Colour.white + 1
+        cp Colour.brWhite + 1
         jr C, .l_8              ; if greater than bright white
-        ld a, Colour.blue       ;   return to blue
+        ld a, Colour.brBlue       ;   return to blue
 .l_8:
         ld (hl), a
         inc l
@@ -103,42 +103,42 @@ gameMenu:  ; #c6d5
 printGameMenuText:  ; #c76f
         ld hl, #040A
         ld de, gameMenuText     ; 'impossamole'
-        ld c, Colour.white
+        ld c, Colour.brWhite
         call printString
         ld hl, #1605
         inc de                  ; '@ 1990 gremlin graphics'
-        ld c, Colour.cyan
+        ld c, Colour.brCyan
         call printString
         ld hl, #0809
         inc de                  ; '0 start game'
-        ld c, Colour.white
+        ld c, Colour.brWhite
         call printString
         ld hl, #0909
         inc de                  ; '1 keyboard'
-        ld c, Colour.yellow
+        ld c, Colour.brYellow
         call printString
         ld hl, #0A09
         inc de                  ; '2 kempston'
-        ld c, Colour.magenta
+        ld c, Colour.brMagenta
         call printString
         ld hl, #0B09
         inc de                  ; '3 cursor'
-        ld c, Colour.green
+        ld c, Colour.brGreen
         call printString
         ld hl, #0C09
         inc de                  ; '4 interface 2'
-        ld c, Colour.cyan
+        ld c, Colour.brCyan
         call printString
         ld hl, #1305
         inc de                  ; 'written by core design'
-        ld c, Colour.green
+        ld c, Colour.brGreen
         call printString
 
         ; make digits (0..4) white
         ld hl, Screen.attrs.row9 + 9
         ld b, 5
 .l_0:
-        ld (hl), Colour.white
+        ld (hl), Colour.brWhite
         ld de, 32
         add hl, de
         djnz .l_0
@@ -146,7 +146,7 @@ printGameMenuText:  ; #c76f
         ; print last score
         ld hl, #0F07            ; at 15, 7
         ld de, textLastScore
-        ld c, Colour.magenta
+        ld c, Colour.brMagenta
         call printString
 
         ld hl, Screen.pixels.row15 + 18
@@ -160,9 +160,9 @@ clampActiveMenuItemAttrs:  ; #c7e1
         ld hl, (activeMenuItemAttrAddr)
         ld b, #0C
         ld a, (hl)
-        cp Colour.white + 1
+        cp Colour.brWhite + 1
         jr C, .l_0
-        ld a, Colour.blue
+        ld a, Colour.brBlue
 .l_0:
         ld (hl), a
         inc l

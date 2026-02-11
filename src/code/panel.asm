@@ -4,14 +4,14 @@
 ; Attributes used for items on the panel
 ; (number of chars, colour)
 panelAttrs:
-        db  1, Colour.gray      ; smart
-        db  6, Colour.white     ; score
-        db  3, Colour.magenta   ; soup cans
-        db  4, Colour.yellow    ; coins
-        db  1, Colour.purple    ; diary
-.energ: db  3, Colour.red       ; energy
-        db  4, Colour.green     ; energy
-        db 10, Colour.blue      ; energy
+        db  1, Colour.white     ; smart
+        db  6, Colour.brWhite   ; score
+        db  3, Colour.brMagenta ; soup cans
+        db  4, Colour.brYellow  ; coins
+        db  1, Colour.magenta   ; diary
+.energ: db  3, Colour.brRed     ; energy
+        db  4, Colour.brGreen   ; energy
+        db 10, Colour.brBlue    ; energy
 .end:   db  0
 
 
@@ -285,7 +285,7 @@ clearEnergy:
 
         ld h, high(Screen.attrs)
         ld b, 17
-        ld a, Colour.white
+        ld a, Colour.brWhite
 .attr:
         ld (hl), a
         dec l

@@ -19,14 +19,14 @@ c_d6f1:  ; #d6f1
 c_d709:  ; #d709
         ld ix, scene.hero
         call collectStateTiles
-        
+
         ld a, (State.s_28)
         add a
         ld l, a
         ld h, 0
         ld de, c_d6e7
         add hl, de
-        
+
         ld e, (hl)
         inc hl
         ld d, (hl)
@@ -48,23 +48,23 @@ c_d709:  ; #d709
 .l_0:
         ld a, (State.tileLfFoot)
         call getTileType
-        cp #05
+        cp TileType.conveyorL
         jp Z, .l_6
-        cp #06
+        cp TileType.conveyorR
         jp Z, .l_7
         ld a, (State.tileRgFoot)
         call getTileType
-        cp #05
+        cp TileType.conveyorL
         jp Z, .l_6
-        cp #06
+        cp TileType.conveyorR
         jp Z, .l_7
         ld a, (State.tileLfFoot)
         call getTileType
-        cp #09
+        cp TileType.waterSpikes
         jr Z, .l_1
         ld a, (State.tileRgFoot)
         call getTileType
-        cp #09
+        cp TileType.waterSpikes
         jr NZ, .l_4
 .l_1:
         call decEnergy
@@ -75,7 +75,7 @@ c_d709:  ; #d709
         jp Z, .l_2
         ld b, a
         ld a, (ix+Obj.direction)
-        and #FC
+        and ~Dir.horizontal
         or b
         ld (ix+Obj.direction), a
         ld (ix+Obj.horizSpeed), 2
@@ -131,22 +131,22 @@ c_d7f6_t0:  ; #d7f6
         ld a, (controlState)
         bit Key.up, a
         jr Z, .notUp
-        
+
         ld a, (State.tileCentre)
         call getTileType
-        
+
         cp TileType.ladder
         jp Z, .l_12
         cp TileType.ladderTop
         jp Z, .l_12
         jp .l_9
-        
+
 .notUp:
         bit Key.down, a
         jr Z, .l_1
         ld a, (State.tileCnFoot)
         call getTileType
-        cp #02
+        cp TileType.ladderTop
         jp Z, .l_12
 .l_1:
         ld a, (controlState)
@@ -154,36 +154,36 @@ c_d7f6_t0:  ; #d7f6
         jp NZ, .l_7
         bit Key.right, a
         jp NZ, .l_8
-        bit 0, (ix+Obj.o_24)
+        bit Flag.fo_0, (ix+Obj.o_24)
         ret NZ
         ld a, (State.tileLfFoot)
         call getTileType
-        cp #02
+        cp TileType.ladderTop
         jr NC, .l_2
         ld a, (State.tileRgFoot)
         call getTileType
-        cp #02
+        cp TileType.ladderTop
         jp C, c_d94c_t1.l_13
 .l_2:
         ld a, (State.tileLfFoot)
         call getTileType
-        cp #07
+        cp TileType.ice
         jr Z, .l_3
         ld a, (State.tileRgFoot)
         call getTileType
-        cp #07
+        cp TileType.ice
         jr Z, .l_3
         ld a, (State.tileLfFoot)
         call getTileType
-        cp #05
+        cp TileType.conveyorL
         ret NC
         ld a, (State.tileRgFoot)
         call getTileType
-        cp #05
+        cp TileType.conveyorL
         jp C, c_d94c_t1.l_11
         ret
 .l_3:
-        bit 0, (ix+Obj.direction)
+        bit Dir.right, (ix+Obj.direction)
         jr NZ, .l_4
         call c_de37
         jp NZ, c_d94c_t1.l_11
@@ -215,8 +215,8 @@ c_d7f6_t0:  ; #d7f6
         xor a
         ld (State.s_42), a
         ld (ix+Obj.o_6), a
-        set 1, (ix+Obj.direction)
-        res 0, (ix+Obj.direction)
+        set Dir.left, (ix+Obj.direction)
+        res Dir.right, (ix+Obj.direction)
         ret
 .l_8:
         ld a, #01
@@ -226,14 +226,14 @@ c_d7f6_t0:  ; #d7f6
         xor a
         ld (State.s_42), a
         ld (ix+Obj.o_6), a
-        set 0, (ix+Obj.direction)
-        res 1, (ix+Obj.direction)
+        set Dir.right, (ix+Obj.direction)
+        res Dir.left, (ix+Obj.direction)
         ret
 .l_9:
         ld a, (State.pressTime)
         or a
         ret NZ
-        res 0, (ix+Obj.o_24)
+        res Flag.fo_0, (ix+Obj.o_24)
         ld a, #02
         ld (State.s_28), a
         ld a, (controlState)
@@ -241,7 +241,7 @@ c_d7f6_t0:  ; #d7f6
         jp Z, .l_10
         ld b, a
         ld a, (ix+Obj.direction)
-        and #FC
+        and ~Dir.horizontal
         or b
         ld (ix+Obj.direction), a
         ld (ix+Obj.horizSpeed), #02
@@ -285,39 +285,39 @@ c_d7f6_t0:  ; #d7f6
 
 ; (Some game logic from call table #D6E7?)
 c_d94c_t1:  ; #d94c
-        bit 0, (ix+Obj.o_24)
+        bit Flag.fo_0, (ix+Obj.o_24)
         jr NZ, .l_0
         ld a, (State.tileLfFoot)
         call getTileType
-        cp #02
+        cp TileType.ladderTop
         jr NC, .l_0
         ld a, (State.tileRgFoot)
         call getTileType
-        cp #02
+        cp TileType.ladderTop
         jp C, .l_13
 .l_0:
         ld a, (controlState)
         bit Key.up, a
         jp NZ, .l_11
-        bit 2, a
+        bit Key.down, a
         jr Z, .l_1
         ld a, (State.tileCnFoot)
         call getTileType
-        cp #02
+        cp TileType.ladderTop
         jp Z, c_d7f6_t0.l_12
 .l_1:
-        bit 0, (ix+Obj.direction)
+        bit Dir.right, (ix+Obj.direction)
         jp NZ, .l_5
         call c_de37
         or a
         jp NZ, .l_11
         ld a, (State.tileLfFoot)
         call getTileType
-        cp #08
+        cp TileType.slow
         jr Z, .l_2
         ld a, (State.tileRgFoot)
         call getTileType
-        cp #08
+        cp TileType.slow
         jr NZ, .l_3
 .l_2:
         ld a, (ix+Obj.x)
@@ -346,11 +346,11 @@ c_d94c_t1:  ; #d94c
         jp NZ, .l_11
         ld a, (State.tileLfFoot)
         call getTileType
-        cp #08
+        cp TileType.slow
         jr Z, .l_6
         ld a, (State.tileRgFoot)
         call getTileType
-        cp #08
+        cp TileType.slow
         jr NZ, .l_7
 .l_6:
         ld a, (ix+Obj.x)
@@ -375,11 +375,11 @@ c_d94c_t1:  ; #d94c
 .l_9:
         ld a, (State.tileLfFoot)
         call getTileType
-        cp #07
+        cp TileType.ice
         jr Z, .l_10
         ld a, (State.tileRgFoot)
         call getTileType
-        cp #07
+        cp TileType.ice
         ret NZ
 .l_10:
         ld a, #01
@@ -419,7 +419,7 @@ c_d94c_t1:  ; #d94c
         jp Z, .l_14
         ld b, a
         ld a, (ix+Obj.direction)
-        and #FC
+        and ~Dir.horizontal
         or b
         ld (ix+Obj.direction), a
         ld a, #02
@@ -452,15 +452,15 @@ c_da95_t2:  ; #da95
         jr Z, .l_1
         ld a, (State.tileCentre)
         call getTileType
-        cp #01
+        cp TileType.ladder
         jp Z, c_d7f6_t0.l_12
-        cp #02
+        cp TileType.ladderTop
         jp Z, c_d7f6_t0.l_12
 .l_1:
         ld a, (ix+Obj.horizSpeed)
         or a
         jr Z, .l_3
-        bit 0, (ix+Obj.direction)
+        bit Dir.right, (ix+Obj.direction)
         jr NZ, .l_2
         call c_de37
         or a
@@ -498,22 +498,22 @@ c_da95_t2:  ; #da95
         call collectTilesAbove
         ld a, (State.tileLfAbov)
         call getTileType
-        cp #04
+        cp TileType.wall
         jr NC, .l_5
         ld a, (State.tileRgAbov)
         call getTileType
-        cp #04
+        cp TileType.wall
         jr NC, .l_5
         ret
 .l_4:
         call collectTwoTilesBelow
         ld a, (State.tileLfFoot)
         call getTileType
-        cp #02
+        cp TileType.ladderTop
         jp NC, c_d94c_t1.l_11
         ld a, (State.tileRgFoot)
         call getTileType
-        cp #02
+        cp TileType.ladderTop
         jp NC, c_d94c_t1.l_11
         ret
 .l_5:
@@ -533,9 +533,9 @@ c_db4e_t3:  ; #db4e
         jr Z, .l_0
         ld a, (State.tileCentre)
         call getTileType
-        cp #01
+        cp TileType.ladder
         jp Z, c_d7f6_t0.l_12
-        cp #02
+        cp TileType.ladderTop
         jp Z, c_d7f6_t0.l_12
 .l_0:
         ld l, (ix+Obj.x+0)
@@ -544,7 +544,7 @@ c_db4e_t3:  ; #db4e
         ld a, (ix+Obj.horizSpeed)
         or a
         jr Z, .l_2
-        bit 0, (ix+Obj.direction)
+        bit Dir.right, (ix+Obj.direction)
         jr NZ, .l_1
         call c_de37
         or a
@@ -579,11 +579,11 @@ c_db4e_t3:  ; #db4e
         exx
         ld a, (State.tileLfFoot)
         call getTileType
-        cp #02
+        cp TileType.ladderTop
         jp NC, c_d94c_t1.l_11
         ld a, (State.tileRgFoot)
         call getTileType
-        cp #02
+        cp TileType.ladderTop
         jp NC, c_d94c_t1.l_11
         ld a, (controlState)
         bit Key.left, a
@@ -594,13 +594,13 @@ c_db4e_t3:  ; #db4e
         ret
 .l_3:
         ld (ix+Obj.horizSpeed), #02
-        set 1, (ix+Obj.direction)
-        res 0, (ix+Obj.direction)
+        set Dir.left, (ix+Obj.direction)
+        res Dir.right, (ix+Obj.direction)
         ret
 .l_4:
         ld (ix+Obj.horizSpeed), #02
-        set 0, (ix+Obj.direction)
-        res 1, (ix+Obj.direction)
+        set Dir.right, (ix+Obj.direction)
+        res Dir.left, (ix+Obj.direction)
         ret
 
 
@@ -622,11 +622,11 @@ c_dbfc_t4:  ; #dbfc
         call collectTilesAbove
         ld a, (State.tileLfAbov)
         call getTileType
-        cp #04
+        cp TileType.wall
         jr NC, .l_1
         ld a, (State.tileRgAbov)
         call getTileType
-        cp #04
+        cp TileType.wall
         jr NC, .l_1
         call c_dcce
         ld a, (ix+Obj.y)
@@ -659,7 +659,7 @@ c_dbfc_t4:  ; #dbfc
         call collectCentreTileBelow
         ld a, (State.tileCnFoot)
         call getTileType
-        cp #02
+        cp TileType.ladderTop
         jp NC, c_d94c_t1.l_11
 .l_4:
         ld a, (controlState)
@@ -711,9 +711,9 @@ c_dcce:  ; #dcce
         and %11
         ld (State.s_42), a
         ret NZ
-        
+
         ld a, (ix+Obj.direction)
-        xor %0011               ; left <-> right
+        xor Dir.horizontal      ; left <-> right
         ld (ix+Obj.direction), a
         ret
 
@@ -917,33 +917,33 @@ c_de37:  ; #de37
         jr NZ, .l_0
         ld a, (State.tileLfTop)
         call getTileType
-        cp #03
+        cp TileType.platform
         jr NC, .l_2
         ld a, (State.tileLfMid)
         call getTileType
-        cp #03
+        cp TileType.platform
         jr NC, .l_2
         ld a, (State.tileLfBot)
         call getTileType
-        cp #03
+        cp TileType.platform
         jr NC, .l_2
         ld a, (State.tileLfUndr)
         call getTileType
-        cp #03
+        cp TileType.platform
         jr NC, .l_2
         jp .l_1
 .l_0:
         ld a, (State.tileLfTop)
         call getTileType
-        cp #04
+        cp TileType.wall
         jr NC, .l_2
         ld a, (State.tileLfMid)
         call getTileType
-        cp #04
+        cp TileType.wall
         jr NC, .l_2
         ld a, (State.tileLfBot)
         call getTileType
-        cp #04
+        cp TileType.wall
         jr NC, .l_2
         ld a, (State.s_28)
         cp #02
@@ -953,7 +953,7 @@ c_de37:  ; #de37
         jp M, .l_1
         ld a, (State.tileRgUndr)
         call getTileType
-        cp #04
+        cp TileType.wall
         jr NC, .l_2
 .l_1:
         xor a
@@ -976,33 +976,33 @@ c_deb1:  ; #deb1
         jr NZ, .l_0
         ld a, (State.tileRgTop)
         call getTileType
-        cp #03
+        cp TileType.platform
         jr NC, .l_2
         ld a, (State.tileRgMid)
         call getTileType
-        cp #03
+        cp TileType.platform
         jr NC, .l_2
         ld a, (State.tileRgBot)
         call getTileType
-        cp #03
+        cp TileType.platform
         jr NC, .l_2
         ld a, (State.tileRgUndr)
         call getTileType
-        cp #03
+        cp TileType.platform
         jr NC, .l_2
         jp .l_1
 .l_0:
         ld a, (State.tileRgTop)
         call getTileType
-        cp #04
+        cp TileType.wall
         jr NC, .l_2
         ld a, (State.tileRgMid)
         call getTileType
-        cp #04
+        cp TileType.wall
         jr NC, .l_2
         ld a, (State.tileRgBot)
         call getTileType
-        cp #04
+        cp TileType.wall
         jr NC, .l_2
         ld a, (State.s_28)
         cp #02
@@ -1012,7 +1012,7 @@ c_deb1:  ; #deb1
         jp M, .l_1
         ld a, (State.tileRgUndr)
         call getTileType
-        cp #04
+        cp TileType.wall
         jr NC, .l_2
 .l_1:
         xor a
@@ -1044,10 +1044,10 @@ explosionBubbles:  ; #df5f
         dw cS.explosion3
         dw cS.explosion4
 
-lazerBulletTable:  ; #df67       w   h
-        dw cS.lazerBullet1 : db 16,  7, 8
-        dw cS.lazerBullet2 : db 16, 11, 6
-        dw cS.lazerBullet3 : db 16, 15, 4
+laserBulletTable:  ; #df67       w   h
+        dw cS.laserBullet1 : db 16,  7, 8
+        dw cS.laserBullet2 : db 16, 11, 6
+        dw cS.laserBullet3 : db 16, 15, 4
 powerBulletTable:  ; #df76
         dw cS.powerBullet1 : db  4,  4, 9
         dw cS.powerBullet2 : db  4, 16, 4
@@ -1112,9 +1112,9 @@ processFire:  ; #df85
         ld (ix+Obj.sprite+1), h
 
         ; create kick bubble
-        ld (iy+Obj.flags), %10  ; big
-        ld (iy+Obj.colour), Colour.white
-        ld (iy+Obj.direction), 1    ; right
+        ld (iy+Obj.flags), 1<<Flag.isBig
+        ld (iy+Obj.colour), Colour.brWhite
+        ld (iy+Obj.direction), 1<<Dir.right
         ld (iy+Obj.horizSpeed), 0
         ld (iy+Obj.o_7), 0
 
@@ -1122,7 +1122,7 @@ processFire:  ; #df85
         ld l, (ix+Obj.x+0)
         ld h, (ix+Obj.x+1)
         ld de, 16
-        bit 0, (ix+Obj.direction)   ; right
+        bit Dir.right, (ix+Obj.direction)
         jr NZ, .kickRight
 .kickLeft:
         ld de, -16
@@ -1169,8 +1169,8 @@ processFire:  ; #df85
         ld hl, cS.shatterbomb
         ld (iy+Obj.sprite+0), l
         ld (iy+Obj.sprite+1), h
-        ld (iy+Obj.flags), %1   ; exists
-        ld (iy+Obj.colour), Colour.cyan
+        ld (iy+Obj.flags), 1<<Flag.exists
+        ld (iy+Obj.colour), Colour.brCyan
         ld (iy+Obj.o_7), 0
         ld (iy+Obj.width), 8
         ld (iy+Obj.height), 8
@@ -1179,7 +1179,7 @@ processFire:  ; #df85
         ld l, (ix+Obj.x+0)
         ld h, (ix+Obj.x+1)
         ld de, 8
-        bit 0, (ix+Obj.direction)   ; right
+        bit Dir.right, (ix+Obj.direction)
         jr NZ, .throwRight
 .throwLeft:
         ld de, -6
@@ -1194,7 +1194,7 @@ processFire:  ; #df85
 
         ld (iy+Obj.horizSpeed), 4
         ld a, (ix+Obj.direction)
-        and %0011               ; left-right
+        and Dir.horizontal
         ld (iy+Obj.direction), a
 
         xor a
@@ -1208,7 +1208,7 @@ processFire:  ; #df85
 
 .gun:
         cp 2                    ; powerGun
-        jp NZ, .lazerGun
+        jp NZ, .laserGun
 
 .powerGun:
         ld a, 10                ; powerGun sound
@@ -1246,7 +1246,7 @@ processFire:  ; #df85
         ld l, (ix+Obj.x+0)
         ld h, (ix+Obj.x+1)
         ld de, 24
-        bit 0, (ix+Obj.direction)   ; right
+        bit Dir.right, (ix+Obj.direction)
         jr NZ, .powerShootRight
 .powerShootLeft
         ld de, -16
@@ -1255,14 +1255,14 @@ processFire:  ; #df85
         ld (iy+Obj.x+0), l
         ld (iy+Obj.x+1), h
 
-        ld (iy+Obj.flags), %1   ; exists
-        ld (iy+Obj.colour), Colour.white
+        ld (iy+Obj.flags), 1<<Flag.exists
+        ld (iy+Obj.colour), Colour.brWhite
         ld (iy+Obj.horizSpeed), 8
         ld (iy+Obj.vertSpeed), 8
         ld (iy+Obj.o_7), 0
 
         ld a, (ix+Obj.direction)
-        and %0011               ; left-right
+        and Dir.horizontal
         ld (iy+Obj.direction), a
 
         ld (State.s_38), a
@@ -1275,8 +1275,8 @@ processFire:  ; #df85
 
         jp checkEnemiesForDamage
 
-.lazerGun:
-        ld a, 8                 ; lazer gun sound
+.laserGun:
+        ld a, 8                 ; laser gun sound
         call playSound
 
         ld a, (State.soupCans)
@@ -1287,7 +1287,7 @@ processFire:  ; #df85
         add l
         ld l, a
         ld h, 0
-        ld de, lazerBulletTable
+        ld de, laserBulletTable
         add hl, de
 
         ; create bullet
@@ -1312,22 +1312,22 @@ processFire:  ; #df85
         ld l, (ix+Obj.x+0)
         ld h, (ix+Obj.x+1)
         ld de, 16
-        bit 0, (ix+Obj.direction)   ; right
-        jr NZ, .lazerShootRight
-.lazerShootLeft
+        bit Dir.right, (ix+Obj.direction)
+        jr NZ, .laserShootRight
+.laserShootLeft
         ld de, -6
-.lazerShootRight:
+.laserShootRight:
         add hl, de
         ld (iy+Obj.x+0), l
         ld (iy+Obj.x+1), h
 
         ld (iy+Obj.o_7), 0
-        ld (iy+Obj.flags), %1   ; exists
-        ld (iy+Obj.colour), Colour.cyan
+        ld (iy+Obj.flags), 1<<Flag.exists
+        ld (iy+Obj.colour), Colour.brCyan
         ld (iy+Obj.horizSpeed), 8
 
         ld a, (ix+Obj.direction)
-        and %0011               ; left-right
+        and Dir.horizontal
         ld (iy+Obj.direction), a
 
         ld (State.s_38), a
@@ -1364,7 +1364,7 @@ processFire:  ; #df85
         xor a
         ld (State.s_3D), a
         ld ix, scene.obj1
-        ld (ix+Obj.flags), a
+        ld (ix+Obj.flags), a    ; remove object
         ret
 .l_12:
         cp #02
@@ -1418,7 +1418,7 @@ processFire:  ; #df85
         ld (ix+Obj.x+1), a
         ld a, (hl)
         call getTileType
-        cp #02
+        cp TileType.ladderTop
         ret C
 .l_15:
         ld a, 6                 ; kill enemy sound
@@ -1435,7 +1435,7 @@ processFire:  ; #df85
         xor a
         ld (State.s_40), a
         ld (ix+Obj.direction), a
-        set 1, (ix+Obj.flags)
+        set Flag.isBig, (ix+Obj.flags)
         ld a, (State.soupCans)
         dec a
         ld (.l), a
@@ -1471,11 +1471,11 @@ processFire:  ; #df85
         ld h, (hl)
         ld (ix+Obj.sprite+0), a
         ld (ix+Obj.sprite+1), h
-        ld (ix+Obj.colour), Colour.white
+        ld (ix+Obj.colour), Colour.brWhite
         jp checkEnemiesForDamage
 .l_18:
         xor a
-        ld (ix+Obj.flags), a
+        ld (ix+Obj.flags), a    ; remove object
         ld (State.s_3D), a
         ld (State.s_40), a
         ld (c_e308), a
@@ -1504,7 +1504,7 @@ processFire:  ; #df85
         ld (ix+Obj.y), a
         ld a, (hl)
         call getTileType
-        cp #02
+        cp TileType.ladderTop
         jp NC, .l_18
         call checkEnemiesForDamage
         jr NC, .l_18
@@ -1541,12 +1541,12 @@ c_e31c:  ; #e31c
         ld de, Obj
         ld b, #06
 .l_1:
-        bit 0, (iy+Obj.flags)
+        bit Flag.exists, (iy+Obj.flags)
         jr Z, .l_2
         ld a, (iy+Obj.o_7)
         cp #FF
         jr Z, .l_2
-        bit 7, (iy+Obj.flags)
+        bit Flag.cleanUp, (iy+Obj.flags)
         jr NZ, .l_2
         ld a, (iy+Obj.health)
         cp #FE
@@ -1563,17 +1563,17 @@ c_e31c:  ; #e31c
         add iy, de
         djnz .l_1
         ld a, (ix+Obj.direction)
-        and #03
+        and Dir.horizontal
         ld (ix+Obj.direction), a
         ret
 .l_3:
         ld a, (ix+Obj.direction)
         ld l, a
-        ld h, #00
+        ld h, 0
         ld de, c_e311
         add hl, de
         ld b, (hl)
-        ld (ix+Obj.direction), #00
+        ld (ix+Obj.direction), 0
         ld l, (ix+Obj.x+0)
         ld h, (ix+Obj.x+1)
         ld e, (iy+Obj.x+0)
@@ -1588,34 +1588,34 @@ c_e31c:  ; #e31c
         neg
         ld l, a
         inc hl
-        set 0, (ix+Obj.direction)
+        set Dir.right, (ix+Obj.direction)
         jr .l_5
 .l_4:
-        set 1, (ix+Obj.direction)
+        set Dir.left, (ix+Obj.direction)
 .l_5:
         ld de, #0004
         xor a
         sbc hl, de
         jr NC, .l_6
-        ld (ix+Obj.direction), #00
+        ld (ix+Obj.direction), 0
 .l_6:
         ld a, (ix+Obj.y)
         sub (iy+Obj.y)
         jp P, .l_7
         neg
-        set 2, (ix+Obj.direction)
+        set Dir.down, (ix+Obj.direction)
         jr .l_8
 .l_7:
-        set 3, (ix+Obj.direction)
+        set Dir.up, (ix+Obj.direction)
 .l_8:
         cp #04
         jr NC, .l_9
-        res 2, (ix+Obj.direction)
-        res 3, (ix+Obj.direction)
+        res Dir.down, (ix+Obj.direction)
+        res Dir.up, (ix+Obj.direction)
 .l_9:
         ld a, (ix+Obj.direction)
         ld l, a
-        ld h, #00
+        ld h, 0
         ld de, c_e311
         add hl, de
         ld c, (hl)

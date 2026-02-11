@@ -12,7 +12,7 @@ beeperSounds:  ; #be3a
         db 100,  120,  0        ; [5]
         db  80,   80,  2        ; [6] kill enemy
         db  20,   20,  1        ; [7]
-        db  20,  200,  0        ; [8] lazer gun
+        db  20,  200,  0        ; [8] laser gun
         db  20,   20,  2        ; [9]
         db  10,  180,  0        ; [10] power gun
         db  20,  200,  3        ; [11] pick up item

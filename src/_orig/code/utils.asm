@@ -28,9 +28,9 @@ fillScreenAttrs:  ; #c877
 ; Used by c_cc25.
 rollConveyorTiles:  ; #c884
         ld a, (State.level)
-        cp #02
+        cp Level.amazon
         ret Z
-        cp #03
+        cp Level.iceland
         ret Z
         ld a, (conveyorTileIndices.left)
         or a

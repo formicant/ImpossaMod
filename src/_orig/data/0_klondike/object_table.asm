@@ -20,7 +20,7 @@ objectTable:
         db #00, #86,  6, #1C    ; x=134 bat
         db #00, #8A, 19, #12    ; x=138 fullMineCart
         db #00, #9B,  5, #22    ; x=155 bat
-        db #00, #9E, 12, #03    ; x=158 lazerGun
+        db #00, #9E, 12, #03    ; x=158 laserGun
         db #00, #A0,  5, #23    ; x=160 bat
         db #00, #A9,  8, #10    ; x=169 dynamite
         db #00, #BC, 19, #18    ; x=188 bat
@@ -94,7 +94,7 @@ objectTable:
         db #02, #F1, 17, #0E    ; x=753 pressPlatform
         db #02, #FA,  3, #18    ; x=762 bat
         db #03, #0C, 12, #1C    ; x=780 bat
-        db #03, #0D, 20, #03    ; x=781 lazerGun
+        db #03, #0D, 20, #03    ; x=781 laserGun
         db #03, #0E, 16, #0C    ; x=782 diamond
         db #03, #1F,  8, #13    ; x=799 gnome
         db #03, #25, 20, #13    ; x=805 gnome
@@ -186,10 +186,10 @@ objectTable:
         db #06, #45, 19, #11    ; x=1605 emptyMineCart
         db #06, #4C, 12, #31    ; x=1612 pressPlatform
         db #06, #55, 11, #31    ; x=1621 pressPlatform
-        db #06, #5C,  9, #03    ; x=1628 lazerGun
+        db #06, #5C,  9, #03    ; x=1628 laserGun
         db #06, #6D, 10, #05    ; x=1645 slimyWorms
         db #06, #71, 20, #01    ; x=1649 shatterbomb
-        db #06, #79, 14, #03    ; x=1657 lazerGun
+        db #06, #79, 14, #03    ; x=1657 laserGun
         db #06, #7C, 20, #00    ; x=1660 shopMole
         db #06, #7D,  8, #07    ; x=1661 pintaADay
         db #06, #81, 20, #05    ; x=1665 slimyWorms
