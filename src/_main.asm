@@ -7,9 +7,8 @@
 ; Definitions
     INCLUDE "_orig/inc/macros.inc"
     INCLUDE "_orig/inc/basic.inc"
-    INCLUDE "_orig/inc/colour.inc"
-    INCLUDE "_orig/inc/structs.inc"
     INCLUDE "_orig/inc/enums.inc"
+    INCLUDE "_orig/inc/structs.inc"
     INCLUDE "_orig/inc/ay.inc"
     INCLUDE "inc/memory.inc"
     INCLUDE "inc/level.inc"
