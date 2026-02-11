@@ -41,23 +41,23 @@ levelSelectionMenu:  ; #d553
         ld (State.level), a
 .l_1:
         ld a, (controlState)
-        bit 4, a
+        bit Key.fire, a
         jr NZ, .l_1
 .l_2:
         ld a, (controlState)
-        bit 4, a
+        bit Key.fire, a
         jr Z, .l_2
         jp .l_7
 .l_3:
         ld a, (controlState)
         ld c, a
         ld a, (State.level)
-        bit 2, c
+        bit Key.down, c
         jr Z, .l_4
         dec a
         jr .l_5
 .l_4:
-        bit 3, c
+        bit Key.up, c
         jr Z, .l_5
         inc a
 .l_5:
@@ -89,7 +89,7 @@ levelSelectionMenu:  ; #d553
         ld bc, #00FA
         call delay
         ld a, (controlState)
-        bit 4, a
+        bit Key.fire, a
         jr Z, .l_3
 .l_7:
         call loadLevelIfNeeded
@@ -103,7 +103,7 @@ levelSelectionMenu:  ; #d553
         call printString
 .l_8:
         ld a, (controlState)
-        bit 4, a
+        bit Key.fire, a
         jr Z, .l_8
         ret
 
@@ -155,7 +155,7 @@ loadLevelIfNeeded:  ; #d62c
         call printString
 .l_2:
         ld a, (controlState)
-        bit 4, a
+        bit Key.fire, a
         jr Z, .l_2
         pop af
         ret

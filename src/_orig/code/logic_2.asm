@@ -3,66 +3,77 @@
 
 ; (Modifies some object properties?)
 ; Used by c_cc25.
-c_e56f:  ; #e56f
+moveObjects:  ; #e56f
         ld ix, scene.obj1
-        ld b, #07
-.l_0:
+        ld b, 7                 ; object count
+.object:
         push bc
-        call c_e582
-        ld bc, Obj
+        call moveObject
+        ld bc, Obj              ; object size
         add ix, bc
         pop bc
-        djnz .l_0
+        djnz .object
         ret
+
 
 ; (Modifies some object properties?)
 ; Used by c_e56f.
-c_e582:  ; #e582
-        bit 0, (ix+Obj.flags)
+moveObject:  ; #e582
+        bit 0, (ix+Obj.flags)   ; exists
         ret Z
+
         ld a, (ix+Obj.o_48)
         or a
         ret NZ
-        bit 5, (ix+Obj.flags)
+        bit 5, (ix+Obj.flags)   ; waiting
         ret NZ
-        bit 2, (ix+Obj.flags)
-        jr NZ, .l_1
-        bit 0, (ix+Obj.o_21)
-        jr Z, .l_0
-        ld e, (ix+Obj.o_19)
-        ld d, #00
+
+.horizontal:
+        bit 2, (ix+Obj.flags)   ; fixed horizontally
+        jr NZ, .vertical
+
+        bit 0, (ix+Obj.direction)
+        jr Z, .left
+        ; move right
+        ld e, (ix+Obj.horizSpeed)
+        ld d, 0
         ld l, (ix+Obj.x+0)
         ld h, (ix+Obj.x+1)
         add hl, de
         ld (ix+Obj.x+0), l
         ld (ix+Obj.x+1), h
-        jr .l_1
-.l_0:
-        bit 1, (ix+Obj.o_21)
-        jr Z, .l_1
-        ld a, (ix+Obj.o_19)
+        jr .vertical
+.left:
+        bit 1, (ix+Obj.direction)
+        jr Z, .vertical
+        ; move left
+        ld a, (ix+Obj.horizSpeed)
         neg
         ld e, a
-        ld d, #FF
+        ld d, -1
         ld l, (ix+Obj.x+0)
         ld h, (ix+Obj.x+1)
         add hl, de
         ld (ix+Obj.x+0), l
         ld (ix+Obj.x+1), h
-.l_1:
-        bit 3, (ix+Obj.flags)
+
+.vertical:
+        bit 3, (ix+Obj.flags)   ; fixed vertically
         ret NZ
-        bit 3, (ix+Obj.o_21)
-        jr Z, .l_2
-        ld a, (ix+Obj.o_20)
+
+        bit 3, (ix+Obj.direction)
+        jr Z, .down
+        ; move up
+        ld a, (ix+Obj.vertSpeed)
         neg
         add (ix+Obj.y)
         ld (ix+Obj.y), a
         ret
-.l_2:
-        bit 2, (ix+Obj.o_21)
+.down:
+        bit 2, (ix+Obj.direction)
         ret Z
-        ld a, (ix+Obj.o_20)
+        ; move down
+        ld a, (ix+Obj.vertSpeed)
         add (ix+Obj.y)
         ld (ix+Obj.y), a
         ret
@@ -85,111 +96,113 @@ removeObjects:  ; #e5f2
         pop ix
         ret
 
-; ?
+
+; Check if the hero enters a transit
 ; Used by c_cc25.
-c_e60a:  ; #e60a
-        ld ix, scene
+checkTransitEnter:  ; #e60a
+        ld ix, scene.hero
         ld a, (State.s_27)
         ld (State.s_44), a
+
         ld a, (ix+Obj.y)
-        ld (State.s_43), a
-        cp #0B
-        jp C, .l_0
-        cp #E0
-        jr NC, .l_1
+        ld (State.tmpY), a
+        cp 11
+        jp C, .up
+        cp 224
+        jr NC, .down
         ret
-.l_0:
+.up:
         xor a
         exa
-        ld (ix+Obj.y), #E0
+        ld (ix+Obj.y), 224      ; appear from the bottom
         xor a
         ld (State.s_27), a
         jr .l_2
-.l_1:
-        ld a, #01
+.down:
+        ld a, 1
         exa
-        ld (ix+Obj.y), #0C
+        ld (ix+Obj.y), 12       ; appear from the top
+
 .l_2:
         ld de, Level.transitTable
         ld l, (ix+Obj.x+0)
         ld h, (ix+Obj.x+1)
         ld bc, -22
         add hl, bc
+    DUP 3
         sra h
         rr l
-        sra h
-        rr l
-        sra h
-        rr l
+    EDUP
+        ; `hl`: screen x coord in tiles
         ld bc, (State.screenX)
         add hl, bc
+    DUP 2
         sra h
         rr l
-        sra h
-        rr l
-        ld (.hl), hl
-.l_3:
+    EDUP
+        ld (.mapX), hl          ; map x coord in blocks
+
+.findTransit:
         exa
-        ld c, a
+        ld c, a                 ; 0: up, 1: down
         exa
-        ld a, (de)
+        ld a, (de)              ; isDown
         cp c
-        jr NZ, .l_4
+        jr NZ, .next
         inc de
-        ld a, (de)
+        ld a, (de)              ; fromX (low)
         ld c, a
         inc de
-        ld a, (de)
+        ld a, (de)              ; fromX (high)
         ld b, a
         xor a
-.hl+*   ld hl, -0
+.mapX+* ld hl, -0
         sbc hl, bc
-        jr Z, .l_5
-        dec de
-        dec de
-.l_4:
-        ld hl, Transit
+        jr Z, .found
+    .2  dec de
+.next:
+        ld hl, Transit          ; struct size
         add hl, de
         ex de, hl
         ld a, (de)
         or a
-        jp P, .l_3
-        ld a, (State.s_43)
+        jp P, .findTransit
+
+.notFound:
+        ld a, (State.tmpY)
         ld (ix+Obj.y), a
         ld a, (State.s_44)
         ld (State.s_27), a
         ret
-.l_5:
-        ld a, #3C
+
+.found:
+        ld a, 60
         ld (State.bulletTime), a
         call removeObjects
-        ld hl, #0005
+
+        ld hl, 5
         add hl, de
-        ld a, (hl)
-        add a
-        add a
-        add a
-        add a
-        add a
-        add #20
+        ld a, (hl)              ; toX
+    .5  add a
+        add 32
         ld (ix+Obj.x+0), a
-        ld (ix+Obj.x+1), #00
+        ld (ix+Obj.x+1), 0
+
         ld de, -4
         add hl, de
-        ld e, (hl)
+        ld e, (hl)              ; toStart (low)
         inc hl
-        ld d, (hl)
+        ld d, (hl)              ; toStart (high)
         inc hl
-        ld a, (hl)
+        ld a, (hl)              ; toEnd (low)
         inc hl
-        ld h, (hl)
+        ld h, (hl)              ; toEnd (high)
         ld l, a
-        add hl, hl
-        add hl, hl
+    .2  add hl, hl
         ex de, hl
-        add hl, hl
-        add hl, hl
-        call removeObjects
+    .2  add hl, hl
+        ; `hl`: toStart in tiles, `de`: toEnd in tiles
+        call removeObjects      ; unnecessary
         call moveToMapSpan
         xor a
         ret
@@ -222,51 +235,56 @@ allocateObject:  ; #e6c2
         ret
 
 
-; (Some variable?)
-c_e6df:  ; #e6df
-        dw #0000
+; Hero's x coord stored here temporarily
+tmpHeroX:  ; #e6df
+        dw -0
 
-; (Process collision?)
+; Find collisions between the hero and other objects and do appropriate action
 ; Used by c_cc25.
-c_e6e1:  ; #e6e1
+processHeroCollisions:  ; #e6e1
         ld a, (State.inShop)
         or a
         ret NZ
-        ld ix, scene
+
+        ld ix, scene.hero
         ld l, (ix+Obj.x+0)
         ld h, (ix+Obj.x+1)
-        ld (c_e6df), hl
-        inc hl
-        inc hl
-        inc hl
-        inc hl
+        ld (tmpHeroX), hl
+    .4  inc hl
         ld (ix+Obj.x+0), l
         ld (ix+Obj.x+1), h
+
         ld iy, scene.obj2
-        ld b, #06
-.l_0:
+        ld b, 6                 ; object count
+.object:
         push bc
-        call c_e80a
+        call checkObjectCollision
         pop bc
-        jr NC, .l_1
-        ld de, Obj
+        jr NC, .collision
+        ld de, Obj              ; object size
         add iy, de
-        djnz .l_0
-        ld hl, (c_e6df)
+        djnz .object
+
+        ld hl, (tmpHeroX)
         ld (ix+Obj.x+0), l
         ld (ix+Obj.x+1), h
         ret
-.l_1:
-        ld hl, (c_e6df)
+
+.collision:
+        ld hl, (tmpHeroX)
         ld (ix+Obj.x+0), l
         ld (ix+Obj.x+1), h
+
         ld a, (iy+Obj.objType)
-        cp #0E
-        jp NC, .l_12
-        or a
+        cp 14                   ; press/platform
+        jp NC, .levelSpecific
+        or a                    ; no type
         ret Z
-        cp #04
+
+        cp 4                    ; soupCan
         jr NC, .l_2
+
+        ; weapon
         exa
         ld a, (State.s_3D)
         or a
@@ -275,37 +293,41 @@ c_e6e1:  ; #e6e1
         ld (State.weapon), a
         ld hl, 750
         ld (State.weaponTime), hl
-        ld (iy+Obj.flags), #00
-        ld a, #0D
+        ld (iy+Obj.flags), 0    ; remove object
+        ld a, 13                ; pick up weapon
         jp playSound
+
 .l_2:
-        cp #09
-        jr Z, .l_3
+        cp 9                    ; shop mole
+        jr Z, .skipSound
         push af
-        ld a, #0B
+        ld a, 11                ; pick up item sound
         call playSound
         pop af
-.l_3:
-        cp #04
-        jr NZ, .l_5
+.skipSound:
+
+        cp 4                    ; soupCan
+        jr NZ, .notSoupCan
         ld a, (State.soupCans)
-        cp #03
-        jr Z, .l_4
+        cp 3
+        jr Z, .maxSoupCans
         inc a
         ld (State.soupCans), a
-.l_4:
-        ld (iy+Obj.flags), #00
+.maxSoupCans:
+        ld (iy+Obj.flags), 0    ; remove object
         jp printSoupCans
-.l_5:
-        cp #05
-        jr NZ, .l_6
-        ld (iy+Obj.flags), #00
-        ld a, #04
+
+.notSoupCan:
+        cp 5                    ; slimyWorms
+        jr NZ, .notSlimyWorms
+        ld (iy+Obj.flags), 0    ; remove object
+        ld a, 4
         jp addEnergy
-.l_6:
-        cp #06
-        jr NZ, .l_7
-        ld (iy+Obj.flags), #00
+
+.notSlimyWorms:
+        cp 6                    ; coin
+        jr NZ, .notCoin
+        ld (iy+Obj.flags), 0    ; remove object
         ld a, (State.coins)
     IFDEF _MOD
         inc a                   ; coin denomination
@@ -314,123 +336,144 @@ c_e6e1:  ; #e6e1
     ENDIF
         ld (State.coins), a
         jp printCoinCount
-.l_7:
-        cp #07
-        jr NZ, .l_9
-        ld (iy+Obj.flags), #00
+
+.notCoin:
+        cp 7                    ; pintaADay
+        jr NZ, .notPintaADay
+        ld (iy+Obj.flags), 0    ; remove object
         ld a, (State.maxEnergy)
-        add #04
-        cp #22
-        jr C, .l_8
-        ld a, #22
-.l_8:
+        add 4
+        cp 34
+        jr C, .addMaxEnergy
+        ld a, 34
+.addMaxEnergy:
         ld (State.maxEnergy), a
-        ld a, #04
+        ld a, 4
         jp addEnergy
-.l_9:
-        cp #08
-        jr NZ, .l_10
-        ld (iy+Obj.flags), #00
+
+.notPintaADay:
+        cp 8                    ; diary
+        jr NZ, .notDiary
+        ld (iy+Obj.flags), 0    ; remove object
         ld a, #FF
         ld (State.hasDiary), a
         ret
-.l_10:
-        cp #0A
-        jr NC, .l_11
+
+.notDiary:
+        cp 10                   ; score item
+        jr NC, .scoreItem
+
+        ; shop mole
         ld a, (controlState)
-        bit 2, a                ; down key
+        bit Key.down, a
         ret Z
-        ld (iy+Obj.flags), #00
+        ld (iy+Obj.flags), 0    ; remove object
         ld a, #FF
         ld (State.inShop), a
         ret
-.l_11:
-        ld (iy+Obj.flags), #00
+
+.scoreItem:
+        ld (iy+Obj.flags), 0    ; remove object
         ld a, (iy+Obj.score)
         jp addScore
-.l_12:
-        cp #0E
-        jr NZ, .l_14
-        bit 3, (iy+Obj.o_21)
+
+.levelSpecific:
+        cp 14                   ; press/platform
+        jr NZ, .notPress
+
+        ; TODO: press logic
+        bit 3, (iy+Obj.direction)   ; up
         ret NZ
         ld a, (State.pressTime)
         or a
         ret NZ
         ld a, (State.s_28)
-        cp #02
+        cp 2
         jr C, .l_13
         ret NZ
-        call c_d94c.l_13
+        call c_d94c_t1.l_13
         ld a, (State.s_28)
         or a
         ret NZ
 .l_13:
-        ld a, #32
+        ld a, 50
         ld (State.pressTime), a
-.l_14:
-        ld a, (iy+Obj.o_7)
+
+.notPress:
+        ld a, (iy+Obj.o_7)      ; ?
         cp #FF
         ret Z
-        bit 0, (iy+Obj.o_24)
+        bit 0, (iy+Obj.o_24)    ; ?
         ret NZ
         ld a, (iy+Obj.health)
-        cp #FE
+        cp -2                   ; not an enemy (?)
         ret Z
         jp decEnergy
 
-; (Checks some object properties?)
+
+; Check if there is a collision between two objects
+;   arg `ix`: object 1
+;       `iy`: object 2
+;   ret flag C: no collision, NC: collision
 ; Used by c_e6e1, c_e9b1, c_eb19 and c_f618.
-c_e80a:  ; #e80a
-        bit 0, (iy+Obj.flags)
-        jr NZ, .l_0
+checkObjectCollision:  ; #e80a
+        bit 0, (iy+Obj.flags)   ; object 2 exists
+        jr NZ, .obj2Exists
         scf
         ret
-.l_0:
+
+.obj2Exists:
+        ; object 1 size
         ld d, (ix+Obj.height)
         ld e, (ix+Obj.width)
+        ; object 2 size
         ld b, (iy+Obj.height)
         ld c, (iy+Obj.width)
+
         ld a, (ix+Obj.y)
-        ld l, a
-        add d
-        ld h, (iy+Obj.y)
+        ld l, a                 ; `l`: object 1 top
+        add d                   ; `a`: object 1 bottom
+        ld h, (iy+Obj.y)        ; `h`: object 2 top
         cp h
-        ret C
+        ret C                   ; object 2 is below object 1
+
         ld a, h
-        add b
+        add b                   ; `a`: object 2 bottom
         cp l
-        ret C
+        ret C                   ; object 1 is above object 1
+
         ld l, (ix+Obj.x+0)
         ld h, (ix+Obj.x+1)
-        push hl
-        ld d, #00
-        add hl, de
+        push hl                 ; object 1 left
+        ld d, 0
+        add hl, de              ; `hl`: object 1 right
         ld e, (iy+Obj.x+0)
-        ld d, (iy+Obj.x+1)
+        ld d, (iy+Obj.x+1)      ; `de`: object 2 left
         ld a, (iy+Obj.objType)
-        cp #0E
-        jr NZ, .l_1
+        cp 14                   ; object 2 is press/platform
+        jr NZ, .notPressLeft
         ld a, e
-        add #06
+        add 6
         ld e, a
-.l_1:
+.notPressLeft:
         or a
         sbc hl, de
-        pop hl
-        ret C
+        pop hl                  ; object 1 left
+        ret C                   ; object 2 is to the right from object 1
+
         ex de, hl
-        ld b, #00
+        ld b, 0
         ld a, (iy+Obj.objType)
-        cp #0E
-        jr NZ, .l_2
-        ld a, c
-        sub #0C
+        cp 14                   ; object 2 is press/platform
+        jr NZ, .notPressRight
+        ld a, c                 ; object 2 width
+        sub 12
         ld c, a
-.l_2:
-        add hl, bc
+.notPressRight:
+        add hl, bc              ; `hl`: object 2 right
         or a
-        sbc hl, de
-        ret
+        sbc hl, de              ; C if object 2 is to the left from object 1
+        ret                     ; NC if there is a collision
 
 
 ; (Some table, 5 levels * 6 words)
@@ -532,7 +575,7 @@ enterShop:  ; #e920
         ld (ix+Obj.sprite+1), h
         ld (ix+Obj.colour), Colour.white
 
-        ld (ix+Obj.o_21), 0
+        ld (ix+Obj.direction), 0
         ld (ix+Obj.width), 24
         ld (ix+Obj.height), 21
         ld (ix+Obj.objType), 9
@@ -540,7 +583,7 @@ enterShop:  ; #e920
         ld (ix+Obj.health), -2
         ld (ix+Obj.o_24), 0
         ld (ix+Obj.o_49), 0
-        ld (ix+Obj.o_23), 0
+        ld (ix+Obj.behaviour), 0
         ret
 
 ; Shop logic
@@ -556,7 +599,7 @@ shopLogic:  ; #e9b1
         ld b, 6                 ; object count
 .object:
         push bc
-        call c_e80a
+        call checkObjectCollision
         pop bc
         jr NC, .found
         ld de, Obj              ; object size
@@ -616,7 +659,7 @@ shopLogic:  ; #e9b1
 
 .skipPrice:
         ld a, (controlState)
-        bit 4, a                ; fire key
+        bit Key.fire, a
         ret Z
 
         ld a, (State.shopPrice)
@@ -672,7 +715,7 @@ shopLogic:  ; #e9b1
         call printString
 .waitFireRelease:
         ld a, (controlState)
-        bit 4, a                ; fire key
+        bit Key.fire, a
         jr NZ, .waitFireRelease
         ret
 
@@ -766,51 +809,65 @@ getTileType:  ; #eaee
         ret
 
 
-; (Some damage table (3 something * 3 soup cans)?)
-c_eaf7:  ; #eaf7
-        db #04, #10, #10
-        db #02, #14, #14
-        db #00, #18, #18
+; Sizes and x offsets of kick bubble collision boxes for 3 soup cans
+kickBubbleSizes:  ; #eaf7
+        ;  dx  w   h
+        db 4, 16, 16            ; s
+        db 2, 20, 20            ; ss
+        db 0, 24, 24            ; sss
 
-; Check enemies for damaging?
+
+; Check if kick, bomb, or bullet damages any object in the scene
+;   ret flag C if object is not damaged, NC if damaged
 ; Used by c_df85.
-c_eb00:  ; #eb00
-        ld ix, scene.obj1
+checkEnemiesForDamage:  ; #eb00
+        ld ix, scene.obj1       ; bullet, bomb, or kick bubble
         ld iy, scene.obj2
-        ld b, #06
-.l_0:
+        ld b, 6                 ; object count
+.object:
         push bc
-        call c_eb19
+        call checkEnemyDamage
         pop bc
-        ret NC
-        ld de, Obj
+        ret NC                  ; stop searching after first damaged enemy
+        ld de, Obj              ; object size
         add iy, de
-        djnz .l_0
+        djnz .object
         scf
         ret
 
-; Logic for damaging enemies?
+
+; Check if kick, bomb, or bullet damages the object
+;   arg `ix`: bullet, bomb, or kick bubble
+;       `iy`: object
+;   ret flag C if object is not damaged, NC if damaged
 ; Used by c_eb00.
-c_eb19:  ; #eb19
+checkEnemyDamage:  ; #eb19
         ld a, (iy+Obj.objType)
         or a
         jp Z, damageEnemy.notDamaged
+
         bit 0, (iy+Obj.flags)
         jp Z, damageEnemy.notDamaged
+
         ld a, (iy+Obj.health)
-        cp #FE
+        cp -2                   ; not an enemy (?)
         jp Z, damageEnemy.notDamaged
+
         ld a, (iy+Obj.blinkTime)
-        or a
+        or a                    ; blinking
         jp NZ, damageEnemy.notDamaged
+
         ld a, (State.weapon)
         or a
-        jr NZ, .l_1
+        jr NZ, .weaponUsed
+
+        ; no weapon
         ld a, (iy+Obj.o_7)
-        cp #FF
+        cp -1
         jr NZ, .l_0
-        res 0, (ix+Obj.flags)
+        res 0, (ix+Obj.flags)   ; remove bubble
         ret
+
 .l_0:
         ld a, (State.soupCans)
         dec a
@@ -819,35 +876,46 @@ c_eb19:  ; #eb19
         add l
         ld l, a
         ld h, 0
-        ld de, c_eaf7
+        ld de, kickBubbleSizes
         add hl, de
         ld c, l
-        ld b, h
+        ld b, h                 ; `bc`: addr in `c_eaf7`
+
         ld l, (ix+Obj.x+0)
         ld h, (ix+Obj.x+1)
         push hl
-        ld a, (bc)
+        ld a, (bc)              ; kick bubble x offset
         inc bc
         ld e, a
-        ld d, #00
+        ld d, 0
         add hl, de
         ld (ix+Obj.x+0), l
         ld (ix+Obj.x+1), h
-        ld a, (bc)
+
+        ld a, (bc)              ; kick bubble width
         inc bc
         ld (ix+Obj.width), a
-        ld a, (bc)
+        ld a, (bc)              ; kick bubble height
         ld (ix+Obj.height), a
-        call c_e80a
+
+        ; check collision between kick bubble and the object
+        call checkObjectCollision
+
+        ; restore kick bubble x coord
         pop hl
         ld (ix+Obj.x+0), l
         ld (ix+Obj.x+1), h
-        ret C
-        set 0, (ix+Obj.flags)
+        ret C                   ; ret if no collision
+
+        ; collision
+        set 0, (ix+Obj.flags)   ; remove bubble
         jr damageEnemy
-.l_1:
-        cp #01
-        jr NZ, .l_3
+
+.weaponUsed:
+        cp 1                    ; shatterbomb
+        jr NZ, .gun
+
+.shatterbomb:
         bit 1, (ix+Obj.flags)
         jr NZ, .l_2
         ld a, (ix+Obj.x+0)
@@ -856,7 +924,7 @@ c_eb19:  ; #eb19
         ld a, (ix+Obj.x+1)
         adc a, #00
         ld (ix+Obj.x+1), a
-        call c_e80a
+        call checkObjectCollision
         exa
         ld a, (ix+Obj.x+0)
         add #FC
@@ -874,7 +942,7 @@ c_eb19:  ; #eb19
         add l
         ld l, a
         ld h, #00
-        ld de, c_eaf7
+        ld de, kickBubbleSizes
         add hl, de
         ld c, l
         ld b, h
@@ -893,16 +961,21 @@ c_eb19:  ; #eb19
         ld (ix+Obj.width), a
         ld a, (bc)
         ld (ix+Obj.height), a
-        call c_e80a
+        call checkObjectCollision
         pop hl
         ld (ix+Obj.x+0), l
         ld (ix+Obj.x+1), h
-        ret C
+        ret C                   ; ret if no collision
+        ; collision
         jr damageEnemy
-.l_3:
-        call c_e80a
-        ret C
+
+.gun:
+        ; check bullet collision
+        call checkObjectCollision
+        ret C                   ; ret if no collision
+        ; collision
         jr damageEnemy
+
 
 ; Weapon damage table (4 weapons × 3 soup cans)
 weaponDamageTable:  ; #ebf4
@@ -951,7 +1024,7 @@ damageEnemy:  ; #ec00
         ld (iy+Obj.health), a
         ld (iy+Obj.blinkTime), 4
 
-        ld a, 3                 ; damage enemy
+        ld a, 3                 ; damage enemy sound
         call playSound
         jr .damaged
 
@@ -974,7 +1047,7 @@ damageEnemy:  ; #ec00
         ld (iy+Obj.o_6), 0
         ld (iy+Obj.o_7), -1
         ld (iy+Obj.colour), Colour.white
-        ld a, 6                 ; kill enemy
+        ld a, 6                 ; kill enemy sound
         call playSound
 
 .damaged:
@@ -996,7 +1069,7 @@ damageEnemy:  ; #ec00
         jr NC, .bossKilled
 
         ld (State.bossHealth), a
-        ld a, 3                 ; damage enemy
+        ld a, 3                 ; damage enemy sound
         call playSound
 
         push ix
@@ -1050,21 +1123,21 @@ damageEnemy:  ; #ec00
         add hl, de
         ld (hl), 1
 
-        ld a, 6                 ; kill enemy
+        ld a, 6                 ; kill enemy sound
         call playSound
         jr .damaged
 
 
-; Do something with all objects (?)
+; For every object in the scene, process its behaviour
 ; Used by c_cc25.
-c_ecee:  ; #ecee
+processObjsBehaviour:  ; #ecee
         ld ix, scene.obj2
         ld b, 6                 ; object count
 .object:
         push bc
         push ix
         call checkStillEnemyActivation
-        call c_ed08
+        call processObjectBehaviour
         pop ix
         ld bc, Obj              ; object size
         add ix, bc
@@ -1073,86 +1146,103 @@ c_ecee:  ; #ecee
         ret
 
 
-; (Modifies some object properties?)
+; Check object type and behaviour type and do appropriate actions
+;   arg `ix`: object
 ; Used by c_ecee.
-c_ed08:  ; #ed08
-        bit 0, (ix+Obj.flags)
+processObjectBehaviour:  ; #ed08
+        bit 0, (ix+Obj.flags)   ; exists
         ret Z
+
         call emitEnemyBullet
-        ld a, (ix+Obj.o_23)
-        cp #01
+
+        ld a, (ix+Obj.behaviour)
+        cp 1
         jp Z, c_f618
-        bit 5, (ix+Obj.flags)
+
+        bit 5, (ix+Obj.flags)   ; waiting
         ret NZ
+
         ld a, (ix+Obj.objType)
-        cp #0E
+        cp 14                   ; press/platform
         jp Z, c_f2e7
+
         call c_f4e9
-        ld a, (ix+Obj.o_23)
-        cp #02
+
+        ld a, (ix+Obj.behaviour)
+        cp 2
         jr NZ, .l_0
         call c_f37e
         jp .l_2
 .l_0:
-        cp #04
+        cp 4
         call Z, c_f37e
-        ld a, (ix+Obj.o_23)
+
+        ld a, (ix+Obj.behaviour)
         or a
         jp Z, .l_1
-        cp #03
+        cp 3
         jp Z, c_ef72
-        cp #04
+        cp 4
         jp Z, c_ef72
-        cp #05
+        cp 5
         jp Z, c_f0f3
-        cp #06
+        cp 6
         jp Z, c_f518
         ret
+
 .l_1:
         set 2, (ix+Obj.flags)
         set 3, (ix+Obj.flags)
         ret
+
 .l_2:
         ld a, (ix+Obj.o_22)
-        cp #FE
+        cp -2
         jr Z, .l_5
-        cp #FF
+        cp -1
         ret NZ
+
         call c_f1d7
+
         ld a, (State.s_4A)
-        cp #02
+        cp 2
         ret C
+
         bit 1, (ix+Obj.flags)
         jr NZ, .l_3
         call makeObjectBig
 .l_3:
         ld a, (ix+Obj.objType)
-        cp #28
+        cp 40                   ; Klondike stalactite
         jr NZ, .l_4
         ld a, (ix+Obj.x+0)
-        sub #08
+        sub 8
         ld (ix+Obj.x+0), a
 .l_4:
-        ld (ix+Obj.o_6), #00
-        ld (ix+Obj.o_7), #FF
+        ld (ix+Obj.o_6), 0
+        ld (ix+Obj.o_7), -1
         ld (ix+Obj.colour), Colour.white
-        ld a, #06
+        ld a, 6                 ; kill enemy
         jp playSound
+
 .l_5:
         call c_f1d7
+
         ld a, (State.s_4A)
-        cp #04
+        cp 4
         ret C
-        ld (ix+Obj.o_23), #00
-        set 5, (ix+Obj.flags)
+
+        ld (ix+Obj.behaviour), 0
+        set 5, (ix+Obj.flags)   ; waiting
         ld a, (ix+Obj.objType)
-        cp #6E
+        cp 110                  ; Amazon hangingMonkey
         ret NZ
         ld hl, Lev2Amazon.lS.sittingMonkey
         ld (ix+Obj.sprite+0), l
         ld (ix+Obj.sprite+1), h
-        ld (ix+Obj.o_7), #00
+        ld (ix+Obj.o_7), 0
         ret
+
 
 ; (Modifies some object properties?)
 ; Used by c_f564.
@@ -1363,7 +1453,7 @@ c_ef72:  ; #ef72
         call c_f697
         call c_f1d7
         ld a, (State.s_4C)
-        bit 0, (ix+Obj.o_21)
+        bit 0, (ix+Obj.direction)
         jr NZ, .l_1
         ld a, (State.s_4B)
 .l_1:
@@ -1373,21 +1463,21 @@ c_ef72:  ; #ef72
         cp #82
         jr Z, .l_4
         ld a, (State.s_4E)
-        bit 0, (ix+Obj.o_21)
+        bit 0, (ix+Obj.direction)
         jr NZ, .l_2
         ld a, (State.s_4D)
 .l_2:
         or a
         jr NZ, .l_4
 .l_3:
-        ld a, (ix+Obj.o_21)
+        ld a, (ix+Obj.direction)
         xor #03
-        ld (ix+Obj.o_21), a
+        ld (ix+Obj.direction), a
         jp .l_23
 .l_4:
         ld l, (ix+Obj.x+0)
         ld h, (ix+Obj.x+1)
-        bit 0, (ix+Obj.o_21)
+        bit 0, (ix+Obj.direction)
         jr NZ, .l_5
         ld de, #0020
         xor a
@@ -1404,29 +1494,29 @@ c_ef72:  ; #ef72
         jr NC, .l_3
         jp .l_23
 .l_6:
-        ld (ix+Obj.o_20), #08
+        ld (ix+Obj.vertSpeed), #08
         call c_f1d7
         bit 7, (ix+Obj.o_24)
         jr NZ, .l_9
         call c_f670
         call c_f697
         ld a, (State.s_4C)
-        bit 0, (ix+Obj.o_21)
+        bit 0, (ix+Obj.direction)
         jr NZ, .l_7
         ld a, (State.s_4B)
 .l_7:
         cp #04
         jr C, .l_8
-        ld a, (ix+Obj.o_21)
+        ld a, (ix+Obj.direction)
         xor #03
-        ld (ix+Obj.o_21), a
+        ld (ix+Obj.direction), a
 .l_8:
         ld a, (State.s_4A)
         cp #02
         jp NC, .l_23
         set 7, (ix+Obj.o_24)
         set 2, (ix+Obj.flags)
-        set 2, (ix+Obj.o_21)
+        set 2, (ix+Obj.direction)
         jp .l_23
 .l_9:
         ld a, (State.s_4A)
@@ -1434,7 +1524,7 @@ c_ef72:  ; #ef72
         jp C, .l_23
         res 7, (ix+Obj.o_24)
         res 2, (ix+Obj.flags)
-        res 2, (ix+Obj.o_21)
+        res 2, (ix+Obj.direction)
         jp .l_23
 .l_10:
         bit 0, (ix+Obj.trajectory)
@@ -1442,53 +1532,53 @@ c_ef72:  ; #ef72
         call generateRandom
         cp #0A
         jr NC, .l_11
-        ld a, (ix+Obj.o_21)
+        ld a, (ix+Obj.direction)
         xor #0C
-        ld (ix+Obj.o_21), a
+        ld (ix+Obj.direction), a
 .l_11:
         bit 1, (ix+Obj.trajectory)
         jr Z, .l_12
         call generateRandom
         cp #0A
         jr NC, .l_12
-        ld a, (ix+Obj.o_21)
+        ld a, (ix+Obj.direction)
         xor #03
-        ld (ix+Obj.o_21), a
+        ld (ix+Obj.direction), a
 .l_12:
         call c_f1d7
-        bit 0, (ix+Obj.o_21)
+        bit 0, (ix+Obj.direction)
         jr Z, .l_13
         ld a, (State.s_4C)
         cp #02
         jr NC, .l_14
         jr .l_15
 .l_13:
-        bit 1, (ix+Obj.o_21)
+        bit 1, (ix+Obj.direction)
         jr Z, .l_15
         ld a, (State.s_4B)
         cp #02
         jr C, .l_15
 .l_14:
-        ld a, (ix+Obj.o_21)
+        ld a, (ix+Obj.direction)
         xor #03
-        ld (ix+Obj.o_21), a
+        ld (ix+Obj.direction), a
 .l_15:
-        bit 2, (ix+Obj.o_21)
+        bit 2, (ix+Obj.direction)
         jr Z, .l_16
         ld a, (State.s_4A)
         cp #02
         jr NC, .l_17
         jr .l_18
 .l_16:
-        bit 3, (ix+Obj.o_21)
+        bit 3, (ix+Obj.direction)
         jr Z, .l_18
         ld a, (State.s_49)
         cp #02
         jr C, .l_18
 .l_17:
-        ld a, (ix+Obj.o_21)
+        ld a, (ix+Obj.direction)
         xor #0C
-        ld (ix+Obj.o_21), a
+        ld (ix+Obj.direction), a
 .l_18:
         jp .l_23
 .l_19:
@@ -1499,7 +1589,7 @@ c_ef72:  ; #ef72
         jp .l_23
 .l_20:
         ld (ix+Obj.trajectory), 0
-        ld c, (ix+Obj.o_21)
+        ld c, (ix+Obj.direction)
         ld a, c
         and #03
         jr Z, .l_21
@@ -1512,7 +1602,7 @@ c_ef72:  ; #ef72
         xor #0C
 .l_22:
         or b
-        ld (ix+Obj.o_21), a
+        ld (ix+Obj.direction), a
         jp .l_23
 ; This entry point is used by c_f0f3 and c_f518.
 .l_23:
@@ -1524,8 +1614,8 @@ c_ef72:  ; #ef72
 ; (Some game logic?)
 ; Used by c_ed08.
 c_f0f3:  ; #f0f3
-        ld (ix+Obj.o_19), 2
-        ld (ix+Obj.o_20), 2
+        ld (ix+Obj.horizSpeed), 2
+        ld (ix+Obj.vertSpeed), 2
         res 2, (ix+Obj.flags)
         res 3, (ix+Obj.flags)
         bit 0, (ix+Obj.o_22)
@@ -1552,9 +1642,9 @@ c_f0f3:  ; #f0f3
         add hl, bc
         xor a
         sbc hl, de
-        ld (ix+Obj.o_21), #01
+        ld (ix+Obj.direction), #01
         jp P, .l_2
-        ld (ix+Obj.o_21), #02
+        ld (ix+Obj.direction), #02
         ld a, l
         cpl
         ld l, a
@@ -1563,7 +1653,7 @@ c_f0f3:  ; #f0f3
         ld h, a
         inc hl
 .l_2:
-        ld e, (ix+Obj.o_19)
+        ld e, (ix+Obj.horizSpeed)
         ld d, #00
         xor a
         sbc hl, de
@@ -1580,40 +1670,40 @@ c_f0f3:  ; #f0f3
         srl b
         add b
         sub c
-        set 2, (ix+Obj.o_21)
-        res 3, (ix+Obj.o_21)
+        set 2, (ix+Obj.direction)
+        res 3, (ix+Obj.direction)
         jp P, .l_4
         cpl
-        set 3, (ix+Obj.o_21)
-        res 2, (ix+Obj.o_21)
+        set 3, (ix+Obj.direction)
+        res 2, (ix+Obj.direction)
 .l_4:
-        cp (ix+Obj.o_20)
+        cp (ix+Obj.vertSpeed)
         jr NC, .l_5
         set 3, (ix+Obj.flags)
 .l_5:
         call c_f1d7
-        bit 0, (ix+Obj.o_21)
+        bit 0, (ix+Obj.direction)
         jr Z, .l_6
         ld a, (State.s_4C)
         cp #04
         jr C, .l_6
         set 2, (ix+Obj.flags)
 .l_6:
-        bit 1, (ix+Obj.o_21)
+        bit 1, (ix+Obj.direction)
         jr Z, .l_7
         ld a, (State.s_4B)
         cp #04
         jr C, .l_7
         set 2, (ix+Obj.flags)
 .l_7:
-        bit 2, (ix+Obj.o_21)
+        bit 2, (ix+Obj.direction)
         jr Z, .l_8
         ld a, (State.s_4A)
         cp #03
         jr C, .l_8
         set 3, (ix+Obj.flags)
 .l_8:
-        bit 3, (ix+Obj.o_21)
+        bit 3, (ix+Obj.direction)
         jr Z, .l_9
         ld a, (State.s_49)
         cp #03
@@ -1684,7 +1774,7 @@ c_f1d7:  ; #f1d7
         ld a, (ix+Obj.x+1)
         adc a, #FF
         ld (ix+Obj.x+1), a
-        bit 1, (ix+Obj.o_21)
+        bit 1, (ix+Obj.direction)
         jr NZ, .l_1
         dec hl
 .l_1:
@@ -1697,7 +1787,7 @@ c_f1d7:  ; #f1d7
         call getTileType
         ld (State.s_4A), a
         inc hl
-        bit 1, (ix+Obj.o_21)
+        bit 1, (ix+Obj.direction)
         jr NZ, .l_2
         dec hl
 .l_2:
@@ -1753,20 +1843,20 @@ c_f2d1:  ; #f2d1
 ; (Modifies some object properties?)
 ; Used by c_ed08.
 c_f2e7:  ; #f2e7
-        ld a, (ix+Obj.o_19)
+        ld a, (ix+Obj.horizSpeed)
         or a
         jr Z, .l_0
-        dec (ix+Obj.o_19)
+        dec (ix+Obj.horizSpeed)
         ret
 .l_0:
-        bit 2, (ix+Obj.o_21)
+        bit 2, (ix+Obj.direction)
         jr NZ, .l_2
         ld a, (ix+Obj.o_6)
         or a
         jr NZ, .l_1
-        ld (ix+Obj.o_21), 4
-        ld (ix+Obj.o_20), 0
-        ld (ix+Obj.o_19), 32
+        ld (ix+Obj.direction), 4
+        ld (ix+Obj.vertSpeed), 0
+        ld (ix+Obj.horizSpeed), 32
         ret
 .l_1:
         dec (ix+Obj.o_6)
@@ -1820,17 +1910,28 @@ c_f2e7:  ; #f2e7
         ld de, c_f2d1
         add hl, de
         ld a, (hl)
-        ld (ix+Obj.o_20), a
+        ld (ix+Obj.vertSpeed), a
         ret
 .l_5:
-        ld (ix+Obj.o_21), 8
-        ld (ix+Obj.o_20), 0
+        ld (ix+Obj.direction), 8
+        ld (ix+Obj.vertSpeed), 0
         ret
 
-; (Direction transform?)
-c_f373:  ; #f373
-        db #00, #08, #04, #00, #02, #0A, #06, #00
-        db #01, #09, #05
+
+; Direction transform (bit 3← 2→ 1↓ 0↑) to (bit 3↑ 2↓ 1← 0→)
+directionTransform:  ; #f373
+        db %0000
+.up:    db %1000
+.dn:    db %0100
+        db %0000
+.lf:    db %0010
+.upLf:  db %1010
+.dnLf:  db %0110
+        db %0000
+.rg:    db %0001
+.upRg:  db %1001
+.dnRg:  db %0101
+
 
 ; (Moves object along trajectory?)
 ; Used by c_ed08.
@@ -1903,7 +2004,7 @@ c_f37e:  ; #f37e
         ld a, (State.s_50)
         ld l, a
         ld h, #00
-        ld de, c_f373
+        ld de, directionTransform
         add hl, de
         ld c, (hl)
         ld a, (ix+Obj.o_17)
@@ -1927,7 +2028,7 @@ c_f37e:  ; #f37e
         ld a, (State.s_4F)
         bit 0, (ix+Obj.o_24)
         jr Z, .l_9
-        ld (ix+Obj.o_19), a
+        ld (ix+Obj.horizSpeed), a
 .l_9:
         ld b, a
         bit 2, c
@@ -1980,31 +2081,34 @@ c_f37e:  ; #f37e
         ret
 
 
-; (Modifies some object properties?)
+; Check if hero is inside the activation zone of a still enemy
 ; Used by c_ecee.
 checkStillEnemyActivation:  ; #f488
-        ld a, (ix+Obj.o_27)
+        ld a, (ix+Obj.stillActW)
         or a
-        ret Z
-        
-        ; test y coord
+        ret Z                   ; not a still enemy
+
+        ; test vertical zone range
+        ; hero_top <= obj_y - stillActY + stillActH
         ld iy, scene.hero
-        ld a, (ix+Obj.o_26)
+        ld a, (ix+Obj.stillActY)
         neg
         add (ix+Obj.y)
         ld c, a
-        add (ix+Obj.o_28)
+        add (ix+Obj.stillActH)
         cp (iy+Obj.y)
         ret C
+        ; hero_bottom >= obj_y - stillActY
         ld a, (iy+Obj.y)
         add (iy+Obj.height)
         cp c
         ret C
-        
-        ; test x coord
+
+        ; test horizontal zone range
+        ; hero_right >= obj_x - stillActX
         ld l, (ix+Obj.x+0)
         ld h, (ix+Obj.x+1)
-        ld e, (ix+Obj.o_25)
+        ld e, (ix+Obj.stillActX)
         ld d, 0
         xor a
         sbc hl, de
@@ -2017,7 +2121,8 @@ checkStillEnemyActivation:  ; #f488
         xor a
         sbc hl, de
         ret C
-        ld l, (ix+Obj.o_27)
+        ; hero_left <= obj_x - stillActX + stillActW
+        ld l, (ix+Obj.stillActW)
         ld h, 0
         add hl, de
         ld e, (iy+Obj.x+0)
@@ -2025,11 +2130,12 @@ checkStillEnemyActivation:  ; #f488
         xor a
         sbc hl, de
         ret C
-        
+
+        ; if in range, activate the enemy
         res 5, (ix+Obj.flags)   ; remove waiting flag
         res 2, (ix+Obj.flags)
         res 3, (ix+Obj.flags)
-        ld (ix+Obj.o_27), 0
+        ld (ix+Obj.stillActW), 0
         ret
 
 
@@ -2081,7 +2187,7 @@ c_f518:  ; #f518
         ld a, (ix+Obj.y)
         and #F8
         ld (ix+Obj.y), a
-        ld (ix+Obj.o_23), #00
+        ld (ix+Obj.behaviour), #00
 .l_1:
         inc (ix+Obj.trajectory)
         jp c_ef72.l_23
@@ -2096,7 +2202,7 @@ enemyBulletTimer:  ; #f553
         dec a
         ld (State.bulletTime), a
         ret
-        
+
 .setPeriod:
         ld a, 60
         ld (State.bulletTime), a
@@ -2109,7 +2215,7 @@ emitEnemyBullet:  ; #f564
         ld a, (State.bulletTime)
         or a
         ret NZ
-        ld a, (ix+Obj.o_23)
+        ld a, (ix+Obj.behaviour)
         cp 1
         ret Z
         ld a, (ix+Obj.o_49)
@@ -2129,15 +2235,15 @@ emitEnemyBullet:  ; #f564
         ld (iy+Obj.sprite+1), h
         ld (iy+Obj.o_7), 0
         ld (iy+Obj.colour), Colour.white
-        ld (iy+Obj.o_21), 0
-        ld (iy+Obj.o_19), 5
-        ld (iy+Obj.o_20), 3
+        ld (iy+Obj.direction), 0
+        ld (iy+Obj.horizSpeed), 5
+        ld (iy+Obj.vertSpeed), 3
         ld (iy+Obj.width), 6
         ld (iy+Obj.height), 6
         ld (iy+Obj.health), 1
         ld (iy+Obj.flags), %1   ; small
         ld (iy+Obj.objType), 0
-        ld (iy+Obj.o_23), 1
+        ld (iy+Obj.behaviour), 1
         ld (iy+Obj.o_24), 0
         ld a, (ix+Obj.o_49)
         ld (iy+Obj.o_49), a
@@ -2166,19 +2272,19 @@ emitEnemyBullet:  ; #f564
         jr Z, .l_2
         cp 2
         jr NZ, .l_0
-        ld a, (ix+Obj.o_21)
+        ld a, (ix+Obj.direction)
         and %00000011
-        ld (iy+Obj.o_21), a
+        ld (iy+Obj.direction), a
         ret
 .l_0:
         cp 3
         jr NZ, .l_1
-        ld (iy+Obj.o_21), 8
+        ld (iy+Obj.direction), 8
         ret
 .l_1:
         cp 4
         ret NZ
-        ld (iy+Obj.o_21), 4
+        ld (iy+Obj.direction), 4
         ret
 .l_2:
         push ix
@@ -2196,7 +2302,7 @@ c_f618:  ; #f618
         cp 1
         call Z, c_ee93
         ld iy, scene
-        call c_e80a
+        call checkObjectCollision
         jr C, .l_1
         ld (ix+Obj.flags), 0
         ld b, (ix+Obj.health)
@@ -2244,15 +2350,15 @@ c_f670:  ; #f670
         ret NC
         bit 1, (ix+Obj.trajectory)
         jr Z, .l_0
-        ld a, (ix+Obj.o_21)
+        ld a, (ix+Obj.direction)
         xor %00000011
-        ld (ix+Obj.o_21), a
+        ld (ix+Obj.direction), a
 .l_0:
         bit 0, (ix+Obj.trajectory)
         ret Z
-        ld a, (ix+Obj.o_21)
+        ld a, (ix+Obj.direction)
         xor %00001100
-        ld (ix+Obj.o_21), a
+        ld (ix+Obj.direction), a
         ret
 
 ; (Some game logic?)
@@ -2318,7 +2424,7 @@ findAndPutObjectsToScene:  ; #f6ba
 
 ; Get next objects from the object table
 ; Used by c_cc25.
-putNextObjectsToScene:  ; #f6e7
+putNextObjsToScene:  ; #f6e7
         ld bc, (State.nextObject)
 .object:
         ld de, (State.screenX)
@@ -2372,10 +2478,10 @@ setWaitingFlags:
         set 5, (ix+Obj.flags)   ; waiting
         jr .skip
 .visible:
-        ld a, (ix+Obj.o_27)
+        ld a, (ix+Obj.stillActW)
         or a
-        jr NZ, .skip
-        res 5, (ix+Obj.flags)   ; visible
+        jr NZ, .skip            ; visible, but still
+        res 5, (ix+Obj.flags)   ; remove waiting flag
 .skip:
         ld de, Obj              ; object size
         add ix, de
@@ -2451,7 +2557,7 @@ createObject:
         ; fill object properties
         ld (ix+Obj.o_6), 0
         ld (ix+Obj.o_48), 0
-        ld (ix+Obj.o_21), %0000010
+        ld (ix+Obj.direction), %0000010
         ld a, (hl)              ; spriteAddr (low)
         ld (ix+Obj.sprite+0), a
         inc hl                  ; +1
@@ -2517,40 +2623,40 @@ createObject:
         ld (ix+Obj.o_18), a
         inc hl                  ; +17
         ld a, (hl)              ; mirror (?)
-        ld (ix+Obj.o_19), a
+        ld (ix+Obj.horizSpeed), a
         inc hl                  ; +18
         ld a, (hl)
-        ld (ix+Obj.o_20), a
+        ld (ix+Obj.vertSpeed), a
         inc hl                  ; +19
         ld a, (hl)
-        ld (ix+Obj.o_21), a
+        ld (ix+Obj.direction), a
         inc hl                  ; +20
         ld a, (hl)
         ld (ix+Obj.o_22), a
         inc hl                  ; +21
         ld a, (hl)
-        ld (ix+Obj.o_23), a
+        ld (ix+Obj.behaviour), a
         inc hl                  ; +22
         ld a, (hl)
-        ld (ix+Obj.o_25), a
+        ld (ix+Obj.stillActX), a
         inc hl                  ; +23
         ld a, (hl)
-        ld (ix+Obj.o_26), a
+        ld (ix+Obj.stillActY), a
         inc hl                  ; +24
         ld a, (hl)
-        ld (ix+Obj.o_27), a
+        ld (ix+Obj.stillActW), a
         inc hl                  ; +25
         ld a, (hl)
-        ld (ix+Obj.o_28), a
+        ld (ix+Obj.stillActH), a
 
-        ; direction transform (?)
-        ld a, (ix+Obj.o_21)
+        ; direction transform
+        ld a, (ix+Obj.direction)
         ld l, a
         ld h, 0
-        ld de, c_f373
+        ld de, directionTransform
         add hl, de
         ld a, (hl)
-        ld (ix+Obj.o_21), a
+        ld (ix+Obj.direction), a
 
         ; get top by bottom and height
         bit 1, (ix+Obj.flags)   ; is big

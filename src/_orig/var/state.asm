@@ -18,7 +18,7 @@ isDead:     db -0       ; 0|#FF
 hasDiary:   db -0
 hasSmart:   db -0       ; 0|1
 levelsDone: block 5     ; 0|1 for each level
-s_27:       db -0
+s_27:       db -0       ; jump phase (?)
 s_28:       db -0       ; (0..4, index of call table #D6E7 ?)
 tileLfTop:  db -0       ;
 tileLfMid:  db -0       ;      LA       RA
@@ -45,7 +45,7 @@ s_3F:       db -0
 s_40:       db -0
 s_41:       db -0
 s_42:       db -0
-s_43:       db -0
+tmpY:       db -0       ; y coord is saved here temporarily during transit check
 s_44:       db -0
 pressTime:  db -0       ; time during which the hero is small after a press
 inShop:     db -0       ; 0: not in shop, #FF: entering shop, #7F in shop

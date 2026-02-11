@@ -3,36 +3,38 @@
 
 ; (Some call table)
 c_d6e7:  ; #d6e7
-        dw c_d7f6
-        dw c_d94c
-        dw c_da95
-        dw c_db4e
-        dw c_dbfc
+        dw c_d7f6_t0
+        dw c_d94c_t1
+        dw c_da95_t2
+        dw c_db4e_t3
+        dw c_dbfc_t4
 
 ; Data block at D6F1
 c_d6f1:  ; #d6f1
-        db #F8, #F8, #F8, #F9, #F9, #F9, #F9, #FA
-        db #FD, #FE, #FF, #00, #00, #00, #01, #01
-        db #02, #02, #04, #07, #07, #08, #08, #7F
+        db -8, -8, -8, -7, -7, -7, -7, -6, -3, -2, -1, 0, 0, 0, 1, 1, 2, 2, 4, 7, 7, 8, 8
+        db #7F
 
 ; (Some game logic, calls from call table #D6E7?)
 ; Used by c_cc25.
 c_d709:  ; #d709
-        ld ix, scene
+        ld ix, scene.hero
         call collectStateTiles
+        
         ld a, (State.s_28)
         add a
         ld l, a
-        ld h, #00
+        ld h, 0
         ld de, c_d6e7
         add hl, de
+        
         ld e, (hl)
         inc hl
         ld d, (hl)
         ld (.call), de
 .call+* call -0
+
         ld a, (State.s_28)
-        cp #02
+        cp 2
         jp NC, .l_4
         ld a, (State.s_39)
         or a
@@ -69,16 +71,16 @@ c_d709:  ; #d709
         ld a, #02
         ld (State.s_28), a
         ld a, (controlState)
-        and #03
+        and (1<<Key.left) | (1<<Key.right)
         jp Z, .l_2
         ld b, a
-        ld a, (ix+Obj.o_21)
+        ld a, (ix+Obj.direction)
         and #FC
         or b
-        ld (ix+Obj.o_21), a
-        ld (ix+Obj.o_19), #02
+        ld (ix+Obj.direction), a
+        ld (ix+Obj.horizSpeed), 2
 .l_2:
-        ld a, #03
+        ld a, 3
         ld (State.s_27), a
         xor a
         ld (State.s_41), a
@@ -123,20 +125,24 @@ c_d709:  ; #d709
         ld (ix+Obj.x), a
         jp .l_4
 
+
 ; (Some game logic from call table #D6E7?)
-c_d7f6:  ; #d7f6
+c_d7f6_t0:  ; #d7f6
         ld a, (controlState)
-        bit 3, a
-        jr Z, .l_0
+        bit Key.up, a
+        jr Z, .notUp
+        
         ld a, (State.tileCentre)
         call getTileType
-        cp #01
+        
+        cp TileType.ladder
         jp Z, .l_12
-        cp #02
+        cp TileType.ladderTop
         jp Z, .l_12
         jp .l_9
-.l_0:
-        bit 2, a
+        
+.notUp:
+        bit Key.down, a
         jr Z, .l_1
         ld a, (State.tileCnFoot)
         call getTileType
@@ -144,9 +150,9 @@ c_d7f6:  ; #d7f6
         jp Z, .l_12
 .l_1:
         ld a, (controlState)
-        bit 1, a
+        bit Key.left, a
         jp NZ, .l_7
-        bit 0, a
+        bit Key.right, a
         jp NZ, .l_8
         bit 0, (ix+Obj.o_24)
         ret NZ
@@ -157,7 +163,7 @@ c_d7f6:  ; #d7f6
         ld a, (State.tileRgFoot)
         call getTileType
         cp #02
-        jp C, c_d94c.l_13
+        jp C, c_d94c_t1.l_13
 .l_2:
         ld a, (State.tileLfFoot)
         call getTileType
@@ -174,20 +180,20 @@ c_d7f6:  ; #d7f6
         ld a, (State.tileRgFoot)
         call getTileType
         cp #05
-        jp C, c_d94c.l_11
+        jp C, c_d94c_t1.l_11
         ret
 .l_3:
-        bit 0, (ix+Obj.o_21)
+        bit 0, (ix+Obj.direction)
         jr NZ, .l_4
         call c_de37
-        jp NZ, c_d94c.l_11
+        jp NZ, c_d94c_t1.l_11
         ld a, (ix+Obj.x)
         add #FE
         ld (ix+Obj.x), a
         jp .l_5
 .l_4:
         call c_deb1
-        jp NZ, c_d94c.l_11
+        jp NZ, c_d94c_t1.l_11
         ld a, (ix+Obj.x)
         add #02
         ld (ix+Obj.x), a
@@ -209,8 +215,8 @@ c_d7f6:  ; #d7f6
         xor a
         ld (State.s_42), a
         ld (ix+Obj.o_6), a
-        set 1, (ix+Obj.o_21)
-        res 0, (ix+Obj.o_21)
+        set 1, (ix+Obj.direction)
+        res 0, (ix+Obj.direction)
         ret
 .l_8:
         ld a, #01
@@ -220,8 +226,8 @@ c_d7f6:  ; #d7f6
         xor a
         ld (State.s_42), a
         ld (ix+Obj.o_6), a
-        set 0, (ix+Obj.o_21)
-        res 1, (ix+Obj.o_21)
+        set 0, (ix+Obj.direction)
+        res 1, (ix+Obj.direction)
         ret
 .l_9:
         ld a, (State.pressTime)
@@ -231,16 +237,16 @@ c_d7f6:  ; #d7f6
         ld a, #02
         ld (State.s_28), a
         ld a, (controlState)
-        and #03
+        and (1<<Key.left) | (1<<Key.right)
         jp Z, .l_10
         ld b, a
-        ld a, (ix+Obj.o_21)
+        ld a, (ix+Obj.direction)
         and #FC
         or b
-        ld (ix+Obj.o_21), a
-        ld (ix+Obj.o_19), #02
+        ld (ix+Obj.direction), a
+        ld (ix+Obj.horizSpeed), #02
 .l_10:
-        ld a, #03
+        ld a, 3
         ld (State.s_27), a
         xor a
         ld (State.s_41), a
@@ -252,9 +258,9 @@ c_d7f6:  ; #d7f6
 .l_11:
         ld (ix+Obj.sprite+0), l
         ld (ix+Obj.sprite+1), h
-        ld a, #05
+        ld a, 5
         call playSound
-        jp c_da95
+        jp c_da95_t2
 ; This entry point is used by c_d94c, c_da95 and c_db4e.
 .l_12:
         ld a, (State.pressTime)
@@ -274,10 +280,11 @@ c_d7f6:  ; #d7f6
         ld (ix+Obj.sprite+1), h
         xor a
         ld (State.s_41), a
-        jp c_dbfc
+        jp c_dbfc_t4
+
 
 ; (Some game logic from call table #D6E7?)
-c_d94c:  ; #d94c
+c_d94c_t1:  ; #d94c
         bit 0, (ix+Obj.o_24)
         jr NZ, .l_0
         ld a, (State.tileLfFoot)
@@ -290,16 +297,16 @@ c_d94c:  ; #d94c
         jp C, .l_13
 .l_0:
         ld a, (controlState)
-        bit 3, a
+        bit Key.up, a
         jp NZ, .l_11
         bit 2, a
         jr Z, .l_1
         ld a, (State.tileCnFoot)
         call getTileType
         cp #02
-        jp Z, c_d7f6.l_12
+        jp Z, c_d7f6_t0.l_12
 .l_1:
-        bit 0, (ix+Obj.o_21)
+        bit 0, (ix+Obj.direction)
         jp NZ, .l_5
         call c_de37
         or a
@@ -330,7 +337,7 @@ c_d94c:  ; #d94c
         ld (State.s_42), a
 .l_4:
         ld a, (controlState)
-        bit 1, a
+        bit Key.left, a
         jp Z, .l_11
         jr .l_9
 .l_5:
@@ -363,7 +370,7 @@ c_d94c:  ; #d94c
         ld (State.s_42), a
 .l_8:
         ld a, (controlState)
-        bit 0, a
+        bit Key.right, a
         jp Z, .l_11
 .l_9:
         ld a, (State.tileLfFoot)
@@ -389,7 +396,7 @@ c_d94c:  ; #d94c
         and #F8
         or #03
         ld (ix+Obj.y), a
-        ld (ix+Obj.o_19), #00
+        ld (ix+Obj.horizSpeed), #00
         ld hl, cS.heroStands
         ld a, (State.weapon)
         cp 2
@@ -408,15 +415,15 @@ c_d94c:  ; #d94c
         xor a
         ld (State.s_41), a
         ld a, (controlState)
-        and #03
+        and (1<<Key.left) | (1<<Key.right)
         jp Z, .l_14
         ld b, a
-        ld a, (ix+Obj.o_21)
+        ld a, (ix+Obj.direction)
         and #FC
         or b
-        ld (ix+Obj.o_21), a
+        ld (ix+Obj.direction), a
         ld a, #02
-        ld (ix+Obj.o_19), a
+        ld (ix+Obj.horizSpeed), a
 .l_14:
         ld hl, cS.heroFalls
         ld a, (State.weapon)
@@ -426,11 +433,12 @@ c_d94c:  ; #d94c
 .l_15:
         ld (ix+Obj.sprite+0), l
         ld (ix+Obj.sprite+1), h
-        jp c_db4e
+        jp c_db4e_t3
+
 
 ; (Some game logic from call table #D6E7?)
 ; Used by c_d7f6.
-c_da95:  ; #da95
+c_da95_t2:  ; #da95
         ld hl, cS.heroJumps
         ld a, (State.weapon)
         cp 2
@@ -440,24 +448,24 @@ c_da95:  ; #da95
         ld (ix+Obj.sprite+0), l
         ld (ix+Obj.sprite+1), h
         ld a, (controlState)
-        bit 3, a
+        bit Key.up, a
         jr Z, .l_1
         ld a, (State.tileCentre)
         call getTileType
         cp #01
-        jp Z, c_d7f6.l_12
+        jp Z, c_d7f6_t0.l_12
         cp #02
-        jp Z, c_d7f6.l_12
+        jp Z, c_d7f6_t0.l_12
 .l_1:
-        ld a, (ix+Obj.o_19)
+        ld a, (ix+Obj.horizSpeed)
         or a
         jr Z, .l_3
-        bit 0, (ix+Obj.o_21)
+        bit 0, (ix+Obj.direction)
         jr NZ, .l_2
         call c_de37
         or a
         jr NZ, .l_3
-        ld a, (ix+Obj.o_19)
+        ld a, (ix+Obj.horizSpeed)
         neg
         add (ix+Obj.x)
         ld (ix+Obj.x), a
@@ -466,19 +474,19 @@ c_da95:  ; #da95
         call c_deb1
         or a
         jr NZ, .l_3
-        ld a, (ix+Obj.o_19)
+        ld a, (ix+Obj.horizSpeed)
         add (ix+Obj.x)
         ld (ix+Obj.x), a
 .l_3:
         ld a, (State.s_27)
         ld e, a
-        ld d, #00
+        ld d, 0
         ld hl, c_d6f1
         add hl, de
         ld a, (hl)
         ld (State.s_37), a
         cp #7F
-        jp Z, c_d94c.l_13
+        jp Z, c_d94c_t1.l_13
         add (ix+Obj.y)
         ld (ix+Obj.y), a
         ld a, (hl)
@@ -502,11 +510,11 @@ c_da95:  ; #da95
         ld a, (State.tileLfFoot)
         call getTileType
         cp #02
-        jp NC, c_d94c.l_11
+        jp NC, c_d94c_t1.l_11
         ld a, (State.tileRgFoot)
         call getTileType
         cp #02
-        jp NC, c_d94c.l_11
+        jp NC, c_d94c_t1.l_11
         ret
 .l_5:
         exa
@@ -516,31 +524,32 @@ c_da95:  ; #da95
         ld (ix+Obj.y), a
         ret
 
+
 ; (Some game logic from call table #D6E7?)
 ; Used by c_d94c.
-c_db4e:  ; #db4e
+c_db4e_t3:  ; #db4e
         ld a, (controlState)
-        bit 3, a
+        bit Key.up, a
         jr Z, .l_0
         ld a, (State.tileCentre)
         call getTileType
         cp #01
-        jp Z, c_d7f6.l_12
+        jp Z, c_d7f6_t0.l_12
         cp #02
-        jp Z, c_d7f6.l_12
+        jp Z, c_d7f6_t0.l_12
 .l_0:
         ld l, (ix+Obj.x+0)
         ld h, (ix+Obj.x+1)
         push hl
-        ld a, (ix+Obj.o_19)
+        ld a, (ix+Obj.horizSpeed)
         or a
         jr Z, .l_2
-        bit 0, (ix+Obj.o_21)
+        bit 0, (ix+Obj.direction)
         jr NZ, .l_1
         call c_de37
         or a
         jr NZ, .l_2
-        ld a, (ix+Obj.o_19)
+        ld a, (ix+Obj.horizSpeed)
         neg
         add (ix+Obj.x)
         ld (ix+Obj.x), a
@@ -549,7 +558,7 @@ c_db4e:  ; #db4e
         call c_deb1
         or a
         jr NZ, .l_2
-        ld a, (ix+Obj.o_19)
+        ld a, (ix+Obj.horizSpeed)
         add (ix+Obj.x)
         ld (ix+Obj.x), a
 .l_2:
@@ -571,34 +580,35 @@ c_db4e:  ; #db4e
         ld a, (State.tileLfFoot)
         call getTileType
         cp #02
-        jp NC, c_d94c.l_11
+        jp NC, c_d94c_t1.l_11
         ld a, (State.tileRgFoot)
         call getTileType
         cp #02
-        jp NC, c_d94c.l_11
+        jp NC, c_d94c_t1.l_11
         ld a, (controlState)
-        bit 1, a
+        bit Key.left, a
         jr NZ, .l_3
-        bit 0, a
+        bit Key.right, a
         jr NZ, .l_4
-        ld (ix+Obj.o_19), #00
+        ld (ix+Obj.horizSpeed), #00
         ret
 .l_3:
-        ld (ix+Obj.o_19), #02
-        set 1, (ix+Obj.o_21)
-        res 0, (ix+Obj.o_21)
+        ld (ix+Obj.horizSpeed), #02
+        set 1, (ix+Obj.direction)
+        res 0, (ix+Obj.direction)
         ret
 .l_4:
-        ld (ix+Obj.o_19), #02
-        set 0, (ix+Obj.o_21)
-        res 1, (ix+Obj.o_21)
+        ld (ix+Obj.horizSpeed), #02
+        set 0, (ix+Obj.direction)
+        res 1, (ix+Obj.direction)
         ret
+
 
 ; (Some game logic from call table #D6E7?)
 ; Used by c_d7f6.
-c_dbfc:  ; #dbfc
+c_dbfc_t4:  ; #dbfc
         ld a, (controlState)
-        bit 3, a
+        bit Key.up, a
         jr Z, .l_1
         ld a, (State.tileCentre)
         call getTileType
@@ -607,7 +617,7 @@ c_dbfc:  ; #dbfc
         ld a, (State.tileCnFoot)
         call getTileType
         or a
-        jp Z, c_d94c.l_13
+        jp Z, c_d94c_t1.l_13
 .l_0:
         call collectTilesAbove
         ld a, (State.tileLfAbov)
@@ -624,7 +634,7 @@ c_dbfc:  ; #dbfc
         ld (ix+Obj.y), a
 .l_1:
         ld a, (controlState)
-        bit 2, a
+        bit Key.down, a
         jr Z, .l_3
         ld a, (State.tileCentre)
         call getTileType
@@ -633,7 +643,7 @@ c_dbfc:  ; #dbfc
         ld a, (State.tileCnFoot)
         call getTileType
         or a
-        jp Z, c_d94c.l_13
+        jp Z, c_d94c_t1.l_13
 .l_2:
         call c_dcce
         ld a, (ix+Obj.y)
@@ -650,10 +660,10 @@ c_dbfc:  ; #dbfc
         ld a, (State.tileCnFoot)
         call getTileType
         cp #02
-        jp NC, c_d94c.l_11
+        jp NC, c_d94c_t1.l_11
 .l_4:
         ld a, (controlState)
-        bit 1, a
+        bit Key.left, a
         jr Z, .l_6
         ld a, (State.tileCentre)
         call getTileType
@@ -662,7 +672,7 @@ c_dbfc:  ; #dbfc
         ld a, (State.tileCnFoot)
         call getTileType
         or a
-        jp Z, c_d94c.l_13
+        jp Z, c_d94c_t1.l_13
 .l_5:
         call c_de37
         jr NZ, .l_6
@@ -672,7 +682,7 @@ c_dbfc:  ; #dbfc
         ld (ix+Obj.x), a
 .l_6:
         ld a, (controlState)
-        bit 0, a
+        bit Key.right, a
         jr Z, .l_8
         ld a, (State.tileCentre)
         call getTileType
@@ -681,7 +691,7 @@ c_dbfc:  ; #dbfc
         ld a, (State.tileCnFoot)
         call getTileType
         or a
-        jp Z, c_d94c.l_13
+        jp Z, c_d94c_t1.l_13
 .l_7:
         call c_deb1
         jr NZ, .l_8
@@ -698,12 +708,13 @@ c_dbfc:  ; #dbfc
 c_dcce:  ; #dcce
         ld a, (State.s_42)
         inc a
-        and #03
+        and %11
         ld (State.s_42), a
         ret NZ
-        ld a, (ix+Obj.o_21)
-        xor #03
-        ld (ix+Obj.o_21), a
+        
+        ld a, (ix+Obj.direction)
+        xor %0011               ; left <-> right
+        ld (ix+Obj.direction), a
         ret
 
 
@@ -1043,73 +1054,91 @@ powerBulletTable:  ; #df76
         dw cS.powerBullet3 : db  8,  8, 8
 
 
-; (Some logic for enemies?)
+; Decrement weapon time and perform fire if pressed
 ; Used by c_cc25.
-c_df85:  ; #df85
+processFire:  ; #df85
         ld a, (State.pressTime)
         or a
         ret NZ
         ld a, (State.inShop)
         or a
         ret NZ
+
+        ; decrement weapon time
         ld a, (State.weapon)
         or a
-        jr Z, .l_1
+        jr Z, .skipWeaponTime
         ld hl, (State.weaponTime)
         ld a, h
         or l
-        jr NZ, .l_0
+        jr NZ, .decWeaponTime
+        ; weapon time elapsed
         ld a, (State.s_3D)
         or a
-        jr NZ, .l_1
+        jr NZ, .skipWeaponTime
         xor a
-        ld (State.weapon), a
+        ld (State.weapon), a    ; remove weapon
         ret
-.l_0:
+.decWeaponTime:
         dec hl
         ld (State.weaponTime), hl
-.l_1:
+.skipWeaponTime:
+
         ld a, (State.s_3D)
         or a
         jp NZ, .l_9
+
         ld a, (State.s_28)
-        cp #03
+        cp 3
         ret NC
+
         ld a, (controlState)
-        bit 4, a
+        bit Key.fire, a                ; fire key
         ret Z
-        ld ix, scene
+
+        ; fire pressed
+        ld ix, scene.hero
         ld iy, scene.obj1
         ld a, (State.weapon)
         or a
-        jp NZ, .l_3
-        ld a, #04
+        jp NZ, .useWeapon
+
+        ; no weapon
+        ld a, 4                 ; kick/throw sound
         call playSound
+
         ld hl, cS.heroKicks
         ld (ix+Obj.sprite+0), l
         ld (ix+Obj.sprite+1), h
-        ld (iy+Obj.flags), #02
+
+        ; create kick bubble
+        ld (iy+Obj.flags), %10  ; big
         ld (iy+Obj.colour), Colour.white
-        ld (iy+Obj.o_21), #01
-        ld (iy+Obj.o_19), #00
-        ld (iy+Obj.o_7), #00
+        ld (iy+Obj.direction), 1    ; right
+        ld (iy+Obj.horizSpeed), 0
+        ld (iy+Obj.o_7), 0
+
+        ; set x coord
         ld l, (ix+Obj.x+0)
         ld h, (ix+Obj.x+1)
-        ld de, #0010
-        bit 0, (ix+Obj.o_21)
-        jr NZ, .l_2
+        ld de, 16
+        bit 0, (ix+Obj.direction)   ; right
+        jr NZ, .kickRight
+.kickLeft:
         ld de, -16
-.l_2:
+.kickRight:
         add hl, de
         ld (iy+Obj.x+0), l
         ld (iy+Obj.x+1), h
+        ; set y coord
         ld a, (ix+Obj.y)
         ld (iy+Obj.y), a
+
         ld a, (State.soupCans)
         dec a
         add a
         ld l, a
-        ld h, #00
+        ld h, 0
         ld de, kickBubbles
         add hl, de
         ld a, (hl)
@@ -1117,110 +1146,139 @@ c_df85:  ; #df85
         inc hl
         ld a, (hl)
         ld (iy+Obj.sprite+1), a
-        ld a, #01
+
+        ld a, 1
         ld (State.s_3D), a
-        ld a, #03
+        ld a, 3
         ld (State.s_3E), a
-        jp c_eb00
-.l_3:
-        cp #01
-        jp NZ, .l_5
-        ld a, #04
+        jp checkEnemiesForDamage
+
+.useWeapon:
+        cp 1
+        jp NZ, .gun
+
+.shatterbomb:
+        ld a, 4                 ; kick/throw sound
         call playSound
+
         ld hl, cS.heroThrows
         ld (ix+Obj.sprite+0), l
         ld (ix+Obj.sprite+1), h
+
+        ; create bomb
         ld hl, cS.shatterbomb
         ld (iy+Obj.sprite+0), l
         ld (iy+Obj.sprite+1), h
-        ld (iy+Obj.flags), #01
+        ld (iy+Obj.flags), %1   ; exists
         ld (iy+Obj.colour), Colour.cyan
-        ld (iy+Obj.o_7), #00
-        ld (iy+Obj.width), #08
-        ld (iy+Obj.height), #08
+        ld (iy+Obj.o_7), 0
+        ld (iy+Obj.width), 8
+        ld (iy+Obj.height), 8
+
+        ; set x coord
         ld l, (ix+Obj.x+0)
         ld h, (ix+Obj.x+1)
-        ld de, #0008
-        bit 0, (ix+Obj.o_21)
-        jr NZ, .l_4
+        ld de, 8
+        bit 0, (ix+Obj.direction)   ; right
+        jr NZ, .throwRight
+.throwLeft:
         ld de, -6
-.l_4:
+.throwRight:
         add hl, de
         ld (iy+Obj.x+0), l
         ld (iy+Obj.x+1), h
+        ; set y coord
         ld a, (ix+Obj.y)
-        add #FC
+        add -4
         ld (iy+Obj.y), a
-        ld (iy+Obj.o_19), #04
-        ld a, (ix+Obj.o_21)
-        and #03
-        ld (iy+Obj.o_21), a
+
+        ld (iy+Obj.horizSpeed), 4
+        ld a, (ix+Obj.direction)
+        and %0011               ; left-right
+        ld (iy+Obj.direction), a
+
         xor a
         ld (State.s_3F), a
-        ld a, #02
+        ld a, 2
         ld (State.s_3D), a
-        ld a, #03
+        ld a, 3
         ld (State.s_3E), a
-        jp c_eb00
-.l_5:
-        cp #02
-        jp NZ, .l_7
-        ld a, #0A
+
+        jp checkEnemiesForDamage
+
+.gun:
+        cp 2                    ; powerGun
+        jp NZ, .lazerGun
+
+.powerGun:
+        ld a, 10                ; powerGun sound
         call playSound
+
         ld a, (State.soupCans)
         dec a
         ld l, a
-        add a
-        add a
+    .2  add a
         add l
         ld l, a
-        ld h, #00
+        ld h, 0
         ld de, powerBulletTable
         add hl, de
-        ld c, (hl)
+
+        ; create bullet
+        ld c, (hl)              ; bullet sprite (low)
         inc hl
-        ld b, (hl)
+        ld b, (hl)              ; bullet sprite (high)
         ld (iy+Obj.sprite+0), c
         ld (iy+Obj.sprite+1), b
+
         inc hl
-        ld a, (hl)
+        ld a, (hl)              ; bullet width
         ld (iy+Obj.width), a
         inc hl
-        ld a, (hl)
+        ld a, (hl)              ; bullet height
         ld (iy+Obj.height), a
         inc hl
-        ld a, (hl)
+        ld a, (hl)              ; bullet y offset
         add (ix+Obj.y)
         ld (iy+Obj.y), a
+
+        ; bullet x coord
         ld l, (ix+Obj.x+0)
         ld h, (ix+Obj.x+1)
-        ld de, #0018
-        bit 0, (ix+Obj.o_21)
-        jr NZ, .l_6
+        ld de, 24
+        bit 0, (ix+Obj.direction)   ; right
+        jr NZ, .powerShootRight
+.powerShootLeft
         ld de, -16
-.l_6:
+.powerShootRight:
         add hl, de
         ld (iy+Obj.x+0), l
         ld (iy+Obj.x+1), h
-        ld (iy+Obj.flags), #01
+
+        ld (iy+Obj.flags), %1   ; exists
         ld (iy+Obj.colour), Colour.white
-        ld (iy+Obj.o_19), #08
-        ld (iy+Obj.o_20), #08
-        ld (iy+Obj.o_7), #00
-        ld a, (ix+Obj.o_21)
-        and #03
-        ld (iy+Obj.o_21), a
+        ld (iy+Obj.horizSpeed), 8
+        ld (iy+Obj.vertSpeed), 8
+        ld (iy+Obj.o_7), 0
+
+        ld a, (ix+Obj.direction)
+        and %0011               ; left-right
+        ld (iy+Obj.direction), a
+
         ld (State.s_38), a
-        ld a, #03
+        ld a, 3
         ld (State.s_3D), a
-        ld a, #01
+        ld a, 1
         ld (c_e308), a
-        ld a, #04
+        ld a, 4
         ld (State.s_39), a
-        jp c_eb00
-.l_7:
-        ld a, #08
+
+        jp checkEnemiesForDamage
+
+.lazerGun:
+        ld a, 8                 ; lazer gun sound
         call playSound
+
         ld a, (State.soupCans)
         dec a
         ld l, a
@@ -1228,52 +1286,64 @@ c_df85:  ; #df85
         add a
         add l
         ld l, a
-        ld h, #00
+        ld h, 0
         ld de, lazerBulletTable
         add hl, de
-        ld c, (hl)
+
+        ; create bullet
+        ld c, (hl)              ; bullet sprite (low)
         inc hl
-        ld b, (hl)
+        ld b, (hl)              ; bullet sprite (high)
         ld (iy+Obj.sprite+0), c
         ld (iy+Obj.sprite+1), b
+
         inc hl
-        ld a, (hl)
+        ld a, (hl)              ; bullet width
         ld (iy+Obj.width), a
         inc hl
-        ld a, (hl)
+        ld a, (hl)              ; bullet height
         ld (iy+Obj.height), a
         inc hl
-        ld a, (hl)
+        ld a, (hl)              ; bullet y offset
         add (ix+Obj.y)
         ld (iy+Obj.y), a
+
+        ; bullet x coord
         ld l, (ix+Obj.x+0)
         ld h, (ix+Obj.x+1)
-        ld de, #0010
-        bit 0, (ix+Obj.o_21)
-        jr NZ, .l_8
+        ld de, 16
+        bit 0, (ix+Obj.direction)   ; right
+        jr NZ, .lazerShootRight
+.lazerShootLeft
         ld de, -6
-.l_8:
+.lazerShootRight:
         add hl, de
         ld (iy+Obj.x+0), l
         ld (iy+Obj.x+1), h
-        ld (iy+Obj.o_7), #00
-        ld (iy+Obj.flags), #01
+
+        ld (iy+Obj.o_7), 0
+        ld (iy+Obj.flags), %1   ; exists
         ld (iy+Obj.colour), Colour.cyan
-        ld (iy+Obj.o_19), #08
-        ld a, (ix+Obj.o_21)
-        and #03
-        ld (iy+Obj.o_21), a
+        ld (iy+Obj.horizSpeed), 8
+
+        ld a, (ix+Obj.direction)
+        and %0011               ; left-right
+        ld (iy+Obj.direction), a
+
         ld (State.s_38), a
-        ld a, #04
+        ld a, 4
         ld (State.s_3D), a
-        ld a, #04
+        ld a, 4
         ld (State.s_39), a
-        jp c_eb00
+
+        jp checkEnemiesForDamage
+
 .l_9:
         ld ix, scene.obj1
-        cp #01
+        cp 1
         jr NZ, .l_12
-        ld ix, scene
+
+        ld ix, scene.hero
         ld hl, State.s_3E
         ld a, (hl)
         or a
@@ -1314,7 +1384,7 @@ c_df85:  ; #df85
         ld a, (State.s_40)
         or a
         jp NZ, .l_16
-        call c_eb00
+        call checkEnemiesForDamage
         jr NC, .l_15
         ld a, (State.s_3F)
         ld l, a
@@ -1326,9 +1396,9 @@ c_df85:  ; #df85
         jr Z, .l_14
         ld hl, State.s_3F
         inc (hl)
-        ld (ix+Obj.o_20), a
+        ld (ix+Obj.vertSpeed), a
 .l_14:
-        ld a, (ix+Obj.o_20)
+        ld a, (ix+Obj.vertSpeed)
         add (ix+Obj.y)
         ld (ix+Obj.y), a
         call isObjectVisible
@@ -1351,7 +1421,7 @@ c_df85:  ; #df85
         cp #02
         ret C
 .l_15:
-        ld a, #06
+        ld a, 6                 ; kill enemy sound
         call playSound
         ld a, (ix+Obj.x)
         add #FC
@@ -1364,7 +1434,7 @@ c_df85:  ; #df85
         ld (ix+Obj.y), a
         xor a
         ld (State.s_40), a
-        ld (ix+Obj.o_21), a
+        ld (ix+Obj.direction), a
         set 1, (ix+Obj.flags)
         ld a, (State.soupCans)
         dec a
@@ -1402,7 +1472,7 @@ c_df85:  ; #df85
         ld (ix+Obj.sprite+0), a
         ld (ix+Obj.sprite+1), h
         ld (ix+Obj.colour), Colour.white
-        jp c_eb00
+        jp checkEnemiesForDamage
 .l_18:
         xor a
         ld (ix+Obj.flags), a
@@ -1436,7 +1506,7 @@ c_df85:  ; #df85
         call getTileType
         cp #02
         jp NC, .l_18
-        call c_eb00
+        call checkEnemiesForDamage
         jr NC, .l_18
         ld a, (State.s_3D)
         cp #03
@@ -1446,6 +1516,7 @@ c_df85:  ; #df85
         jr Z, c_e31c
         ret
 
+
 ; (Some data on enemies?)
 c_e308:  ; #e308
         db 0
@@ -1453,6 +1524,7 @@ c_e309:  ; #e309
         db 1, 5, 4, 6, 2, 10, 8, 9
 c_e311:  ; #e311
         db 0, 0, 4, 0, 2, 1, 3, 0, 6, 7, 5
+
 
 ; (Some logic for enemies?)
 ; Used by c_df85.
@@ -1490,18 +1562,18 @@ c_e31c:  ; #e31c
 .l_2:
         add iy, de
         djnz .l_1
-        ld a, (ix+Obj.o_21)
+        ld a, (ix+Obj.direction)
         and #03
-        ld (ix+Obj.o_21), a
+        ld (ix+Obj.direction), a
         ret
 .l_3:
-        ld a, (ix+Obj.o_21)
+        ld a, (ix+Obj.direction)
         ld l, a
         ld h, #00
         ld de, c_e311
         add hl, de
         ld b, (hl)
-        ld (ix+Obj.o_21), #00
+        ld (ix+Obj.direction), #00
         ld l, (ix+Obj.x+0)
         ld h, (ix+Obj.x+1)
         ld e, (iy+Obj.x+0)
@@ -1516,32 +1588,32 @@ c_e31c:  ; #e31c
         neg
         ld l, a
         inc hl
-        set 0, (ix+Obj.o_21)
+        set 0, (ix+Obj.direction)
         jr .l_5
 .l_4:
-        set 1, (ix+Obj.o_21)
+        set 1, (ix+Obj.direction)
 .l_5:
         ld de, #0004
         xor a
         sbc hl, de
         jr NC, .l_6
-        ld (ix+Obj.o_21), #00
+        ld (ix+Obj.direction), #00
 .l_6:
         ld a, (ix+Obj.y)
         sub (iy+Obj.y)
         jp P, .l_7
         neg
-        set 2, (ix+Obj.o_21)
+        set 2, (ix+Obj.direction)
         jr .l_8
 .l_7:
-        set 3, (ix+Obj.o_21)
+        set 3, (ix+Obj.direction)
 .l_8:
         cp #04
         jr NC, .l_9
-        res 2, (ix+Obj.o_21)
-        res 3, (ix+Obj.o_21)
+        res 2, (ix+Obj.direction)
+        res 3, (ix+Obj.direction)
 .l_9:
-        ld a, (ix+Obj.o_21)
+        ld a, (ix+Obj.direction)
         ld l, a
         ld h, #00
         ld de, c_e311
@@ -1567,7 +1639,7 @@ c_e31c:  ; #e31c
         ld de, c_e309
         add hl, de
         ld a, (hl)
-        ld (ix+Obj.o_21), a
+        ld (ix+Obj.direction), a
 .l_11:
         ld a, #01
         ld (c_e308), a

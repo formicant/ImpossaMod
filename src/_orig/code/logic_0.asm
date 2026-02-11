@@ -37,7 +37,7 @@ decEnergy:  ; #d0af
 .skip:
         ld (State.energy), a
         ld (ix+Obj.blinkTime), #07
-        ld a, 12                ; energy loss
+        ld a, 12                ; energy loss sound
         call playSound
         jp printEnergy
 
@@ -179,7 +179,7 @@ initHero:  ; #d153
         ld (ix+Obj.sprite+0), l
         ld (ix+Obj.sprite+1), h ; set sprite addr
 
-        ld (ix+Obj.o_21), 1     ; mirror (?)
+        ld (ix+Obj.direction), 1     ; mirror (?)
         ld (ix+Obj.flags), %11  ; flags: exists, big
         ld (ix+Obj.width), 16
         ld (ix+Obj.height), 21
@@ -392,9 +392,9 @@ turnIntoCoin:  ; #d2b3
         ld (iy+Obj.sprite+1), h
 
         ld (iy+Obj.o_7), 0
-        ld (iy+Obj.o_23), 6
+        ld (iy+Obj.behaviour), 6
         ld (iy+Obj.objType), 6
-        ld (iy+Obj.o_21), 0     ; some flags (?)
+        ld (iy+Obj.direction), 0     ; some flags (?)
         ld (iy+Obj.trajectory), 0
         ld (iy+Obj.health), -2    ; vertical speed (?)
         ld (iy+Obj.colour), Colour.yellow
@@ -405,7 +405,7 @@ turnIntoCoin:  ; #d2b3
         ret
 
 
-; (Some game logic?)
+; (Some hero logic?)
 ; Used by c_cc25.
 c_d308:  ; #d308
         ld ix, scene.hero
@@ -421,6 +421,7 @@ c_d308:  ; #d308
         ld a, (State.s_37)
         or a
         ret M
+
 .l_0:
         ld iy, scene.obj2
         ld b, 6                 ; object count
@@ -436,7 +437,7 @@ c_d308:  ; #d308
         xor a
         ld (State.s_28), a
         ld (State.s_41), a
-        ld (ix+Obj.o_19), 0
+        ld (ix+Obj.horizSpeed), 0
         set 0, (ix+Obj.o_24)
         push iy
         pop hl
@@ -465,8 +466,8 @@ c_d308:  ; #d308
         ld a, (iy+Obj.y)
         sub (ix+Obj.height)
         ld (ix+Obj.y), a
-        ld c, (iy+Obj.o_21)
-        ld a, (iy+Obj.o_23)
+        ld c, (iy+Obj.direction)
+        ld a, (iy+Obj.behaviour)
         cp 3
         jr Z, .l_6
         ld c, (iy+Obj.o_18)
@@ -475,7 +476,7 @@ c_d308:  ; #d308
         and %00000011
         ret Z
 
-        ld a, (iy+Obj.o_19)
+        ld a, (iy+Obj.horizSpeed)
         ld d, 0
         bit 0, c
         jr NZ, .l_7
@@ -705,7 +706,7 @@ cleanUpScene:  ; #d4cd
 
 
 ; Used by c_cc25.
-performSmartIfSmartKeyPressed:  ; #d4e5
+performSmartIfPressed:  ; #d4e5
         call checkSmartKey
         ret NZ
         ld a, (State.hasSmart)

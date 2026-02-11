@@ -8,16 +8,16 @@ beeperSounds:  ; #be3a
         db  20,   20,  0        ; [1]
         db  20,   20,  0        ; [2]
         db  10,   50,  2        ; [3] damage enemy
-        db  10,  220,  3        ; [4]
+        db  10,  220,  3        ; [4] kick/throw
         db 100,  120,  0        ; [5]
         db  80,   80,  2        ; [6] kill enemy
         db  20,   20,  1        ; [7]
-        db  20,  200,  0        ; [8]
+        db  20,  200,  0        ; [8] lazer gun
         db  20,   20,  2        ; [9]
-        db  10,  180,  0        ; [10]
-        db  20,  200,  3        ; [11]
+        db  10,  180,  0        ; [10] power gun
+        db  20,  200,  3        ; [11] pick up item
         db  60,   30,  0        ; [12] energy loss
-        db  20,  240,  3        ; [13]
+        db  20,  240,  3        ; [13] pick up weapon
         db  20,   20,  2        ; [14]
 
 

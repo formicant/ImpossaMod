@@ -11,7 +11,7 @@ checkCheatKey:
 checkQuitKey:
         ld a, (controlState)
         cpl
-        bit 7, a
+        bit Key.quit, a
         ret
 
 ; Set flag Z if [0] key is pressed
@@ -25,14 +25,14 @@ checkStartKey:
 checkPauseKey:
         ld a, (controlState)
         cpl
-        bit 6, a
+        bit Key.pause, a
         ret
 
 ; Set flag Z if smart key is pressed
 checkSmartKey:
         ld a, (controlState)
         cpl
-        bit 5, a
+        bit Key.smart, a
         ret
 
 ; Wait until all keys released

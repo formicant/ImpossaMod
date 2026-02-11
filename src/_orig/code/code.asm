@@ -15,12 +15,12 @@ showGameOver:  ; #cd22
         call printString
 .l_0:
         ld a, (controlState)
-        bit 4, a
+        bit Key.fire, a
         jr NZ, .l_0
         ld bc, 30000
 .l_1:
         ld a, (controlState)
-        bit 4, a
+        bit Key.fire, a
         jr NZ, .l_3
         exx
         ld b, #C8
@@ -40,7 +40,7 @@ textPaused:  ; #cd52
 
 ; Pause the game
 ; Used by c_cc25.
-pauseGameIfPauseKeyPressed:  ; #cd5c
+pauseGameIfPressed:  ; #cd5c
         call checkPauseKey
         ret NZ
 .l_0:
@@ -56,7 +56,7 @@ pauseGameIfPauseKeyPressed:  ; #cd5c
         call checkCheatKey
         jr NZ, .l_2
         ld a, (controlState)
-        bit 3, a
+        bit Key.up, a
         jr Z, .l_2
         ld a, #22
         ld (State.maxEnergy), a
@@ -293,7 +293,7 @@ advanceObjectsInMap:  ; #cf17
         ld (ix+Obj.x+0), l
         ld (ix+Obj.x+1), h
 
-        ld a, (ix+Obj.o_23)     ; ? (possibly, horizontal moving)
+        ld a, (ix+Obj.behaviour)     ; ? (possibly, horizontal moving)
         cp 1
         jr NZ, .nextObject
 

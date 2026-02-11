@@ -3,7 +3,7 @@
 
 ; Boss logic switch by level
 ; Used by c_cc25.
-boss_logic:  ; #f8cb
+bossLogic:  ; #f8cb
         ld a, (State.bossFight)
         or a
         ret Z

@@ -15,23 +15,23 @@ trajectory  byte
 ot_14       byte    ; o_16
 ot_15       byte    ; o_17
 ot_16       byte    ; o_18
-mirror      byte    ; o_19
-ot_18       byte    ; o_20
-ot_19       byte    ; o_21
+horizSpeed  byte
+vertSpeed   byte
+direction   byte    ; bit 0: up, 1: down, 2: left, 3: right
 ot_20       byte    ; o_22
-ot_21       byte    ; o_23
-ot_22       byte    ; o_25
-ot_23       byte    ; o_26
-ot_24       byte    ; o_27
-ot_25       byte    ; o_28
+behaviour   byte    ; behaviour type (0..5)
+stillActX   byte    ; still enemy activation zone left offset
+stillActY   byte    ; still enemy activation zone top offset
+stillActW   byte    ; still enemy activation zone width
+stillActH   byte    ; still enemy activation zone height
     ENDS
 
 
     STRUCT Obj      ; length: 50
-x           word    ; x coord in pixels (from -32 ?)
-y           byte    ; y coord in pixels (from -32 ?)
+x           word    ; x coord in pixels
+y           byte    ; y coord in pixels
 sprite      word    ; base sprite addr
-flags       byte    ; bit 0: exists, 1: is big, 4: blink once, 5: waiting, 6: mirror(?), 7: should be removed(?)
+flags       byte    ; bit 0: exists, 1: is big, 2: fixed horizontally, 3: fixed vertically, 4: blink once, 5: waiting, 6: mirror(?), 7: should be removed(?)
 o_6         byte
 o_7         byte
 objType     byte    ; object type with offset
@@ -45,16 +45,16 @@ trajectory  byte
 o_16        byte    ; ot_14
 o_17        byte    ; ot_15
 o_18        byte    ; ot_16
-o_19        byte    ; ot_17
-o_20        byte    ; ot_18
-o_21        byte    ; ot_19, bit 1: mirror(?)
+horizSpeed  byte
+vertSpeed   byte
+direction   byte    ; bit 0: right, 1: left, 2: down, 3: up
 o_22        byte    ; ot_20
-o_23        byte    ; ot_21, ? (possibly, value 1 means that object moves horizontally)
+behaviour   byte    ; behaviour type (0..6)
 o_24        byte    ; ot_10, bit 0: ?, 1: ? 3: smart-killable, 4: gives coin; 5: ?
-o_25        byte    ; ot_22
-o_26        byte    ; ot_23
-o_27        byte    ; ot_24
-o_28        byte    ; ot_25
+stillActX   byte    ; still enemy activation zone left offset
+stillActY   byte    ; still enemy activation zone top offset
+stillActW   byte    ; still enemy activation zone width
+stillActH   byte    ; still enemy activation zone height
 o_29        byte
 o_30        word
 o_32        word
