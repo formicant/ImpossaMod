@@ -1156,8 +1156,8 @@ processObjectBehaviour:  ; #ed08
         call emitEnemyBullet
 
         ld a, (ix+Obj.behaviour)
-        cp Behaviour.be_1
-        jp Z, c_f618
+        cp Behaviour.bullet
+        jp Z, processBulletBehaviour
 
         bit Flag.waiting, (ix+Obj.flags)
         ret NZ
@@ -1166,7 +1166,7 @@ processObjectBehaviour:  ; #ed08
         cp ObjType.pressPlatf
         jp Z, c_f2e7
 
-        call c_f4e9
+        call processDynamiteBehaviour
 
         ld a, (ix+Obj.behaviour)
         cp Behaviour.be_2
@@ -1174,7 +1174,7 @@ processObjectBehaviour:  ; #ed08
         call c_f37e
         jp .l_2
 .l_0:
-        cp 4
+        cp Behaviour.be_4
         call Z, c_f37e
 
         ld a, (ix+Obj.behaviour)
@@ -1859,11 +1859,9 @@ collectTileTypes:  ; #f1d7
 
 ; Data block at F2D1
 c_f2d1:  ; #f2d1
-        db #00, #01, #01, #01, #01, #02, #02, #02
-        db #03, #03, #04, #04, #04, #04, #04, #04
-        db #04, #04, #04, #04, #04, #04
+        db 0, 1, 1, 1, 1, 2, 2, 2, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4
 
-; (Modifies some object properties?)
+; (process press/platform behaviour?)
 ; Used by c_ed08.
 c_f2e7:  ; #f2e7
         ld a, (ix+Obj.horizSpeed)
@@ -1961,34 +1959,41 @@ directionTransform:  ; #f373
 c_f37e:  ; #f37e
         bit Flag.waiting, (ix+Obj.flags)
         ret NZ
+        
         xor a
         ld (State.s_4F), a
         ld (State.s_50), a
+        
         ld a, (ix+Obj.trajectory)
         add a
         ld l, a
-        ld h, #00
+        ld h, 0
         ld de, Level.trajVelTable
         add hl, de
         ld e, (hl)
         inc hl
         ld d, (hl)
+        ; `de`: trajectory velocity list addr
+        
         ld a, (ix+Obj.trajectory)
         add a
         ld l, a
-        ld h, #00
+        ld h, 0
         ld bc, Level.trajDirTable
         add hl, bc
         ld c, (hl)
         inc hl
         ld b, (hl)
+        ; `bc`: trajectory direction list addr
+        
 .l_0:
         ld l, (ix+Obj.o_16)
-        ld h, #00
+        ld h, 0
         add hl, de
         ld a, (hl)
-        cp #FF
+        cp -1
         jr NZ, .l_1
+        
         dec hl
         ld a, (hl)
         ld (State.s_4F), a
@@ -2000,6 +2005,7 @@ c_f37e:  ; #f37e
         ld (State.s_50), a
         dec (ix+Obj.o_16)
         jr .l_5
+        
 .l_1:
         cp #FE
         jr NZ, .l_2
@@ -2162,9 +2168,9 @@ checkStillEnemyActivation:  ; #f488
         ret
 
 
-; Decide whether to blow up a dynamite (?)
+; Decide whether to blow up a dynamite
 ; Used by c_ed08.
-c_f4e9:  ; #f4e9
+processDynamiteBehaviour:  ; #f4e9
         ld a, (ix+Obj.objType)
         cp ObjType.klondike.dynamite1
         jr Z, .isDynamite
@@ -2174,10 +2180,12 @@ c_f4e9:  ; #f4e9
         call generateRandom
         cp 2
         ret NC
+        ; explosion cloud
         ld (ix+Obj.o_6), 0
         ld (ix+Obj.o_7), -1
         ld (ix+Obj.colour), Colour.brWhite
         ret
+
 
 ; Data block at F506
 c_f506:  ; #f506
@@ -2239,7 +2247,7 @@ emitEnemyBullet:  ; #f564
         or a
         ret NZ
         ld a, (ix+Obj.behaviour)
-        cp Behaviour.be_1
+        cp Behaviour.bullet
         ret Z
         ld a, (ix+Obj.o_49)
         or a
@@ -2266,7 +2274,7 @@ emitEnemyBullet:  ; #f564
         ld (iy+Obj.health), 1
         ld (iy+Obj.flags), 1<<Flag.exists
         ld (iy+Obj.objType), ObjType.bullet
-        ld (iy+Obj.behaviour), Behaviour.be_1
+        ld (iy+Obj.behaviour), Behaviour.bullet
         ld (iy+Obj.o_24), 0
         ld a, (ix+Obj.o_49)
         ld (iy+Obj.o_49), a
@@ -2318,50 +2326,62 @@ emitEnemyBullet:  ; #f564
         pop ix
         ret
 
-; (Modifies some object properties?)
+; Process behaviour of an enemy bullet
 ; Used by c_ed08.
-c_f618:  ; #f618
+processBulletBehaviour:  ; #f618
         ld a, (ix+Obj.o_49)
         cp 1
         call Z, c_ee93
-        ld iy, scene
+        
+        ld iy, scene.hero
         call checkObjectCollision
-        jr C, .l_1
-        ld (ix+Obj.flags), 0    ; remove object
-        ld b, (ix+Obj.health)
+        jr C, .noCollision
+        
+.collision:
+        ld (ix+Obj.flags), 0    ; remove bullet
+        ld b, (ix+Obj.health)   ; bullet's damage
         ld a, (iy+Obj.blinkTime)
         or a
-        ret NZ
+        ret NZ                  ; ret if hero blinks
+        
+        ; decrement hero's energy
         ld a, (State.energy)
         sub b
-        jr NC, .l_0
-        ld a, #FF
+        jr NC, .heroAlive
+        ld a, -1
         ld (State.isDead), a
         xor a
-.l_0:
+.heroAlive:
         ld (State.energy), a
         ld (iy+Obj.blinkTime), 7
         jp printEnergy
-.l_1:
+        
+.noCollision:
         ld a, (State.level)
-        or a
-        jr NZ, .l_2
+        or a                    ; Klondike?
+        jr NZ, .tileCheck
         ld a, (State.bossFight)
         or a
-        jr NZ, .l_3
-.l_2:
+        jr NZ, .skipTileCheck   ; skip if Klondike boss
+        
+.tileCheck:
         call getScrTileAddr
         ld a, (hl)
         call getTileType
         cp TileType.wall
-        jr C, .l_3
-        ld (ix+Obj.flags), 0    ; remove object
+        jr C, .skipTileCheck    ; passable (space, ladder, platform)
+        
+        ; non-passable (wall, conveyor, ice, slow, water/spikes)
+        ld (ix+Obj.flags), 0    ; remove bullet
         ret
-.l_3:
+        
+.skipTileCheck:
         call isObjectVisible
-        ret C
-        ld (ix+Obj.flags), 0    ; remove object
+        ret C                   ; ret if visible
+        ; invisible
+        ld (ix+Obj.flags), 0    ; remove bullet
         ret
+
 
 ; (Some game logic?)
 ; Used by c_ef72.

@@ -294,7 +294,7 @@ advanceObjectsInMap:  ; #cf17
         ld (ix+Obj.x+1), h
 
         ld a, (ix+Obj.behaviour)
-        cp Behaviour.be_1
+        cp Behaviour.bullet
         jr NZ, .nextObject
 
         ld l, (ix+Obj.o_30+0)

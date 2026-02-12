@@ -51,16 +51,16 @@ bermuda     EQU 4
 
     MODULE TileType
 
-space       EQU 0
-ladder      EQU 1
+space       EQU 0   ; behaves as an empty tile
+ladder      EQU 1   ; hero can climb
 ladderTop   EQU 2
-platform    EQU 3
-wall        EQU 4
+platform    EQU 3   ; passable
+wall        EQU 4   ; not passable
 conveyorL   EQU 5
 conveyorR   EQU 6
-ice         EQU 7
-slow        EQU 8
-waterSpikes EQU 9
+ice         EQU 7   ; slippery
+slow        EQU 8   ; slows down walking hero
+waterSpikes EQU 9   ; water or spikes, damage and make jump
 ; bit mask
 typeMask    EQU %01111111
 
@@ -142,7 +142,7 @@ fo_7        EQU 7
 
 ; values of `Obj.behaviour`
 be_0        EQU 0
-be_1        EQU 1
+bullet      EQU 1
 be_2        EQU 2
 be_3        EQU 3
 be_4        EQU 4
