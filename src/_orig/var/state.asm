@@ -57,8 +57,8 @@ tTypeLeft:  db -0
 tTypeRight: db -0
 tTypeBotLf: db -0
 tTypeBotRg: db -0
-s_4F:       db -0
-s_50:       db -0
+trajVel:    db -0       ; (loc) object's current trajectory velocity
+trajDir:    db -0       ; (loc) object's current trajectory direction (in untransformed format)
 bulletTime: db -0       ; enemy bullet emission timer
 nextObject: dw -0       ; addr of the next object in level object table
 bossFight:  db -0       ; 0 if no boss, 1 or higher when fighting a boss

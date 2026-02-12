@@ -53,8 +53,8 @@ bermuda     EQU 4
 
 space       EQU 0   ; behaves as an empty tile
 ladder      EQU 1   ; hero can climb
-ladderTop   EQU 2
-platform    EQU 3   ; passable
+ladderTop   EQU 2   ; hero can climb and stand on
+platform    EQU 3   ; hero can stand on and jump through
 wall        EQU 4   ; not passable
 conveyorL   EQU 5
 conveyorR   EQU 6
@@ -141,7 +141,7 @@ fo_7        EQU 7
     MODULE Behaviour
 
 ; values of `Obj.behaviour`
-be_0        EQU 0
+none        EQU 0
 bullet      EQU 1
 be_2        EQU 2
 be_3        EQU 3
@@ -152,7 +152,17 @@ be_6        EQU 6
     ENDMODULE
 
 
-    MODULE Dir      ; object direction
+    MODULE TrajMarker   ; trajectory end marker type
+
+last        EQU -1  ; use the last vel/dir values forever
+loop        EQU -2  ; start the trajectory from the beginning
+stop        EQU -3  ; don't move any more
+back        EQU -4  ; traverse the trajectory backwards
+
+    ENDMODULE
+
+
+    MODULE Dir          ; object direction
 
 ; bits in `Obj.direction`
 right       EQU 0

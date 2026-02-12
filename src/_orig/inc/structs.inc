@@ -42,8 +42,8 @@ health      byte    ; enemy's health
 score       byte    ; index 1..6 in `scoreTable`
 blinkTime   byte    ; time during which the object will blink
 trajectory  byte
-o_16        byte    ; ot_14
-o_17        byte    ; ot_15
+trajPos     byte    ; ot_14 index in `trajVel`/`trajDir` (also, something else?)
+trajBack    byte    ; ot_15 -1: traverse trajectory backwards
 o_18        byte    ; ot_16 (some direction ?)
 horizSpeed  byte
 vertSpeed   byte

@@ -583,7 +583,7 @@ enterShop:  ; #e920
         ld (ix+Obj.health), -2
         ld (ix+Obj.o_24), 0
         ld (ix+Obj.o_49), 0
-        ld (ix+Obj.behaviour), Behaviour.be_0
+        ld (ix+Obj.behaviour), Behaviour.none
         ret
 
 ; Shop logic
@@ -1171,69 +1171,79 @@ processObjectBehaviour:  ; #ed08
         ld a, (ix+Obj.behaviour)
         cp Behaviour.be_2
         jr NZ, .l_0
-        call c_f37e
-        jp .l_2
+        call moveAlongTrajectory
+        jp processFallingBehaviour
+
 .l_0:
         cp Behaviour.be_4
-        call Z, c_f37e
+        call Z, moveAlongTrajectory
 
         ld a, (ix+Obj.behaviour)
         or a
-        jp Z, .l_1
+        jp Z, .behaviourNone
+
         cp Behaviour.be_3
         jp Z, c_ef72
         cp Behaviour.be_4
         jp Z, c_ef72
+
         cp Behaviour.be_5
         jp Z, c_f0f3
+
         cp Behaviour.be_6
         jp Z, c_f518
+
         ret
 
-.l_1:
+.behaviourNone:
         set Flag.fixedX, (ix+Obj.flags)
         set Flag.fixedY, (ix+Obj.flags)
         ret
 
-.l_2:
+
+; If object is one that falls, process its behaviour
+;   arg `ix`: object
+processFallingBehaviour: ; #ed5f
         ld a, (ix+Obj.o_22)
         cp -2
-        jr Z, .l_5
+        jr Z, .fallAndStay
         cp -1
-        ret NZ
+        ret NZ                  ; not falling
 
+.fallAndExplode:                ; stalactite, block, iceCube
         call collectTileTypes
-
         ld a, (State.tTypeBot)
-        cp 2
-        ret C
+        cp TileType.ladderTop
+        ret C                   ; space or ladder
 
+        ; if any other tile type, explode
         bit Flag.isBig, (ix+Obj.flags)
-        jr NZ, .l_3
+        jr NZ, .big
         call makeObjectBig
-.l_3:
+.big:
         ld a, (ix+Obj.objType)
         cp ObjType.klondike.stalactite
-        jr NZ, .l_4
+        jr NZ, .skipAdjustX
         ld a, (ix+Obj.x+0)
         sub 8
         ld (ix+Obj.x+0), a
-.l_4:
+.skipAdjustX:
         ld (ix+Obj.o_6), 0
         ld (ix+Obj.o_7), -1
         ld (ix+Obj.colour), Colour.brWhite
-        ld a, 6                 ; kill enemy
+        ld a, 6                 ; kill enemy sound
         jp playSound
 
-.l_5:
+.fallAndStay:                   ; sumoist, monkey, icicle
         call collectTileTypes
-
         ld a, (State.tTypeBot)
-        cp 4
-        ret C
+        cp TileType.wall
+        ret C                   ; space, ladder, or ladderTop
 
-        ld (ix+Obj.behaviour), Behaviour.be_0
+        ; if any other tile type, stop
+        ld (ix+Obj.behaviour), Behaviour.none
         set Flag.waiting, (ix+Obj.flags)
+
         ld a, (ix+Obj.objType)
         cp ObjType.amazon.hangingMonkey
         ret NZ
@@ -1439,16 +1449,17 @@ c_ee93:  ; #ee93
 ; Used by c_ed08.
 c_ef72:  ; #ef72
         ld a, (ix+Obj.o_22)
-        cp #FF
-        jp Z, .l_0
-        cp #FE
-        jp Z, .l_6
-        cp #FC
-        jp Z, .l_10
-        cp #FB
-        jp Z, .l_19
-        jp .l_23
-.l_0:
+        cp -1
+        jp Z, .minus1
+        cp -2
+        jp Z, .minus2
+        cp -4
+        jp Z, .minus4
+        cp -5
+        jp Z, .minus5
+        jp .end
+
+.minus1:
         call c_f670
         call c_f697
         call collectTileTypes
@@ -1473,7 +1484,7 @@ c_ef72:  ; #ef72
         ld a, (ix+Obj.direction)
         xor Dir.horizontal
         ld (ix+Obj.direction), a
-        jp .l_23
+        jp .end
 .l_4:
         ld l, (ix+Obj.x+0)
         ld h, (ix+Obj.x+1)
@@ -1483,7 +1494,7 @@ c_ef72:  ; #ef72
         xor a
         sbc hl, de
         jr C, .l_3
-        jp .l_23
+        jp .end
 .l_5:
         ld d, #00
         ld e, (ix+Obj.width)
@@ -1492,9 +1503,10 @@ c_ef72:  ; #ef72
         xor a
         sbc hl, de
         jr NC, .l_3
-        jp .l_23
-.l_6:
-        ld (ix+Obj.vertSpeed), #08
+        jp .end
+
+.minus2:
+        ld (ix+Obj.vertSpeed), 8
         call collectTileTypes
         bit Flag.fo_7, (ix+Obj.o_24)
         jr NZ, .l_9
@@ -1513,20 +1525,21 @@ c_ef72:  ; #ef72
 .l_8:
         ld a, (State.tTypeBot)
         cp #02
-        jp NC, .l_23
+        jp NC, .end
         set Flag.fo_7, (ix+Obj.o_24)
         set Flag.fixedX, (ix+Obj.flags)
         set Dir.down, (ix+Obj.direction)
-        jp .l_23
+        jp .end
 .l_9:
         ld a, (State.tTypeBot)
         cp #02
-        jp C, .l_23
+        jp C, .end
         res Flag.fo_7, (ix+Obj.o_24)
         res Flag.fixedX, (ix+Obj.flags)
         res Dir.down, (ix+Obj.direction)
-        jp .l_23
-.l_10:
+        jp .end
+
+.minus4:
         bit 0, (ix+Obj.trajectory)
         jr Z, .l_11
         call generateRandom
@@ -1580,15 +1593,18 @@ c_ef72:  ; #ef72
         xor Dir.vertical
         ld (ix+Obj.direction), a
 .l_18:
-        jp .l_23
-.l_19:
-        ld a, (ix+Obj.trajectory)
-        cp (ix+Obj.o_16)
+        jp .end
+
+.minus5:
+        ld a, (ix+Obj.trajectory) ; range position
+        cp (ix+Obj.trajPos)     ; range width
         jr Z, .l_20
-        inc (ix+Obj.trajectory)
-        jp .l_23
+        inc (ix+Obj.trajectory) ; range position
+        jp .end
 .l_20:
-        ld (ix+Obj.trajectory), 0
+        ld (ix+Obj.trajectory), 0 ; range position
+
+        ; invert direction
         ld c, (ix+Obj.direction)
         ld a, c
         and Dir.horizontal
@@ -1603,13 +1619,16 @@ c_ef72:  ; #ef72
 .l_22:
         or b
         ld (ix+Obj.direction), a
-        jp .l_23
+        jp .end
+
 ; This entry point is used by c_f0f3 and c_f518.
-.l_23:
+.end:
         call isObjectVisibleOrWaiting
         ret C
+        ; if object became invisible
         ld (ix+Obj.flags), 0    ; remove object
         ret
+
 
 ; (Some game logic?)
 ; Used by c_ed08.
@@ -1710,7 +1729,7 @@ c_f0f3:  ; #f0f3
         jr C, .l_9
         set Flag.fixedY, (ix+Obj.flags)
 .l_9:
-        jp c_ef72.l_23
+        jp c_ef72.end
 
 ; Get tile types behind different parts of the object and store them in the state
 ;   arg `ix`: object
@@ -1941,29 +1960,31 @@ c_f2e7:  ; #f2e7
 
 ; Direction transform (bit 3← 2→ 1↓ 0↑) to (bit 3↑ 2↓ 1← 0→)
 directionTransform:  ; #f373
-        db %0000
+        db 0
 .up:    db %1000
 .dn:    db %0100
-        db %0000
+        db 0
 .lf:    db %0010
 .upLf:  db %1010
 .dnLf:  db %0110
-        db %0000
+        db 0
 .rg:    db %0001
 .upRg:  db %1001
 .dnRg:  db %0101
 
 
-; (Moves object along trajectory?)
+; Move object along its trajectory
+;   arg `ix`: object
 ; Used by c_ed08.
-c_f37e:  ; #f37e
+moveAlongTrajectory:  ; #f37e
         bit Flag.waiting, (ix+Obj.flags)
         ret NZ
-        
+
+        ; reset temp variables
         xor a
-        ld (State.s_4F), a
-        ld (State.s_50), a
-        
+        ld (State.trajVel), a
+        ld (State.trajDir), a
+
         ld a, (ix+Obj.trajectory)
         add a
         ld l, a
@@ -1974,7 +1995,7 @@ c_f37e:  ; #f37e
         inc hl
         ld d, (hl)
         ; `de`: trajectory velocity list addr
-        
+
         ld a, (ix+Obj.trajectory)
         add a
         ld l, a
@@ -1985,127 +2006,159 @@ c_f37e:  ; #f37e
         inc hl
         ld b, (hl)
         ; `bc`: trajectory direction list addr
-        
-.l_0:
-        ld l, (ix+Obj.o_16)
+
+.getVel:
+        ld l, (ix+Obj.trajPos)
         ld h, 0
         add hl, de
-        ld a, (hl)
-        cp -1
-        jr NZ, .l_1
-        
+        ld a, (hl)              ; velocity value or marker
+
+        cp TrajMarker.last
+        jr NZ, .notLast
+        ; `last` marker: use the last vel/dir values forever
         dec hl
         ld a, (hl)
-        ld (State.s_4F), a
-        ld l, (ix+Obj.o_16)
-        ld h, #00
+        ld (State.trajVel), a
+        ; get direction
+        ld l, (ix+Obj.trajPos)
+        ld h, 0
         add hl, bc
         dec hl
         ld a, (hl)
-        ld (State.s_50), a
-        dec (ix+Obj.o_16)
-        jr .l_5
-        
-.l_1:
-        cp #FE
-        jr NZ, .l_2
-        ld (ix+Obj.o_16), #00
-        jr .l_0
-.l_2:
-        cp #FD
-        jr NZ, .l_3
-        dec (ix+Obj.o_16)
-        jr .l_5
-.l_3:
-        cp #FC
-        jr NZ, .l_4
-        ld (ix+Obj.o_17), #FF
-        dec (ix+Obj.o_16)
-        jr .l_0
-.l_4:
-        ld (State.s_4F), a
-        ld l, (ix+Obj.o_16)
-        ld h, #00
+        ld (State.trajDir), a
+        dec (ix+Obj.trajPos)
+        jr .transformDir
+
+.notLast:
+        cp TrajMarker.loop
+        jr NZ, .notLoop
+        ; `loop` marker: start the trajectory from the beginning
+        ld (ix+Obj.trajPos), 0
+        jr .getVel
+
+.notLoop:
+        cp TrajMarker.stop
+        jr NZ, .notStop
+        ; `stop` marker: don't move any more
+        dec (ix+Obj.trajPos)
+        jr .transformDir
+
+.notStop:
+        cp TrajMarker.back
+        jr NZ, .notBack
+        ; `back` marker: traverse the trajectory backwards
+        ld (ix+Obj.trajBack), -1
+        dec (ix+Obj.trajPos)
+        jr .getVel
+
+.notBack:
+        ; `a`: velocity
+        ld (State.trajVel), a
+        ; get direction
+        ld l, (ix+Obj.trajPos)
+        ld h, 0
         add hl, bc
         ld a, (hl)
-        ld (State.s_50), a
-.l_5:
-        ld a, (State.s_50)
+        ld (State.trajDir), a
+
+.transformDir:
+        ; transform direction format
+        ld a, (State.trajDir)
         ld l, a
-        ld h, #00
+        ld h, 0
         ld de, directionTransform
         add hl, de
-        ld c, (hl)
-        ld a, (ix+Obj.o_17)
+        ld c, (hl)              ; direction as in `Dir` enum
+
+        ld a, (ix+Obj.trajBack)
         or a
-        jr Z, .l_8
+        jr Z, .skipInvDir
+
+        ; invert direction
         ld a, c
         and Dir.horizontal
-        jr Z, .l_6
+        jr Z, .skipInvHoriz
         xor Dir.horizontal
-.l_6:
+.skipInvHoriz:
         ld b, a
         ld a, c
         and Dir.vertical
-        jr Z, .l_7
+        jr Z, .skipInvVert
         xor Dir.vertical
-.l_7:
+.skipInvVert:
         or b
-        ld c, a
-.l_8:
-        ld (ix+Obj.o_18), c
-        ld a, (State.s_4F)
-        bit Flag.fo_0, (ix+Obj.o_24)
-        jr Z, .l_9
+        ld c, a                 ; inverted direction
+
+.skipInvDir:
+        ld (ix+Obj.o_18), c     ; ?
+        ld a, (State.trajVel)
+        bit Flag.fo_0, (ix+Obj.o_24) ; ?
+        jr Z, .move
         ld (ix+Obj.horizSpeed), a
-.l_9:
-        ld b, a
+
+.move:
+        ld b, a                 ; speed
         bit Dir.down, c
-        jr Z, .l_10
+        jr Z, .notDown
+        ; move down
         ld a, (ix+Obj.y)
         add b
         ld (ix+Obj.y), a
-        jr .l_11
-.l_10:
+        jr .notUp
+
+.notDown:
         bit Dir.up, c
-        jr Z, .l_11
+        jr Z, .notUp
+        ; move up
         ld a, (ix+Obj.y)
         sub b
         ld (ix+Obj.y), a
-.l_11:
+
+.notUp:
         ld e, b
-        ld d, 0
+        ld d, 0                 ; `de`: speed
         bit Dir.right, c
-        jr Z, .l_12
+        jr Z, .notRight
+        ; move right
         ld l, (ix+Obj.x+0)
         ld h, (ix+Obj.x+1)
         add hl, de
         ld (ix+Obj.x+0), l
         ld (ix+Obj.x+1), h
-        jr .l_13
-.l_12:
+        jr .notLeft
+
+.notRight:
         bit Dir.left, c
-        jr Z, .l_13
+        jr Z, .notLeft
+        ; move left
         ld l, (ix+Obj.x+0)
         ld h, (ix+Obj.x+1)
         xor a
         sbc hl, de
         ld (ix+Obj.x+0), l
         ld (ix+Obj.x+1), h
-.l_13:
-        ld a, (ix+Obj.o_17)
+
+.notLeft:
+        ; step to the next trajectory position
+        ld a, (ix+Obj.trajBack)
         or a
-        jr NZ, .l_14
-        inc (ix+Obj.o_16)
-        jr .l_15
-.l_14:
-        dec (ix+Obj.o_16)
-        jp P, .l_15
-        ld (ix+Obj.o_16), 0
-        ld (ix+Obj.o_17), 0
-.l_15:
+        jr NZ, .stepBack
+
+.stepForward:
+        inc (ix+Obj.trajPos)
+        jr .end
+
+.stepBack:
+        dec (ix+Obj.trajPos)
+        jp P, .end
+        ; start position reached
+        ld (ix+Obj.trajPos), 0
+        ld (ix+Obj.trajBack), 0
+
+.end:
         call isObjectVisibleOrWaiting
         ret C
+        ; if the object became invisible
         ld (ix+Obj.flags), 0    ; remove object
         ret
 
@@ -2218,10 +2271,10 @@ c_f518:  ; #f518
         ld a, (ix+Obj.y)
         and #F8
         ld (ix+Obj.y), a
-        ld (ix+Obj.behaviour), Behaviour.be_0
+        ld (ix+Obj.behaviour), Behaviour.none
 .l_1:
         inc (ix+Obj.trajectory)
-        jp c_ef72.l_23
+        jp c_ef72.end
 
 
 ; Tick the enemy bullet emission timer
@@ -2332,18 +2385,18 @@ processBulletBehaviour:  ; #f618
         ld a, (ix+Obj.o_49)
         cp 1
         call Z, c_ee93
-        
+
         ld iy, scene.hero
         call checkObjectCollision
         jr C, .noCollision
-        
+
 .collision:
         ld (ix+Obj.flags), 0    ; remove bullet
         ld b, (ix+Obj.health)   ; bullet's damage
         ld a, (iy+Obj.blinkTime)
         or a
         ret NZ                  ; ret if hero blinks
-        
+
         ; decrement hero's energy
         ld a, (State.energy)
         sub b
@@ -2355,7 +2408,7 @@ processBulletBehaviour:  ; #f618
         ld (State.energy), a
         ld (iy+Obj.blinkTime), 7
         jp printEnergy
-        
+
 .noCollision:
         ld a, (State.level)
         or a                    ; Klondike?
@@ -2363,18 +2416,18 @@ processBulletBehaviour:  ; #f618
         ld a, (State.bossFight)
         or a
         jr NZ, .skipTileCheck   ; skip if Klondike boss
-        
+
 .tileCheck:
         call getScrTileAddr
         ld a, (hl)
         call getTileType
         cp TileType.wall
         jr C, .skipTileCheck    ; passable (space, ladder, platform)
-        
+
         ; non-passable (wall, conveyor, ice, slow, water/spikes)
         ld (ix+Obj.flags), 0    ; remove bullet
         ret
-        
+
 .skipTileCheck:
         call isObjectVisible
         ret C                   ; ret if visible
@@ -2391,6 +2444,7 @@ c_f670:  ; #f670
         call generateRandom
         cp 8
         ret NC
+
         bit 1, (ix+Obj.trajectory)
         jr Z, .l_0
         ld a, (ix+Obj.direction)
@@ -2404,11 +2458,13 @@ c_f670:  ; #f670
         ld (ix+Obj.direction), a
         ret
 
+
 ; (Some game logic?)
 ; Used by c_ef72.
 c_f697:  ; #f697
         bit Flag.fo_1, (ix+Obj.o_24)
         ret Z
+
         ld a, (ix+Obj.o_48)
         or a
         jr Z, .l_0
@@ -2657,10 +2713,10 @@ createObject:
         ld (ix+Obj.trajectory), a
         inc hl                  ; +14
         ld a, (hl)
-        ld (ix+Obj.o_16), a
+        ld (ix+Obj.trajPos), a
         inc hl                  ; +15
         ld a, (hl)
-        ld (ix+Obj.o_17), a
+        ld (ix+Obj.trajBack), a
         inc hl                  ; +16
         ld a, (hl)
         ld (ix+Obj.o_18), a
