@@ -147,7 +147,7 @@ be_2        EQU 2
 be_3        EQU 3
 be_4        EQU 4
 be_5        EQU 5
-be_6        EQU 6
+coinJump    EQU 6
 
     ENDMODULE
 

@@ -392,7 +392,7 @@ turnIntoCoin:  ; #d2b3
         ld (iy+Obj.sprite+1), h
 
         ld (iy+Obj.o_7), 0
-        ld (iy+Obj.behaviour), Behaviour.be_6
+        ld (iy+Obj.behaviour), Behaviour.coinJump
         ld (iy+Obj.objType), ObjType.coin
         ld (iy+Obj.direction), 0
         ld (iy+Obj.trajectory), 0

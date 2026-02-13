@@ -1190,8 +1190,8 @@ processObjectBehaviour:  ; #ed08
         cp Behaviour.be_5
         jp Z, c_f0f3
 
-        cp Behaviour.be_6
-        jp Z, c_f518
+        cp Behaviour.coinJump
+        jp Z, processCoinJump
 
         ret
 
@@ -1731,6 +1731,7 @@ c_f0f3:  ; #f0f3
 .l_9:
         jp c_ef72.end
 
+
 ; Get tile types behind different parts of the object and store them in the state
 ;   arg `ix`: object
 ; Used by c_ed08, c_ef72, c_f0f3 and c_f518.
@@ -2240,39 +2241,45 @@ processDynamiteBehaviour:  ; #f4e9
         ret
 
 
-; Data block at F506
-c_f506:  ; #f506
+; Velocity table for coin jump
+coinJumpVelocity:  ; #f506
         db -6, -5, -4, -3, -2, -2, -1, -1, 0, 1, 1, 2, 2, 3, 4, 5, 6
         db #7F
 
-; (Modifies some object properties?)
+; Precess the motion of a coin appearing from a defeated enemy
 ; Used by c_ed08.
-c_f518:  ; #f518
+processCoinJump:  ; #f518
         ld a, (ix+Obj.trajectory)
         ld l, a
-        ld h, #00
-        ld de, c_f506
+        ld h, 0
+        ld de, coinJumpVelocity
         add hl, de
         ld a, (hl)
         cp #7F
-        jr NZ, .l_0
+        jr NZ, .jump
+        
+        ; falling
         dec (ix+Obj.trajectory)
-        ld a, #08
-.l_0:
+        ld a, 8                 ; falling speed
+.jump:
         add (ix+Obj.y)
         ld (ix+Obj.y), a
         ld a, (hl)
         cp #7F
-        jr NZ, .l_1
+        jr NZ, .end
+        
+        ; falling
         call collectTileTypes
         ld a, (State.tTypeBot)
-        cp #04
-        jr C, .l_1
+        cp TileType.wall
+        jr C, .end              ; space, ladder, ladderTop, platform
+        
+        ; impenetrable tiles
         ld a, (ix+Obj.y)
-        and #F8
+        and -8
         ld (ix+Obj.y), a
         ld (ix+Obj.behaviour), Behaviour.none
-.l_1:
+.end:
         inc (ix+Obj.trajectory)
         jp c_ef72.end
 
