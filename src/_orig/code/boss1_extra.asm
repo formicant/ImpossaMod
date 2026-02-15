@@ -25,10 +25,10 @@ c_fbd2:  ; #fbd2
         ld ix, scene.obj2
         ld iy, scene.obj3
         call c_fbf9
-        ld a, (ix+Obj.o_49)
-        ld c, (iy+Obj.o_49)
-        ld (ix+Obj.o_49), c
-        ld (iy+Obj.o_49), a
+        ld a, (ix+Obj.emitBullets)
+        ld c, (iy+Obj.emitBullets)
+        ld (ix+Obj.emitBullets), c
+        ld (iy+Obj.emitBullets), a
         ld ix, scene.obj4
         ld iy, scene.obj5
         call c_fbf9

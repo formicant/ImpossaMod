@@ -37,7 +37,7 @@ gameStart:  ; #cc5a
         call performSmartIfPressed  ; TODO: replace
         call cleanUpScene           ; TODO: can be inlined
         call enemyBulletTimer       ; TODO: can be inlined
-        call processObjsBehaviour   ; (time: long)
+        call performMotionOfAllObjs   ; (time: long)
         call moveObjects            ; TODO: can be inlined (time: medium)
         call putNextObjsToScene     ; (time: medium)
         call bossLogic              ; TODO: can be inlined

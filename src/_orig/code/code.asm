@@ -293,15 +293,15 @@ advanceObjectsInMap:  ; #cf17
         ld (ix+Obj.x+0), l
         ld (ix+Obj.x+1), h
 
-        ld a, (ix+Obj.behaviour)
-        cp Behaviour.bullet
+        ld a, (ix+Obj.motion)
+        cp Motion.bullet
         jr NZ, .nextObject
 
-        ld l, (ix+Obj.o_30+0)
-        ld h, (ix+Obj.o_30+1)
+        ld l, (ix+Obj.aim.curX+0)
+        ld h, (ix+Obj.aim.curX+1)
         add hl, de
-        ld (ix+Obj.o_30+0), l
-        ld (ix+Obj.o_30+1), h
+        ld (ix+Obj.aim.curX+0), l
+        ld (ix+Obj.aim.curX+1), h
 
 .nextObject:
         ld de, Obj              ; object size

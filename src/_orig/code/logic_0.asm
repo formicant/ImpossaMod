@@ -392,10 +392,10 @@ turnIntoCoin:  ; #d2b3
         ld (iy+Obj.sprite+1), h
 
         ld (iy+Obj.o_7), 0
-        ld (iy+Obj.behaviour), Behaviour.coinJump
+        ld (iy+Obj.motion), Motion.coinJump
         ld (iy+Obj.objType), ObjType.coin
         ld (iy+Obj.direction), 0
-        ld (iy+Obj.trajectory), 0
+        ld (iy+Obj.motionStep), 0
         ld (iy+Obj.health), -2    ; vertical speed (?)
         ld (iy+Obj.colour), Colour.brYellow
         res Flag.waiting, (iy+Obj.flags)
@@ -439,15 +439,14 @@ c_d308:  ; #d308
         ld (State.s_41), a
         ld (ix+Obj.horizSpeed), 0
         set Flag.fo_0, (ix+Obj.o_24)
-        push iy
-        pop hl
-        ld (ix+Obj.o_30+0), l
-        ld (ix+Obj.o_30+1), h
+        push iy : pop hl
+        ld (ix+Obj.aim.curX+0), l
+        ld (ix+Obj.aim.curX+1), h
+        
 .l_3:
-        ld l, (ix+Obj.o_30+0)
-        ld h, (ix+Obj.o_30+1)
-        push hl
-        pop iy
+        ld l, (ix+Obj.aim.curX+0)
+        ld h, (ix+Obj.aim.curX+1)
+        push hl : pop iy
         call c_d3bb
         jr NZ, .setSprite
         res Flag.fo_0, (ix+Obj.o_24)
@@ -467,8 +466,8 @@ c_d308:  ; #d308
         sub (ix+Obj.height)
         ld (ix+Obj.y), a
         ld c, (iy+Obj.direction)
-        ld a, (iy+Obj.behaviour)
-        cp Behaviour.be_3
+        ld a, (iy+Obj.motion)
+        cp Motion.general
         jr Z, .l_6
         ld c, (iy+Obj.o_18)
 .l_6:

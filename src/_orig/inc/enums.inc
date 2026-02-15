@@ -129,25 +129,44 @@ cleanUp     EQU 7   ; object should be removed
 
 ; bits in `Obj.o_24`
 fo_0        EQU 0
-fo_1        EQU 1
+standsStill EQU 1   ; randomly stands still
 destroyable EQU 3   ; can be killed by smart
-givesCoin   EQU 4
-fo_5        EQU 5
-fo_7        EQU 7
+givesCoin   EQU 4   ; a coin appears after defeat
+changesDir  EQU 5   ; randomly changes direction
+falling     EQU 7   ; walking enemy is falling down
 
     ENDMODULE
 
 
-    MODULE Behaviour
+    MODULE Motion
 
-; values of `Obj.behaviour`
+; values of `Obj.motion` (sub-labels are values of `Obj.motionSub`)
+none        EQU  0  ; object does not move
+bullet      EQU  1  ; enemy bullet flies
+trajOrFall  EQU  2  ; object moves along a trajectory or falls
+.andExplode EQU -1  ;   object falls and explodes at the bottom
+.andStay    EQU -2  ;   object falls and stays at the bottom
+general     EQU  3  ; `motionSub` defines motion type
+.walk       EQU -1  ;   object walks avoiding falling
+.walkOrFall EQU -2  ;   object walks and can fall down
+.random     EQU -4  ;   object flies changing direction randomly
+.range      EQU -5  ;   object moves back and forth within a range
+trajectory  EQU  4  ; object moves along a trajectory
+selfGuided  EQU  5  ; object flies always towards the hero
+.vert       EQU  0  ;   (bit) allow vertical movements
+.horiz      EQU  1  ;   (bit) allow horizontal movements
+coinJump    EQU  6  ; coin jumps after defeating an enemy
+
+    ENDMODULE
+
+
+    MODULE EmitBullets
+
 none        EQU 0
-bullet      EQU 1
-be_2        EQU 2
-be_3        EQU 3
-be_4        EQU 4
-be_5        EQU 5
-coinJump    EQU 6
+aim         EQU 1
+forward     EQU 2
+up          EQU 3
+down        EQU 4
 
     ENDMODULE
 

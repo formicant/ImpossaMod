@@ -25,7 +25,7 @@ getSpriteAddr:  ; #e47a
         jr Z, c_e4fc
 
         exa
-        ld a, (ix+Obj.o_48)
+        ld a, (ix+Obj.stillTime)
         or a
         ret NZ
         exa

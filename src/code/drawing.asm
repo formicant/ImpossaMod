@@ -130,8 +130,7 @@ drawObject:
         ld bc, objTiles
         add hl, bc
         ; `hl`: tile addr in `objTiles`
-        push hl
-        pop iy
+        push hl : pop iy
         ; `iy`: tile addr in `objTiles`
         ld a, (ix+Obj.y)            ; y coord
         and %00000111

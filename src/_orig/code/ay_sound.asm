@@ -1118,8 +1118,7 @@ playAySound:  ; #cd25
         ; `hl`: a * 13
         ld bc, aySounds
         add hl, bc
-        push hl
-        pop iy
+        push hl : pop iy
         ; `iy`: sound effect addr
 
         ld a, (channelCounter)

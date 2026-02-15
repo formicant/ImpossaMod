@@ -10,20 +10,36 @@ ot_8        byte
 score       byte    ; index 1..6 in `scoreTable`
 ot_10       byte    ; o_24
 objType     byte    ; object type with offset
-ot_12       byte    ; o_49
-trajectory  byte
-ot_14       byte    ; o_16
+emitBullets byte    ; o_49
+motionPar1  byte
+motionPar2  byte
 ot_15       byte    ; o_17
 ot_16       byte    ; o_18
 horizSpeed  byte
 vertSpeed   byte
 direction   byte    ; bit 0: up, 1: down, 2: left, 3: right
-ot_20       byte    ; o_22
-behaviour   byte    ; behaviour type (0..5)
+motionSub   byte    ; motion subtype (`Motion` enum sub-labels)
+motion      byte    ; motion type (`Motion` enum)
 stillActX   byte    ; still enemy activation zone left offset
 stillActY   byte    ; still enemy activation zone top offset
 stillActW   byte    ; still enemy activation zone width
 stillActH   byte    ; still enemy activation zone height
+    ENDS
+
+
+    STRUCT Aim      ; variables used for enemy bullets aimed at the hero
+
+speed       byte
+curX        word
+curY        word
+tgtX        word    ; unused(?)
+tgtY        word
+distX       word
+distY       word
+dirX        word
+dirY        word
+phase       word
+
     ENDS
 
 
@@ -41,32 +57,28 @@ height      byte    ; gravity (?)
 health      byte    ; enemy's health
 score       byte    ; index 1..6 in `scoreTable`
 blinkTime   byte    ; time during which the object will blink
-trajectory  byte
-trajPos     byte    ; ot_14 index in `trajVel`/`trajDir` (also, something else?)
+coordConstr         ; (alias for `motionPar1`)
+motionStep          ; (alias for `motionPar1`)
+trajetory           ; (alias for `motionPar1`)
+motionPar1  byte    ; motion parameter with multiple semantics
+motionRange         ; (alias for `motionPar2`)
+trajStep            ; (alias for `motionPar2`)
+motionPar2  byte    ; motion parameter with multiple semantics
 trajBack    byte    ; ot_15 -1: traverse trajectory backwards
 o_18        byte    ; ot_16 (some direction ?)
 horizSpeed  byte
 vertSpeed   byte
 direction   byte    ; bit 0: right, 1: left, 2: down, 3: up
-o_22        byte    ; ot_20
-behaviour   byte    ; behaviour type (0..6)
+motionSub   byte    ; motion subtype (`Motion` enum sub-labels)
+motion      byte    ; motion type (`Motion` enum)
 o_24        byte    ; ot_10, bit 0: ?, 1: ? 3: smart-killable, 4: gives coin; 5: ?
 stillActX   byte    ; still enemy activation zone left offset
 stillActY   byte    ; still enemy activation zone top offset
 stillActW   byte    ; still enemy activation zone width
 stillActH   byte    ; still enemy activation zone height
-o_29        byte
-o_30        word
-o_32        word
-o_34        word    ; unused(?)
-o_36        word
-o_38        word
-o_40        word
-o_42        word
-o_44        word
-o_46        word
-o_48        byte
-o_49        byte    ; ot_12
+aim         Aim     ; variables used for enemy bullets aimed at the hero
+stillTime   byte
+emitBullets byte    ; ot_12
     ENDS
 
 
