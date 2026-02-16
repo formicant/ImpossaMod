@@ -426,7 +426,7 @@ c_d308:  ; #d308
         ld iy, scene.obj2
         ld b, 6                 ; object count
 .object:
-        call c_d3bb
+        call isHeroOnTopObject
         jr NZ, .l_2
         ld de, Obj              ; object size
         add iy, de
@@ -447,7 +447,7 @@ c_d308:  ; #d308
         ld l, (ix+Obj.aim.curX+0)
         ld h, (ix+Obj.aim.curX+1)
         push hl : pop iy
-        call c_d3bb
+        call isHeroOnTopObject
         jr NZ, .setSprite
         res Flag.fo_0, (ix+Obj.o_24)
         ret
@@ -504,11 +504,12 @@ c_d308:  ; #d308
         ret
 
 
-; (Some game logic?)
-;   `ix`: object ?
-;   `iy`: object ?
+; Check if the hero's bottom is near the object's top (?)
+;   arg `ix`: hero
+;       `iy`: object
+;   ret `a`: #FF and flag NZ if is, `a`: 0 and flag Z if isn't
 ; Used by c_d308.
-c_d3bb:  ; #d3bb
+isHeroOnTopObject:  ; #d3bb
         bit Flag.exists, (iy+Obj.flags)
         ret Z
         bit Flag.fo_0, (iy+Obj.o_24)
@@ -518,10 +519,12 @@ c_d3bb:  ; #d3bb
         add (ix+Obj.height)
         sub (iy+Obj.y)
         jp P, .l_0
+        ; hero's bottom is above object's top
         neg
 .l_0:
         cp 5
-        jr NC, .l_1
+        jr NC, .false
+        ; hero's bottom is 5 pixels apart from object's top
 
         ld l, (ix+Obj.x+0)
         ld h, (ix+Obj.x+1)
@@ -531,8 +534,8 @@ c_d3bb:  ; #d3bb
         ld d, (iy+Obj.x+1)
         xor a
         sbc hl, de
-        jr C, .l_1
-
+        jr C, .false
+        ; hero's right - object's left >= 4
         ld l, (iy+Obj.width)
         ld h, 0
         add hl, de
@@ -541,11 +544,13 @@ c_d3bb:  ; #d3bb
     .4  inc de
         xor a
         sbc hl, de
-        jr C, .l_1
+        jr C, .false
+        ; object's right - hero's left >= 4
+.true:
         ld a, #FF
         or a
         ret
-.l_1:
+.false:
         xor a
         ret
 
