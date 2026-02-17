@@ -49,7 +49,7 @@ bossLogicKlondike:  ; #f8f4
         ld a, #02
         ld (State.bossFight), a
         xor a
-        ld (State.s_56), a
+        ld (State.bossInvinc), a
         ld a, #FF
         ld (State.bulletTime), a
         ret
@@ -64,7 +64,7 @@ bossLogicKlondike:  ; #f8f4
         ld (ix+Obj.sprite+0), l
         ld (ix+Obj.sprite+1), h
         ld a, #FF
-        ld (State.s_56), a
+        ld (State.bossInvinc), a
         ld a, #02
         ld (State.bulletTime), a
         ret

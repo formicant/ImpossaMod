@@ -44,8 +44,8 @@ gameStart:  ; #cc5a
         call checkTransitEnter      ; TODO: can be inlined
         call decBlinkTime           ; TODO: can be inlined
         call processHeroCollisions  ; TODO: can be inlined (time: medium)
-        call c_d308                 ; TODO: can be inlined
-        call c_d709                 ; TODO: can be inlined (time: long)
+        call heroRiding             ; TODO: can be inlined
+        call processHero            ; TODO: can be inlined (time: long)
         call enterShop              ; TODO: can be inlined
         call shopLogic              ; TODO: can be inlined
         call processFire            ; TODO: can be inlined (time: medium)
@@ -60,19 +60,19 @@ gameStart:  ; #cc5a
 
         call updateScreenTiles  ; (time: extreme)
 
-        ld a, (State.s_05)
+        ld a, (State.advance)
         or a
-        jr Z, .l_6
+        jr Z, .skipAdvance
 
         xor a
-        ld (State.s_05), a
+        ld (State.advance), a
         ld ix, scene.hero
-        set Flag.exists, (ix+Obj.flags)
+        set Flag.exists, (ix+Obj.flags) ; why?
 
         call advanceInMap       ; TODO: can be inlined
         call putNextObjsToScene
 
-.l_6:
+.skipAdvance:
         call pauseGameIfPressed ; TODO: replace
         call checkQuitKey       ; TODO: remove
         jp Z, gameStart

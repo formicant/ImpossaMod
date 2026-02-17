@@ -2,29 +2,32 @@
 
 
 ; (Some call table)
-c_d6e7:  ; #d6e7
-        dw c_d7f6_t0
-        dw c_d94c_t1
-        dw c_da95_t2
-        dw c_db4e_t3
-        dw c_dbfc_t4
+heroStateRoutines:  ; #d6e7
+        dw heroStands
+        dw heroWalks
+        dw heroJumps
+        dw heroFalls
+        dw heroClimbs
 
-; Data block at D6F1
-c_d6f1:  ; #d6f1
-        db -8, -8, -8, -7, -7, -7, -7, -6, -3, -2, -1, 0, 0, 0, 1, 1, 2, 2, 4, 7, 7, 8, 8
-        db #7F
 
-; (Some game logic, calls from call table #D6E7?)
+; Vertical velocity by jump phase
+jumpVelocityTable:  ; #d6f1
+.up:    db -8, -8, -8, -7, -7, -7, -7, -6, -3, -2, -1
+.down:  db  0,  0,  0,  1,  1,  2,  2,  4,  7,  7,  8,  8
+.end:   db #7F
+
+
+; Process hero's behaviour
 ; Used by c_cc25.
-c_d709:  ; #d709
+processHero:  ; #d709
         ld ix, scene.hero
         call collectStateTiles
 
-        ld a, (State.s_28)
+        ld a, (State.heroState)
         add a
         ld l, a
         ld h, 0
-        ld de, c_d6e7
+        ld de, heroStateRoutines
         add hl, de
 
         ld e, (hl)
@@ -33,572 +36,690 @@ c_d709:  ; #d709
         ld (.call), de
 .call+* call -0
 
-        ld a, (State.s_28)
-        cp 2
-        jp NC, .l_4
+        ld a, (State.heroState)
+        cp HeroState.jump
+        jp NC, .checkAdvance
+
         ld a, (State.s_39)
         or a
         jr Z, .l_0
         dec a
         ld (State.s_39), a
+
         ld a, (State.s_38)
-        cp #01
-        jp NZ, .l_7
-        jp .l_6
+        cp 1
+        jp NZ, .conveyorRight
+
+        jp .conveyorLeft
+
 .l_0:
-        ld a, (State.tileLfFoot)
+        ; check conveyors
+        ld a, (State.tileFootL)
         call getTileType
         cp TileType.conveyorL
-        jp Z, .l_6
+        jp Z, .conveyorLeft
         cp TileType.conveyorR
-        jp Z, .l_7
-        ld a, (State.tileRgFoot)
+        jp Z, .conveyorRight
+
+        ld a, (State.tileFootR)
         call getTileType
         cp TileType.conveyorL
-        jp Z, .l_6
+        jp Z, .conveyorLeft
         cp TileType.conveyorR
-        jp Z, .l_7
-        ld a, (State.tileLfFoot)
+        jp Z, .conveyorRight
+
+        ; check water/spikes
+        ld a, (State.tileFootL)
         call getTileType
         cp TileType.waterSpikes
-        jr Z, .l_1
-        ld a, (State.tileRgFoot)
+        jr Z, .waterSpikes
+        ld a, (State.tileFootR)
         call getTileType
         cp TileType.waterSpikes
-        jr NZ, .l_4
-.l_1:
+        jr NZ, .checkAdvance
+
+.waterSpikes:
         call decEnergy
-        ld a, #02
-        ld (State.s_28), a
+        ld a, HeroState.jump
+        ld (State.heroState), a
+
         ld a, (controlState)
         and (1<<Key.left) | (1<<Key.right)
-        jp Z, .l_2
+        jp Z, .jumpUp
+
+        ; jump sideways
         ld b, a
         ld a, (ix+Obj.direction)
         and ~Dir.horizontal
         or b
         ld (ix+Obj.direction), a
         ld (ix+Obj.horizSpeed), 2
-.l_2:
+
+.jumpUp:
         ld a, 3
-        ld (State.s_27), a
+        ld (State.jumpPhase), a
         xor a
-        ld (State.s_41), a
+        ld (State.stepPeriod), a
+
+        ; set sprite
         ld hl, cS.heroJumps
         ld a, (State.weapon)
-        cp 2
-        jr C, .l_3
+        cp ObjType.powerGun
+        jr C, .noGun
         ld hl, cS.armedHeroJumps
-.l_3:
+.noGun:
         ld (ix+Obj.sprite+0), l
         ld (ix+Obj.sprite+1), h
-.l_4:
+
+.checkAdvance:
         xor a
-        ld (State.s_05), a
+        ld (State.advance), a
         ld de, (State.screenX)
         ld hl, (State.mapSpanEnd)
         xor a
         sbc hl, de
-        jr Z, .l_5
-        jr C, .l_5
+        jr Z, .noAdvance
+        jr C, .noAdvance
+
         ld l, (ix+Obj.x+0)
         ld h, (ix+Obj.x+1)
         ld de, -200
         add hl, de
-        jr NC, .l_5
+        jr NC, .noAdvance
+
         ld a, #FF
-        ld (State.s_05), a
-.l_5:
-        jp c_e419
-.l_6:
-        call c_de37
-        jr NZ, .l_4
+        ld (State.advance), a
+
+.noAdvance:
+        jp setWalkPhase
+
+.conveyorLeft:
+        call isObstacleToTheLeft
+        jr NZ, .checkAdvance
+
         ld a, (ix+Obj.x)
-        add #FF
+        add -1
         ld (ix+Obj.x), a
-        jp .l_4
-.l_7:
-        call c_deb1
-        jr NZ, .l_4
+        jp .checkAdvance
+
+.conveyorRight:
+        call isObstacleToTheRight
+        jr NZ, .checkAdvance
+
         ld a, (ix+Obj.x)
-        add #01
+        add 1
         ld (ix+Obj.x), a
-        jp .l_4
+        jp .checkAdvance
 
 
 ; (Some game logic from call table #D6E7?)
-c_d7f6_t0:  ; #d7f6
+heroStands:  ; #d7f6
         ld a, (controlState)
         bit Key.up, a
         jr Z, .notUp
 
+.keyUp:
         ld a, (State.tileCentre)
         call getTileType
-
         cp TileType.ladder
-        jp Z, .l_12
+        jp Z, .climb
         cp TileType.ladderTop
-        jp Z, .l_12
-        jp .l_9
+        jp Z, .climb
+
+        jp .jump
 
 .notUp:
         bit Key.down, a
-        jr Z, .l_1
-        ld a, (State.tileCnFoot)
+        jr Z, .notDown
+
+.keyDown:
+        ld a, (State.tileFootC)
         call getTileType
         cp TileType.ladderTop
-        jp Z, .l_12
-.l_1:
+        jp Z, .climb
+
+.notDown:
         ld a, (controlState)
         bit Key.left, a
-        jp NZ, .l_7
+        jp NZ, .keyLeft
         bit Key.right, a
-        jp NZ, .l_8
-        bit Flag.fo_0, (ix+Obj.o_24)
+        jp NZ, .keyRight
+
+        bit Flag.riding, (ix+Obj.auxFlags)
         ret NZ
-        ld a, (State.tileLfFoot)
+
+        ; check foot tiles
+        ld a, (State.tileFootL)
         call getTileType
         cp TileType.ladderTop
-        jr NC, .l_2
-        ld a, (State.tileRgFoot)
+        jr NC, .notFalling
+        ld a, (State.tileFootR)
         call getTileType
         cp TileType.ladderTop
-        jp C, c_d94c_t1.l_13
-.l_2:
-        ld a, (State.tileLfFoot)
+        jp C, heroWalks.fall
+
+.notFalling:
+        ; check for ice
+        ld a, (State.tileFootL)
         call getTileType
         cp TileType.ice
-        jr Z, .l_3
-        ld a, (State.tileRgFoot)
+        jr Z, .ice
+        ld a, (State.tileFootR)
         call getTileType
         cp TileType.ice
-        jr Z, .l_3
-        ld a, (State.tileLfFoot)
+        jr Z, .ice
+
+        ld a, (State.tileFootL)
         call getTileType
         cp TileType.conveyorL
-        ret NC
-        ld a, (State.tileRgFoot)
+        ret NC                  ; ret if conveyor, slow, water/spikes (?)
+        ld a, (State.tileFootR)
         call getTileType
         cp TileType.conveyorL
-        jp C, c_d94c_t1.l_11
-        ret
-.l_3:
+        jp C, heroWalks.stop    ; if space, ladder, platform, wall (?)
+        ret                     ; ret if conveyor, slow, water/spikes (?)
+
+.ice:
         bit Dir.right, (ix+Obj.direction)
-        jr NZ, .l_4
-        call c_de37
-        jp NZ, c_d94c_t1.l_11
+        jr NZ, .slipRight
+.slipLeft:
+        call isObstacleToTheLeft
+        jp NZ, heroWalks.stop
         ld a, (ix+Obj.x)
-        add #FE
+        add -2                  ; slip speed
         ld (ix+Obj.x), a
-        jp .l_5
-.l_4:
-        call c_deb1
-        jp NZ, c_d94c_t1.l_11
+        jp .slip
+.slipRight:
+        call isObstacleToTheRight
+        jp NZ, heroWalks.stop
         ld a, (ix+Obj.x)
-        add #02
+        add 2                   ; slip speed
         ld (ix+Obj.x), a
-.l_5:
+.slip:
+        ; set slipping sprite
         ld hl, cS.heroWalks1
         ld a, (State.weapon)
-        cp 2
-        jr C, .l_6
+        cp ObjType.powerGun
+        jr C, .slipNoGun
         ld hl, cS.armedHeroWalks1
-.l_6:
+.slipNoGun:
         ld (ix+Obj.sprite+0), l
         ld (ix+Obj.sprite+1), h
         ret
-.l_7:
-        ld a, #01
-        ld (State.s_28), a
-        ld a, #02
-        ld (State.s_41), a
+
+.keyLeft:
+        ld a, HeroState.walk
+        ld (State.heroState), a
+        ld a, 2
+        ld (State.stepPeriod), a
         xor a
-        ld (State.s_42), a
-        ld (ix+Obj.o_6), a
+        ld (State.stepTime), a
+        ld (ix+Obj.walkPhase), a
         set Dir.left, (ix+Obj.direction)
         res Dir.right, (ix+Obj.direction)
         ret
-.l_8:
-        ld a, #01
-        ld (State.s_28), a
-        ld a, #02
-        ld (State.s_41), a
+
+.keyRight:
+        ld a, HeroState.walk
+        ld (State.heroState), a
+        ld a, 2
+        ld (State.stepPeriod), a
         xor a
-        ld (State.s_42), a
-        ld (ix+Obj.o_6), a
+        ld (State.stepTime), a
+        ld (ix+Obj.walkPhase), a
         set Dir.right, (ix+Obj.direction)
         res Dir.left, (ix+Obj.direction)
         ret
-.l_9:
+
+.jump:
         ld a, (State.pressTime)
         or a
         ret NZ
-        res Flag.fo_0, (ix+Obj.o_24)
-        ld a, #02
-        ld (State.s_28), a
+
+        res Flag.riding, (ix+Obj.auxFlags)
+
+        ld a, HeroState.jump
+        ld (State.heroState), a
+
         ld a, (controlState)
         and (1<<Key.left) | (1<<Key.right)
-        jp Z, .l_10
+        jp Z, .jumpUp
+
         ld b, a
         ld a, (ix+Obj.direction)
         and ~Dir.horizontal
         or b
         ld (ix+Obj.direction), a
-        ld (ix+Obj.horizSpeed), #02
-.l_10:
+        ld (ix+Obj.horizSpeed), 2
+
+.jumpUp:
         ld a, 3
-        ld (State.s_27), a
+        ld (State.jumpPhase), a
         xor a
-        ld (State.s_41), a
+        ld (State.stepPeriod), a
+
+        ; set jumping sprite
         ld hl, cS.heroJumps
         ld a, (State.weapon)
-        cp 2
-        jr C, .l_11
+        cp ObjType.powerGun
+        jr C, .jumpNoGun
         ld hl, cS.armedHeroJumps
-.l_11:
+.jumpNoGun:
         ld (ix+Obj.sprite+0), l
         ld (ix+Obj.sprite+1), h
-        ld a, 5
+
+        ld a, Sound.jump
         call playSound
-        jp c_da95_t2
+        jp heroJumps
+
 ; This entry point is used by c_d94c, c_da95 and c_db4e.
-.l_12:
+.climb:
         ld a, (State.pressTime)
         or a
         ret NZ
-        ld a, #04
-        ld (State.s_28), a
+
+        ld a, HeroState.climb
+        ld (State.heroState), a
         xor a
         ld (State.s_3E), a
+
+        ; set climbing sprite
         ld hl, cS.heroClimbs
         ld a, (State.weapon)
-        cp 2
-        jr C, .l_13
+        cp ObjType.powerGun
+        jr C, .climbNoGun
         ld hl, cS.armedHeroClimbs
-.l_13:
+.climbNoGun:
         ld (ix+Obj.sprite+0), l
         ld (ix+Obj.sprite+1), h
+
         xor a
-        ld (State.s_41), a
-        jp c_dbfc_t4
+        ld (State.stepPeriod), a
+        jp heroClimbs
 
 
 ; (Some game logic from call table #D6E7?)
-c_d94c_t1:  ; #d94c
-        bit Flag.fo_0, (ix+Obj.o_24)
-        jr NZ, .l_0
-        ld a, (State.tileLfFoot)
+heroWalks:  ; #d94c
+        bit Flag.riding, (ix+Obj.auxFlags)
+        jr NZ, .notFalling
+
+        ; check tiles below
+        ld a, (State.tileFootL)
         call getTileType
         cp TileType.ladderTop
-        jr NC, .l_0
-        ld a, (State.tileRgFoot)
+        jr NC, .notFalling
+        ld a, (State.tileFootR)
         call getTileType
         cp TileType.ladderTop
-        jp C, .l_13
-.l_0:
+        jp C, .fall
+
+.notFalling:
         ld a, (controlState)
         bit Key.up, a
-        jp NZ, .l_11
+        jp NZ, .stop
         bit Key.down, a
-        jr Z, .l_1
-        ld a, (State.tileCnFoot)
+        jr Z, .notDown
+
+.keyDown:
+        ld a, (State.tileFootC)
         call getTileType
         cp TileType.ladderTop
-        jp Z, c_d7f6_t0.l_12
-.l_1:
+        jp Z, heroStands.climb
+
+.notDown:
         bit Dir.right, (ix+Obj.direction)
-        jp NZ, .l_5
-        call c_de37
+        jp NZ, .right
+
+.left:
+        call isObstacleToTheLeft
         or a
-        jp NZ, .l_11
-        ld a, (State.tileLfFoot)
+        jp NZ, .stop
+
+        ld a, (State.tileFootL)
         call getTileType
         cp TileType.slow
-        jr Z, .l_2
-        ld a, (State.tileRgFoot)
+        jr Z, .slowLeft
+        ld a, (State.tileFootR)
         call getTileType
         cp TileType.slow
-        jr NZ, .l_3
-.l_2:
+        jr NZ, .walkLeft
+
+.slowLeft:
         ld a, (ix+Obj.x)
-        add #FF
+        add -1                  ; slow walking speed
         ld (ix+Obj.x), a
-        ld a, #04
-        ld (State.s_41), a
-        jr .l_4
-.l_3:
+        ld a, 4
+        ld (State.stepPeriod), a
+        jr .checkWalkingLeft
+
+.walkLeft:
         ld a, (ix+Obj.x)
-        add #FE
+        add -2                  ; walking speed
         ld (ix+Obj.x), a
-        ld a, #02
-        ld (State.s_41), a
-        ld a, (State.s_42)
-        and #01
-        ld (State.s_42), a
-.l_4:
+        ld a, 2
+        ld (State.stepPeriod), a
+        ld a, (State.stepTime)
+        and 1
+        ld (State.stepTime), a
+
+.checkWalkingLeft:
         ld a, (controlState)
         bit Key.left, a
-        jp Z, .l_11
-        jr .l_9
-.l_5:
-        call c_deb1
+        jp Z, .stop
+        jr .checkIce
+
+.right:
+        call isObstacleToTheRight
         or a
-        jp NZ, .l_11
-        ld a, (State.tileLfFoot)
+        jp NZ, .stop
+
+        ld a, (State.tileFootL)
         call getTileType
         cp TileType.slow
-        jr Z, .l_6
-        ld a, (State.tileRgFoot)
+        jr Z, .slowRight
+        ld a, (State.tileFootR)
         call getTileType
         cp TileType.slow
-        jr NZ, .l_7
-.l_6:
+        jr NZ, .walkRight
+
+.slowRight:
         ld a, (ix+Obj.x)
-        add #01
+        add 1                   ; slow walking speed
         ld (ix+Obj.x), a
-        ld a, #04
-        ld (State.s_41), a
-        jr .l_8
-.l_7:
+        ld a, 4
+        ld (State.stepPeriod), a
+        jr .checkWalkingRight
+
+.walkRight:
         ld a, (ix+Obj.x)
-        add #02
+        add 2                   ; walking speed
         ld (ix+Obj.x), a
-        ld a, #02
-        ld (State.s_41), a
-        ld a, (State.s_42)
-        and #01
-        ld (State.s_42), a
-.l_8:
+        ld a, 2
+        ld (State.stepPeriod), a
+        ld a, (State.stepTime)
+        and 1
+        ld (State.stepTime), a
+
+.checkWalkingRight:
         ld a, (controlState)
         bit Key.right, a
-        jp Z, .l_11
-.l_9:
-        ld a, (State.tileLfFoot)
+        jp Z, .stop
+
+.checkIce:
+        ld a, (State.tileFootL)
         call getTileType
         cp TileType.ice
-        jr Z, .l_10
-        ld a, (State.tileRgFoot)
+        jr Z, .ice
+        ld a, (State.tileFootR)
         call getTileType
         cp TileType.ice
         ret NZ
-.l_10:
-        ld a, #01
-        ld (State.s_41), a
+
+.ice:
+        ld a, 1
+        ld (State.stepPeriod), a
         xor a
-        ld (State.s_42), a
+        ld (State.stepTime), a
         ret
+
 ; This entry point is used by c_d7f6, c_da95, c_db4e and c_dbfc.
-.l_11:
+.stop:
         xor a
-        ld (State.s_28), a
-        ld (State.s_41), a
+        ld (State.heroState), a
+        ld (State.stepPeriod), a
+
         ld a, (ix+Obj.y)
         and #F8
         or #03
         ld (ix+Obj.y), a
-        ld (ix+Obj.horizSpeed), #00
+
+        ld (ix+Obj.horizSpeed), 0
+
+        ; set standing sprite
         ld hl, cS.heroStands
         ld a, (State.weapon)
-        cp 2
-        jr C, .l_12
+        cp ObjType.powerGun
+        jr C, .standNoGun
         ld hl, cS.armedHeroStands
-.l_12:
+.standNoGun:
         ld (ix+Obj.sprite+0), l
         ld (ix+Obj.sprite+1), h
         ret
+
 ; This entry point is used by c_d7f6, c_da95, c_dbfc and c_e6e1.
-.l_13:
+.fall:
         xor a
         ld (State.pressTime), a
-        ld a, #03
-        ld (State.s_28), a
+        ld a, HeroState.fall
+        ld (State.heroState), a
         xor a
-        ld (State.s_41), a
+        ld (State.stepPeriod), a
+
         ld a, (controlState)
         and (1<<Key.left) | (1<<Key.right)
-        jp Z, .l_14
+        jp Z, .fallDown
+
         ld b, a
         ld a, (ix+Obj.direction)
         and ~Dir.horizontal
         or b
         ld (ix+Obj.direction), a
-        ld a, #02
+        ld a, 2
         ld (ix+Obj.horizSpeed), a
-.l_14:
+
+.fallDown:
+        ; set falling sprite
         ld hl, cS.heroFalls
         ld a, (State.weapon)
-        cp 2
-        jr C, .l_15
+        cp ObjType.powerGun
+        jr C, .fallNoGun
         ld hl, cS.armedHeroFalls
-.l_15:
+.fallNoGun:
         ld (ix+Obj.sprite+0), l
         ld (ix+Obj.sprite+1), h
-        jp c_db4e_t3
+        jp heroFalls
 
 
 ; (Some game logic from call table #D6E7?)
 ; Used by c_d7f6.
-c_da95_t2:  ; #da95
+heroJumps:  ; #da95
+        ; set sprite
         ld hl, cS.heroJumps
         ld a, (State.weapon)
-        cp 2
-        jr C, .l_0
+        cp ObjType.powerGun
+        jr C, .nGun
         ld hl, cS.armedHeroJumps
-.l_0:
+.nGun:
         ld (ix+Obj.sprite+0), l
         ld (ix+Obj.sprite+1), h
+
         ld a, (controlState)
         bit Key.up, a
-        jr Z, .l_1
+        jr Z, .skipGrabLadder
+
+        ; grab ladder if present
         ld a, (State.tileCentre)
         call getTileType
         cp TileType.ladder
-        jp Z, c_d7f6_t0.l_12
+        jp Z, heroStands.climb
         cp TileType.ladderTop
-        jp Z, c_d7f6_t0.l_12
-.l_1:
+        jp Z, heroStands.climb
+
+.skipGrabLadder:
         ld a, (ix+Obj.horizSpeed)
         or a
-        jr Z, .l_3
+        jr Z, .vertical
+
         bit Dir.right, (ix+Obj.direction)
-        jr NZ, .l_2
-        call c_de37
+        jr NZ, .right
+
+.left:
+        call isObstacleToTheLeft
         or a
-        jr NZ, .l_3
+        jr NZ, .vertical
         ld a, (ix+Obj.horizSpeed)
         neg
         add (ix+Obj.x)
         ld (ix+Obj.x), a
-        jr .l_3
-.l_2:
-        call c_deb1
+        jr .vertical
+
+.right:
+        call isObstacleToTheRight
         or a
-        jr NZ, .l_3
+        jr NZ, .vertical
         ld a, (ix+Obj.horizSpeed)
         add (ix+Obj.x)
         ld (ix+Obj.x), a
-.l_3:
-        ld a, (State.s_27)
+
+.vertical:
+        ld a, (State.jumpPhase)
         ld e, a
         ld d, 0
-        ld hl, c_d6f1
+        ld hl, jumpVelocityTable
         add hl, de
         ld a, (hl)
         ld (State.s_37), a
-        cp #7F
-        jp Z, c_d94c_t1.l_13
+        cp #7F                  ; end jump
+        jp Z, heroWalks.fall
+
+        ; `a`: vertical velocity
         add (ix+Obj.y)
         ld (ix+Obj.y), a
-        ld a, (hl)
-        ld hl, State.s_27
+
+        ld a, (hl)              ; vertical velocity
+        ; next phase
+        ld hl, State.jumpPhase
         inc (hl)
+
         or a
-        jp P, .l_4
+        jp P, .down
+
+.up:
         exa
         call collectTilesAbove
-        ld a, (State.tileLfAbov)
+        ld a, (State.tileAbovL)
         call getTileType
         cp TileType.wall
-        jr NC, .l_5
-        ld a, (State.tileRgAbov)
+        jr NC, .obstacleAbove
+        ld a, (State.tileAbovR)
         call getTileType
         cp TileType.wall
-        jr NC, .l_5
+        jr NC, .obstacleAbove
         ret
-.l_4:
+
+.down:
         call collectTwoTilesBelow
-        ld a, (State.tileLfFoot)
+        ld a, (State.tileFootL)
         call getTileType
         cp TileType.ladderTop
-        jp NC, c_d94c_t1.l_11
-        ld a, (State.tileRgFoot)
+        jp NC, heroWalks.stop
+        ld a, (State.tileFootR)
         call getTileType
         cp TileType.ladderTop
-        jp NC, c_d94c_t1.l_11
+        jp NC, heroWalks.stop
         ret
-.l_5:
+
+.obstacleAbove:
         exa
         neg
         add (ix+Obj.y)
-        and #F8
+        and -8
         ld (ix+Obj.y), a
         ret
 
 
 ; (Some game logic from call table #D6E7?)
 ; Used by c_d94c.
-c_db4e_t3:  ; #db4e
+heroFalls:  ; #db4e
         ld a, (controlState)
         bit Key.up, a
-        jr Z, .l_0
+        jr Z, .skipGrabLadder
+
+        ; grab ladder if present
         ld a, (State.tileCentre)
         call getTileType
         cp TileType.ladder
-        jp Z, c_d7f6_t0.l_12
+        jp Z, heroStands.climb
         cp TileType.ladderTop
-        jp Z, c_d7f6_t0.l_12
-.l_0:
+        jp Z, heroStands.climb
+
+.skipGrabLadder:
         ld l, (ix+Obj.x+0)
         ld h, (ix+Obj.x+1)
         push hl
+
         ld a, (ix+Obj.horizSpeed)
         or a
-        jr Z, .l_2
+        jr Z, .vertical
+
         bit Dir.right, (ix+Obj.direction)
-        jr NZ, .l_1
-        call c_de37
+        jr NZ, .right:
+
+.left:
+        call isObstacleToTheLeft
         or a
-        jr NZ, .l_2
+        jr NZ, .vertical
         ld a, (ix+Obj.horizSpeed)
         neg
         add (ix+Obj.x)
         ld (ix+Obj.x), a
-        jr .l_2
-.l_1:
-        call c_deb1
+        jr .vertical
+
+.right::
+        call isObstacleToTheRight
         or a
-        jr NZ, .l_2
+        jr NZ, .vertical
         ld a, (ix+Obj.horizSpeed)
         add (ix+Obj.x)
         ld (ix+Obj.x), a
-.l_2:
+
+.vertical:
         exx
         ld l, (ix+Obj.x+0)
         ld h, (ix+Obj.x+1)
-        exx
-        pop hl
+        exx                     ; `hl'`: old x
+        pop hl                  ; `hl`: new x
         ld (ix+Obj.x+0), l
         ld (ix+Obj.x+1), h
+
         ld a, (ix+Obj.y)
-        add #04
+        add 4                   ; fall speed
         ld (ix+Obj.y), a
+
         call collectTwoTilesBelow
+
         exx
         ld (ix+Obj.x+0), l
         ld (ix+Obj.x+1), h
         exx
-        ld a, (State.tileLfFoot)
+
+        ; check tiles below
+        ld a, (State.tileFootL)
         call getTileType
         cp TileType.ladderTop
-        jp NC, c_d94c_t1.l_11
-        ld a, (State.tileRgFoot)
+        jp NC, heroWalks.stop
+        ld a, (State.tileFootR)
         call getTileType
         cp TileType.ladderTop
-        jp NC, c_d94c_t1.l_11
+        jp NC, heroWalks.stop
+
         ld a, (controlState)
         bit Key.left, a
-        jr NZ, .l_3
+        jr NZ, .keyLeft
         bit Key.right, a
-        jr NZ, .l_4
-        ld (ix+Obj.horizSpeed), #00
+        jr NZ, .keyRight
+
+        ld (ix+Obj.horizSpeed), 0
         ret
-.l_3:
-        ld (ix+Obj.horizSpeed), #02
+
+.keyLeft:
+        ld (ix+Obj.horizSpeed), 2
         set Dir.left, (ix+Obj.direction)
         res Dir.right, (ix+Obj.direction)
         ret
-.l_4:
-        ld (ix+Obj.horizSpeed), #02
+
+.keyRight:
+        ld (ix+Obj.horizSpeed), 2
         set Dir.right, (ix+Obj.direction)
         res Dir.left, (ix+Obj.direction)
         ret
@@ -606,114 +727,134 @@ c_db4e_t3:  ; #db4e
 
 ; (Some game logic from call table #D6E7?)
 ; Used by c_d7f6.
-c_dbfc_t4:  ; #dbfc
+heroClimbs:  ; #dbfc
         ld a, (controlState)
         bit Key.up, a
-        jr Z, .l_1
+        jr Z, .notUp
+
         ld a, (State.tileCentre)
         call getTileType
         or a
-        jr NZ, .l_0
-        ld a, (State.tileCnFoot)
+        jr NZ, .checkTilesAbove
+        ld a, (State.tileFootC)
         call getTileType
         or a
-        jp Z, c_d94c_t1.l_13
-.l_0:
+        jp Z, heroWalks.fall
+
+.checkTilesAbove:
         call collectTilesAbove
-        ld a, (State.tileLfAbov)
+        ld a, (State.tileAbovL)
         call getTileType
         cp TileType.wall
-        jr NC, .l_1
-        ld a, (State.tileRgAbov)
+        jr NC, .notUp
+        ld a, (State.tileAbovR)
         call getTileType
         cp TileType.wall
-        jr NC, .l_1
-        call c_dcce
+        jr NC, .notUp
+
+        ; climb up
+        call climbStep
         ld a, (ix+Obj.y)
-        add #FE
+        add -2                  ; climb speed
         ld (ix+Obj.y), a
-.l_1:
+
+.notUp:
         ld a, (controlState)
         bit Key.down, a
-        jr Z, .l_3
+        jr Z, .notDown
+
         ld a, (State.tileCentre)
         call getTileType
         or a
         jr NZ, .l_2
-        ld a, (State.tileCnFoot)
+        ld a, (State.tileFootC)
         call getTileType
         or a
-        jp Z, c_d94c_t1.l_13
+        jp Z, heroWalks.fall
+
 .l_2:
-        call c_dcce
+
+        ; climb down
+        call climbStep
         ld a, (ix+Obj.y)
-        add #02
+        add 2                   ; climb speed
         ld (ix+Obj.y), a
-.l_3:
+
+.notDown:
         ld a, (ix+Obj.y)
-        or #01
+        or 1                    ; ceil to odd
         ld (ix+Obj.y), a
-        and #07
-        cp #03
+
+        and 7
+        cp 3
         jr NZ, .l_4
+
         call collectCentreTileBelow
-        ld a, (State.tileCnFoot)
+        ld a, (State.tileFootC)
         call getTileType
         cp TileType.ladderTop
-        jp NC, c_d94c_t1.l_11
+        jp NC, heroWalks.stop
+
 .l_4:
         ld a, (controlState)
         bit Key.left, a
-        jr Z, .l_6
+        jr Z, .notLeft
         ld a, (State.tileCentre)
         call getTileType
         or a
-        jr NZ, .l_5
-        ld a, (State.tileCnFoot)
+        jr NZ, .left
+
+        ld a, (State.tileFootC)
         call getTileType
         or a
-        jp Z, c_d94c_t1.l_13
-.l_5:
-        call c_de37
-        jr NZ, .l_6
-        call c_dcce
+        jp Z, heroWalks.fall
+
+.left:
+        call isObstacleToTheLeft
+        jr NZ, .notLeft
+        call climbStep
         ld a, (ix+Obj.x)
-        add #FE
+        add -2
         ld (ix+Obj.x), a
-.l_6:
+
+.notLeft:
         ld a, (controlState)
         bit Key.right, a
-        jr Z, .l_8
+        jr Z, .notRight
+
         ld a, (State.tileCentre)
         call getTileType
         or a
-        jr NZ, .l_7
-        ld a, (State.tileCnFoot)
+        jr NZ, .right
+
+        ld a, (State.tileFootC)
         call getTileType
         or a
-        jp Z, c_d94c_t1.l_13
-.l_7:
-        call c_deb1
-        jr NZ, .l_8
-        call c_dcce
+        jp Z, heroWalks.fall
+
+.right:
+        call isObstacleToTheRight
+        jr NZ, .notRight
+        call climbStep
         ld a, (ix+Obj.x)
-        add #02
+        add 2
         ld (ix+Obj.x), a
-.l_8:
+
+.notRight:
         ret
 
 
-; ?
+; Alter hero's feet when climbing
 ; Used by c_dbfc.
-c_dcce:  ; #dcce
-        ld a, (State.s_42)
+climbStep:  ; #dcce
+        ld a, (State.stepTime)
         inc a
         and %11
-        ld (State.s_42), a
+        ld (State.stepTime), a
         ret NZ
 
         ld a, (ix+Obj.direction)
-        xor Dir.horizontal      ; left <-> right
+        xor Dir.horizontal
         ld (ix+Obj.direction), a
         ret
 
@@ -730,7 +871,7 @@ collectCentreTileBelow:  ; #dce1
 
         call getScrTileAddr
         ld a, (hl)
-        ld (State.tileCnFoot), a
+        ld (State.tileFootC), a
 
         ld a, (ix+Obj.x)
         add -12
@@ -755,10 +896,10 @@ collectTwoTilesBelow:  ; #dd09
 
         call getScrTileAddr
         ld a, (hl)
-        ld (State.tileLfFoot), a
+        ld (State.tileFootL), a
         inc hl
         ld a, (hl)
-        ld (State.tileRgFoot), a
+        ld (State.tileFootR), a
 
         ld a, (ix+Obj.x)
         add -6
@@ -784,10 +925,10 @@ collectTilesAbove:  ; #dd46
 
         call getScrTileAddr
         ld a, (hl)
-        ld (State.tileLfAbov), a
+        ld (State.tileAbovL), a
         inc hl
         ld a, (hl)
-        ld (State.tileRgAbov), a
+        ld (State.tileAbovR), a
 
         ld a, (ix+Obj.x)
         add -6
@@ -811,16 +952,16 @@ collectStateTiles:  ; #dd73
         call getScrTileAddr
         ld bc, 44
         ld a, (hl)
-        ld (State.tileLfTop), a
+        ld (State.tileTopL), a
         add hl, bc              ; move down
         ld a, (hl)
-        ld (State.tileLfMid), a
+        ld (State.tileMidL), a
         add hl, bc              ; move down
         ld a, (hl)
-        ld (State.tileLfBot), a
+        ld (State.tileBotL), a
         add hl, bc              ; move down
         ld a, (hl)
-        ld (State.tileLfUndr), a
+        ld (State.tileUndrL), a
 
         ld a, (ix+Obj.x)
         add 12
@@ -832,16 +973,16 @@ collectStateTiles:  ; #dd73
         call getScrTileAddr
         ld bc, 44
         ld a, (hl)
-        ld (State.tileRgTop), a
+        ld (State.tileTopR), a
         add hl, bc              ; move down
         ld a, (hl)
-        ld (State.tileRgMid), a
+        ld (State.tileMidR), a
         add hl, bc              ; move down
         ld a, (hl)
-        ld (State.tileRgBot), a
+        ld (State.tileBotR), a
         add hl, bc              ; move down
         ld a, (hl)
-        ld (State.tileRgUndr), a
+        ld (State.tileUndrR), a
 
         ld a, (ix+Obj.x)
         add -10
@@ -856,10 +997,10 @@ collectStateTiles:  ; #dd73
 
         call getScrTileAddr
         ld a, (hl)
-        ld (State.tileLfFoot), a
+        ld (State.tileFootL), a
         inc hl                  ; move right
         ld a, (hl)
-        ld (State.tileRgFoot), a
+        ld (State.tileFootR), a
 
         ld a, (ix+Obj.x)
         add 6
@@ -877,7 +1018,7 @@ collectStateTiles:  ; #dd73
         ld (State.tileCentre), a
         add hl, bc              ; move down
         ld a, (hl)
-        ld (State.tileCnFoot), a
+        ld (State.tileFootC), a
 
         ld a, (ix+Obj.x)
         add -12
@@ -896,131 +1037,147 @@ collectStateTiles:  ; #dd73
         jr NZ, .l_0
 
         xor a
-        ld (State.tileLfUndr), a
-        ld (State.tileRgUndr), a
+        ld (State.tileUndrL), a
+        ld (State.tileUndrR), a
         ret
 .l_0:
         ret
 
 
-; (Checks something?)
+; Check if tiles to the left are impenetrable
+;   arg `ix`: hero
+;   ret `a`: #FF and flag NZ if true, `a`: 0 and flag Z if false
 ; Used by c_d308, c_d709, c_d7f6, c_d94c, c_da95, c_db4e and c_dbfc.
-c_de37:  ; #de37
+isObstacleToTheLeft:  ; #de37
         ld l, (ix+Obj.x+0)
         ld h, (ix+Obj.x+1)
         ld de, -32
         add hl, de
-        jr NC, .l_2
+        jr NC, .true             ; x < 32
 
-        ld a, (State.s_28)
-        cp #04
-        jr NZ, .l_0
-        ld a, (State.tileLfTop)
+        ; x >= 32
+        ld a, (State.heroState)
+        cp HeroState.climb
+        jr NZ, .climbing
+
+        ld a, (State.tileTopL)
         call getTileType
         cp TileType.platform
-        jr NC, .l_2
-        ld a, (State.tileLfMid)
+        jr NC, .true
+        ld a, (State.tileMidL)
         call getTileType
         cp TileType.platform
-        jr NC, .l_2
-        ld a, (State.tileLfBot)
+        jr NC, .true
+        ld a, (State.tileBotL)
         call getTileType
         cp TileType.platform
-        jr NC, .l_2
-        ld a, (State.tileLfUndr)
+        jr NC, .true
+        ld a, (State.tileUndrL)
         call getTileType
         cp TileType.platform
-        jr NC, .l_2
-        jp .l_1
-.l_0:
-        ld a, (State.tileLfTop)
+        jr NC, .true
+        jp .false
+
+.climbing:
+        ld a, (State.tileTopL)
         call getTileType
         cp TileType.wall
-        jr NC, .l_2
-        ld a, (State.tileLfMid)
+        jr NC, .true
+        ld a, (State.tileMidL)
         call getTileType
         cp TileType.wall
-        jr NC, .l_2
-        ld a, (State.tileLfBot)
+        jr NC, .true
+        ld a, (State.tileBotL)
         call getTileType
         cp TileType.wall
-        jr NC, .l_2
-        ld a, (State.s_28)
-        cp #02
-        jr NZ, .l_1
+        jr NC, .true
+
+        ld a, (State.heroState)
+        cp HeroState.jump
+        jr NZ, .false
         ld a, (State.s_37)
         or a
-        jp M, .l_1
-        ld a, (State.tileRgUndr)
+        jp M, .false
+
+        ld a, (State.tileUndrR)
         call getTileType
         cp TileType.wall
-        jr NC, .l_2
-.l_1:
+        jr NC, .true
+
+.false:
         xor a
         ret
-.l_2:
+.true:
         ld a, #FF
         or a
         ret
 
-; (Checks something?)
+
+; Check if tiles to the right are impenetrable
+;   arg `ix`: hero
+;   ret `a`: #FF and flag NZ if true, `a`: 0 and flag Z if false
 ; Used by c_d308, c_d709, c_d7f6, c_d94c, c_da95, c_db4e and c_dbfc.
-c_deb1:  ; #deb1
+isObstacleToTheRight:  ; #deb1
         ld l, (ix+Obj.x+0)
         ld h, (ix+Obj.x+1)
         ld de, -252
         add hl, de
-        jr C, .l_2
-        ld a, (State.s_28)
-        cp #04
-        jr NZ, .l_0
-        ld a, (State.tileRgTop)
+        jr C, .true
+
+        ld a, (State.heroState)
+        cp HeroState.climb
+        jr NZ, .climbing
+
+        ld a, (State.tileTopR)
         call getTileType
         cp TileType.platform
-        jr NC, .l_2
-        ld a, (State.tileRgMid)
+        jr NC, .true
+        ld a, (State.tileMidR)
         call getTileType
         cp TileType.platform
-        jr NC, .l_2
-        ld a, (State.tileRgBot)
+        jr NC, .true
+        ld a, (State.tileBotR)
         call getTileType
         cp TileType.platform
-        jr NC, .l_2
-        ld a, (State.tileRgUndr)
+        jr NC, .true
+        ld a, (State.tileUndrR)
         call getTileType
         cp TileType.platform
-        jr NC, .l_2
-        jp .l_1
-.l_0:
-        ld a, (State.tileRgTop)
+        jr NC, .true
+        jp .false
+
+.climbing:
+        ld a, (State.tileTopR)
         call getTileType
         cp TileType.wall
-        jr NC, .l_2
-        ld a, (State.tileRgMid)
+        jr NC, .true
+        ld a, (State.tileMidR)
         call getTileType
         cp TileType.wall
-        jr NC, .l_2
-        ld a, (State.tileRgBot)
+        jr NC, .true
+        ld a, (State.tileBotR)
         call getTileType
         cp TileType.wall
-        jr NC, .l_2
-        ld a, (State.s_28)
-        cp #02
-        jr NZ, .l_1
+        jr NC, .true
+        ld a, (State.heroState)
+        cp HeroState.jump
+        jr NZ, .false
         ld a, (State.s_37)
         or a
-        jp M, .l_1
-        ld a, (State.tileRgUndr)
+        jp M, .false
+        ld a, (State.tileUndrR)
         call getTileType
         cp TileType.wall
-        jr NC, .l_2
-.l_1:
+        jr NC, .true
+
+.false:
         xor a
         ret
-.l_2:
+.true:
         ld a, #FF
         or a
         ret
+
 
 ; (Some data on enemies?)
 c_df2b:  ; #df2b
@@ -1088,8 +1245,8 @@ processFire:  ; #df85
         or a
         jp NZ, .l_9
 
-        ld a, (State.s_28)
-        cp 3
+        ld a, (State.heroState)
+        cp HeroState.fall
         ret NC
 
         ld a, (controlState)
@@ -1104,7 +1261,7 @@ processFire:  ; #df85
         jp NZ, .useWeapon
 
         ; no weapon
-        ld a, 4                 ; kick/throw sound
+        ld a, Sound.kickOrThrow
         call playSound
 
         ld hl, cS.heroKicks
@@ -1158,7 +1315,7 @@ processFire:  ; #df85
         jp NZ, .gun
 
 .shatterbomb:
-        ld a, 4                 ; kick/throw sound
+        ld a, Sound.kickOrThrow
         call playSound
 
         ld hl, cS.heroThrows
@@ -1211,7 +1368,7 @@ processFire:  ; #df85
         jp NZ, .laserGun
 
 .powerGun:
-        ld a, 10                ; powerGun sound
+        ld a, Sound.powerGun
         call playSound
 
         ld a, (State.soupCans)
@@ -1276,7 +1433,7 @@ processFire:  ; #df85
         jp checkEnemiesForDamage
 
 .laserGun:
-        ld a, 8                 ; laser gun sound
+        ld a, Sound.laserGun
         call playSound
 
         ld a, (State.soupCans)
@@ -1354,7 +1511,7 @@ processFire:  ; #df85
         ld (ix+Obj.sprite+1), h
         ret
 .l_10:
-        ld a, (State.s_28)
+        ld a, (State.heroState)
         or a
         jr NZ, .l_11
         ld hl, cS.heroStands
@@ -1421,7 +1578,7 @@ processFire:  ; #df85
         cp TileType.ladderTop
         ret C
 .l_15:
-        ld a, 6                 ; kill enemy sound
+        ld a, Sound.killEnemy
         call playSound
         ld a, (ix+Obj.x)
         add #FC
@@ -1664,51 +1821,60 @@ heroWalkPhases:  ; #e401
 
 ; (Some game logic with weapons?)
 ; Used by c_d709.
-c_e419:  ; #e419
+setWalkPhase:  ; #e419
         ld a, (State.pressTime)
         or a
-        jr Z, .l_1
+        jr Z, .noPress
+
+        ; hero is pressed
         dec a
         ld (State.pressTime), a
+
+        ; set small sprite
         ld de, cS.heroSmallWalks
-        ld a, (State.s_41)
+        ld a, (State.stepPeriod)
         or a
         jr Z, .l_0
-        inc (ix+Obj.o_6)
-        ld a, (ix+Obj.o_6)
-        and #02
+        inc (ix+Obj.walkPhase)
+        ld a, (ix+Obj.walkPhase)
+        and %00000010
         jr NZ, .l_0
         ld de, cS.heroSmallStands
 .l_0:
         ld (ix+Obj.sprite+0), e
         ld (ix+Obj.sprite+1), d
         ret
-.l_1:
-        ld a, (State.s_41)
+
+.noPress:
+        ld a, (State.stepPeriod)
         or a
         ret Z
-        ld hl, State.s_42
+
+        ld hl, State.stepTime
         inc (hl)
-        ld a, (State.s_41)
+        ld a, (State.stepPeriod)
         cp (hl)
         ret NZ
-        ld (hl), #00
-        inc (ix+Obj.o_6)
-        ld a, (ix+Obj.o_6)
-        cp #06
+
+        ld (hl), 0
+
+        inc (ix+Obj.walkPhase)
+        ld a, (ix+Obj.walkPhase)
+        cp 6                    ; walk phase count
         jr C, .l_2
         xor a
-        ld (ix+Obj.o_6), a
+        ld (ix+Obj.walkPhase), a      ; reset walk phase
+
 .l_2:
         add a
         ld l, a
-        ld h, #00
+        ld h, 0
         ld de, heroWalkPhases
         ld a, (State.weapon)
-        cp 2
-        jr C, .l_3
+        cp ObjType.powerGun
+        jr C, .noGun
         ld de, heroWalkPhases.armed
-.l_3:
+.noGun:
         add hl, de
         ld e, (hl)
         inc hl

@@ -101,8 +101,8 @@ removeObjects:  ; #e5f2
 ; Used by c_cc25.
 checkTransitEnter:  ; #e60a
         ld ix, scene.hero
-        ld a, (State.s_27)
-        ld (State.s_44), a
+        ld a, (State.jumpPhase)
+        ld (State.tmpJumpPh), a
 
         ld a, (ix+Obj.y)
         ld (State.tmpY), a
@@ -116,7 +116,7 @@ checkTransitEnter:  ; #e60a
         exa
         ld (ix+Obj.y), 224      ; appear from the bottom
         xor a
-        ld (State.s_27), a
+        ld (State.jumpPhase), a
         jr .l_2
 .down:
         ld a, 1
@@ -171,8 +171,8 @@ checkTransitEnter:  ; #e60a
 .notFound:
         ld a, (State.tmpY)
         ld (ix+Obj.y), a
-        ld a, (State.s_44)
-        ld (State.s_27), a
+        ld a, (State.tmpJumpPh)
+        ld (State.jumpPhase), a
         ret
 
 .found:
@@ -294,14 +294,14 @@ processHeroCollisions:  ; #e6e1
         ld hl, 750
         ld (State.weaponTime), hl
         ld (iy+Obj.flags), 0    ; remove object
-        ld a, 13                ; pick up weapon
+        ld a, Sound.pickWeapon
         jp playSound
 
 .l_2:
         cp ObjType.shopMole
         jr Z, .skipSound
         push af
-        ld a, 11                ; pick up item sound
+        ld a, Sound.pickItem
         call playSound
         pop af
 .skipSound:
@@ -387,12 +387,12 @@ processHeroCollisions:  ; #e6e1
         ld a, (State.pressTime)
         or a
         ret NZ
-        ld a, (State.s_28)
+        ld a, (State.heroState)
         cp 2
         jr C, .l_13
         ret NZ
-        call c_d94c_t1.l_13
-        ld a, (State.s_28)
+        call heroWalks.fall
+        ld a, (State.heroState)
         or a
         ret NZ
 .l_13:
@@ -403,7 +403,7 @@ processHeroCollisions:  ; #e6e1
         ld a, (iy+Obj.o_7)      ; ?
         cp #FF
         ret Z
-        bit Flag.fo_0, (iy+Obj.o_24)    ; ?
+        bit Flag.riding, (iy+Obj.auxFlags)    ; ?
         ret NZ
         ld a, (iy+Obj.health)
         cp -2                   ; not an enemy (?)
@@ -581,7 +581,7 @@ enterShop:  ; #e920
         ld (ix+Obj.objType), ObjType.shopMole
         ld (ix+Obj.flags), (1<<Flag.exists) | (1<<Flag.isBig)
         ld (ix+Obj.health), -2
-        ld (ix+Obj.o_24), 0
+        ld (ix+Obj.auxFlags), 0
         ld (ix+Obj.emitBullets), 0
         ld (ix+Obj.motion), Motion.none
         ret
@@ -695,7 +695,7 @@ shopLogic:  ; #e9b1
         call moveToMapSpan
         xor a
         ld (State.inShop), a
-        ld (State.s_28), a
+        ld (State.heroState), a
 
     IFDEF _MOD
         jp printPanel
@@ -912,7 +912,7 @@ checkEnemyDamage:  ; #eb19
         jr damageEnemy
 
 .weaponUsed:
-        cp 1                    ; shatterbomb
+        cp ObjType.shatterbomb
         jr NZ, .gun
 
 .shatterbomb:
@@ -1024,13 +1024,13 @@ damageEnemy:  ; #ec00
         ld (iy+Obj.health), a
         ld (iy+Obj.blinkTime), 4
 
-        ld a, 3                 ; damage enemy sound
+        ld a, Sound.damageEnemy
         call playSound
         jr .damaged
 
 ; This entry point is used by c_d4e5.
 .kill:
-        bit Flag.givesCoin, (iy+Obj.o_24)
+        bit Flag.givesCoin, (iy+Obj.auxFlags)
         jp NZ, turnIntoCoin
 
         ; turn into cloud
@@ -1043,10 +1043,10 @@ damageEnemy:  ; #ec00
         pop iy
         pop ix
 .big:
-        ld (iy+Obj.o_6), 0
+        ld (iy+Obj.walkPhase), 0
         ld (iy+Obj.o_7), -1
         ld (iy+Obj.colour), Colour.brWhite
-        ld a, 6                 ; kill enemy sound
+        ld a, Sound.killEnemy
         call playSound
 
 .damaged:
@@ -1059,7 +1059,7 @@ damageEnemy:  ; #ec00
         ret
 
 .boss:
-        ld a, (State.s_56)
+        ld a, (State.bossInvinc)
         or a
         jr NZ, .damaged
 
@@ -1068,7 +1068,7 @@ damageEnemy:  ; #ec00
         jr NC, .bossKilled
 
         ld (State.bossHealth), a
-        ld a, 3                 ; damage enemy sound
+        ld a, Sound.damageEnemy
         call playSound
 
         push ix
@@ -1100,7 +1100,7 @@ damageEnemy:  ; #ec00
         bit Flag.isBig, (ix+Obj.flags)
         jr Z, .l_9
         ; turn into cloud
-        ld (ix+Obj.o_6), 0
+        ld (ix+Obj.walkPhase), 0
         ld (ix+Obj.o_7), -1
         ld (ix+Obj.colour), Colour.brWhite
 .l_9:
@@ -1122,7 +1122,7 @@ damageEnemy:  ; #ec00
         add hl, de
         ld (hl), 1
 
-        ld a, 6                 ; kill enemy sound
+        ld a, Sound.killEnemy
         call playSound
         jr .damaged
 
@@ -1229,10 +1229,10 @@ fallingMotion: ; #ed5f
         sub 8
         ld (ix+Obj.x+0), a
 .skipAdjustX:
-        ld (ix+Obj.o_6), 0
+        ld (ix+Obj.walkPhase), 0
         ld (ix+Obj.o_7), -1
         ld (ix+Obj.colour), Colour.brWhite
-        ld a, 6                 ; kill enemy sound
+        ld a, Sound.killEnemy
         jp playSound
 
 .fallAndStay:
@@ -1309,12 +1309,12 @@ aimAtHero:  ; #edc0
         ; check sign of x difference
         bit 7, d
         jp M, .negX             ; should work like `jp NZ`
-        
+
 .posX:
         ld (ix+Obj.aim.dirX+0), 1
         ld (ix+Obj.aim.dirX+1), 0
         jr .distX
-        
+
 .negX:
         ld (ix+Obj.aim.dirX+0), low(-1)
         ld (ix+Obj.aim.dirX+1), high(-1)
@@ -1417,7 +1417,7 @@ aimedBulletMotion:  ; #ee93
         sbc hl, de
         ld (ix+Obj.aim.phase+0), l
         ld (ix+Obj.aim.phase+1), h
-        
+
 .moveHoriz:
         ld l, (ix+Obj.aim.curX+0)
         ld h, (ix+Obj.aim.curX+1)
@@ -1443,7 +1443,7 @@ aimedBulletMotion:  ; #ee93
         ld a, (ix+Obj.aim.phase+0)
         or a
         jp P, .moveVert
-        
+
         ; move horizontally
         ld l, (ix+Obj.aim.curX+0)
         ld h, (ix+Obj.aim.curX+1)
@@ -1452,7 +1452,7 @@ aimedBulletMotion:  ; #ee93
         add hl, de
         ld (ix+Obj.aim.curX+0), l
         ld (ix+Obj.aim.curX+1), h
-        
+
         ; adjust phase
         ld l, (ix+Obj.aim.distY+0)
         ld h, (ix+Obj.aim.distY+1)
@@ -1462,7 +1462,7 @@ aimedBulletMotion:  ; #ee93
         add hl, de
         ld (ix+Obj.aim.phase+0), l
         ld (ix+Obj.aim.phase+1), h
-        
+
 .moveVert:
         ld l, (ix+Obj.aim.curY+0)
         ld h, (ix+Obj.aim.curY+1)
@@ -1471,7 +1471,7 @@ aimedBulletMotion:  ; #ee93
         add hl, de
         ld (ix+Obj.aim.curY+0), l
         ld (ix+Obj.aim.curY+1), h
-        
+
         ; adjust phase
         ld e, (ix+Obj.aim.distX+0)
         ld d, (ix+Obj.aim.distX+1)
@@ -1481,7 +1481,7 @@ aimedBulletMotion:  ; #ee93
         sbc hl, de
         ld (ix+Obj.aim.phase+0), l
         ld (ix+Obj.aim.phase+1), h
-        
+
         djnz .stepByY
 
 .setPosition:
@@ -1533,10 +1533,10 @@ walkMotion:
         cp ObjType.amazon.crocodile
         jr Z, .checkScreenEdge
 
-        ld a, (State.tTypeBotRg)
+        ld a, (State.tTypeBotR)
         bit Dir.right, (ix+Obj.direction)
         jr NZ, .l_2
-        ld a, (State.tTypeBotLf)
+        ld a, (State.tTypeBotL)
 .l_2:
         or a                    ; if space, turn around
         jr NZ, .checkScreenEdge
@@ -1574,7 +1574,7 @@ walkMotion:
 walkOrFallMotion:
         ld (ix+Obj.vertSpeed), 8
         call collectTileTypes
-        bit Flag.falling, (ix+Obj.o_24)
+        bit Flag.falling, (ix+Obj.auxFlags)
         jr NZ, .fall
 
         call randomlyChangeDirection
@@ -1599,7 +1599,7 @@ walkOrFallMotion:
         jp NC, removeIfOffScreen
 
 .startFalling:
-        set Flag.falling, (ix+Obj.o_24)
+        set Flag.falling, (ix+Obj.auxFlags)
         set Flag.fixedX, (ix+Obj.flags)
         set Dir.down, (ix+Obj.direction)
         jp removeIfOffScreen
@@ -1610,7 +1610,7 @@ walkOrFallMotion:
         jp C, removeIfOffScreen ; space or ladder
 
 .stopFalling:
-        res Flag.falling, (ix+Obj.o_24)
+        res Flag.falling, (ix+Obj.auxFlags)
         res Flag.fixedX, (ix+Obj.flags)
         res Dir.down, (ix+Obj.direction)
         jp removeIfOffScreen
@@ -1894,13 +1894,13 @@ collectTileTypes:  ; #f1d7
         add hl, de
         ld a, (hl)
         call getTileType
-        ld (State.tTypeBotLf), a
+        ld (State.tTypeBotL), a
 
         ; x + 16, y + 16
     .2  inc hl                  ; 2 tiles right
         ld a, (hl)
         call getTileType
-        ld (State.tTypeBotRg), a
+        ld (State.tTypeBotR), a
 
         ret
 
@@ -1976,13 +1976,13 @@ collectTileTypes:  ; #f1d7
         add hl, de
         ld a, (hl)
         call getTileType
-        ld (State.tTypeBotLf), a
+        ld (State.tTypeBotL), a
 
         ; x + 24, y + 24
     .3  inc hl                  ; 3 tiles right
         ld a, (hl)
         call getTileType
-        ld (State.tTypeBotRg), a
+        ld (State.tTypeBotR), a
 
         ret
 
@@ -2002,7 +2002,7 @@ pressPlatformMotion:  ; #f2e7
 .l_0:
         bit Dir.down, (ix+Obj.direction)
         jr NZ, .l_2
-        ld a, (ix+Obj.o_6)
+        ld a, (ix+Obj.walkPhase)
         or a
         jr NZ, .l_1
         ld (ix+Obj.direction), 1<<Dir.down
@@ -2010,7 +2010,7 @@ pressPlatformMotion:  ; #f2e7
         ld (ix+Obj.horizSpeed), 32
         ret
 .l_1:
-        dec (ix+Obj.o_6)
+        dec (ix+Obj.walkPhase)
         ld a, (ix+Obj.y)
         and #07
         jr NZ, .l_4
@@ -2026,7 +2026,7 @@ pressPlatformMotion:  ; #f2e7
         ld (hl), 1
         jr .l_4
 .l_2:
-        inc (ix+Obj.o_6)
+        inc (ix+Obj.walkPhase)
         call getScrTileAddr
         ld c, #BD
         ld a, (State.level)
@@ -2055,7 +2055,7 @@ pressPlatformMotion:  ; #f2e7
         or a
         jr NZ, .l_5
 .l_4:
-        ld a, (ix+Obj.o_6)
+        ld a, (ix+Obj.walkPhase)
         ld l, a
         ld h, 0
         ld de, c_f2d1
@@ -2201,9 +2201,9 @@ trajectoryMotion:  ; #f37e
         ld c, a                 ; inverted direction
 
 .skipInvDir:
-        ld (ix+Obj.o_18), c     ; ?
+        ld (ix+Obj.trajDir), c
         ld a, (State.trajVel)
-        bit Flag.fo_0, (ix+Obj.o_24) ; ?
+        bit Flag.riding, (ix+Obj.auxFlags) ; ?
         jr Z, .move
         ld (ix+Obj.horizSpeed), a
 
@@ -2346,7 +2346,7 @@ checkDynamiteExplosion:  ; #f4e9
         cp 2
         ret NC
         ; explosion cloud
-        ld (ix+Obj.o_6), 0
+        ld (ix+Obj.walkPhase), 0
         ld (ix+Obj.o_7), -1
         ld (ix+Obj.colour), Colour.brWhite
         ret
@@ -2446,7 +2446,7 @@ emitEnemyBullet:  ; #f564
         ld (iy+Obj.flags), 1<<Flag.exists
         ld (iy+Obj.objType), ObjType.bullet
         ld (iy+Obj.motion), Motion.bullet
-        ld (iy+Obj.o_24), 0
+        ld (iy+Obj.auxFlags), 0
         ld a, (ix+Obj.emitBullets)
         ld (iy+Obj.emitBullets), a
 
@@ -2561,7 +2561,7 @@ bulletMotion:  ; #f618
 ; Change object direction with some probability
 ; Used by c_ef72.
 randomlyChangeDirection:  ; #f670
-        bit Flag.changesDir, (ix+Obj.o_24)
+        bit Flag.changesDir, (ix+Obj.auxFlags)
         ret Z
         call generateRandom
         cp 8
@@ -2586,7 +2586,7 @@ randomlyChangeDirection:  ; #f670
 ; (Some game logic?)
 ; Used by c_ef72.
 randomlyStandStill:  ; #f697
-        bit Flag.standsStill, (ix+Obj.o_24)
+        bit Flag.standsStill, (ix+Obj.auxFlags)
         ret Z
 
         ld a, (ix+Obj.stillTime)
@@ -2779,7 +2779,7 @@ createObject:
         add hl, de              ; `hl`: object type addr
 
         ; fill object properties
-        ld (ix+Obj.o_6), 0
+        ld (ix+Obj.walkPhase), 0
         ld (ix+Obj.stillTime), 0
         ld (ix+Obj.direction), 1<<Dir.left
         ld a, (hl)              ; spriteAddr (low)
@@ -2810,7 +2810,7 @@ createObject:
         or a
         jr Z, .l_2
         ld a, (ix+Obj.flags)
-        or  (1<<Flag.fixedX) | (1<<Flag.fixedY) | (1<<Flag.waiting)
+        or (1<<Flag.fixedX) | (1<<Flag.fixedY) | (1<<Flag.waiting)
         ld (ix+Obj.flags), a
 .l_2:
         inc hl                  ; +9
@@ -2818,7 +2818,7 @@ createObject:
         ld (ix+Obj.score), a
         inc hl                  ; +10
         ld a, (hl)
-        ld (ix+Obj.o_24), a
+        ld (ix+Obj.auxFlags), a
         inc hl                  ; +11
         ld a, (hl)              ; objType (with offset)
         ld (ix+Obj.objType), a
@@ -2844,7 +2844,7 @@ createObject:
         ld (ix+Obj.trajBack), a
         inc hl                  ; +16
         ld a, (hl)
-        ld (ix+Obj.o_18), a
+        ld (ix+Obj.trajDir), a
         inc hl                  ; +17
         ld a, (hl)              ; mirror (?)
         ld (ix+Obj.horizSpeed), a

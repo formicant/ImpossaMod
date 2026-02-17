@@ -40,7 +40,7 @@ getSpriteAddr:  ; #e47a
         cp 2
         jr NZ, .l_4
 
-        ld a, (ix+Obj.o_6)
+        ld a, (ix+Obj.walkPhase)
         and %00000010
         srl a
         jr Z, .l_3
@@ -51,13 +51,13 @@ getSpriteAddr:  ; #e47a
         djnz .l_2
 .l_3:
         ; `hl`: phase sprite addr
-        inc (ix+Obj.o_6)
+        inc (ix+Obj.walkPhase)
         ret
 
 .l_4:
         cp 3
         jr NZ, .l_5
-        ld a, (ix+Obj.o_6)
+        ld a, (ix+Obj.walkPhase)
         and %00000111
         srl a
         or a
@@ -65,11 +65,11 @@ getSpriteAddr:  ; #e47a
         cp 3
         jr C, .l_1
 
-        ld (ix+Obj.o_6), 0
+        ld (ix+Obj.walkPhase), 0
         jr .l_3
 
 .l_5:
-        ld a, (ix+Obj.o_6)
+        ld a, (ix+Obj.walkPhase)
         and %00000110
         srl a
         jr Z, .l_3
@@ -95,7 +95,7 @@ c_e4fc:  ; #e4fc
         set Flag.waiting, (ix+Obj.flags)
         set Flag.fixedX, (ix+Obj.flags)
         set Flag.fixedY, (ix+Obj.flags)
-        ld a, (ix+Obj.o_6)
+        ld a, (ix+Obj.walkPhase)
         add a
         ld l, a
         ld h, #00
@@ -105,8 +105,8 @@ c_e4fc:  ; #e4fc
         inc hl
         ld h, (hl)
         ld l, a
-        inc (ix+Obj.o_6)
-        ld a, (ix+Obj.o_6)
+        inc (ix+Obj.walkPhase)
+        ld a, (ix+Obj.walkPhase)
         cp #07
         ret C
         set Flag.cleanUp, (ix+Obj.flags)
@@ -119,7 +119,7 @@ c_e4fc:  ; #e4fc
 ; (Some game logic?)
 ; Used by c_e47a.
 c_e52d:  ; #e52d
-        ld a, (ix+Obj.o_18)
+        ld a, (ix+Obj.trajDir)
         or a
         jr NZ, .l_0
         call generateRandom
@@ -131,7 +131,7 @@ c_e52d:  ; #e52d
         add hl, de
         add hl, de
 .l_1:
-        bit Dir.right, (ix+Obj.o_18)
+        bit Dir.right, (ix+Obj.trajDir)
         jr NZ, .l_2
         set Flag.mirror, (ix+Obj.flags)
         ret

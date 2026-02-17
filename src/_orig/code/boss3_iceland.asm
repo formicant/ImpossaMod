@@ -29,7 +29,7 @@ bossLogicIceland:  ; #fad3
         ld a, #02
         ld (State.bossFight), a
         xor a
-        ld (State.s_56), a
+        ld (State.bossInvinc), a
         ld a, #3C
         ld (State.bulletTime), a
         ret

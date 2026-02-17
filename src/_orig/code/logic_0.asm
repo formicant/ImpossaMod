@@ -36,8 +36,8 @@ decEnergy:  ; #d0af
         xor a
 .skip:
         ld (State.energy), a
-        ld (ix+Obj.blinkTime), #07
-        ld a, 12                ; energy loss sound
+        ld (ix+Obj.blinkTime), 7
+        ld a, Sound.energyLoss
         call playSound
         jp printEnergy
 
@@ -172,7 +172,7 @@ initHero:  ; #d153
 
         ld hl, cS.heroStands
         ld a, (State.weapon)
-        cp 2
+        cp ObjType.powerGun
         jr C, .noGun
         ld hl, cS.armedHeroStands
 .noGun:
@@ -187,8 +187,8 @@ initHero:  ; #d153
         ld (ix+Obj.colour), Colour.brWhite
         ld (ix+Obj.objType), ObjType.hero
         xor a
-        ld (State.s_28), a      ; ?
-        ld (State.s_41), a      ; ?
+        ld (State.heroState), a
+        ld (State.stepPeriod), a      ; ?
         ret
 
 
@@ -405,17 +405,18 @@ turnIntoCoin:  ; #d2b3
         ret
 
 
-; (Some hero logic?)
+; If the hero is riding an object, move the hero accordingly
 ; Used by c_cc25.
-c_d308:  ; #d308
+heroRiding:  ; #d308
         ld ix, scene.hero
-        bit Flag.fo_0, (ix+Obj.o_24)
-        jp NZ, .l_3
+        bit Flag.riding, (ix+Obj.auxFlags)
+        jp NZ, .isRiding
 
-        ld a, (State.s_28)
-        cp 3
+        ; ?
+        ld a, (State.heroState)
+        cp HeroState.fall
         jr Z, .l_0
-        cp 2
+        cp HeroState.jump
         ret NZ
 
         ld a, (State.s_37)
@@ -423,54 +424,64 @@ c_d308:  ; #d308
         ret M
 
 .l_0:
+        ; Find an object at the hero's feet
         ld iy, scene.obj2
         ld b, 6                 ; object count
 .object:
         call isHeroOnTopObject
-        jr NZ, .l_2
+        jr NZ, .found
         ld de, Obj              ; object size
         add iy, de
         djnz .object
+        ; not found
         ret
 
-.l_2:
+.found:
+        ; `ix`: hero
+        ; `iy`: object at the hero's feet
         xor a
-        ld (State.s_28), a
-        ld (State.s_41), a
+        ld (State.heroState), a
+        ld (State.stepPeriod), a
         ld (ix+Obj.horizSpeed), 0
-        set Flag.fo_0, (ix+Obj.o_24)
+        set Flag.riding, (ix+Obj.auxFlags)
         push iy : pop hl
+        ; save obj addr
         ld (ix+Obj.aim.curX+0), l
         ld (ix+Obj.aim.curX+1), h
-        
-.l_3:
+
+.isRiding:
         ld l, (ix+Obj.aim.curX+0)
         ld h, (ix+Obj.aim.curX+1)
         push hl : pop iy
+        ; `iy`: object that used to be at the hero's feet
         call isHeroOnTopObject
         jr NZ, .setSprite
-        res Flag.fo_0, (ix+Obj.o_24)
+        ; not at the feet any more
+        res Flag.riding, (ix+Obj.auxFlags)
         ret
 
 .setSprite:
         ld hl, cS.heroStands
         ld a, (State.weapon)
-        cp 2
-        jr C, .l_5
+        cp ObjType.powerGun
+        jr C, .noGun
         ld hl, cS.armedHeroStands
-.l_5:
+.noGun:
         ld (ix+Obj.sprite+0), l
         ld (ix+Obj.sprite+1), h
 
+        ; adjust hero's y
         ld a, (iy+Obj.y)
         sub (ix+Obj.height)
         ld (ix+Obj.y), a
+
+        ; get object direction
         ld c, (iy+Obj.direction)
         ld a, (iy+Obj.motion)
         cp Motion.general
-        jr Z, .l_6
-        ld c, (iy+Obj.o_18)
-.l_6:
+        jr Z, .notTrajectory
+        ld c, (iy+Obj.trajDir)
+.notTrajectory:
         ld a, c
         and Dir.horizontal
         ret Z
@@ -478,24 +489,29 @@ c_d308:  ; #d308
         ld a, (iy+Obj.horizSpeed)
         ld d, 0
         bit Dir.right, c
-        jr NZ, .l_7
+        jr NZ, .skipNeg
         neg
         ld d, -1
-.l_7:
+.skipNeg:
         ld e, a
-        push de
+        push de                 ; object's signed horizontal velocity
         bit Dir.right, c
-        jr NZ, .l_8
-        call c_de37
+        jr NZ, .right
+
+.left:
+        call isObstacleToTheLeft
         pop de
         or a
-        jr Z, .l_9
+        jr Z, .applyVelocity
         ret
-.l_8:
-        call c_deb1
+
+.right:
+        call isObstacleToTheRight
         pop de
         ret NZ
-.l_9:
+
+.applyVelocity:
+        ; `de`: object's signed horizontal velocity
         ld l, (ix+Obj.x+0)
         ld h, (ix+Obj.x+1)
         add hl, de
@@ -512,7 +528,7 @@ c_d308:  ; #d308
 isHeroOnTopObject:  ; #d3bb
         bit Flag.exists, (iy+Obj.flags)
         ret Z
-        bit Flag.fo_0, (iy+Obj.o_24)
+        bit Flag.riding, (iy+Obj.auxFlags)
         ret Z
 
         ld a, (ix+Obj.y)
@@ -725,7 +741,7 @@ performSmartIfPressed:  ; #d4e5
         ld b, 6                 ; object count
 .object:
         push bc
-        bit Flag.destroyable, (iy+Obj.o_24)
+        bit Flag.destroyable, (iy+Obj.auxFlags)
         jr NZ, .next
 
         ; check if object is visible

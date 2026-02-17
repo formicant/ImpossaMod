@@ -27,7 +27,7 @@ bossLogicBermuda:  ; #fb45
         ld a, #02
         ld (State.bossFight), a
         xor a
-        ld (State.s_56), a
+        ld (State.bossInvinc), a
         ld a, #C8
         ld (State.bulletTime), a
         ret
