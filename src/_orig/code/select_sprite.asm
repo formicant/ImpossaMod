@@ -7,7 +7,8 @@
 ; Used by c_c07c, c_c245, c_c314 and c_c3ac.
 getSpriteAddr:  ; #e47a
         ld l, (ix+Obj.sprite+0)
-        ld h, (ix+Obj.sprite+1)            ; `hl`: base sprite addr
+        ld h, (ix+Obj.sprite+1) ; `hl`: base sprite addr
+        
         ld de, 21 * 6           ; big sprite size in bytes
         bit Flag.isBig, (ix+Obj.flags)
         jr NZ, .l_0
@@ -21,8 +22,8 @@ getSpriteAddr:  ; #e47a
         or a
         ret Z
 
-        cp -1
-        jr Z, c_e4fc
+        cp -1                   ; explosion cloud
+        jr Z, getCloudSprite
 
         exa
         ld a, (ix+Obj.stillTime)
@@ -31,14 +32,14 @@ getSpriteAddr:  ; #e47a
         exa
 
         ; `a`: (ix+Obj.o_7)
-        cp -4
+        cp -4                   ; ?
         jp Z, c_e566
-        cp -3
-        jp Z, c_e54f
-        cp -2
-        jr Z, c_e52d
-        cp 2
-        jr NZ, .l_4
+        cp -3                   ; burrow
+        jp Z, getBurrowSprite
+        cp -2                   ; frog
+        jr Z, getFrogSprite
+        cp 2                    ; 2 walk phases
+        jr NZ, .moreThan2
 
         ld a, (ix+Obj.walkPhase)
         and %00000010
@@ -54,9 +55,11 @@ getSpriteAddr:  ; #e47a
         inc (ix+Obj.walkPhase)
         ret
 
-.l_4:
+.moreThan2:
         cp 3
-        jr NZ, .l_5
+        jr NZ, .four
+        
+.three:
         ld a, (ix+Obj.walkPhase)
         and %00000111
         srl a
@@ -68,7 +71,7 @@ getSpriteAddr:  ; #e47a
         ld (ix+Obj.walkPhase), 0
         jr .l_3
 
-.l_5:
+.four:
         ld a, (ix+Obj.walkPhase)
         and %00000110
         srl a
@@ -91,7 +94,7 @@ c_e4ee:  ; #e4ee
 
 ; Get cloud sprite phase address
 ; Used by c_e47a.
-c_e4fc:  ; #e4fc
+getCloudSprite:  ; #e4fc
         set Flag.waiting, (ix+Obj.flags)
         set Flag.fixedX, (ix+Obj.flags)
         set Flag.fixedY, (ix+Obj.flags)
@@ -116,9 +119,10 @@ c_e4fc:  ; #e4fc
         pop hl
         ret
 
-; (Some game logic?)
+
+; Get frog sprite address
 ; Used by c_e47a.
-c_e52d:  ; #e52d
+getFrogSprite:  ; #e52d
         ld a, (ix+Obj.trajDir)
         or a
         jr NZ, .l_0
@@ -139,9 +143,10 @@ c_e52d:  ; #e52d
         res Flag.mirror, (ix+Obj.flags)
         ret
 
-; (Get Mole sprite address?)
+
+; Get burrow or shop mole sprite address
 ; Used by c_e47a.
-c_e54f:  ; #e54f
+getBurrowSprite:  ; #e54f
         bit Flag.waiting, (ix+Obj.flags)
         ret NZ
         ld (ix+Obj.colour), Colour.brWhite
@@ -150,6 +155,7 @@ c_e54f:  ; #e54f
         ld (ix+Obj.sprite+1), h
         ld (ix+Obj.objType), ObjType.shopMole
         ret
+
 
 ; (Modifies some object properties?)
 ; Used by c_e47a.
