@@ -28,7 +28,7 @@ gameMenu:  ; #c6d5
 .l_1:
         ld a, (controlType)
         exa
-        ld bc, Port.keys_54321
+        ld bc, Port.keys_12345
         in a, (c)
         and Port.keyMask
         bit Port.key1, a        ; select [1] (keyboard)

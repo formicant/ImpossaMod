@@ -100,26 +100,26 @@ setControlKeys:
 keyTable:
 ; index                half-row   bit mask           name
 .i0:    db 0,                    0,                 "  "C
-.i1:    db high(Port.keys_VCXZc), 1<<Port.keyV,      "V "C
-.i2:    db high(Port.keys_VCXZc), 1<<Port.keyC,      "C "C
-.i3:    db high(Port.keys_VCXZc), 1<<Port.keyX,      "X "C
-.i4:    db high(Port.keys_VCXZc), 1<<Port.keyZ,      "Z "C
-.i5:    db high(Port.keys_VCXZc), 1<<Port.keyCaps,   "CS"C
-.i6:    db high(Port.keys_GFDSA), 1<<Port.keyG,      "G "C
-.i7:    db high(Port.keys_GFDSA), 1<<Port.keyF,      "F "C
-.i8:    db high(Port.keys_GFDSA), 1<<Port.keyD,      "D "C
-.i9:    db high(Port.keys_GFDSA), 1<<Port.keyS,      "S "C
-.i10:   db high(Port.keys_GFDSA), 1<<Port.keyA,      "A "C
-.i11:   db high(Port.keys_TREWQ), 1<<Port.keyT,      "T "C
-.i12:   db high(Port.keys_TREWQ), 1<<Port.keyR,      "R "C
-.i13:   db high(Port.keys_TREWQ), 1<<Port.keyE,      "E "C
-.i14:   db high(Port.keys_TREWQ), 1<<Port.keyW,      "W "C
-.i15:   db high(Port.keys_TREWQ), 1<<Port.keyQ,      "Q "C
-.i16:   db high(Port.keys_54321), 1<<Port.key5,      "5 "C
-.i17:   db high(Port.keys_54321), 1<<Port.key4,      "4 "C
-.i18:   db high(Port.keys_54321), 1<<Port.key3,      "3 "C
-.i19:   db high(Port.keys_54321), 1<<Port.key2,      "2 "C
-.i20:   db high(Port.keys_54321), 1<<Port.key1,      "1 "C
+.i1:    db high(Port.keys_cZXCV), 1<<Port.keyV,      "V "C
+.i2:    db high(Port.keys_cZXCV), 1<<Port.keyC,      "C "C
+.i3:    db high(Port.keys_cZXCV), 1<<Port.keyX,      "X "C
+.i4:    db high(Port.keys_cZXCV), 1<<Port.keyZ,      "Z "C
+.i5:    db high(Port.keys_cZXCV), 1<<Port.keyCaps,   "CS"C
+.i6:    db high(Port.keys_ASDFG), 1<<Port.keyG,      "G "C
+.i7:    db high(Port.keys_ASDFG), 1<<Port.keyF,      "F "C
+.i8:    db high(Port.keys_ASDFG), 1<<Port.keyD,      "D "C
+.i9:    db high(Port.keys_ASDFG), 1<<Port.keyS,      "S "C
+.i10:   db high(Port.keys_ASDFG), 1<<Port.keyA,      "A "C
+.i11:   db high(Port.keys_QWERT), 1<<Port.keyT,      "T "C
+.i12:   db high(Port.keys_QWERT), 1<<Port.keyR,      "R "C
+.i13:   db high(Port.keys_QWERT), 1<<Port.keyE,      "E "C
+.i14:   db high(Port.keys_QWERT), 1<<Port.keyW,      "W "C
+.i15:   db high(Port.keys_QWERT), 1<<Port.keyQ,      "Q "C
+.i16:   db high(Port.keys_12345), 1<<Port.key5,      "5 "C
+.i17:   db high(Port.keys_12345), 1<<Port.key4,      "4 "C
+.i18:   db high(Port.keys_12345), 1<<Port.key3,      "3 "C
+.i19:   db high(Port.keys_12345), 1<<Port.key2,      "2 "C
+.i20:   db high(Port.keys_12345), 1<<Port.key1,      "1 "C
 .i21:   db high(Port.keys_67890), 1<<Port.key6,      "6 "C
 .i22:   db high(Port.keys_67890), 1<<Port.key7,      "7 "C
 .i23:   db high(Port.keys_67890), 1<<Port.key8,      "8 "C

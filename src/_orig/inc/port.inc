@@ -9,10 +9,10 @@ tapeOut     EQU 3       ; (bit, output)
 beeper      EQU 4       ; (bit, output)
 
 ; Keyboard half-rows (input)
-keys_VCXZc  EQU #FEFE
-keys_GFDSA  EQU #FDFE
-keys_TREWQ  EQU #FBFE
-keys_54321  EQU #F7FE
+keys_cZXCV  EQU #FEFE
+keys_ASDFG  EQU #FDFE
+keys_QWERT  EQU #FBFE
+keys_12345  EQU #F7FE
 keys_67890  EQU #EFFE
 keys_YUIOP  EQU #DFFE
 keys_HJKLe  EQU #BFFE

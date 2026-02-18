@@ -4,7 +4,7 @@
 ; Set flag Z if [C] key is pressed
 ; Used by c_cd5c.
 checkCheatKey:  ; #c8c2
-        ld bc, Port.keys_VCXZc
+        ld bc, Port.keys_cZXCV
         in a, (c)
         bit Port.keyC, a
         ret
@@ -12,7 +12,7 @@ checkCheatKey:  ; #c8c2
 ; Set flag Z if [Q] key is pressed
 ; Used by c_cc25.
 checkQuitKey:  ; #c8ca
-        ld bc, Port.keys_TREWQ
+        ld bc, Port.keys_QWERT
         in a, (c)
         bit Port.keyQ, a
         ret
@@ -81,14 +81,14 @@ pollControlKeys:  ; #c8f8
         jr NZ, .l_1
         set Key.down, (hl)
 .l_1:
-        ld bc, Port.keys_VCXZc
+        ld bc, Port.keys_cZXCV
         in a, (c)
         bit Port.keyZ, a
         jr NZ, .l_2
         set Key.left, (hl)
         jr .l_3
 .l_2:
-        ld bc, Port.keys_VCXZc
+        ld bc, Port.keys_cZXCV
         in a, (c)
         bit Port.keyX, a
         jr NZ, .l_3
@@ -140,7 +140,7 @@ pollControlKeys:  ; #c8f8
 .l_10:
         bit 0, (hl)
         jr NZ, .l_11
-        ld bc, Port.keys_54321
+        ld bc, Port.keys_12345
         in a, (c)
         bit Port.key5, a
         jr NZ, .l_11
