@@ -2354,7 +2354,8 @@ checkDynamiteExplosion:  ; #f4e9
 
 ; Velocity table for coin jump
 coinJumpVelocity:  ; #f506
-        db -6, -5, -4, -3, -2, -2, -1, -1, 0, 1, 1, 2, 2, 3, 4, 5, 6
+        db -6, -5, -4, -3, -2, -2, -1, -1, 0
+        db  1,  1,  2,  2,  3,  4,  5,  6
         db #7F
 
 ; Precess the motion of a coin appearing from a defeated enemy
@@ -2782,16 +2783,16 @@ createObject:
         ld (ix+Obj.walkPhase), 0
         ld (ix+Obj.stillTime), 0
         ld (ix+Obj.mo.direction), 1<<Dir.left
-        ld a, (hl)              ; spriteAddr (low)
+        ld a, (hl)              ; sprite (low)
         ld (ix+Obj.sprite+0), a
         inc hl                  ; +1
-        ld a, (hl)              ; spriteAddr (high)
+        ld a, (hl)              ; sprite (high)
         ld (ix+Obj.sprite+1), a
         inc hl                  ; +2
-        ld a, (hl)              ; attr
+        ld a, (hl)              ; colour
         ld (ix+Obj.colour), a
         inc hl                  ; +3
-        ld a, (hl)
+        ld a, (hl)              ; spriteSet
         ld (ix+Obj.spriteSet), a
         inc hl                  ; +4
         ld a, (hl)              ; flags
@@ -2806,71 +2807,73 @@ createObject:
         ld a, (hl)              ; health
         ld (ix+Obj.health), a
         inc hl                  ; +8
-        ld a, (hl)
+        ld a, (hl)              ; isWaiting
         or a
-        jr Z, .l_2
+        jr Z, .skipWaiting
         ld a, (ix+Obj.flags)
         or (1<<Flag.fixedX) | (1<<Flag.fixedY) | (1<<Flag.waiting)
         ld (ix+Obj.flags), a
-.l_2:
+.skipWaiting:
         inc hl                  ; +9
-        ld a, (hl)
+        ld a, (hl)              ; score
         ld (ix+Obj.score), a
         inc hl                  ; +10
-        ld a, (hl)
+        ld a, (hl)              ; auxFlags
         ld (ix+Obj.auxFlags), a
         inc hl                  ; +11
         ld a, (hl)              ; objType (with offset)
         ld (ix+Obj.objType), a
         or a
-        jr NZ, .l_3
+        jr NZ, .skipBurrow
         ld a, (State.inShop)
         cp #7F
-        jr NZ, .l_3
+        jr NZ, .skipBurrow
         ld (ix+Obj.flags), 0    ; remove object
         ret
-.l_3:
+.skipBurrow:
         inc hl                  ; +12
-        ld a, (hl)
+        ld a, (hl)              ; emitBullets
         ld (ix+Obj.emitBullets), a
+        ; motion options
         inc hl                  ; +13
-        ld a, (hl)              ; trajectory
+        ld a, (hl)              ; param1
         ld (ix+Obj.mo.param1), a
         inc hl                  ; +14
-        ld a, (hl)
+        ld a, (hl)              ; param2
         ld (ix+Obj.mo.param2), a
         inc hl                  ; +15
-        ld a, (hl)
+        ld a, (hl)              ; trajBack
         ld (ix+Obj.mo.trajBack), a
         inc hl                  ; +16
-        ld a, (hl)
+        ld a, (hl)              ; trajDir
         ld (ix+Obj.mo.trajDir), a
         inc hl                  ; +17
-        ld a, (hl)              ; mirror (?)
+        ld a, (hl)              ; horizSpeed
         ld (ix+Obj.mo.horizSpeed), a
         inc hl                  ; +18
-        ld a, (hl)
+        ld a, (hl)              ; vertSpeed
         ld (ix+Obj.mo.vertSpeed), a
         inc hl                  ; +19
-        ld a, (hl)
+        ld a, (hl)              ; direction
         ld (ix+Obj.mo.direction), a
         inc hl                  ; +20
-        ld a, (hl)
+        ld a, (hl)              ; subType
         ld (ix+Obj.mo.subType), a
         inc hl                  ; +21
-        ld a, (hl)
+        ld a, (hl)              ; type
         ld (ix+Obj.mo.type), a
+        ; still enemy activation zone
         inc hl                  ; +22
-        ld a, (hl)
+        ld a, (hl)              ; x
         ld (ix+Obj.activeZone.x), a
         inc hl                  ; +23
-        ld a, (hl)
+        ld a, (hl)              ; y
         ld (ix+Obj.activeZone.y), a
         inc hl                  ; +24
-        ld a, (hl)
+        ld a, (hl)              ; w
         ld (ix+Obj.activeZone.w), a
         inc hl                  ; +25
-        ld a, (hl)
+        ld a, (hl)              ; h
         ld (ix+Obj.activeZone.h), a
 
         ; direction transform
@@ -2884,18 +2887,18 @@ createObject:
 
         ; get top by bottom and height
         bit Flag.isBig, (ix+Obj.flags)
-        jr NZ, .big             ; why? same code for both cases
+        jr NZ, .big             ; (why? same code for both cases)
 .small:
         ld a, (ix+Obj.y)
         sub (ix+Obj.height)
         ld (ix+Obj.y), a
-        jr .l_5
+        jr .checkPress
 .big:
         ld a, (ix+Obj.y)
         sub (ix+Obj.height)
         ld (ix+Obj.y), a
 
-.l_5:
+.checkPress:
         ld a, (ix+Obj.objType)
         cp ObjType.pressPlatf
         jr NZ, .notPress

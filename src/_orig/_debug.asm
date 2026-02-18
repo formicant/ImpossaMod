@@ -8,8 +8,9 @@
     INCLUDE "inc/basic.inc"
     INCLUDE "inc/enums.inc"
     INCLUDE "inc/structs.inc"
-    INCLUDE "inc/level.inc"
+    INCLUDE "inc/port.inc"
     INCLUDE "inc/ay.inc"
+    INCLUDE "inc/level.inc"
 
 ; Loading screen
     ORG #4000
@@ -80,7 +81,7 @@ codeStart:
     INCLUDE "code/boss1_extra.asm"
 
     DISPLAY #FE01 - $
-    
+
     ORG #FE01
     INCLUDE "var/state.asm"
 

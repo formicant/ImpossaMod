@@ -260,7 +260,7 @@ pickWeapon  EQU 13
     MODULE SoundType
 
 rising  EQU 0
-falling EQU 1
+falling EQU 1   ; (unused)
 noise   EQU 2
 steady  EQU 3
 

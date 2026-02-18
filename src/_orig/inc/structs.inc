@@ -37,14 +37,14 @@ h   byte    ; zone height
 
 
 ; Variables used for enemy bullets aimed at the hero
-;   length: 19
+;   length: 19 (ridiculous!)
     STRUCT AimVars
 
 speed   byte
 curX    word
 curY    word
-tgtX    word    ; unused(?)
-tgtY    word
+tgtX    word    ; (unused)
+tgtY    word    ; (local)
 distX   word
 distY   word
 dirX    word
@@ -65,7 +65,7 @@ flags       byte
 width       byte
 height      byte
 health      byte
-isWaiting   byte
+isWaiting   byte    ; (why? flags are enough)
 score       byte
 auxFlags    byte
 objType     byte
@@ -84,7 +84,7 @@ x           word    ; x coord in pixels
 y           byte    ; y coord in pixels
 sprite      word    ; base sprite addr
 flags       byte    ; main flags, values of `Flag` enum
-walkPhase   byte    ; (for enemies only)
+walkPhase   byte    ; enemy's walk phase
 spriteSet   byte    ; values of `SpriteSet` enum
 objType     byte    ; object type with offset
 colour      byte    ; object colour attribute

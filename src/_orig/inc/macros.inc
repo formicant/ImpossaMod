@@ -12,7 +12,7 @@
     MACRO _DEBUG_BORDER colour?
     IFDEF _DEBUG
         ld a, colour?
-        out (#FE), a
+        out (Port.general), a
     ENDIF
     ENDM
 

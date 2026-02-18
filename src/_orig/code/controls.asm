@@ -4,49 +4,49 @@
 ; Set flag Z if [C] key is pressed
 ; Used by c_cd5c.
 checkCheatKey:  ; #c8c2
-        ld bc, #FEFE            ; keyboard half-row [cs]..[V]
+        ld bc, Port.keys_VCXZc
         in a, (c)
-        bit 3, a                ; key [C]
+        bit Port.keyC, a
         ret
 
 ; Set flag Z if [Q] key is pressed
 ; Used by c_cc25.
 checkQuitKey:  ; #c8ca
-        ld bc, #FBFE            ; keyboard half-row [Q]..[T]
+        ld bc, Port.keys_TREWQ
         in a, (c)
-        bit 0, a                ; key [Q]
+        bit Port.keyQ, a
         ret
 
 ; Set flag Z if [0] key is pressed
 ; Used by c_c6d5.
 checkStartKey:  ; #c8d2
-        ld bc, #EFFE            ; keyboard half-row [0]..[6]
+        ld bc, Port.keys_67890
         in a, (c)
-        bit 0, a                ; key [0]
+        bit Port.key0, a
         ret
 
 ; Set flag Z if [H] key is pressed
 ; Used by c_cd5c.
 checkPauseKey:  ; #c8da
-        ld bc, #BFFE            ; keyboard half-row [en]..[H]
+        ld bc, Port.keys_HJKLe
         in a, (c)
-        bit 4, a                ; key [H]
+        bit Port.keyH, a
         ret
 
 ; Set flag Z if [space] is pressed
 ; Used by c_d4e5.
 checkSmartKey:  ; #c8e2
-        ld bc, #7FFE            ; keyboard half-row [sp]..[B]
+        ld bc, Port.keys_BNMss
         in a, (c)
-        bit 0, a                ; key [sp]
+        bit Port.keySpace, a
         ret
 
 ; Wait until all keys released
 waitKeyRelease:  ; #c8ea
-        ld bc, #00FE            ; all keyboard half-rows together
+        ld bc, Port.general     ; all keyboard half-rows together
         in a, (c)
-        and #1F
-        xor #1F
+        and Port.keyMask
+        xor Port.keyMask
         jr NZ, waitKeyRelease
         ret
 
@@ -62,117 +62,117 @@ pollControlKeys:  ; #c8f8
         push hl
         ld hl, controlState
         ld (hl), 0
-        
+
         ld a, (controlType)
         or a
         jr NZ, .notKeyboard
-        
+
 .keyboard:
-        ld bc, #DFFE            ; keyboard half-row [P]..[Y]
+        ld bc, Port.keys_YUIOP
         in a, (c)
-        bit 1, a                ; key [O]
+        bit Port.keyO, a
         jr NZ, .l_0
-        set 3, (hl)             ; up
+        set Key.up, (hl)
         jr .l_1
 .l_0:
-        ld bc, #BFFE            ; keyboard half-row [en]..[H]
+        ld bc, Port.keys_HJKLe
         in a, (c)
-        bit 2, a                ; key [K]
+        bit Port.keyK, a
         jr NZ, .l_1
-        set 2, (hl)             ; down
+        set Key.down, (hl)
 .l_1:
-        ld bc, #FEFE            ; keyboard half-row [cs]..[V]
+        ld bc, Port.keys_VCXZc
         in a, (c)
-        bit 1, a                ; key [Z]
+        bit Port.keyZ, a
         jr NZ, .l_2
-        set 1, (hl)             ; left
+        set Key.left, (hl)
         jr .l_3
 .l_2:
-        ld bc, #FEFE            ; keyboard half-row [cs]..[V]
+        ld bc, Port.keys_VCXZc
         in a, (c)
-        bit 2, a                ; key [X]
+        bit Port.keyX, a
         jr NZ, .l_3
-        set 0, (hl)             ; right
+        set Key.right, (hl)
 .l_3:
-        ld bc, #EFFE            ; keyboard half-row [0]..[6]
+        ld bc, Port.keys_67890
         in a, (c)
-        bit 0, a                ; key [0]
+        bit Port.key0, a
         jr NZ, .l_4
-        set 4, (hl)             ; fire
+        set Key.fire, (hl)
 .l_4:
         pop hl
         ret
-        
+
 .notKeyboard:
         dec a
         jr NZ, .notKempston
-        
+
 .kempston:
-        in a, (#1F)             ; kempston port
-        and #1F                 ; bits 0..4
+        in a, (Port.kempston)
+        and Port.kempston.mask
         ld (hl), a
         pop hl
         ret
-        
+
 .notKempston:
         dec a
         jr NZ, .interface2
-        
+
 .cursor:
-        ld bc, #EFFE            ; keyboard half-row [0]..[6]
+        ld bc, Port.keys_67890
         in a, (c)
-        bit 0, a                ; key [0]
+        bit Port.key0, a
         jr NZ, .l_7
-        set 4, (hl)             ; fire
+        set Key.fire, (hl)
 .l_7:
-        bit 2, a                ; key [8]
+        bit Port.key8, a
         jr NZ, .l_8
-        set 0, (hl)             ; right
+        set Key.right, (hl)
 .l_8:
-        bit 3, a                ; key [7]
+        bit Port.key7, a
         jr NZ, .l_9
-        set 3, (hl)             ; up
+        set Key.up, (hl)
         jr .l_10
 .l_9:
-        bit 4, a                ; key [6]
+        bit Port.key6, a
         jr NZ, .l_10
-        set 2, (hl)             ; down
+        set Key.down, (hl)
 .l_10:
         bit 0, (hl)
         jr NZ, .l_11
-        ld bc, #F7FE            ; keyboard half-row [1]..[5]
+        ld bc, Port.keys_54321
         in a, (c)
-        bit 4, a                ; key [5]
+        bit Port.key5, a
         jr NZ, .l_11
-        set 1, (hl)             ; left
+        set Key.left, (hl)
 .l_11:
         pop hl
         ret
-        
+
 .interface2:
-        ld bc, #EFFE            ; keyboard half-row [0]..[6]
+        ld bc, Port.keys_67890
         in a, (c)
-        and #1F
-        bit 0, a                ; key [0]
+        and Port.keyMask
+        bit Port.key0, a
         jr NZ, .l_13
-        set 4, (hl)             ; fire
+        set Key.fire, (hl)
 .l_13:
-        bit 4, a                ; key [6]
+        bit Port.key6, a
         jr NZ, .l_14
-        set 1, (hl)             ; left
+        set Key.left, (hl)
 .l_14:
-        bit 3, a                ; key [7]
+        bit Port.key7, a
         jr NZ, .l_15
-        set 0, (hl)             ; right
+        set Key.right, (hl)
 .l_15:
-        bit 1, a                ; key [9]
+        bit Port.key9, a
         jr NZ, .l_16
-        set 3, (hl)             ; up
+        set Key.up, (hl)
         jr .l_17
 .l_16:
-        bit 2, a                ; key [8]
+        bit Port.key8, a
         jr NZ, .l_17
-        set 2, (hl)             ; down
+        set Key.down, (hl)
 .l_17:
         pop hl
         ret

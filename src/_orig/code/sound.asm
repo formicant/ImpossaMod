@@ -34,12 +34,12 @@ hasMusicEnded:  ; #bdfa
 
         di
         ld a, 1
-        ld bc, #7FFD
+        ld bc, Port.memory
         out (c), a              ; set RAM page 1
         ld a, (AY.isPlaying)
         ld e, a
         xor a
-        ld bc, #7FFD
+        ld bc, Port.memory
         out (c), a              ; set RAM page 0
         ld a, e
         and a
@@ -56,9 +56,9 @@ callAyProcedure:  ; #be15
         ret NZ
 
         di
-        ld a, #01
-        ld bc, #7FFD
-        out (c), a
+        ld a, 1
+        ld bc, Port.memory
+        out (c), a              ; set RAM page 1
         ld de, .return
         push de
         ld (.addr), hl
@@ -66,8 +66,8 @@ callAyProcedure:  ; #be15
 .addr+* jp -0
 .return:
         xor a
-        ld bc, #7FFD
-        out (c), a
+        ld bc, Port.memory
+        out (c), a              ; set RAM page 0
         ei
         ret
 

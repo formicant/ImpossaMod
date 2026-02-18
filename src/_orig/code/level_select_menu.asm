@@ -92,8 +92,8 @@ levelSelectionMenu:  ; #d553
 .l_7:
         call loadLevelIfNeeded
         jp NC, levelSelectionMenu
-        ld a, #00
-        out (#FE), a
+        ld a, Colour.black
+        out (Port.general), a   ; set black border
         call clearScreenPixels
         ld hl, #0E0B
         ld de, textPressFire

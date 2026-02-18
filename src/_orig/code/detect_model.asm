@@ -7,7 +7,7 @@ detectSpectrumModel:  ; #5e00
         di
         ld a, (#C000)
         ld e, a
-        ld bc, #7FFD
+        ld bc, Port.memory
         ld a, 1
         out (c), a
         ld a, e
@@ -30,7 +30,7 @@ detectSpectrumModel:  ; #5e00
 ; Moves AY-related code from #5E80 to RAM page 1 #C000
 moveAyCode:
         exx
-        ld bc, #7FFD
+        ld bc, Port.memory
         ld hl, #5E80
         ld de, #C000
         exx
@@ -41,7 +41,7 @@ moveAyCode:
         exx
         ld a, (hl)
         exa
-        ld a, #01
+        ld a, 1
         out (c), a
         exa
         ld (de), a
@@ -54,7 +54,7 @@ moveAyCode:
         ld a, b
         or c
         jr NZ, .l_0
-        
+
         ; add a `call` instruction to interrupt routine
         ld a, #CD  ; `call` instruction
         ld (interruptRoutine.callAySound), a

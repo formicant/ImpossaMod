@@ -15,7 +15,7 @@ gameMenu:  ; #c6d5
         ld a, Colour.brWhite    ; bright white ink, black paper
         call fillScreenAttrs
         ld a, 0
-        out (#FE), a            ; set border black
+        out (Port.general), a   ; set border black
 
         call printGameMenuText
         call clampActiveMenuItemAttrs
@@ -28,10 +28,10 @@ gameMenu:  ; #c6d5
 .l_1:
         ld a, (controlType)
         exa
-        ld bc, #F7FE            ; keyboard half-row [1]..[5]
+        ld bc, Port.keys_54321
         in a, (c)
-        and #1F
-        bit 0, a                ; key [1] (keyboard)
+        and Port.keyMask
+        bit Port.key1, a
         jr NZ, .l_2
         exa
         or a

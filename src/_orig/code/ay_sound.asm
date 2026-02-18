@@ -619,9 +619,9 @@ justReturn:  ; #c9e6
 setAyReg:  ; #c9e7
         push bc
         ld e, c
-        ld bc, registPort
+        ld bc, Port.ayRegister
         out (c), e
-        ld b, high(valuePort)
+        ld b, high(Port.ayValue)
         out (c), a
         pop bc
         ret

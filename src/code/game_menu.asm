@@ -14,8 +14,8 @@ gameMenu:  ; #c6d5
         call clearScreenPixels
         ld a, Colour.brWhite    ; bright white ink, black paper
         call fillScreenAttrs
-        ld a, 0
-        out (#FE), a            ; set border black
+        ld a, Colour.black
+        out (Port.general), a   ; set black border
 
         call printGameMenuText
         call clampActiveMenuItemAttrs
@@ -28,10 +28,10 @@ gameMenu:  ; #c6d5
 .l_1:
         ld a, (controlType)
         exa
-        ld bc, #F7FE            ; keyboard half-row [1]..[5]
+        ld bc, Port.keys_54321
         in a, (c)
-        and #1F
-        bit 0, a                ; key [1] (keyboard)
+        and Port.keyMask
+        bit Port.key1, a        ; select [1] (keyboard)
         jr NZ, .l_2
         exa
         or a
@@ -40,7 +40,7 @@ gameMenu:  ; #c6d5
         xor a                   ; controlType: keyboard
         jr .l_5
 .l_2:
-        bit 1, a                ; key [2] (kempston)
+        bit Port.key2, a        ; select [2] (kempston)
         jr NZ, .l_3
         exa
         cp 1
@@ -49,7 +49,7 @@ gameMenu:  ; #c6d5
         ld a, 1                 ; controlType: kempston
         jr .l_5
 .l_3:
-        bit 2, a                ; key [3] (cursor)
+        bit Port.key3, a        ; select [3] (cursor)
         jr NZ, .l_4
         exa
         cp 2
@@ -58,7 +58,7 @@ gameMenu:  ; #c6d5
         ld a, 2                 ; controlType: cursor
         jr .l_5
 .l_4:
-        bit 3, a                ; key [4] (interface 2)
+        bit Port.key4, a        ; select [4] (interface 2)
         jr NZ, .l_6
         exa
         cp 3

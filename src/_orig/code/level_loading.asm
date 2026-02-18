@@ -57,8 +57,8 @@ loadBytes:  ; #c9fb
         dec d
         di
         ld a, #0F
-        out (#FE), a
-        in a, (#FE)
+        out (Port.general), a
+        in a, (Port.general)
         rra
         and #20
         or #02
@@ -168,8 +168,8 @@ c_ca84:  ; #ca84
 .l_2:
         inc b
         ret Z
-        ld a, #7F
-        in a, (#FE)
+        ld a, high(Port.keys_BNMss)
+        in a, (Port.general)
         rra
         xor c
         and #20
@@ -179,7 +179,7 @@ c_ca84:  ; #ca84
         ld c, a
         and #07
         or #08
-        out (#FE), a
+        out (Port.general), a
         scf
         ret
 

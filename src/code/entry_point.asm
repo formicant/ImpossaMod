@@ -8,11 +8,11 @@ romLoadBytes    EQU #0556       ; ROM tape loading routine
 
 entryPoint:
         ; Detect Spectrum model (48K/128K)
-        ld bc, #7FFD            ; memory paging port
+        ld bc, Port.memory
         ld hl, Level.end        ; an unused address in RAM slot 3
 
         ld (hl), #00
-        ld a, #11
+        ld a, (1<<Port.memory.rom48) | 1
         out (c), a              ; set RAM page 1
         ld (hl), #FF
         dec a

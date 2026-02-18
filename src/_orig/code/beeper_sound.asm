@@ -32,13 +32,13 @@ playBeeperSound:  ; #be67
         ld h, 0
         ld de, beeperSounds
         add hl, de
-        
+
         ld c, (hl)              ; length
         inc hl
         ld d, (hl)              ; period
         inc hl
         ld a, (hl)              ; type
-        
+
         or a
         jr Z, .rising
         dec a
@@ -46,21 +46,21 @@ playBeeperSound:  ; #be67
         dec a
         jr Z, .noise
         jr .flat
-        
+
 .rising:
         call .period
         dec d
         dec c
         jr NZ, .rising
         ret
-        
+
 .falling:
         call .period
         inc d
         dec c
         jr NZ, .falling
         ret
-        
+
 .noise:
         call .period
         rrc d
@@ -70,24 +70,24 @@ playBeeperSound:  ; #be67
         dec c
         jr NZ, .noise
         ret
-        
+
 .flat:
         call .period
         dec c
         jr NZ, .flat
         ret
-        
+
 .period:
         xor a
-        out (#FE), a
+        out (Port.general), a
         ld b, d
 .low:   djnz .low
-        
-        ld a, #10
-        out (#FE), a
+
+        ld a, 1<<Port.beeper
+        out (Port.general), a
         ld b, d
 .high:  djnz .high
-        
+
         ret
 
 

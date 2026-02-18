@@ -10,17 +10,17 @@ interruptRoutine:
         ; actual instructions are inserted here in `setControlKeys`
 .keyPollInstructions:
     DUP 8
-        nop ; for keyboard:     ; for Kempston:
-        nop ;   ld a, <halfRow> ;   xor a
-        nop ;   in a, (#FE)     ;   in a, (#1F)
-        nop ;                   ;   cpl
+        nop ; for keyboard:         ; for Kempston:
+        nop ;  ld a, <halfRow>      ;  xor a
+        nop ;  in a, (Port.general) ;  in a, (Port.kempston)
+        nop ;                       ;  cpl
         and -0                  ; bit mask placeholder
         sub l                   ; flag `C` is set iff the key is pressed
         rl h                    ; add bit to the control state
     EDUP
         ld a, h
         ld (controlState), a
-        
+
         ; increment short frame counter
         ld a, (shortFrameCounter)
         inc a

@@ -1,11 +1,6 @@
     MODULE AY
 
 
-; Ports
-registPort  EQU #FFFD
-valuePort   EQU #BFFD
-
-
 ; AY registers
 regPeriodA  EQU #0
 regPeriodB  EQU #2
