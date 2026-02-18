@@ -179,11 +179,11 @@ initHero:  ; #d153
         ld (ix+Obj.sprite+0), l
         ld (ix+Obj.sprite+1), h ; set sprite addr
 
-        ld (ix+Obj.direction), 1<<Dir.right
+        ld (ix+Obj.mo.direction), 1<<Dir.right
         ld (ix+Obj.flags), (1<<Flag.exists) | (1<<Flag.isBig)
         ld (ix+Obj.width), 16
         ld (ix+Obj.height), 21
-        ld (ix+Obj.o_7), 0      ; ?
+        ld (ix+Obj.spriteSet), 0      ; ?
         ld (ix+Obj.colour), Colour.brWhite
         ld (ix+Obj.objType), ObjType.hero
         xor a
@@ -391,12 +391,12 @@ turnIntoCoin:  ; #d2b3
         ld (iy+Obj.sprite+0), l
         ld (iy+Obj.sprite+1), h
 
-        ld (iy+Obj.o_7), 0
-        ld (iy+Obj.motion), Motion.coinJump
+        ld (iy+Obj.spriteSet), 0
+        ld (iy+Obj.mo.type), Motion.coinJump
         ld (iy+Obj.objType), ObjType.coin
-        ld (iy+Obj.direction), 0
-        ld (iy+Obj.motionStep), 0
-        ld (iy+Obj.health), -2    ; vertical speed (?)
+        ld (iy+Obj.mo.direction), 0
+        ld (iy+Obj.mo.step), 0
+        ld (iy+Obj.health), -2
         ld (iy+Obj.colour), Colour.brYellow
         res Flag.waiting, (iy+Obj.flags)
         res Flag.fixedY, (iy+Obj.flags)
@@ -419,9 +419,9 @@ heroRiding:  ; #d308
         cp HeroState.jump
         ret NZ
 
-        ld a, (State.s_37)
+        ld a, (State.jumpVel)
         or a
-        ret M
+        ret M                   ; moving upwards
 
 .l_0:
         ; Find an object at the hero's feet
@@ -442,7 +442,7 @@ heroRiding:  ; #d308
         xor a
         ld (State.heroState), a
         ld (State.stepPeriod), a
-        ld (ix+Obj.horizSpeed), 0
+        ld (ix+Obj.mo.horizSpeed), 0
         set Flag.riding, (ix+Obj.auxFlags)
         push iy : pop hl
         ; save obj addr
@@ -476,17 +476,17 @@ heroRiding:  ; #d308
         ld (ix+Obj.y), a
 
         ; get object direction
-        ld c, (iy+Obj.direction)
-        ld a, (iy+Obj.motion)
+        ld c, (iy+Obj.mo.direction)
+        ld a, (iy+Obj.mo.type)
         cp Motion.general
         jr Z, .notTrajectory
-        ld c, (iy+Obj.trajDir)
+        ld c, (iy+Obj.mo.trajDir)
 .notTrajectory:
         ld a, c
         and Dir.horizontal
         ret Z
 
-        ld a, (iy+Obj.horizSpeed)
+        ld a, (iy+Obj.mo.horizSpeed)
         ld d, 0
         bit Dir.right, c
         jr NZ, .skipNeg

@@ -32,10 +32,10 @@ moveObject:  ; #e582
         bit Flag.fixedX, (ix+Obj.flags)
         jr NZ, .vertical
 
-        bit Dir.right, (ix+Obj.direction)
+        bit Dir.right, (ix+Obj.mo.direction)
         jr Z, .left
         ; move right
-        ld e, (ix+Obj.horizSpeed)
+        ld e, (ix+Obj.mo.horizSpeed)
         ld d, 0
         ld l, (ix+Obj.x+0)
         ld h, (ix+Obj.x+1)
@@ -44,10 +44,10 @@ moveObject:  ; #e582
         ld (ix+Obj.x+1), h
         jr .vertical
 .left:
-        bit Dir.left, (ix+Obj.direction)
+        bit Dir.left, (ix+Obj.mo.direction)
         jr Z, .vertical
         ; move left
-        ld a, (ix+Obj.horizSpeed)
+        ld a, (ix+Obj.mo.horizSpeed)
         neg
         ld e, a
         ld d, -1
@@ -61,19 +61,19 @@ moveObject:  ; #e582
         bit Flag.fixedY, (ix+Obj.flags)
         ret NZ
 
-        bit Dir.up, (ix+Obj.direction)
+        bit Dir.up, (ix+Obj.mo.direction)
         jr Z, .down
         ; move up
-        ld a, (ix+Obj.vertSpeed)
+        ld a, (ix+Obj.mo.vertSpeed)
         neg
         add (ix+Obj.y)
         ld (ix+Obj.y), a
         ret
 .down:
-        bit Dir.down, (ix+Obj.direction)
+        bit Dir.down, (ix+Obj.mo.direction)
         ret Z
         ; move down
-        ld a, (ix+Obj.vertSpeed)
+        ld a, (ix+Obj.mo.vertSpeed)
         add (ix+Obj.y)
         ld (ix+Obj.y), a
         ret
@@ -286,7 +286,7 @@ processHeroCollisions:  ; #e6e1
 
         ; weapon
         exa
-        ld a, (State.s_3D)
+        ld a, (State.attack)
         or a
         ret NZ
         exa
@@ -382,7 +382,7 @@ processHeroCollisions:  ; #e6e1
         jr NZ, .notPress
 
         ; TODO: press logic
-        bit Dir.up, (iy+Obj.direction)
+        bit Dir.up, (iy+Obj.mo.direction)
         ret NZ
         ld a, (State.pressTime)
         or a
@@ -400,7 +400,7 @@ processHeroCollisions:  ; #e6e1
         ld (State.pressTime), a
 
 .notPress:
-        ld a, (iy+Obj.o_7)      ; ?
+        ld a, (iy+Obj.spriteSet)      ; ?
         cp #FF
         ret Z
         bit Flag.riding, (iy+Obj.auxFlags)    ; ?
@@ -575,7 +575,7 @@ enterShop:  ; #e920
         ld (ix+Obj.sprite+1), h
         ld (ix+Obj.colour), Colour.brWhite
 
-        ld (ix+Obj.direction), 0
+        ld (ix+Obj.mo.direction), 0
         ld (ix+Obj.width), 24
         ld (ix+Obj.height), 21
         ld (ix+Obj.objType), ObjType.shopMole
@@ -583,7 +583,7 @@ enterShop:  ; #e920
         ld (ix+Obj.health), -2
         ld (ix+Obj.auxFlags), 0
         ld (ix+Obj.emitBullets), 0
-        ld (ix+Obj.motion), Motion.none
+        ld (ix+Obj.mo.type), Motion.none
         ret
 
 ; Shop logic
@@ -862,7 +862,7 @@ checkEnemyDamage:  ; #eb19
         jr NZ, .weaponUsed
 
         ; no weapon
-        ld a, (iy+Obj.o_7)
+        ld a, (iy+Obj.spriteSet)
         cp -1
         jr NZ, .l_0
         res Flag.exists, (ix+Obj.flags) ; remove bubble
@@ -988,7 +988,7 @@ weaponDamageTable:  ; #ebf4
 ; Damage/kill enemy?
 ; Used by c_eb19.
 damageEnemy:  ; #ec00
-        ld a, (iy+Obj.o_7)
+        ld a, (iy+Obj.spriteSet)
         cp -1
         jr Z, .notDamaged
         ld a, (iy+Obj.health)
@@ -1044,7 +1044,7 @@ damageEnemy:  ; #ec00
         pop ix
 .big:
         ld (iy+Obj.walkPhase), 0
-        ld (iy+Obj.o_7), -1
+        ld (iy+Obj.spriteSet), -1
         ld (iy+Obj.colour), Colour.brWhite
         ld a, Sound.killEnemy
         call playSound
@@ -1101,7 +1101,7 @@ damageEnemy:  ; #ec00
         jr Z, .l_9
         ; turn into cloud
         ld (ix+Obj.walkPhase), 0
-        ld (ix+Obj.o_7), -1
+        ld (ix+Obj.spriteSet), -1
         ld (ix+Obj.colour), Colour.brWhite
 .l_9:
         add ix, de
@@ -1154,7 +1154,7 @@ performObjectMotion:  ; #ed08
 
         call emitEnemyBullet
 
-        ld a, (ix+Obj.motion)
+        ld a, (ix+Obj.mo.type)
         cp Motion.bullet
         jp Z, bulletMotion
 
@@ -1167,7 +1167,7 @@ performObjectMotion:  ; #ed08
 
         call checkDynamiteExplosion
 
-        ld a, (ix+Obj.motion)
+        ld a, (ix+Obj.mo.type)
         cp Motion.trajOrFall
         jr NZ, .skip
         call trajectoryMotion
@@ -1177,7 +1177,7 @@ performObjectMotion:  ; #ed08
         cp Motion.trajectory
         call Z, trajectoryMotion
 
-        ld a, (ix+Obj.motion)
+        ld a, (ix+Obj.mo.type)
         or a
         jp Z, .noMotion
 
@@ -1203,7 +1203,7 @@ performObjectMotion:  ; #ed08
 ; If object is one that falls, process its motion
 ;   arg `ix`: object
 fallingMotion: ; #ed5f
-        ld a, (ix+Obj.motionSub)
+        ld a, (ix+Obj.mo.subType)
 
         cp Motion.trajOrFall.andStay
         jr Z, .fallAndStay
@@ -1230,7 +1230,7 @@ fallingMotion: ; #ed5f
         ld (ix+Obj.x+0), a
 .skipAdjustX:
         ld (ix+Obj.walkPhase), 0
-        ld (ix+Obj.o_7), -1
+        ld (ix+Obj.spriteSet), -1
         ld (ix+Obj.colour), Colour.brWhite
         ld a, Sound.killEnemy
         jp playSound
@@ -1242,7 +1242,7 @@ fallingMotion: ; #ed5f
         ret C                   ; space, ladder, or ladderTop
 
         ; if any other tile type, stop
-        ld (ix+Obj.motion), Motion.none
+        ld (ix+Obj.mo.type), Motion.none
         set Flag.waiting, (ix+Obj.flags)
 
         ld a, (ix+Obj.objType)
@@ -1251,7 +1251,7 @@ fallingMotion: ; #ed5f
         ld hl, Lev2Amazon.lS.sittingMonkey
         ld (ix+Obj.sprite+0), l
         ld (ix+Obj.sprite+1), h
-        ld (ix+Obj.o_7), 0
+        ld (ix+Obj.spriteSet), 0
         ret
 
 
@@ -1380,7 +1380,7 @@ aimAtHero:  ; #edc0
 ; Move enemy bullet along a line towards aimed target
 ; Used by c_f618.
 aimedBulletMotion:  ; #ee93
-        ld a, (ix+Obj.o_7)
+        ld a, (ix+Obj.spriteSet)
         cp -1
         ret Z
 
@@ -1499,7 +1499,7 @@ aimedBulletMotion:  ; #ee93
 ;   arg `ix`: object
 ; Used by c_ed08.
 generalMotion:  ; #ef72
-        ld a, (ix+Obj.motionSub)
+        ld a, (ix+Obj.mo.subType)
         cp Motion.general.walk
         jp Z, walkMotion
 
@@ -1521,7 +1521,7 @@ walkMotion:
 
         call collectTileTypes
         ld a, (State.tTypeRight)
-        bit Dir.right, (ix+Obj.direction)
+        bit Dir.right, (ix+Obj.mo.direction)
         jr NZ, .l_1
         ld a, (State.tTypeLeft)
 .l_1:
@@ -1534,7 +1534,7 @@ walkMotion:
         jr Z, .checkScreenEdge
 
         ld a, (State.tTypeBotR)
-        bit Dir.right, (ix+Obj.direction)
+        bit Dir.right, (ix+Obj.mo.direction)
         jr NZ, .l_2
         ld a, (State.tTypeBotL)
 .l_2:
@@ -1542,15 +1542,15 @@ walkMotion:
         jr NZ, .checkScreenEdge
 
 .turnAround:
-        ld a, (ix+Obj.direction)
+        ld a, (ix+Obj.mo.direction)
         xor Dir.horizontal
-        ld (ix+Obj.direction), a
+        ld (ix+Obj.mo.direction), a
         jp removeIfOffScreen
 
 .checkScreenEdge:
         ld l, (ix+Obj.x+0)
         ld h, (ix+Obj.x+1)
-        bit Dir.right, (ix+Obj.direction)
+        bit Dir.right, (ix+Obj.mo.direction)
         jr NZ, .right
 
 .left:
@@ -1572,7 +1572,7 @@ walkMotion:
 
 
 walkOrFallMotion:
-        ld (ix+Obj.vertSpeed), 8
+        ld (ix+Obj.mo.vertSpeed), 8
         call collectTileTypes
         bit Flag.falling, (ix+Obj.auxFlags)
         jr NZ, .fall
@@ -1581,7 +1581,7 @@ walkOrFallMotion:
         call randomlyStandStill
 
         ld a, (State.tTypeRight)
-        bit Dir.right, (ix+Obj.direction)
+        bit Dir.right, (ix+Obj.mo.direction)
         jr NZ, .l_7
         ld a, (State.tTypeLeft)
 .l_7:
@@ -1589,9 +1589,9 @@ walkOrFallMotion:
         jr C, .walk
 
 .turnAround:
-        ld a, (ix+Obj.direction)
+        ld a, (ix+Obj.mo.direction)
         xor Dir.horizontal
-        ld (ix+Obj.direction), a
+        ld (ix+Obj.mo.direction), a
 
 .walk:
         ld a, (State.tTypeBot)
@@ -1601,7 +1601,7 @@ walkOrFallMotion:
 .startFalling:
         set Flag.falling, (ix+Obj.auxFlags)
         set Flag.fixedX, (ix+Obj.flags)
-        set Dir.down, (ix+Obj.direction)
+        set Dir.down, (ix+Obj.mo.direction)
         jp removeIfOffScreen
 
 .fall:
@@ -1612,81 +1612,81 @@ walkOrFallMotion:
 .stopFalling:
         res Flag.falling, (ix+Obj.auxFlags)
         res Flag.fixedX, (ix+Obj.flags)
-        res Dir.down, (ix+Obj.direction)
+        res Dir.down, (ix+Obj.mo.direction)
         jp removeIfOffScreen
 
 
 randomMotion: ; randomDirection
-        bit 0, (ix+Obj.coordConstr)
+        bit 0, (ix+Obj.mo.coordConstr)
         jr Z, .l_11
         call generateRandom
         cp 10
         jr NC, .l_11
-        ld a, (ix+Obj.direction)
+        ld a, (ix+Obj.mo.direction)
         xor Dir.vertical
-        ld (ix+Obj.direction), a
+        ld (ix+Obj.mo.direction), a
 .l_11:
-        bit 1, (ix+Obj.coordConstr)
+        bit 1, (ix+Obj.mo.coordConstr)
         jr Z, .l_12
         call generateRandom
         cp 10
         jr NC, .l_12
-        ld a, (ix+Obj.direction)
+        ld a, (ix+Obj.mo.direction)
         xor Dir.horizontal
-        ld (ix+Obj.direction), a
+        ld (ix+Obj.mo.direction), a
 
 .l_12:
         call collectTileTypes
 
-        bit Dir.right, (ix+Obj.direction)
+        bit Dir.right, (ix+Obj.mo.direction)
         jr Z, .l_13
         ld a, (State.tTypeRight)
         cp TileType.ladderTop
         jr NC, .l_14
         jr .l_15
 .l_13:
-        bit Dir.left, (ix+Obj.direction)
+        bit Dir.left, (ix+Obj.mo.direction)
         jr Z, .l_15
         ld a, (State.tTypeLeft)
         cp TileType.ladderTop
         jr C, .l_15
 .l_14:
-        ld a, (ix+Obj.direction)
+        ld a, (ix+Obj.mo.direction)
         xor Dir.horizontal
-        ld (ix+Obj.direction), a
+        ld (ix+Obj.mo.direction), a
 .l_15:
-        bit Dir.down, (ix+Obj.direction)
+        bit Dir.down, (ix+Obj.mo.direction)
         jr Z, .l_16
         ld a, (State.tTypeBot)
         cp TileType.ladderTop
         jr NC, .l_17
         jr .end
 .l_16:
-        bit Dir.up, (ix+Obj.direction)
+        bit Dir.up, (ix+Obj.mo.direction)
         jr Z, .end
         ld a, (State.tTypeTop)
         cp TileType.ladderTop
         jr C, .end
 .l_17:
-        ld a, (ix+Obj.direction)
+        ld a, (ix+Obj.mo.direction)
         xor Dir.vertical
-        ld (ix+Obj.direction), a
+        ld (ix+Obj.mo.direction), a
 .end:
         jp removeIfOffScreen
 
 
 rangeMotion: ; backAndForth
-        ld a, (ix+Obj.motionStep)
-        cp (ix+Obj.motionRange)
+        ld a, (ix+Obj.mo.step)
+        cp (ix+Obj.mo.range)
         jr Z, .rangeEnd
-        inc (ix+Obj.motionStep)
+        inc (ix+Obj.mo.step)
         jp removeIfOffScreen
 
 .rangeEnd:
-        ld (ix+Obj.motionStep), 0
+        ld (ix+Obj.mo.step), 0
 
         ; invert direction
-        ld c, (ix+Obj.direction)
+        ld c, (ix+Obj.mo.direction)
         ld a, c
         and Dir.horizontal
         jr Z, .l_21
@@ -1699,7 +1699,7 @@ rangeMotion: ; backAndForth
         xor Dir.vertical
 .l_22:
         or b
-        ld (ix+Obj.direction), a
+        ld (ix+Obj.mo.direction), a
         jp removeIfOffScreen
 
 
@@ -1717,17 +1717,17 @@ removeIfOffScreen:
 ;   arg `ix`: object
 ; Used by c_ed08.
 selfGuidedMotion:  ; #f0f3
-        ld (ix+Obj.horizSpeed), 2
-        ld (ix+Obj.vertSpeed), 2
+        ld (ix+Obj.mo.horizSpeed), 2
+        ld (ix+Obj.mo.vertSpeed), 2
         res Flag.fixedX, (ix+Obj.flags)
         res Flag.fixedY, (ix+Obj.flags)
 
         ; coordinate constraints
-        bit Motion.selfGuided.vert, (ix+Obj.motionSub)
+        bit Motion.selfGuided.vert, (ix+Obj.mo.subType)
         jr NZ, .skip
         set Flag.fixedY, (ix+Obj.flags)
 .skip:
-        bit Motion.selfGuided.horiz, (ix+Obj.motionSub)
+        bit Motion.selfGuided.horiz, (ix+Obj.mo.subType)
         jr NZ, .horizontal
         set Flag.fixedX, (ix+Obj.flags)
 
@@ -1753,10 +1753,10 @@ selfGuidedMotion:  ; #f0f3
         xor a
         sbc hl, de              ; signed x difference
         ; choose horizontal direction
-        ld (ix+Obj.direction), 1<<Dir.right
+        ld (ix+Obj.mo.direction), 1<<Dir.right
         jp P, .right
 .left:
-        ld (ix+Obj.direction), 1<<Dir.left
+        ld (ix+Obj.mo.direction), 1<<Dir.left
         ; `neg hl`
         ld a, l
         cpl
@@ -1767,7 +1767,7 @@ selfGuidedMotion:  ; #f0f3
         inc hl
 .right:
         ; `hl`: unsigned distance
-        ld e, (ix+Obj.horizSpeed)
+        ld e, (ix+Obj.mo.horizSpeed)
         ld d, 0
         xor a
         sbc hl, de
@@ -1789,16 +1789,16 @@ selfGuidedMotion:  ; #f0f3
 
         sub c                   ; signed x difference
         ; choose vertical direction
-        set Dir.down, (ix+Obj.direction)
-        res Dir.up, (ix+Obj.direction)
+        set Dir.down, (ix+Obj.mo.direction)
+        res Dir.up, (ix+Obj.mo.direction)
         jp P, .down
 .up:
         cpl                     ; should be `neg`(?)
-        set Dir.up, (ix+Obj.direction)
-        res Dir.down, (ix+Obj.direction)
+        set Dir.up, (ix+Obj.mo.direction)
+        res Dir.down, (ix+Obj.mo.direction)
 .down:
         ; `a`: unsigned distance
-        cp (ix+Obj.vertSpeed)
+        cp (ix+Obj.mo.vertSpeed)
         jr NC, .checkTiles
         ; stop if too close
         set Flag.fixedY, (ix+Obj.flags)
@@ -1807,7 +1807,7 @@ selfGuidedMotion:  ; #f0f3
         call collectTileTypes
 
 .rightTile:
-        bit Dir.right, (ix+Obj.direction)
+        bit Dir.right, (ix+Obj.mo.direction)
         jr Z, .leftTile
         ld a, (State.tTypeRight)
         cp TileType.wall
@@ -1815,7 +1815,7 @@ selfGuidedMotion:  ; #f0f3
         set Flag.fixedX, (ix+Obj.flags)
 
 .leftTile:
-        bit Dir.left, (ix+Obj.direction)
+        bit Dir.left, (ix+Obj.mo.direction)
         jr Z, .downTile
         ld a, (State.tTypeLeft)
         cp TileType.wall
@@ -1823,7 +1823,7 @@ selfGuidedMotion:  ; #f0f3
         set Flag.fixedX, (ix+Obj.flags)
 
 .downTile:
-        bit Dir.down, (ix+Obj.direction)
+        bit Dir.down, (ix+Obj.mo.direction)
         jr Z, .upTile
         ld a, (State.tTypeBot)
         cp TileType.platform
@@ -1831,7 +1831,7 @@ selfGuidedMotion:  ; #f0f3
         set Flag.fixedY, (ix+Obj.flags)
 
 .upTile:
-        bit Dir.up, (ix+Obj.direction)
+        bit Dir.up, (ix+Obj.mo.direction)
         jr Z, .end
         ld a, (State.tTypeTop)
         cp TileType.platform
@@ -1919,7 +1919,7 @@ collectTileTypes:  ; #f1d7
         ld a, (ix+Obj.x+1)
         adc a, -1
         ld (ix+Obj.x+1), a
-        bit Dir.left, (ix+Obj.direction)
+        bit Dir.left, (ix+Obj.mo.direction)
         jr NZ, .l_1
         dec hl                  ; 1 tile left
 .l_1:
@@ -1934,7 +1934,7 @@ collectTileTypes:  ; #f1d7
         call getTileType
         ld (State.tTypeBot), a
         inc hl                  ; 1 tile right
-        bit Dir.left, (ix+Obj.direction)
+        bit Dir.left, (ix+Obj.mo.direction)
         jr NZ, .l_2
         dec hl                  ; 1 tile left
 .l_2:
@@ -1994,20 +1994,20 @@ c_f2d1:  ; #f2d1
 ; Move a press or a platform (TODO!)
 ; Used by c_ed08.
 pressPlatformMotion:  ; #f2e7
-        ld a, (ix+Obj.horizSpeed)
+        ld a, (ix+Obj.mo.horizSpeed)
         or a
         jr Z, .l_0
-        dec (ix+Obj.horizSpeed)
+        dec (ix+Obj.mo.horizSpeed)
         ret
 .l_0:
-        bit Dir.down, (ix+Obj.direction)
+        bit Dir.down, (ix+Obj.mo.direction)
         jr NZ, .l_2
         ld a, (ix+Obj.walkPhase)
         or a
         jr NZ, .l_1
-        ld (ix+Obj.direction), 1<<Dir.down
-        ld (ix+Obj.vertSpeed), 0
-        ld (ix+Obj.horizSpeed), 32
+        ld (ix+Obj.mo.direction), 1<<Dir.down
+        ld (ix+Obj.mo.vertSpeed), 0
+        ld (ix+Obj.mo.horizSpeed), 32
         ret
 .l_1:
         dec (ix+Obj.walkPhase)
@@ -2061,11 +2061,11 @@ pressPlatformMotion:  ; #f2e7
         ld de, c_f2d1
         add hl, de
         ld a, (hl)
-        ld (ix+Obj.vertSpeed), a
+        ld (ix+Obj.mo.vertSpeed), a
         ret
 .l_5:
-        ld (ix+Obj.direction), 1<<Dir.up
-        ld (ix+Obj.vertSpeed), 0
+        ld (ix+Obj.mo.direction), 1<<Dir.up
+        ld (ix+Obj.mo.vertSpeed), 0
         ret
 
 
@@ -2096,7 +2096,7 @@ trajectoryMotion:  ; #f37e
         ld (State.trajVel), a
         ld (State.trajDir), a
 
-        ld a, (ix+Obj.trajetory)
+        ld a, (ix+Obj.mo.trajetory)
         add a
         ld l, a
         ld h, 0
@@ -2107,7 +2107,7 @@ trajectoryMotion:  ; #f37e
         ld d, (hl)
         ; `de`: trajectory velocity list addr
 
-        ld a, (ix+Obj.trajetory)
+        ld a, (ix+Obj.mo.trajetory)
         add a
         ld l, a
         ld h, 0
@@ -2119,7 +2119,7 @@ trajectoryMotion:  ; #f37e
         ; `bc`: trajectory direction list addr
 
 .getVel:
-        ld l, (ix+Obj.trajStep)
+        ld l, (ix+Obj.mo.trajStep)
         ld h, 0
         add hl, de
         ld a, (hl)              ; velocity value or marker
@@ -2131,42 +2131,42 @@ trajectoryMotion:  ; #f37e
         ld a, (hl)
         ld (State.trajVel), a
         ; get direction
-        ld l, (ix+Obj.trajStep)
+        ld l, (ix+Obj.mo.trajStep)
         ld h, 0
         add hl, bc
         dec hl
         ld a, (hl)
         ld (State.trajDir), a
-        dec (ix+Obj.trajStep)
+        dec (ix+Obj.mo.trajStep)
         jr .transformDir
 
 .notLast:
         cp TrajMarker.loop
         jr NZ, .notLoop
         ; `loop` marker: start the trajectory from the beginning
-        ld (ix+Obj.trajStep), 0
+        ld (ix+Obj.mo.trajStep), 0
         jr .getVel
 
 .notLoop:
         cp TrajMarker.stop
         jr NZ, .notStop
         ; `stop` marker: don't move any more
-        dec (ix+Obj.trajStep)
+        dec (ix+Obj.mo.trajStep)
         jr .transformDir
 
 .notStop:
         cp TrajMarker.back
         jr NZ, .notBack
         ; `back` marker: traverse the trajectory backwards
-        ld (ix+Obj.trajBack), -1
-        dec (ix+Obj.trajStep)
+        ld (ix+Obj.mo.trajBack), -1
+        dec (ix+Obj.mo.trajStep)
         jr .getVel
 
 .notBack:
         ; `a`: velocity
         ld (State.trajVel), a
         ; get direction
-        ld l, (ix+Obj.trajStep)
+        ld l, (ix+Obj.mo.trajStep)
         ld h, 0
         add hl, bc
         ld a, (hl)
@@ -2181,7 +2181,7 @@ trajectoryMotion:  ; #f37e
         add hl, de
         ld c, (hl)              ; direction as in `Dir` enum
 
-        ld a, (ix+Obj.trajBack)
+        ld a, (ix+Obj.mo.trajBack)
         or a
         jr Z, .skipInvDir
 
@@ -2201,11 +2201,11 @@ trajectoryMotion:  ; #f37e
         ld c, a                 ; inverted direction
 
 .skipInvDir:
-        ld (ix+Obj.trajDir), c
+        ld (ix+Obj.mo.trajDir), c
         ld a, (State.trajVel)
         bit Flag.riding, (ix+Obj.auxFlags) ; ?
         jr Z, .move
-        ld (ix+Obj.horizSpeed), a
+        ld (ix+Obj.mo.horizSpeed), a
 
 .move:
         ld b, a                 ; speed
@@ -2251,20 +2251,20 @@ trajectoryMotion:  ; #f37e
 
 .notLeft:
         ; step to the next trajectory position
-        ld a, (ix+Obj.trajBack)
+        ld a, (ix+Obj.mo.trajBack)
         or a
         jr NZ, .stepBack
 
 .stepForward:
-        inc (ix+Obj.trajStep)
+        inc (ix+Obj.mo.trajStep)
         jr .end
 
 .stepBack:
-        dec (ix+Obj.trajStep)
+        dec (ix+Obj.mo.trajStep)
         jp P, .end
         ; start position reached
-        ld (ix+Obj.trajStep), 0
-        ld (ix+Obj.trajBack), 0
+        ld (ix+Obj.mo.trajStep), 0
+        ld (ix+Obj.mo.trajBack), 0
 
 .end:   ; repeats `removeIfOffScreen`
         call isObjectVisibleOrWaiting
@@ -2277,18 +2277,18 @@ trajectoryMotion:  ; #f37e
 ; Check if hero is inside the activation zone of a still enemy
 ; Used by c_ecee.
 checkStillEnemyActivation:  ; #f488
-        ld a, (ix+Obj.stillActW)
+        ld a, (ix+Obj.activeZone.w)
         or a
         ret Z                   ; not a still enemy
 
         ; test vertical zone range
         ; hero_top <= obj_y - stillActY + stillActH
         ld iy, scene.hero
-        ld a, (ix+Obj.stillActY)
+        ld a, (ix+Obj.activeZone.y)
         neg
         add (ix+Obj.y)
         ld c, a
-        add (ix+Obj.stillActH)
+        add (ix+Obj.activeZone.h)
         cp (iy+Obj.y)
         ret C
         ; hero_bottom >= obj_y - stillActY
@@ -2301,7 +2301,7 @@ checkStillEnemyActivation:  ; #f488
         ; hero_right >= obj_x - stillActX
         ld l, (ix+Obj.x+0)
         ld h, (ix+Obj.x+1)
-        ld e, (ix+Obj.stillActX)
+        ld e, (ix+Obj.activeZone.x)
         ld d, 0
         xor a
         sbc hl, de
@@ -2315,7 +2315,7 @@ checkStillEnemyActivation:  ; #f488
         sbc hl, de
         ret C
         ; hero_left <= obj_x - stillActX + stillActW
-        ld l, (ix+Obj.stillActW)
+        ld l, (ix+Obj.activeZone.w)
         ld h, 0
         add hl, de
         ld e, (iy+Obj.x+0)
@@ -2328,7 +2328,7 @@ checkStillEnemyActivation:  ; #f488
         res Flag.waiting, (ix+Obj.flags)
         res Flag.fixedX, (ix+Obj.flags)
         res Flag.fixedY, (ix+Obj.flags)
-        ld (ix+Obj.stillActW), 0
+        ld (ix+Obj.activeZone.w), 0
         ret
 
 
@@ -2347,7 +2347,7 @@ checkDynamiteExplosion:  ; #f4e9
         ret NC
         ; explosion cloud
         ld (ix+Obj.walkPhase), 0
-        ld (ix+Obj.o_7), -1
+        ld (ix+Obj.spriteSet), -1
         ld (ix+Obj.colour), Colour.brWhite
         ret
 
@@ -2360,7 +2360,7 @@ coinJumpVelocity:  ; #f506
 ; Precess the motion of a coin appearing from a defeated enemy
 ; Used by c_ed08.
 coinJumpMotion:  ; #f518
-        ld a, (ix+Obj.motionStep)
+        ld a, (ix+Obj.mo.step)
         ld l, a
         ld h, 0
         ld de, coinJumpVelocity
@@ -2370,7 +2370,7 @@ coinJumpMotion:  ; #f518
         jr NZ, .jump
 
         ; falling
-        dec (ix+Obj.motionStep)
+        dec (ix+Obj.mo.step)
         ld a, 8                 ; falling speed
 .jump:
         add (ix+Obj.y)
@@ -2389,9 +2389,9 @@ coinJumpMotion:  ; #f518
         ld a, (ix+Obj.y)
         and -8
         ld (ix+Obj.y), a
-        ld (ix+Obj.motion), Motion.none
+        ld (ix+Obj.mo.type), Motion.none
 .end:
-        inc (ix+Obj.motionStep)
+        inc (ix+Obj.mo.step)
         jp removeIfOffScreen
 
 
@@ -2418,7 +2418,7 @@ emitEnemyBullet:  ; #f564
         ld a, (State.bulletTime)
         or a
         ret NZ
-        ld a, (ix+Obj.motion)
+        ld a, (ix+Obj.mo.type)
         cp Motion.bullet
         ret Z
         ld a, (ix+Obj.emitBullets)
@@ -2435,17 +2435,17 @@ emitEnemyBullet:  ; #f564
         ld hl, cS.powerBullet1
         ld (iy+Obj.sprite+0), l
         ld (iy+Obj.sprite+1), h
-        ld (iy+Obj.o_7), 0
+        ld (iy+Obj.spriteSet), 0
         ld (iy+Obj.colour), Colour.brWhite
-        ld (iy+Obj.direction), 0
-        ld (iy+Obj.horizSpeed), 5
-        ld (iy+Obj.vertSpeed), 3
+        ld (iy+Obj.mo.direction), 0
+        ld (iy+Obj.mo.horizSpeed), 5
+        ld (iy+Obj.mo.vertSpeed), 3
         ld (iy+Obj.width), 6
         ld (iy+Obj.height), 6
         ld (iy+Obj.health), 1
         ld (iy+Obj.flags), 1<<Flag.exists
         ld (iy+Obj.objType), ObjType.bullet
-        ld (iy+Obj.motion), Motion.bullet
+        ld (iy+Obj.mo.type), Motion.bullet
         ld (iy+Obj.auxFlags), 0
         ld a, (ix+Obj.emitBullets)
         ld (iy+Obj.emitBullets), a
@@ -2476,21 +2476,21 @@ emitEnemyBullet:  ; #f564
 
         cp EmitBullets.forward
         jr NZ, .vertical
-        ld a, (ix+Obj.direction)
+        ld a, (ix+Obj.mo.direction)
         and Dir.horizontal
-        ld (iy+Obj.direction), a
+        ld (iy+Obj.mo.direction), a
         ret
 
 .vertical:
         cp EmitBullets.up
         jr NZ, .down
-        ld (iy+Obj.direction), 1<<Dir.up
+        ld (iy+Obj.mo.direction), 1<<Dir.up
         ret
 
 .down:
         cp EmitBullets.down
         ret NZ
-        ld (iy+Obj.direction), 1<<Dir.down
+        ld (iy+Obj.mo.direction), 1<<Dir.down
         ret
 
 .aim:
@@ -2569,17 +2569,17 @@ randomlyChangeDirection:  ; #f670
 
         ; invert direction
 .horizontal:
-        bit 1, (ix+Obj.coordConstr)
+        bit 1, (ix+Obj.mo.coordConstr)
         jr Z, .vertical
-        ld a, (ix+Obj.direction)
+        ld a, (ix+Obj.mo.direction)
         xor Dir.horizontal
-        ld (ix+Obj.direction), a
+        ld (ix+Obj.mo.direction), a
 .vertical:
-        bit 0, (ix+Obj.coordConstr)
+        bit 0, (ix+Obj.mo.coordConstr)
         ret Z
-        ld a, (ix+Obj.direction)
+        ld a, (ix+Obj.mo.direction)
         xor Dir.vertical
-        ld (ix+Obj.direction), a
+        ld (ix+Obj.mo.direction), a
         ret
 
 
@@ -2702,7 +2702,7 @@ setWaitingFlags:
         set Flag.waiting, (ix+Obj.flags)
         jr .skip
 .visible:
-        ld a, (ix+Obj.stillActW)
+        ld a, (ix+Obj.activeZone.w)
         or a
         jr NZ, .skip            ; visible, but still
         res Flag.waiting, (ix+Obj.flags)
@@ -2781,7 +2781,7 @@ createObject:
         ; fill object properties
         ld (ix+Obj.walkPhase), 0
         ld (ix+Obj.stillTime), 0
-        ld (ix+Obj.direction), 1<<Dir.left
+        ld (ix+Obj.mo.direction), 1<<Dir.left
         ld a, (hl)              ; spriteAddr (low)
         ld (ix+Obj.sprite+0), a
         inc hl                  ; +1
@@ -2792,7 +2792,7 @@ createObject:
         ld (ix+Obj.colour), a
         inc hl                  ; +3
         ld a, (hl)
-        ld (ix+Obj.o_7), a
+        ld (ix+Obj.spriteSet), a
         inc hl                  ; +4
         ld a, (hl)              ; flags
         ld (ix+Obj.flags), a
@@ -2835,52 +2835,52 @@ createObject:
         ld (ix+Obj.emitBullets), a
         inc hl                  ; +13
         ld a, (hl)              ; trajectory
-        ld (ix+Obj.motionPar1), a
+        ld (ix+Obj.mo.param1), a
         inc hl                  ; +14
         ld a, (hl)
-        ld (ix+Obj.motionPar2), a
+        ld (ix+Obj.mo.param2), a
         inc hl                  ; +15
         ld a, (hl)
-        ld (ix+Obj.trajBack), a
+        ld (ix+Obj.mo.trajBack), a
         inc hl                  ; +16
         ld a, (hl)
-        ld (ix+Obj.trajDir), a
+        ld (ix+Obj.mo.trajDir), a
         inc hl                  ; +17
         ld a, (hl)              ; mirror (?)
-        ld (ix+Obj.horizSpeed), a
+        ld (ix+Obj.mo.horizSpeed), a
         inc hl                  ; +18
         ld a, (hl)
-        ld (ix+Obj.vertSpeed), a
+        ld (ix+Obj.mo.vertSpeed), a
         inc hl                  ; +19
         ld a, (hl)
-        ld (ix+Obj.direction), a
+        ld (ix+Obj.mo.direction), a
         inc hl                  ; +20
         ld a, (hl)
-        ld (ix+Obj.motionSub), a
+        ld (ix+Obj.mo.subType), a
         inc hl                  ; +21
         ld a, (hl)
-        ld (ix+Obj.motion), a
+        ld (ix+Obj.mo.type), a
         inc hl                  ; +22
         ld a, (hl)
-        ld (ix+Obj.stillActX), a
+        ld (ix+Obj.activeZone.x), a
         inc hl                  ; +23
         ld a, (hl)
-        ld (ix+Obj.stillActY), a
+        ld (ix+Obj.activeZone.y), a
         inc hl                  ; +24
         ld a, (hl)
-        ld (ix+Obj.stillActW), a
+        ld (ix+Obj.activeZone.w), a
         inc hl                  ; +25
         ld a, (hl)
-        ld (ix+Obj.stillActH), a
+        ld (ix+Obj.activeZone.h), a
 
         ; direction transform
-        ld a, (ix+Obj.direction)
+        ld a, (ix+Obj.mo.direction)
         ld l, a
         ld h, 0
         ld de, directionTransform
         add hl, de
         ld a, (hl)
-        ld (ix+Obj.direction), a
+        ld (ix+Obj.mo.direction), a
 
         ; get top by bottom and height
         bit Flag.isBig, (ix+Obj.flags)

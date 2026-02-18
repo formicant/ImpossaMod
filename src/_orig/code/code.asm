@@ -293,7 +293,7 @@ advanceObjectsInMap:  ; #cf17
         ld (ix+Obj.x+0), l
         ld (ix+Obj.x+1), h
 
-        ld a, (ix+Obj.motion)
+        ld a, (ix+Obj.mo.type)
         cp Motion.bullet
         jr NZ, .nextObject
 

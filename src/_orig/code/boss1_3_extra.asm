@@ -9,9 +9,9 @@ c_fbb9:  ; #fbb9
         ld ix, scene.obj2
         ld de, Obj
 .l_0:
-        ld a, (ix+Obj.direction)
+        ld a, (ix+Obj.mo.direction)
         xor c
-        ld (ix+Obj.direction), a
+        ld (ix+Obj.mo.direction), a
         add ix, de
         djnz .l_0
         pop ix

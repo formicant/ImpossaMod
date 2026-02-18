@@ -58,7 +58,7 @@ bossLogicOrient:  ; #f9a4
         ret
 .l_1:
         ld ix, scene.obj2
-        bit Dir.up, (ix+Obj.direction)
+        bit Dir.up, (ix+Obj.mo.direction)
         jr Z, .l_2
         ld a, (ix+Obj.y)
         cp #20
@@ -75,7 +75,7 @@ bossLogicOrient:  ; #f9a4
 .l_3:
         ld l, (ix+Obj.x+0)
         ld h, (ix+Obj.x+1)
-        bit Dir.left, (ix+Obj.direction)
+        bit Dir.left, (ix+Obj.mo.direction)
         jr NZ, .l_4
         ld de, #00F0
         xor a

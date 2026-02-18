@@ -53,10 +53,10 @@ gameStart:  ; #cc5a
         call rollConveyorTiles      ; TODO: can be inlined
         call drawObjectsChecked     ; (time: extreme)
 
-        _DEBUG_BORDER Colour.black
+        ; _DEBUG_BORDER Colour.black
         ld c, 3
         call waitFrames
-        _DEBUG_BORDER Colour.blue
+        ; _DEBUG_BORDER Colour.blue
 
         call updateScreenTiles  ; (time: extreme)
 

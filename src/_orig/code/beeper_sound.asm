@@ -3,22 +3,22 @@
 
 ; Beeper sounds (15 × 3 bytes)
 beeperSounds:  ; #be3a
-;       length period mode
-        db  20,   20,  0        ; [0]
-        db  20,   20,  0        ; [1]
-        db  20,   20,  0        ; [2]
-        db  10,   50,  2        ; damageEnemy
-        db  10,  220,  3        ; kickOrThrow
-        db 100,  120,  0        ; jump
-        db  80,   80,  2        ; killEnemy
-        db  20,   20,  1        ; [7]
-        db  20,  200,  0        ; laserGun
-        db  20,   20,  2        ; [9]
-        db  10,  180,  0        ; powerGun
-        db  20,  200,  3        ; pickItem
-        db  60,   30,  0        ; energyLoss
-        db  20,  240,  3        ; pickWeapon
-        db  20,   20,  2        ; [14]
+;       length period
+        db  20,  20, SoundType.rising   ; (unused)
+        db  20,  20, SoundType.rising   ; (unused)
+        db  20,  20, SoundType.rising   ; (unused)
+        db  10,  50, SoundType.noise    ; damageEnemy
+        db  10, 220, SoundType.steady   ; kickOrThrow
+        db 100, 120, SoundType.rising   ; jump
+        db  80,  80, SoundType.noise    ; killEnemy
+        db  20,  20, SoundType.falling  ; (unused)
+        db  20, 200, SoundType.rising   ; laserGun
+        db  20,  20, SoundType.noise    ; (unused)
+        db  10, 180, SoundType.rising   ; powerGun
+        db  20, 200, SoundType.steady   ; pickItem
+        db  60,  30, SoundType.rising   ; energyLoss
+        db  20, 240, SoundType.steady   ; pickWeapon
+        db  20,  20, SoundType.noise    ; (unused)
 
 
 ; Play beeper sound
@@ -32,55 +32,62 @@ playBeeperSound:  ; #be67
         ld h, 0
         ld de, beeperSounds
         add hl, de
-        ld c, (hl)
+        
+        ld c, (hl)              ; length
         inc hl
-        ld d, (hl)
+        ld d, (hl)              ; period
         inc hl
-        ld a, (hl)
+        ld a, (hl)              ; type
+        
         or a
-        jr Z, .l_0
+        jr Z, .rising
         dec a
-        jr Z, .l_1
+        jr Z, .falling
         dec a
-        jr Z, .l_2
-        jr .l_3
-.l_0:
-        call .l_4
+        jr Z, .noise
+        jr .flat
+        
+.rising:
+        call .period
         dec d
         dec c
-        jr NZ, .l_0
+        jr NZ, .rising
         ret
-.l_1:
-        call .l_4
+        
+.falling:
+        call .period
         inc d
         dec c
-        jr NZ, .l_1
+        jr NZ, .falling
         ret
-.l_2:
-        call .l_4
+        
+.noise:
+        call .period
         rrc d
         ld a, d
         add 20
         ld d, a
         dec c
-        jr NZ, .l_2
+        jr NZ, .noise
         ret
-.l_3:
-        call .l_4
+        
+.flat:
+        call .period
         dec c
-        jr NZ, .l_3
+        jr NZ, .flat
         ret
-.l_4:
+        
+.period:
         xor a
         out (#FE), a
         ld b, d
-.l_5:
-        djnz .l_5
+.low:   djnz .low
+        
         ld a, #10
         out (#FE), a
         ld b, d
-.l_6:
-        djnz .l_6
+.high:  djnz .high
+        
         ret
 
 

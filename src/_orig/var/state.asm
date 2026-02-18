@@ -34,13 +34,13 @@ tileCentre: db -0       ; └─────────────────
 tileFootC:  db -0       ;      FL    FC FR
 tileAbovL:  db -0       ;     UL         UR
 tileAbovR:  db -0       ;
-s_37:       db -0
-s_38:       db -0
-s_39:       db -0
+jumpVel:    db -0       ; signed jump vertical velocity
+recoilDir:  db -0
+recoilTime: db -0
 weaponTime: dw -0
 weapon:     db -0       ; 0..4
-s_3D:       db -0
-s_3E:       db -0
+attack:     db -0       ; values of `Attack` enum
+attackTime: db -0
 s_3F:       db -0
 s_40:       db -0
 stepPeriod: db -0       ; time between walk phases

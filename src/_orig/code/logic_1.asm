@@ -40,33 +40,33 @@ processHero:  ; #d709
         cp HeroState.jump
         jp NC, .checkAdvance
 
-        ld a, (State.s_39)
+        ld a, (State.recoilTime)
         or a
-        jr Z, .l_0
+        jr Z, .skipRecoil
         dec a
-        ld (State.s_39), a
+        ld (State.recoilTime), a
 
-        ld a, (State.s_38)
-        cp 1
-        jp NZ, .conveyorRight
+        ld a, (State.recoilDir)
+        cp 1<<Dir.right
+        jp NZ, .dragRight
 
-        jp .conveyorLeft
+        jp .dragLeft
 
-.l_0:
+.skipRecoil:
         ; check conveyors
         ld a, (State.tileFootL)
         call getTileType
         cp TileType.conveyorL
-        jp Z, .conveyorLeft
+        jp Z, .dragLeft
         cp TileType.conveyorR
-        jp Z, .conveyorRight
+        jp Z, .dragRight
 
         ld a, (State.tileFootR)
         call getTileType
         cp TileType.conveyorL
-        jp Z, .conveyorLeft
+        jp Z, .dragLeft
         cp TileType.conveyorR
-        jp Z, .conveyorRight
+        jp Z, .dragRight
 
         ; check water/spikes
         ld a, (State.tileFootL)
@@ -89,11 +89,11 @@ processHero:  ; #d709
 
         ; jump sideways
         ld b, a
-        ld a, (ix+Obj.direction)
+        ld a, (ix+Obj.mo.direction)
         and ~Dir.horizontal
         or b
-        ld (ix+Obj.direction), a
-        ld (ix+Obj.horizSpeed), 2
+        ld (ix+Obj.mo.direction), a
+        ld (ix+Obj.mo.horizSpeed), 2
 
 .jumpUp:
         ld a, 3
@@ -133,21 +133,21 @@ processHero:  ; #d709
 .noAdvance:
         jp setWalkPhase
 
-.conveyorLeft:
+.dragLeft:
         call isObstacleToTheLeft
         jr NZ, .checkAdvance
 
         ld a, (ix+Obj.x)
-        add -1
+        add -1                  ; conveyor/recoil speed
         ld (ix+Obj.x), a
         jp .checkAdvance
 
-.conveyorRight:
+.dragRight:
         call isObstacleToTheRight
         jr NZ, .checkAdvance
 
         ld a, (ix+Obj.x)
-        add 1
+        add 1                   ; conveyor/recoil speed
         ld (ix+Obj.x), a
         jp .checkAdvance
 
@@ -220,7 +220,7 @@ heroStands:  ; #d7f6
         ret                     ; ret if conveyor, slow, water/spikes (?)
 
 .ice:
-        bit Dir.right, (ix+Obj.direction)
+        bit Dir.right, (ix+Obj.mo.direction)
         jr NZ, .slipRight
 .slipLeft:
         call isObstacleToTheLeft
@@ -255,8 +255,8 @@ heroStands:  ; #d7f6
         xor a
         ld (State.stepTime), a
         ld (ix+Obj.walkPhase), a
-        set Dir.left, (ix+Obj.direction)
-        res Dir.right, (ix+Obj.direction)
+        set Dir.left, (ix+Obj.mo.direction)
+        res Dir.right, (ix+Obj.mo.direction)
         ret
 
 .keyRight:
@@ -267,8 +267,8 @@ heroStands:  ; #d7f6
         xor a
         ld (State.stepTime), a
         ld (ix+Obj.walkPhase), a
-        set Dir.right, (ix+Obj.direction)
-        res Dir.left, (ix+Obj.direction)
+        set Dir.right, (ix+Obj.mo.direction)
+        res Dir.left, (ix+Obj.mo.direction)
         ret
 
 .jump:
@@ -286,11 +286,11 @@ heroStands:  ; #d7f6
         jp Z, .jumpUp
 
         ld b, a
-        ld a, (ix+Obj.direction)
+        ld a, (ix+Obj.mo.direction)
         and ~Dir.horizontal
         or b
-        ld (ix+Obj.direction), a
-        ld (ix+Obj.horizSpeed), 2
+        ld (ix+Obj.mo.direction), a
+        ld (ix+Obj.mo.horizSpeed), 2
 
 .jumpUp:
         ld a, 3
@@ -321,7 +321,7 @@ heroStands:  ; #d7f6
         ld a, HeroState.climb
         ld (State.heroState), a
         xor a
-        ld (State.s_3E), a
+        ld (State.attackTime), a
 
         ; set climbing sprite
         ld hl, cS.heroClimbs
@@ -367,7 +367,7 @@ heroWalks:  ; #d94c
         jp Z, heroStands.climb
 
 .notDown:
-        bit Dir.right, (ix+Obj.direction)
+        bit Dir.right, (ix+Obj.mo.direction)
         jp NZ, .right
 
 .left:
@@ -473,7 +473,7 @@ heroWalks:  ; #d94c
         or #03
         ld (ix+Obj.y), a
 
-        ld (ix+Obj.horizSpeed), 0
+        ld (ix+Obj.mo.horizSpeed), 0
 
         ; set standing sprite
         ld hl, cS.heroStands
@@ -500,12 +500,12 @@ heroWalks:  ; #d94c
         jp Z, .fallDown
 
         ld b, a
-        ld a, (ix+Obj.direction)
+        ld a, (ix+Obj.mo.direction)
         and ~Dir.horizontal
         or b
-        ld (ix+Obj.direction), a
+        ld (ix+Obj.mo.direction), a
         ld a, 2
-        ld (ix+Obj.horizSpeed), a
+        ld (ix+Obj.mo.horizSpeed), a
 
 .fallDown:
         ; set falling sprite
@@ -546,18 +546,18 @@ heroJumps:  ; #da95
         jp Z, heroStands.climb
 
 .skipGrabLadder:
-        ld a, (ix+Obj.horizSpeed)
+        ld a, (ix+Obj.mo.horizSpeed)
         or a
         jr Z, .vertical
 
-        bit Dir.right, (ix+Obj.direction)
+        bit Dir.right, (ix+Obj.mo.direction)
         jr NZ, .right
 
 .left:
         call isObstacleToTheLeft
         or a
         jr NZ, .vertical
-        ld a, (ix+Obj.horizSpeed)
+        ld a, (ix+Obj.mo.horizSpeed)
         neg
         add (ix+Obj.x)
         ld (ix+Obj.x), a
@@ -567,7 +567,7 @@ heroJumps:  ; #da95
         call isObstacleToTheRight
         or a
         jr NZ, .vertical
-        ld a, (ix+Obj.horizSpeed)
+        ld a, (ix+Obj.mo.horizSpeed)
         add (ix+Obj.x)
         ld (ix+Obj.x), a
 
@@ -578,7 +578,7 @@ heroJumps:  ; #da95
         ld hl, jumpVelocityTable
         add hl, de
         ld a, (hl)
-        ld (State.s_37), a
+        ld (State.jumpVel), a
         cp #7F                  ; end jump
         jp Z, heroWalks.fall
 
@@ -648,18 +648,18 @@ heroFalls:  ; #db4e
         ld h, (ix+Obj.x+1)
         push hl
 
-        ld a, (ix+Obj.horizSpeed)
+        ld a, (ix+Obj.mo.horizSpeed)
         or a
         jr Z, .vertical
 
-        bit Dir.right, (ix+Obj.direction)
+        bit Dir.right, (ix+Obj.mo.direction)
         jr NZ, .right:
 
 .left:
         call isObstacleToTheLeft
         or a
         jr NZ, .vertical
-        ld a, (ix+Obj.horizSpeed)
+        ld a, (ix+Obj.mo.horizSpeed)
         neg
         add (ix+Obj.x)
         ld (ix+Obj.x), a
@@ -669,7 +669,7 @@ heroFalls:  ; #db4e
         call isObstacleToTheRight
         or a
         jr NZ, .vertical
-        ld a, (ix+Obj.horizSpeed)
+        ld a, (ix+Obj.mo.horizSpeed)
         add (ix+Obj.x)
         ld (ix+Obj.x), a
 
@@ -709,19 +709,19 @@ heroFalls:  ; #db4e
         bit Key.right, a
         jr NZ, .keyRight
 
-        ld (ix+Obj.horizSpeed), 0
+        ld (ix+Obj.mo.horizSpeed), 0
         ret
 
 .keyLeft:
-        ld (ix+Obj.horizSpeed), 2
-        set Dir.left, (ix+Obj.direction)
-        res Dir.right, (ix+Obj.direction)
+        ld (ix+Obj.mo.horizSpeed), 2
+        set Dir.left, (ix+Obj.mo.direction)
+        res Dir.right, (ix+Obj.mo.direction)
         ret
 
 .keyRight:
-        ld (ix+Obj.horizSpeed), 2
-        set Dir.right, (ix+Obj.direction)
-        res Dir.left, (ix+Obj.direction)
+        ld (ix+Obj.mo.horizSpeed), 2
+        set Dir.right, (ix+Obj.mo.direction)
+        res Dir.left, (ix+Obj.mo.direction)
         ret
 
 
@@ -853,9 +853,9 @@ climbStep:  ; #dcce
         ld (State.stepTime), a
         ret NZ
 
-        ld a, (ix+Obj.direction)
+        ld a, (ix+Obj.mo.direction)
         xor Dir.horizontal
-        ld (ix+Obj.direction), a
+        ld (ix+Obj.mo.direction), a
         ret
 
 
@@ -1095,9 +1095,9 @@ isObstacleToTheLeft:  ; #de37
         ld a, (State.heroState)
         cp HeroState.jump
         jr NZ, .false
-        ld a, (State.s_37)
+        ld a, (State.jumpVel)
         or a
-        jp M, .false
+        jp M, .false            ; moving upwards
 
         ld a, (State.tileUndrR)
         call getTileType
@@ -1162,9 +1162,9 @@ isObstacleToTheRight:  ; #deb1
         ld a, (State.heroState)
         cp HeroState.jump
         jr NZ, .false
-        ld a, (State.s_37)
+        ld a, (State.jumpVel)
         or a
-        jp M, .false
+        jp M, .false            ; moving upwards
         ld a, (State.tileUndrR)
         call getTileType
         cp TileType.wall
@@ -1181,9 +1181,9 @@ isObstacleToTheRight:  ; #deb1
 
 ; (Some data on enemies?)
 c_df2b:  ; #df2b
-        db #FC, #FE, #FF, #FF, #00, #01, #01, #01
-        db #01, #02, #03, #04, #06, #07, #08, #0A
-        db #0B, #0C, #0E, #0F, #10, #80
+        db -4, -2, -1, -1, 0, 1, 1, 1, 1, 2, 3
+        db 4, 6, 7, 8, 10, 11, 12, 14, 15, 16
+        db #80
 
 kickBubbles:  ; #df41
         dw cS.kickBubble1
@@ -1230,32 +1230,34 @@ processFire:  ; #df85
         or l
         jr NZ, .decWeaponTime
         ; weapon time elapsed
-        ld a, (State.s_3D)
+
+        ld a, (State.attack)
         or a
         jr NZ, .skipWeaponTime
         xor a
         ld (State.weapon), a    ; remove weapon
         ret
+
 .decWeaponTime:
         dec hl
         ld (State.weaponTime), hl
 .skipWeaponTime:
 
-        ld a, (State.s_3D)
+        ld a, (State.attack)
         or a
-        jp NZ, .l_9
+        jp NZ, .alreadyInAttack
 
         ld a, (State.heroState)
         cp HeroState.fall
-        ret NC
+        ret NC                  ; fall or climb
 
         ld a, (controlState)
-        bit Key.fire, a                ; fire key
+        bit Key.fire, a
         ret Z
 
         ; fire pressed
         ld ix, scene.hero
-        ld iy, scene.obj1
+        ld iy, scene.obj1       ; bullet, bomb, or bubble
         ld a, (State.weapon)
         or a
         jp NZ, .useWeapon
@@ -1264,6 +1266,7 @@ processFire:  ; #df85
         ld a, Sound.kickOrThrow
         call playSound
 
+        ; set kicking sprite
         ld hl, cS.heroKicks
         ld (ix+Obj.sprite+0), l
         ld (ix+Obj.sprite+1), h
@@ -1271,15 +1274,15 @@ processFire:  ; #df85
         ; create kick bubble
         ld (iy+Obj.flags), 1<<Flag.isBig
         ld (iy+Obj.colour), Colour.brWhite
-        ld (iy+Obj.direction), 1<<Dir.right
-        ld (iy+Obj.horizSpeed), 0
-        ld (iy+Obj.o_7), 0
+        ld (iy+Obj.mo.direction), 1<<Dir.right
+        ld (iy+Obj.mo.horizSpeed), 0
+        ld (iy+Obj.spriteSet), 0
 
         ; set x coord
         ld l, (ix+Obj.x+0)
         ld h, (ix+Obj.x+1)
         ld de, 16
-        bit Dir.right, (ix+Obj.direction)
+        bit Dir.right, (ix+Obj.mo.direction)
         jr NZ, .kickRight
 .kickLeft:
         ld de, -16
@@ -1287,10 +1290,12 @@ processFire:  ; #df85
         add hl, de
         ld (iy+Obj.x+0), l
         ld (iy+Obj.x+1), h
+
         ; set y coord
         ld a, (ix+Obj.y)
         ld (iy+Obj.y), a
 
+        ; select bubble sprite
         ld a, (State.soupCans)
         dec a
         add a
@@ -1304,20 +1309,22 @@ processFire:  ; #df85
         ld a, (hl)
         ld (iy+Obj.sprite+1), a
 
-        ld a, 1
-        ld (State.s_3D), a
+        ld a, Attack.kick
+        ld (State.attack), a
         ld a, 3
-        ld (State.s_3E), a
+        ld (State.attackTime), a
+
         jp checkEnemiesForDamage
 
 .useWeapon:
-        cp 1
+        cp ObjType.shatterbomb
         jp NZ, .gun
 
 .shatterbomb:
         ld a, Sound.kickOrThrow
         call playSound
 
+        ; set throwing sprite
         ld hl, cS.heroThrows
         ld (ix+Obj.sprite+0), l
         ld (ix+Obj.sprite+1), h
@@ -1328,7 +1335,7 @@ processFire:  ; #df85
         ld (iy+Obj.sprite+1), h
         ld (iy+Obj.flags), 1<<Flag.exists
         ld (iy+Obj.colour), Colour.brCyan
-        ld (iy+Obj.o_7), 0
+        ld (iy+Obj.spriteSet), 0
         ld (iy+Obj.width), 8
         ld (iy+Obj.height), 8
 
@@ -1336,7 +1343,7 @@ processFire:  ; #df85
         ld l, (ix+Obj.x+0)
         ld h, (ix+Obj.x+1)
         ld de, 8
-        bit Dir.right, (ix+Obj.direction)
+        bit Dir.right, (ix+Obj.mo.direction)
         jr NZ, .throwRight
 .throwLeft:
         ld de, -6
@@ -1344,27 +1351,28 @@ processFire:  ; #df85
         add hl, de
         ld (iy+Obj.x+0), l
         ld (iy+Obj.x+1), h
+
         ; set y coord
         ld a, (ix+Obj.y)
         add -4
         ld (iy+Obj.y), a
 
-        ld (iy+Obj.horizSpeed), 4
-        ld a, (ix+Obj.direction)
+        ld (iy+Obj.mo.horizSpeed), 4
+        ld a, (ix+Obj.mo.direction)
         and Dir.horizontal
-        ld (iy+Obj.direction), a
+        ld (iy+Obj.mo.direction), a
 
         xor a
         ld (State.s_3F), a
-        ld a, 2
-        ld (State.s_3D), a
+        ld a, Attack.throw
+        ld (State.attack), a
         ld a, 3
-        ld (State.s_3E), a
+        ld (State.attackTime), a
 
         jp checkEnemiesForDamage
 
 .gun:
-        cp 2                    ; powerGun
+        cp ObjType.powerGun
         jp NZ, .laserGun
 
 .powerGun:
@@ -1403,7 +1411,7 @@ processFire:  ; #df85
         ld l, (ix+Obj.x+0)
         ld h, (ix+Obj.x+1)
         ld de, 24
-        bit Dir.right, (ix+Obj.direction)
+        bit Dir.right, (ix+Obj.mo.direction)
         jr NZ, .powerShootRight
 .powerShootLeft
         ld de, -16
@@ -1414,21 +1422,21 @@ processFire:  ; #df85
 
         ld (iy+Obj.flags), 1<<Flag.exists
         ld (iy+Obj.colour), Colour.brWhite
-        ld (iy+Obj.horizSpeed), 8
-        ld (iy+Obj.vertSpeed), 8
-        ld (iy+Obj.o_7), 0
+        ld (iy+Obj.mo.horizSpeed), 8
+        ld (iy+Obj.mo.vertSpeed), 8
+        ld (iy+Obj.spriteSet), 0
 
-        ld a, (ix+Obj.direction)
+        ld a, (ix+Obj.mo.direction)
         and Dir.horizontal
-        ld (iy+Obj.direction), a
+        ld (iy+Obj.mo.direction), a
 
-        ld (State.s_38), a
-        ld a, 3
-        ld (State.s_3D), a
+        ld (State.recoilDir), a
+        ld a, Attack.power
+        ld (State.attack), a
         ld a, 1
         ld (c_e308), a
         ld a, 4
-        ld (State.s_39), a
+        ld (State.recoilTime), a
 
         jp checkEnemiesForDamage
 
@@ -1439,8 +1447,7 @@ processFire:  ; #df85
         ld a, (State.soupCans)
         dec a
         ld l, a
-        add a
-        add a
+    .2  add a
         add l
         ld l, a
         ld h, 0
@@ -1469,7 +1476,7 @@ processFire:  ; #df85
         ld l, (ix+Obj.x+0)
         ld h, (ix+Obj.x+1)
         ld de, 16
-        bit Dir.right, (ix+Obj.direction)
+        bit Dir.right, (ix+Obj.mo.direction)
         jr NZ, .laserShootRight
 .laserShootLeft
         ld de, -6
@@ -1478,84 +1485,96 @@ processFire:  ; #df85
         ld (iy+Obj.x+0), l
         ld (iy+Obj.x+1), h
 
-        ld (iy+Obj.o_7), 0
+        ld (iy+Obj.spriteSet), 0
         ld (iy+Obj.flags), 1<<Flag.exists
         ld (iy+Obj.colour), Colour.brCyan
-        ld (iy+Obj.horizSpeed), 8
+        ld (iy+Obj.mo.horizSpeed), 8
 
-        ld a, (ix+Obj.direction)
+        ld a, (ix+Obj.mo.direction)
         and Dir.horizontal
-        ld (iy+Obj.direction), a
+        ld (iy+Obj.mo.direction), a
 
-        ld (State.s_38), a
+        ld (State.recoilDir), a
+        ld a, Attack.laser
+        ld (State.attack), a
         ld a, 4
-        ld (State.s_3D), a
-        ld a, 4
-        ld (State.s_39), a
+        ld (State.recoilTime), a
 
         jp checkEnemiesForDamage
 
-.l_9:
-        ld ix, scene.obj1
-        cp 1
-        jr NZ, .l_12
+.alreadyInAttack:
+        ; `a`: attack
+        ld ix, scene.obj1       ; bullet, bomb, or bubble
+        cp Attack.kick
+        jr NZ, .notKicking
 
+.kicking:
         ld ix, scene.hero
-        ld hl, State.s_3E
+        ld hl, State.attackTime
         ld a, (hl)
         or a
-        jr Z, .l_10
+        jr Z, .endKicking
+
         dec (hl)
         ld hl, cS.heroKicks
         ld (ix+Obj.sprite+0), l
         ld (ix+Obj.sprite+1), h
         ret
-.l_10:
+
+.endKicking:
         ld a, (State.heroState)
         or a
-        jr NZ, .l_11
+        jr NZ, .skipStanding
         ld hl, cS.heroStands
         ld (ix+Obj.sprite+0), l
         ld (ix+Obj.sprite+1), h
-.l_11:
+.skipStanding:
         xor a
-        ld (State.s_3D), a
-        ld ix, scene.obj1
+        ld (State.attack), a
+        ld ix, scene.obj1       ; kick bubble
         ld (ix+Obj.flags), a    ; remove object
         ret
-.l_12:
-        cp #02
-        jp NZ, .l_19
-        ld hl, State.s_3E
+
+.notKicking:
+        cp Attack.throw
+        jp NZ, .notThrowing
+
+.bombIsFlying:
+        ld hl, State.attackTime
         ld a, (hl)
         or a
-        jr Z, .l_13
+        jr Z, .endThrowing
+
         dec (hl)
         push ix
-        ld ix, scene
+        ld ix, scene.hero
         ld hl, cS.heroThrows
         ld (ix+Obj.sprite+0), l
         ld (ix+Obj.sprite+1), h
         pop ix
-.l_13:
+
+.endThrowing:
         ld a, (State.s_40)
         or a
         jp NZ, .l_16
+
         call checkEnemiesForDamage
-        jr NC, .l_15
+        jr NC, .bombExploded
+
         ld a, (State.s_3F)
         ld l, a
-        ld h, #00
+        ld h, 0
         ld de, c_df2b
         add hl, de
         ld a, (hl)
         cp #80
         jr Z, .l_14
+
         ld hl, State.s_3F
         inc (hl)
-        ld (ix+Obj.vertSpeed), a
+        ld (ix+Obj.mo.vertSpeed), a
 .l_14:
-        ld a, (ix+Obj.vertSpeed)
+        ld a, (ix+Obj.mo.vertSpeed)
         add (ix+Obj.y)
         ld (ix+Obj.y), a
         call isObjectVisible
@@ -1577,7 +1596,8 @@ processFire:  ; #df85
         call getTileType
         cp TileType.ladderTop
         ret C
-.l_15:
+
+.bombExploded:
         ld a, Sound.killEnemy
         call playSound
         ld a, (ix+Obj.x)
@@ -1591,7 +1611,7 @@ processFire:  ; #df85
         ld (ix+Obj.y), a
         xor a
         ld (State.s_40), a
-        ld (ix+Obj.direction), a
+        ld (ix+Obj.mo.direction), a
         set Flag.isBig, (ix+Obj.flags)
         ld a, (State.soupCans)
         dec a
@@ -1633,13 +1653,15 @@ processFire:  ; #df85
 .l_18:
         xor a
         ld (ix+Obj.flags), a    ; remove object
-        ld (State.s_3D), a
+        ld (State.attack), a
         ld (State.s_40), a
         ld (c_e308), a
         ret
-.l_19:
+
+.notThrowing:
         call isObjectVisible
         jr NC, .l_18
+
         ld a, (ix+Obj.x)
         add #04
         ld (ix+Obj.x), a
@@ -1665,11 +1687,11 @@ processFire:  ; #df85
         jp NC, .l_18
         call checkEnemiesForDamage
         jr NC, .l_18
-        ld a, (State.s_3D)
-        cp #03
+        ld a, (State.attack)
+        cp 3
         ret NZ
         ld a, (State.soupCans)
-        cp #03
+        cp 3
         jr Z, c_e31c
         ret
 
@@ -1700,7 +1722,7 @@ c_e31c:  ; #e31c
 .l_1:
         bit Flag.exists, (iy+Obj.flags)
         jr Z, .l_2
-        ld a, (iy+Obj.o_7)
+        ld a, (iy+Obj.spriteSet)
         cp #FF
         jr Z, .l_2
         bit Flag.cleanUp, (iy+Obj.flags)
@@ -1719,18 +1741,18 @@ c_e31c:  ; #e31c
 .l_2:
         add iy, de
         djnz .l_1
-        ld a, (ix+Obj.direction)
+        ld a, (ix+Obj.mo.direction)
         and Dir.horizontal
-        ld (ix+Obj.direction), a
+        ld (ix+Obj.mo.direction), a
         ret
 .l_3:
-        ld a, (ix+Obj.direction)
+        ld a, (ix+Obj.mo.direction)
         ld l, a
         ld h, 0
         ld de, c_e311
         add hl, de
         ld b, (hl)
-        ld (ix+Obj.direction), 0
+        ld (ix+Obj.mo.direction), 0
         ld l, (ix+Obj.x+0)
         ld h, (ix+Obj.x+1)
         ld e, (iy+Obj.x+0)
@@ -1745,32 +1767,32 @@ c_e31c:  ; #e31c
         neg
         ld l, a
         inc hl
-        set Dir.right, (ix+Obj.direction)
+        set Dir.right, (ix+Obj.mo.direction)
         jr .l_5
 .l_4:
-        set Dir.left, (ix+Obj.direction)
+        set Dir.left, (ix+Obj.mo.direction)
 .l_5:
         ld de, #0004
         xor a
         sbc hl, de
         jr NC, .l_6
-        ld (ix+Obj.direction), 0
+        ld (ix+Obj.mo.direction), 0
 .l_6:
         ld a, (ix+Obj.y)
         sub (iy+Obj.y)
         jp P, .l_7
         neg
-        set Dir.down, (ix+Obj.direction)
+        set Dir.down, (ix+Obj.mo.direction)
         jr .l_8
 .l_7:
-        set Dir.up, (ix+Obj.direction)
+        set Dir.up, (ix+Obj.mo.direction)
 .l_8:
         cp #04
         jr NC, .l_9
-        res Dir.down, (ix+Obj.direction)
-        res Dir.up, (ix+Obj.direction)
+        res Dir.down, (ix+Obj.mo.direction)
+        res Dir.up, (ix+Obj.mo.direction)
 .l_9:
-        ld a, (ix+Obj.direction)
+        ld a, (ix+Obj.mo.direction)
         ld l, a
         ld h, 0
         ld de, c_e311
@@ -1796,7 +1818,7 @@ c_e31c:  ; #e31c
         ld de, c_e309
         add hl, de
         ld a, (hl)
-        ld (ix+Obj.direction), a
+        ld (ix+Obj.mo.direction), a
 .l_11:
         ld a, #01
         ld (c_e308), a

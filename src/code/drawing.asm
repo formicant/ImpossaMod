@@ -303,7 +303,7 @@ drawSmallSprite:
 
         ld hl, #0000            ; `nop : nop`
         ld (.jrMir), hl
-        bit Dir.left, (ix+Obj.direction)
+        bit Dir.left, (ix+Obj.mo.direction)
         jr NZ, .skip
         bit Flag.mirror, (ix+Obj.flags)
         jr NZ, .skip
@@ -382,7 +382,7 @@ drawShiftedSmallSprite:  ; #c245
 
         ld hl, #0000            ; `nop : nop`
         ld (.jrMir), hl
-        bit Dir.left, (ix+Obj.direction)
+        bit Dir.left, (ix+Obj.mo.direction)
         jr NZ, .skip
         bit Flag.mirror, (ix+Obj.flags)
         jr NZ, .skip
@@ -487,7 +487,7 @@ drawBigSprite:  ; #c314
         jp NZ, drawShiftedBigSprite
 
         ld hl, #0000            ; `nop : nop`
-        bit Dir.left, (ix+Obj.direction)
+        bit Dir.left, (ix+Obj.mo.direction)
         jr NZ, .skip
         bit Flag.mirror, (ix+Obj.flags)
         jr NZ, .skip
@@ -611,7 +611,7 @@ drawShiftedBigSprite:  ; #c3ac
 
         ld hl, #0000            ; `nop : nop`
         ld (.jrMir), hl
-        bit Dir.left, (ix+Obj.direction)
+        bit Dir.left, (ix+Obj.mo.direction)
         jr NZ, .skip
         bit Flag.mirror, (ix+Obj.flags)
         jr NZ, .skip

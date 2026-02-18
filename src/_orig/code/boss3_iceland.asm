@@ -37,7 +37,7 @@ bossLogicIceland:  ; #fad3
         ld ix, scene.obj2
         ld l, (ix+Obj.x+0)
         ld h, (ix+Obj.x+1)
-        bit Dir.left, (ix+Obj.direction)
+        bit Dir.left, (ix+Obj.mo.direction)
         jr NZ, .l_2
         ld de, #0108
         xor a

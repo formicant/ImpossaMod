@@ -144,11 +144,22 @@ falling     EQU 7   ; walking enemy is falling down
 
     MODULE HeroState
 
-stand       EQU 0
-walk        EQU 1
-jump        EQU 2
-fall        EQU 3
-climb       EQU 4
+stand   EQU 0
+walk    EQU 1
+jump    EQU 2
+fall    EQU 3
+climb   EQU 4
+
+    ENDMODULE
+
+
+    MODULE Attack
+
+none    EQU 0
+kick    EQU 1
+throw   EQU 2
+power   EQU 3
+laser   EQU 4
 
     ENDMODULE
 
@@ -183,32 +194,32 @@ coinJump    EQU  6  ; coin jumps after defeating an enemy
 
     MODULE EmitBullets
 
-none        EQU 0
-aim         EQU 1
-forward     EQU 2
-up          EQU 3
-down        EQU 4
+none    EQU 0
+aim     EQU 1
+forward EQU 2
+up      EQU 3
+down    EQU 4
 
     ENDMODULE
 
 
     MODULE TrajMarker   ; trajectory end marker type
 
-last        EQU -1  ; use the last vel/dir values forever
-loop        EQU -2  ; start the trajectory from the beginning
-stop        EQU -3  ; don't move any more
-back        EQU -4  ; traverse the trajectory backwards
+last    EQU -1  ; use the last vel/dir values forever
+loop    EQU -2  ; start the trajectory from the beginning
+stop    EQU -3  ; don't move any more
+back    EQU -4  ; traverse the trajectory backwards
 
     ENDMODULE
 
 
     MODULE Dir          ; object direction
 
-; bits in `Obj.direction`
-right       EQU 0
-left        EQU 1
-down        EQU 2
-up          EQU 3
+; bits in `Obj.mo.direction`
+right   EQU 0
+left    EQU 1
+down    EQU 2
+up      EQU 3
 
 ; bit masks
 horizontal  EQU (1<<left) | (1<<right)
@@ -217,22 +228,40 @@ vertical    EQU (1<<up) | (1<<down)
     ENDMODULE
 
 
+    MODULE SpriteSet
+
+turn    EQU -4
+burrow  EQU -3
+frog    EQU -2
+cloud   EQU -1
+single  EQU  0
+two     EQU  2
+three   EQU  3
+four    EQU  4
+
+    ENDMODULE
+
+
     MODULE Sound
 
-snd_0       EQU  0
-snd_1       EQU  1
-snd_2       EQU  2
 damageEnemy EQU  3
 kickOrThrow EQU  4
 jump        EQU  5
 killEnemy   EQU  6
-snd_7       EQU  7
 laserGun    EQU  8
-snd_9       EQU  9
 powerGun    EQU 10
 pickItem    EQU 11
 energyLoss  EQU 12
 pickWeapon  EQU 13
-snd_14      EQU 14
+
+    ENDMODULE
+
+
+    MODULE SoundType
+
+rising  EQU 0
+falling EQU 1
+noise   EQU 2
+steady  EQU 3
 
     ENDMODULE
