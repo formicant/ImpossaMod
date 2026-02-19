@@ -99,7 +99,7 @@ setControlKeys:
 
 keyTable:
 ; index                half-row   bit mask           name
-.i0:    db 0,                    0,                 "  "C
+.i0:    db 0,                     0,                 "  "C
 .i1:    db high(Port.keys_cZXCV), 1<<Port.keyV,      "V "C
 .i2:    db high(Port.keys_cZXCV), 1<<Port.keyC,      "C "C
 .i3:    db high(Port.keys_cZXCV), 1<<Port.keyX,      "X "C

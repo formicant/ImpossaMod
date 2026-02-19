@@ -401,6 +401,10 @@ turnIntoCoin:  ; #d2b3
         res Flag.waiting, (iy+Obj.flags)
         res Flag.fixedY, (iy+Obj.flags)
         res Flag.fixedX, (iy+Obj.flags)
+    IFDEF _MOD
+        ; fix smart behaviour
+        ld (iy+Obj.auxFlags), 1<<Flag.nonEnemy
+    ENDIF
         xor a
         ret
 
@@ -741,7 +745,7 @@ performSmartIfPressed:  ; #d4e5
         ld b, 6                 ; object count
 .object:
         push bc
-        bit Flag.destroyable, (iy+Obj.auxFlags)
+        bit Flag.nonEnemy, (iy+Obj.auxFlags)
         jr NZ, .next
 
         ; check if object is visible

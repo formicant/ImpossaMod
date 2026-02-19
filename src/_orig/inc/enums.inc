@@ -134,7 +134,7 @@ cleanUp     EQU 7   ; object should be removed
 ; bits in `Obj.auxFlags`
 riding      EQU 0   ; the hero is riding an object
 standsStill EQU 1   ; randomly stands still
-destroyable EQU 3   ; can be killed by smart
+nonEnemy    EQU 3   ; can't be destroyed by smart
 givesCoin   EQU 4   ; a coin appears after defeat
 changesDir  EQU 5   ; randomly changes direction
 falling     EQU 7   ; walking enemy is falling down
