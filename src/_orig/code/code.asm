@@ -101,7 +101,7 @@ advanceInMap:  ; #cdae
         call cleanUpObjTiles
         _DEBUG_BORDER Colour.black
         ld c, 3
-        call waitFrames
+        call Interrupt.waitFrames
         _DEBUG_BORDER Colour.cyan
         ld hl, Tables.scrTiles.row1 + 4
         exx
@@ -110,7 +110,7 @@ advanceInMap:  ; #cdae
         call moveScreenTiles
         _DEBUG_BORDER Colour.black
         ld c, 1
-        call waitFrames
+        call Interrupt.waitFrames
         _DEBUG_BORDER Colour.green
         ld hl, Tables.scrTiles.row1 + 6
         exx
@@ -119,7 +119,7 @@ advanceInMap:  ; #cdae
         call moveScreenTiles
         _DEBUG_BORDER Colour.black
         ld c, 5
-        call waitFrames
+        call Interrupt.waitFrames
         _DEBUG_BORDER Colour.magenta
         ld hl, Tables.scrTiles.row1 + 10
         exx

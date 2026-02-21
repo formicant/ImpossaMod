@@ -39,8 +39,7 @@ codeStart:
     INCLUDE "var/Scene.asm"
     
     ORG #BEB4   ; overlap
-    INCLUDE "code/init_interrupts.asm"
-    INCLUDE "code/interrupt.asm"
+    INCLUDE "code/Interrupt/_index.asm"
     ORG #C044
     INCLUDE "code/drawing.asm"
     INCLUDE "code/game_menu.asm"

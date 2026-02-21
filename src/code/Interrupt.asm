@@ -1,7 +1,7 @@
-    MODULE Code
+    MODULE Interrupt
 
 
-interruptRoutine:
+routine:
     ASSERT low($) == high($)
         push af, hl
 
@@ -19,7 +19,7 @@ interruptRoutine:
         rl h                    ; add bit to the control state
     EDUP
         ld a, h
-        ld (controlState), a
+        ld (Code.controlState), a
 
         ; increment short frame counter
         ld a, (shortFrameCounter)
@@ -27,9 +27,9 @@ interruptRoutine:
         ld (shortFrameCounter), a
 
         ; increment long frame counter
-        ld hl, (longFrameCounter.low)
+        ld hl, (Code.longFrameCounter.low)
         inc hl
-        ld (longFrameCounter.low), hl
+        ld (Code.longFrameCounter.low), hl
         ld a, l
         or h
         jr Z, .incLongFrameHigh
@@ -39,9 +39,9 @@ interruptRoutine:
         ret
 
 .incLongFrameHigh:
-        ld hl, (longFrameCounter.high)
+        ld hl, (Code.longFrameCounter.high)
         inc hl
-        ld (longFrameCounter.high), hl
+        ld (Code.longFrameCounter.high), hl
 
         pop hl, af
         ei
@@ -63,7 +63,7 @@ shortFrameCounter:
         db 0
 
 ; 32-bit frame counter, used in random number generation
-longFrameCounter:
+@Code.longFrameCounter:
 .low:   dw 0
 .high:  dw 0
 

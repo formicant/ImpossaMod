@@ -52,7 +52,7 @@ setControlKeys:
     .3  add a
         _ADD_DE_A
 
-        ld hl, interruptRoutine.keyPollInstructions
+        ld hl, Interrupt.routine.keyPollInstructions
         push hl
 
         di                      ; modifying interrupt routine

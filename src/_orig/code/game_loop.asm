@@ -72,7 +72,7 @@ gameStart:  ; #cc5a
     ELSE
         ld c, 3
     ENDIF
-        call waitFrames
+        call Interrupt.waitFrames
         _DEBUG_BORDER Colour.blue
 
         call updateScreenTiles  ; (time: extreme)

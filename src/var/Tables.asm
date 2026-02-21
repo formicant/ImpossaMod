@@ -24,9 +24,9 @@ mirror:                         ; #8000
 
 ; Interrupt table, const, 257 bytes
 interruptTable:                 ; #8100
-        block 256, high(Code.interruptRoutine)
+        block 256, high(Interrupt.routine)
 objTiles:                       ; #8200
-        db high(Code.interruptRoutine)
+        db high(Interrupt.routine)
 
 disposable:
         ; Code that executes once at game start can be placed here

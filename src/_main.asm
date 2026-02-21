@@ -11,7 +11,7 @@
     INCLUDE "_orig/inc/structs.inc"
     INCLUDE "_orig/inc/port.inc"
     INCLUDE "_orig/inc/ay.inc"
-    INCLUDE "inc/memory.inc"
+    INCLUDE "inc/MemPage.inc"
     INCLUDE "data/Level.inc"
 
 
@@ -53,10 +53,10 @@ codeStart:
     INCLUDE "code/memory_loading.asm"
     ; INCLUDE "_orig/code/ay_sound.asm"    ; length: #D78 = 3448
 
-    DISPLAY "Disp free: ", Code.interruptRoutine - $
+    DISPLAY "Disp free: ", Interrupt.routine - $
 
     _NEXT_ORG #9191
-    INCLUDE "code/interrupt.asm"
+    INCLUDE "code/Interrupt.asm"
 
     INCLUDE "_orig/code/select_sprite.asm"
     INCLUDE "_orig/code/logic_2.asm"

@@ -1,10 +1,10 @@
-    MODULE Code
+    MODULE Interrupt
 
 
     DISP #FEFE
 
 ; In the original, stored at #BED4 and moved to #FEFE by `initInterrupts`
-interruptRoutine:  ; #fefe
+routine:  ; #fefe
         di
         push af, bc, de, hl, ix, iy
         
@@ -12,8 +12,8 @@ interruptRoutine:  ; #fefe
         inc a
         ld (shortFrameCounter), a
         
-        call incrementLongFrameCounter
-        call pollControlKeys
+        call Code.incrementLongFrameCounter
+        call Code.pollControlKeys
 .callAySound:
     .3  nop
         
@@ -35,7 +35,7 @@ waitFrames:  ; #ff21
 shortFrameCounter:  ; #ff2e
         db -0
 
-interruptLength EQU $ - interruptRoutine
+length EQU $ - routine
 
     ENT
 

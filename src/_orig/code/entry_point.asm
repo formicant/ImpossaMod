@@ -7,7 +7,7 @@ entryPoint:  ; #cc25
 .lev+*  ld a, #FF
         ld (State.loadedLevel), a
         ld sp, 0
-        call initInterrupts
+        call Interrupt.init
         call detectSpectrumModel
 
         ; init mirroring table

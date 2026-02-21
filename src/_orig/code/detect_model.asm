@@ -57,9 +57,9 @@ moveAyCode:
 
         ; add a `call` instruction to interrupt routine
         ld a, #CD  ; `call` instruction
-        ld (interruptRoutine.callAySound), a
+        ld (Interrupt.routine.callAySound), a
         ld hl, #BDF4
-        ld (interruptRoutine.callAySound + 1), hl
+        ld (Interrupt.routine.callAySound + 1), hl
         ret
 
 
