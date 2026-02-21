@@ -132,8 +132,9 @@ mirror      EQU 6   ; draw sprite mirrored
 cleanUp     EQU 7   ; object should be removed
 
 ; bits in `Obj.auxFlags`
-riding      EQU 0   ; the hero is riding an object
+riding      EQU 0   ; object is rideable (or the hero is riding)
 standsStill EQU 1   ; randomly stands still
+unknown     EQU 2   ; (used in data but ignored in code)
 nonEnemy    EQU 3   ; can't be destroyed by smart
 givesCoin   EQU 4   ; a coin appears after defeat
 changesDir  EQU 5   ; randomly changes direction
@@ -230,14 +231,14 @@ vertical    EQU (1<<up) | (1<<down)
 
     MODULE SpriteSet
 
-turn    EQU -4
-burrow  EQU -3
-frog    EQU -2
-cloud   EQU -1
-single  EQU  0
-two     EQU  2
-three   EQU  3
-four    EQU  4
+turnAround  EQU -4  ; (unused?)
+burrow      EQU -3
+frog        EQU -2
+explosion   EQU -1
+single      EQU  0
+twoPhase    EQU  2
+threePhase  EQU  3
+fourPhase   EQU  4
 
     ENDMODULE
 
@@ -247,9 +248,9 @@ four    EQU  4
 damageEnemy EQU  3
 kickOrThrow EQU  4
 jump        EQU  5
-killEnemy   EQU  6
-laserGun    EQU  8
-powerGun    EQU 10
+explosion   EQU  6
+laserShot   EQU  8
+powerShot   EQU 10
 pickItem    EQU 11
 energyLoss  EQU 12
 pickWeapon  EQU 13

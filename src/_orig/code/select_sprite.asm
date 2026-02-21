@@ -21,10 +21,10 @@ getSpriteAddr:  ; #e47a
 
         ld a, (ix+Obj.spriteSet)
         or a
-        ret Z
+        ret Z                   ; single sprite
 
-        cp SpriteSet.cloud
-        jr Z, getCloudSprite
+        cp SpriteSet.explosion
+        jr Z, getExplosionSprite
 
         exa
         ld a, (ix+Obj.stillTime)
@@ -33,7 +33,7 @@ getSpriteAddr:  ; #e47a
         exa
         ; `a`: spriteSet
 
-        cp SpriteSet.turn       ; (unused?)
+        cp SpriteSet.turnAround ; (unused?)
         jp Z, turnAround
 
         cp SpriteSet.burrow
@@ -42,8 +42,8 @@ getSpriteAddr:  ; #e47a
         cp SpriteSet.frog
         jr Z, getFrogSprite
 
-        cp SpriteSet.two
-        jr NZ, .moreThan2
+        cp SpriteSet.twoPhase
+        jr NZ, .moreThan2Phases
 
         ld a, (ix+Obj.walkPhase)
         and %00000010
@@ -61,11 +61,11 @@ getSpriteAddr:  ; #e47a
         inc (ix+Obj.walkPhase)
         ret
 
-.moreThan2:
-        cp SpriteSet.three
-        jr NZ, .four
+.moreThan2Phases:
+        cp SpriteSet.threePhase
+        jr NZ, .fourPhase
 
-.three:
+.threePhase:
         ld a, (ix+Obj.walkPhase)
         and %00000111
         srl a                   ; `a`: 0..3
@@ -77,20 +77,20 @@ getSpriteAddr:  ; #e47a
         ld (ix+Obj.walkPhase), 0
         jr .end
 
-.four:
+.fourPhase:
         ld a, (ix+Obj.walkPhase)
         and %00000110
         srl a                   ; `a`: 0..3
         jr Z, .end
         cp 3
         jr NZ, .getSpriteByIndex
-        ; 4th sprite same as 2nd
+        ; 4th phase sprite is the same as 2nd
         ld a, 1
         jr .getSpriteByIndex
 
 
-; Cloud phase sprite addresses
-cloudSprites:  ; #e4ee
+; Explosion cloud phase sprite addresses
+explosionPhases:  ; #e4ee
         dw cS.explosion1
         dw cS.explosion2
         dw cS.explosion3
@@ -99,11 +99,11 @@ cloudSprites:  ; #e4ee
         dw cS.explosion2
         dw cS.explosion1
 
-; Get cloud phase sprite address
+; Get explosion cloud phase sprite address
 ;   arg `ix`: object
 ;   ret `hl`: phase sprite addr
 ; Used by c_e47a.
-getCloudSprite:  ; #e4fc
+getExplosionSprite:  ; #e4fc
         set Flag.waiting, (ix+Obj.flags)
         set Flag.fixedX, (ix+Obj.flags)
         set Flag.fixedY, (ix+Obj.flags)
@@ -112,7 +112,7 @@ getCloudSprite:  ; #e4fc
         add a
         ld l, a
         ld h, 0
-        ld de, cloudSprites
+        ld de, explosionPhases
         add hl, de              ; `hl`: addr in sprite table
 
         ld a, (hl)

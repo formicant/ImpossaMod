@@ -83,7 +83,11 @@ playBeeperSound:  ; #be67
         ld b, d
 .low:   djnz .low
 
+    IFDEF _DEBUG
+        ld a, 1<<Port.beeper | Colour.green
+    ELSE
         ld a, 1<<Port.beeper
+    ENDIF
         out (Port.general), a
         ld b, d
 .high:  djnz .high

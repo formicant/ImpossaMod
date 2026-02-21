@@ -91,35 +91,42 @@ moveToMapSpan:  ; #cd9b
 ; Scroll the screen an add new objects to the scene
 ; Used by c_cc25.
 advanceInMap:  ; #cdae
+        _DEBUG_BORDER Colour.yellow
         ld hl, scrTileUpd
         ld de, scrTileUpd + 1
         ld (hl), 0
         ld bc, scrTileUpd.length - 1
         ldir
-
         call drawObjectsUnchecked
         call cleanUpObjTiles
+        _DEBUG_BORDER Colour.black
         ld c, 3
         call waitFrames
+        _DEBUG_BORDER Colour.cyan
         ld hl, scrTiles.row1 + 4
         exx
         ld hl, scrTiles.row1 + 6
         ld de, scrTileUpd.row1 + 6
         call moveScreenTiles
+        _DEBUG_BORDER Colour.black
         ld c, 1
         call waitFrames
+        _DEBUG_BORDER Colour.green
         ld hl, scrTiles.row1 + 6
         exx
         ld hl, scrTiles.row1 + 10
         ld de, scrTileUpd.row1 + 10
         call moveScreenTiles
+        _DEBUG_BORDER Colour.black
         ld c, 5
         call waitFrames
+        _DEBUG_BORDER Colour.magenta
         ld hl, scrTiles.row1 + 10
         exx
         ld hl, scrTiles.row1 + 12
         ld de, scrTileUpd.row1 + 12
         call moveScreenTiles
+        _DEBUG_BORDER Colour.red
         call advanceObjectsInMap
         ld hl, (State.screenX)
         ld de, 8
@@ -134,6 +141,7 @@ advanceInMap:  ; #cdae
         ld bc, scrTileUpd.length - 1
         ldir
 
+        _DEBUG_BORDER Colour.blue
         call drawObjectsChecked
         call updateScreenTiles
         ld de, scoreTable.walk

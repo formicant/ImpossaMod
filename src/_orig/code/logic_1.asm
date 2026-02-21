@@ -1179,8 +1179,8 @@ isObstacleToTheRight:  ; #deb1
         ret
 
 
-; (Some data on enemies?)
-c_df2b:  ; #df2b
+; Signed vertical velocity of a bomb by time
+bombVerticalVelocity:  ; #df2b
         db -4, -2, -1, -1, 0, 1, 1, 1, 1, 2, 3
         db 4, 6, 7, 8, 10, 11, 12, 14, 15, 16
         db #80
@@ -1190,12 +1190,13 @@ kickBubbles:  ; #df41
         dw cS.kickBubble2
         dw cS.kickBubble3
 
-c_df47:  ; #df47
-        db 0, 1, 0, -1
-        db 0, 0, 0, 0, 0, 1, 2, 1, 0, -1
-        db 0, 0, 0, 1, 2, 3, 2, 1, 0, -1
+; Explosion phases of a bomb for different number of soup cans
+bombExplosionPhases:  ; #df47
+        db 0, 1, 0, -1, 0, 0, 0, 0  ; s
+        db 0, 1, 2, 1, 0, -1, 0, 0  ; ss
+        db 0, 1, 2, 3, 2, 1, 0, -1  ; sss
 
-explosionBubbles:  ; #df5f
+explosionSprites:  ; #df5f
         dw cS.explosion1
         dw cS.explosion2
         dw cS.explosion3
@@ -1205,7 +1206,8 @@ laserBulletTable:  ; #df67       w   h
         dw cS.laserBullet1 : db 16,  7, 8
         dw cS.laserBullet2 : db 16, 11, 6
         dw cS.laserBullet3 : db 16, 15, 4
-powerBulletTable:  ; #df76
+
+powerBulletTable:  ; #df76       w   h
         dw cS.powerBullet1 : db  4,  4, 9
         dw cS.powerBullet2 : db  4, 16, 4
         dw cS.powerBullet3 : db  8,  8, 8
@@ -1363,7 +1365,7 @@ processFire:  ; #df85
         ld (iy+Obj.mo.direction), a
 
         xor a
-        ld (State.s_3F), a
+        ld (State.bombTime), a
         ld a, Attack.throw
         ld (State.attack), a
         ld a, 3
@@ -1376,7 +1378,7 @@ processFire:  ; #df85
         jp NZ, .laserGun
 
 .powerGun:
-        ld a, Sound.powerGun
+        ld a, Sound.powerShot
         call playSound
 
         ld a, (State.soupCans)
@@ -1434,14 +1436,14 @@ processFire:  ; #df85
         ld a, Attack.power
         ld (State.attack), a
         ld a, 1
-        ld (c_e308), a
+        ld (selfGuidedTime), a
         ld a, 4
         ld (State.recoilTime), a
 
         jp checkEnemiesForDamage
 
 .laserGun:
-        ld a, Sound.laserGun
+        ld a, Sound.laserShot
         call playSound
 
         ld a, (State.soupCans)
@@ -1537,13 +1539,13 @@ processFire:  ; #df85
 
 .notKicking:
         cp Attack.throw
-        jp NZ, .notThrowing
+        jp NZ, .bulletIsFlying
 
 .bombIsFlying:
         ld hl, State.attackTime
         ld a, (hl)
         or a
-        jr Z, .endThrowing
+        jr Z, .skipThrowing
 
         dec (hl)
         push ix
@@ -1553,205 +1555,273 @@ processFire:  ; #df85
         ld (ix+Obj.sprite+1), h
         pop ix
 
-.endThrowing:
-        ld a, (State.s_40)
+.skipThrowing:
+        ld a, (State.blowUpTime)
         or a
-        jp NZ, .l_16
+        jp NZ, .bombIsExploding
 
         call checkEnemiesForDamage
         jr NC, .bombExploded
 
-        ld a, (State.s_3F)
+        ld a, (State.bombTime)
         ld l, a
         ld h, 0
-        ld de, c_df2b
+        ld de, bombVerticalVelocity
         add hl, de
-        ld a, (hl)
-        cp #80
-        jr Z, .l_14
+        ld a, (hl)              ; bomb vertical velocity
+        cp #80                  ; end marker
+        jr Z, .bombFalls
 
-        ld hl, State.s_3F
+        ld hl, State.bombTime
         inc (hl)
         ld (ix+Obj.mo.vertSpeed), a
-.l_14:
+
+.bombFalls:
         ld a, (ix+Obj.mo.vertSpeed)
         add (ix+Obj.y)
         ld (ix+Obj.y), a
+
         call isObjectVisible
-        jp NC, .l_18
-        ld a, (ix+Obj.x)
-        add #04
-        ld (ix+Obj.x), a
+        jp NC, .removeBombOrBullet      ; if outside the screen
+
+        ; check tile at the bomb's location
+        ld a, (ix+Obj.x+0)
+        add 4
+        ld (ix+Obj.x+0), a
         ld a, (ix+Obj.x+1)
-        adc a, #00
+        adc a, 0
         ld (ix+Obj.x+1), a
-        call getScrTileAddr
-        ld a, (ix+Obj.x)
-        add #FC
-        ld (ix+Obj.x), a
+
+        call getScrTileAddr     ; `hl`: tile addr
+
+        ld a, (ix+Obj.x+0)
+        add -4
+        ld (ix+Obj.x+0), a
         ld a, (ix+Obj.x+1)
-        adc a, #FF
+        adc a, -1
         ld (ix+Obj.x+1), a
+
         ld a, (hl)
         call getTileType
         cp TileType.ladderTop
-        ret C
+        ret C                   ; space or ladder
 
 .bombExploded:
-        ld a, Sound.killEnemy
+        ld a, Sound.explosion
         call playSound
-        ld a, (ix+Obj.x)
-        add #FC
-        ld (ix+Obj.x), a
+
+        ; turn into explosion cloud
+        ld a, (ix+Obj.x+0)
+        add -4
+        ld (ix+Obj.x+0), a
         ld a, (ix+Obj.x+1)
-        adc a, #FF
+        adc a, -1
         ld (ix+Obj.x+1), a
+
         ld a, (ix+Obj.y)
-        add #F8
+        add -8
         ld (ix+Obj.y), a
+
         xor a
-        ld (State.s_40), a
+        ld (State.blowUpTime), a
         ld (ix+Obj.mo.direction), a
         set Flag.isBig, (ix+Obj.flags)
+
+        ; choose explosion phases depending on soup can count
         ld a, (State.soupCans)
         dec a
-        ld (.l), a
-.l_16:
-.l+*    ld l, #00
-        ld h, #00
-        add hl, hl
-        add hl, hl
-        add hl, hl
-        ld de, c_df47
+        ld (.soup), a
+
+.bombIsExploding:
+.soup+* ld l, -0
+        ld h, 0
+    .3  add hl, hl
+        ld de, bombExplosionPhases
         add hl, de
-        ex de, hl
-        ld a, (State.s_40)
+        ex de, hl               ; `de`: phase list
+
+        ld a, (State.blowUpTime)
         inc a
-        ld (State.s_40), a
+        ld (State.blowUpTime), a
         srl a
-        jr Z, .l_17
+        jr Z, .skipDec
         dec a
-.l_17:
+.skipDec:
         ld l, a
-        ld h, #00
+        ld h, 0
         add hl, de
-        ld a, (hl)
-        cp #FF
-        jr Z, .l_18
+        ld a, (hl)              ; explosion phase
+        cp -1                   ; end marker
+        jr Z, .removeBombOrBullet
+
+        ; get explosion sprite
         ld l, a
-        ld h, #00
+        ld h, 0
         add hl, hl
-        ld de, explosionBubbles
+        ld de, explosionSprites
         add hl, de
         ld a, (hl)
         inc hl
         ld h, (hl)
+
+        ; set explosion sprite
         ld (ix+Obj.sprite+0), a
         ld (ix+Obj.sprite+1), h
         ld (ix+Obj.colour), Colour.brWhite
         jp checkEnemiesForDamage
-.l_18:
+
+.removeBombOrBullet:
         xor a
         ld (ix+Obj.flags), a    ; remove object
         ld (State.attack), a
-        ld (State.s_40), a
-        ld (c_e308), a
+        ld (State.blowUpTime), a
+        ld (selfGuidedTime), a
         ret
 
-.notThrowing:
+.bulletIsFlying:
         call isObjectVisible
-        jr NC, .l_18
+        jr NC, .removeBombOrBullet
+
+        ; check tile at the bullet's location
+        ld a, (ix+Obj.x)
+        add 4
+        ld (ix+Obj.x), a
+        ld a, (ix+Obj.x+1)
+        adc a, 0
+        ld (ix+Obj.x+1), a
+        ld a, (ix+Obj.y)
+        add 8
+        ld (ix+Obj.y), a
+
+        call getScrTileAddr     ; `hl`: tile addr
 
         ld a, (ix+Obj.x)
-        add #04
+        add -4
         ld (ix+Obj.x), a
         ld a, (ix+Obj.x+1)
-        adc a, #00
+        adc a, -1
         ld (ix+Obj.x+1), a
         ld a, (ix+Obj.y)
-        add #08
+        add -8
         ld (ix+Obj.y), a
-        call getScrTileAddr
-        ld a, (ix+Obj.x)
-        add #FC
-        ld (ix+Obj.x), a
-        ld a, (ix+Obj.x+1)
-        adc a, #FF
-        ld (ix+Obj.x+1), a
-        ld a, (ix+Obj.y)
-        add #F8
-        ld (ix+Obj.y), a
+
         ld a, (hl)
         call getTileType
         cp TileType.ladderTop
-        jp NC, .l_18
+        jp NC, .removeBombOrBullet
+
+        ; space or ladder
         call checkEnemiesForDamage
-        jr NC, .l_18
+        jr NC, .removeBombOrBullet
+
+        ; check if the bullet is self-guided
         ld a, (State.attack)
-        cp 3
+        cp Attack.power
         ret NZ
         ld a, (State.soupCans)
         cp 3
-        jr Z, c_e31c
+        jr Z, selfGuidedBullet
         ret
 
 
-; (Some data on enemies?)
-c_e308:  ; #e308
+; Time after which new trajectory correction will occur
+selfGuidedTime:  ; #e308
+        db -0
+
+; Table for converting angle to direction
+; (angles are measured clockwise from the rightward direction
+; in eights of a revolution)
+angleToDir:  ; #e309
+.a0:    db 1<<Dir.right
+.a1:    db (1<<Dir.down) | (1<<Dir.right)
+.a2:    db 1<<Dir.down
+.a3:    db (1<<Dir.down) | (1<<Dir.left)
+.a4:    db 1<<Dir.left
+.a5:    db (1<<Dir.up) | (1<<Dir.left)
+.a6:    db 1<<Dir.up
+.a7:    db (1<<Dir.up) | (1<<Dir.right)
+
+; Table for converting direction to angle
+; (angles are measured clockwise from the rightward direction
+; in eights of a revolution)
+dirToAngle:  ; #e311
         db 0
-c_e309:  ; #e309
-        db 1, 5, 4, 6, 2, 10, 8, 9
-c_e311:  ; #e311
-        db 0, 0, 4, 0, 2, 1, 3, 0, 6, 7, 5
+.right: db 0
+.left:  db 4
+        db 0
+.down:  db 2
+.downR: db 1
+.downL: db 3
+        db 0
+.up:    db 6
+.upR:   db 7
+.upL:   db 5
 
-
-; (Some logic for enemies?)
+; Control a self-guided bullet (power gun with 3 soup cans)
 ; Used by c_df85.
-c_e31c:  ; #e31c
-        ld a, (c_e308)
+selfGuidedBullet:  ; #e31c
+        ld a, (selfGuidedTime)
         or a
         jr Z, .l_0
+
         dec a
-        ld (c_e308), a
+        ld (selfGuidedTime), a
         ret
+
 .l_0:
-        ld ix, scene.obj1
+        ld ix, scene.obj1       ; bullet
+
+        ; search for target object
         ld iy, scene.obj2
-        ld de, Obj
-        ld b, #06
-.l_1:
+        ld de, Obj              ; object size
+        ld b, 6                 ; object count
+.object:
+        ; skip non-existent objects
         bit Flag.exists, (iy+Obj.flags)
-        jr Z, .l_2
+        jr Z, .nextObject
         ld a, (iy+Obj.spriteSet)
-        cp #FF
-        jr Z, .l_2
+        cp SpriteSet.explosion
+        jr Z, .nextObject
         bit Flag.cleanUp, (iy+Obj.flags)
-        jr NZ, .l_2
+        jr NZ, .nextObject
+
+        ; skip non-damageable objects
         ld a, (iy+Obj.health)
-        cp #FE
-        jr Z, .l_2
-        cp #FF
-        jr Z, .l_2
+        cp -2
+        jr Z, .nextObject
+        cp -1
+        jr Z, .nextObject
+
+        ; skip left off-screen objects
         ld l, (iy+Obj.x+0)
         ld h, (iy+Obj.x+1)
-        ld de, #0020
+        ld de, 32
         xor a
         sbc hl, de
-        jr NC, .l_3
-.l_2:
+        jr NC, .found
+
+.nextObject:
         add iy, de
-        djnz .l_1
+        djnz .object
+
+.notFound:
+        ; continue moving horizontally
         ld a, (ix+Obj.mo.direction)
         and Dir.horizontal
         ld (ix+Obj.mo.direction), a
         ret
-.l_3:
+
+.found:
+        ; `ix`: bullet
+        ; `iy`: target object
         ld a, (ix+Obj.mo.direction)
         ld l, a
         ld h, 0
-        ld de, c_e311
+        ld de, dirToAngle
         add hl, de
-        ld b, (hl)
+        ld b, (hl)              ; previous direction angle
+
+        ; calculate target direction
         ld (ix+Obj.mo.direction), 0
         ld l, (ix+Obj.x+0)
         ld h, (ix+Obj.x+1)
@@ -1759,7 +1829,10 @@ c_e31c:  ; #e31c
         ld d, (iy+Obj.x+1)
         xor a
         sbc hl, de
-        jp P, .l_4
+        jp P, .left
+
+.right:
+        ; TODO: is this correct?
         ld a, h
         neg
         ld h, a
@@ -1769,59 +1842,71 @@ c_e31c:  ; #e31c
         inc hl
         set Dir.right, (ix+Obj.mo.direction)
         jr .l_5
-.l_4:
+.left:
         set Dir.left, (ix+Obj.mo.direction)
+
 .l_5:
-        ld de, #0004
+        ; `hl`: unsigned horiz distance(?)
+        ld de, 4
         xor a
         sbc hl, de
-        jr NC, .l_6
+        jr NC, .vertical
         ld (ix+Obj.mo.direction), 0
-.l_6:
+
+.vertical:
         ld a, (ix+Obj.y)
         sub (iy+Obj.y)
-        jp P, .l_7
+        jp P, .up
+
+.down:
         neg
         set Dir.down, (ix+Obj.mo.direction)
         jr .l_8
-.l_7:
+.up:
         set Dir.up, (ix+Obj.mo.direction)
+
 .l_8:
-        cp #04
+        cp 4
         jr NC, .l_9
         res Dir.down, (ix+Obj.mo.direction)
         res Dir.up, (ix+Obj.mo.direction)
+
 .l_9:
         ld a, (ix+Obj.mo.direction)
         ld l, a
         ld h, 0
-        ld de, c_e311
+        ld de, dirToAngle
         add hl, de
-        ld c, (hl)
+        ld c, (hl)              ; target direction angle
+
         ld a, b
-        sub c
-        jp Z, .l_11
-        and #07
-        ld d, a
+        sub c                   ; `a`: signed angle difference with target
+        jp Z, .sameDirection
+
+        and %00000111
+        ld d, a                 ; anti-clockwise angle difference
         ld a, c
         sub b
-        and #07
+        and %00000111           ; clockwise angle difference
         cp d
-        ld a, #01
-        jp C, .l_10
-        neg
-.l_10:
+        ld a, 1                 ; clockwise angle step
+        jp C, .clockwise
+        neg                     ; anti-clockwise angle step
+.clockwise:
+
+        ; set new direction
         add b
-        and #07
+        and %00000111           ; new direction angle
         ld l, a
-        ld h, #00
-        ld de, c_e309
+        ld h, 0
+        ld de, angleToDir
         add hl, de
-        ld a, (hl)
+        ld a, (hl)              ; new direction
         ld (ix+Obj.mo.direction), a
-.l_11:
-        ld a, #01
-        ld (c_e308), a
+
+.sameDirection:
+        ld a, 1
+        ld (selfGuidedTime), a
         ret
 
 

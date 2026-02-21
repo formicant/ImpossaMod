@@ -18,7 +18,7 @@ isDead:     db -0       ; 0|#FF
 hasDiary:   db -0
 hasSmart:   db -0       ; 0|1
 levelsDone: block 5     ; 0|1 for each level
-jumpPhase:       db -0       ; jump phase (?)
+jumpPhase:  db -0       ; jump phase
 heroState:  db -0       ; values of `HeroState` enum
 tileTopL:   db -0       ;
 tileMidL:   db -0       ;      AL       AR
@@ -40,9 +40,9 @@ recoilTime: db -0
 weaponTime: dw -0
 weapon:     db -0       ; 0..4
 attack:     db -0       ; values of `Attack` enum
-attackTime: db -0
-s_3F:       db -0
-s_40:       db -0
+attackTime: db -0       ; time of kicking or throwing posture
+bombTime:   db -0       ; time since a bomb was thrown
+blowUpTime: db -0       ; time of a bomb's explosion
 stepPeriod: db -0       ; time between walk phases
 stepTime:   db -0       ; time elapsed since last step
 tmpY:       db -0       ; y coord is saved here temporarily during transit check
@@ -65,8 +65,8 @@ bossFight:  db -0       ; 0 if no boss, 1 or higher when fighting a boss
 bossHealth: db -0
 bossInvinc: db -0       ; boss is invincible
 bossKilled: db -0
-s_58:       db -0
-s_59:       db -0
+s_58:       db -0       ; Amazon boss (something?)
+s_59:       db -0       ; Bermuda boss (something?)
 conveyors:  block 48    ; 16 × 3 (addr, length)
 
 length  EQU $ - start

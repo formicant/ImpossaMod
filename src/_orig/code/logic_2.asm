@@ -400,11 +400,11 @@ processHeroCollisions:  ; #e6e1
         ld (State.pressTime), a
 
 .notPress:
-        ld a, (iy+Obj.spriteSet)      ; ?
-        cp #FF
-        ret Z
-        bit Flag.riding, (iy+Obj.auxFlags)    ; ?
-        ret NZ
+        ld a, (iy+Obj.spriteSet)
+        cp SpriteSet.explosion
+        ret Z                   ; is exploding
+        bit Flag.riding, (iy+Obj.auxFlags)
+        ret NZ                  ; is rideable
         ld a, (iy+Obj.health)
         cp -2                   ; not an enemy (?)
         ret Z
@@ -1033,7 +1033,7 @@ damageEnemy:  ; #ec00
         bit Flag.givesCoin, (iy+Obj.auxFlags)
         jp NZ, turnIntoCoin
 
-        ; turn into cloud
+        ; turn into explosion cloud
         bit Flag.isBig, (iy+Obj.flags)
         jr NZ, .big
         push ix
@@ -1046,7 +1046,7 @@ damageEnemy:  ; #ec00
         ld (iy+Obj.walkPhase), 0
         ld (iy+Obj.spriteSet), -1
         ld (iy+Obj.colour), Colour.brWhite
-        ld a, Sound.killEnemy
+        ld a, Sound.explosion
         call playSound
 
 .damaged:
@@ -1094,18 +1094,18 @@ damageEnemy:  ; #ec00
         ld ix, scene.obj2
         ld b, 4                 ; object count
         ld de, Obj              ; object size
-.bossPartCloud:
+.bossPartExplosion:
         bit Flag.exists, (ix+Obj.flags)
         jr Z, .l_9
         bit Flag.isBig, (ix+Obj.flags)
         jr Z, .l_9
-        ; turn into cloud
+        ; turn into explosion cloud
         ld (ix+Obj.walkPhase), 0
         ld (ix+Obj.spriteSet), -1
         ld (ix+Obj.colour), Colour.brWhite
 .l_9:
         add ix, de
-        djnz .bossPartCloud
+        djnz .bossPartExplosion
 
         pop de
         pop ix
@@ -1122,7 +1122,7 @@ damageEnemy:  ; #ec00
         add hl, de
         ld (hl), 1
 
-        ld a, Sound.killEnemy
+        ld a, Sound.explosion
         call playSound
         jr .damaged
 
@@ -1172,7 +1172,6 @@ performObjectMotion:  ; #ed08
         jr NZ, .skip
         call trajectoryMotion
         jp fallingMotion
-
 .skip:
         cp Motion.trajectory
         call Z, trajectoryMotion
@@ -1184,7 +1183,7 @@ performObjectMotion:  ; #ed08
         cp Motion.general
         jp Z, generalMotion
         cp Motion.trajectory
-        jp Z, generalMotion      ; does nothing (?)
+        jp Z, generalMotion     ; does nothing (?)
 
         cp Motion.selfGuided
         jp Z, selfGuidedMotion
@@ -1232,7 +1231,7 @@ fallingMotion: ; #ed5f
         ld (ix+Obj.walkPhase), 0
         ld (ix+Obj.spriteSet), -1
         ld (ix+Obj.colour), Colour.brWhite
-        ld a, Sound.killEnemy
+        ld a, Sound.explosion
         jp playSound
 
 .fallAndStay:
@@ -1987,83 +1986,105 @@ collectTileTypes:  ; #f1d7
         ret
 
 
-; Data block at F2D1
-c_f2d1:  ; #f2d1
+; Press vertical speed by walk phase (22 phases)
+pressSpeedTable:  ; #f2d1
         db 0, 1, 1, 1, 1, 2, 2, 2, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4
 
-; Move a press or a platform (TODO!)
+; Move a press or a platform
+;   arg `ix`: press/platform object
 ; Used by c_ed08.
 pressPlatformMotion:  ; #f2e7
         ld a, (ix+Obj.mo.horizSpeed)
         or a
-        jr Z, .l_0
+        jr Z, .vertical
+
+        ; horizontal slow down
         dec (ix+Obj.mo.horizSpeed)
         ret
-.l_0:
+
+.vertical:
         bit Dir.down, (ix+Obj.mo.direction)
-        jr NZ, .l_2
+        jr NZ, .down
+
+.notDown:
         ld a, (ix+Obj.walkPhase)
         or a
-        jr NZ, .l_1
+        jr NZ, .up
+
+        ; change direction to horizontal
         ld (ix+Obj.mo.direction), 1<<Dir.down
         ld (ix+Obj.mo.vertSpeed), 0
         ld (ix+Obj.mo.horizSpeed), 32
         ret
-.l_1:
+
+.up:
         dec (ix+Obj.walkPhase)
         ld a, (ix+Obj.y)
-        and #07
-        jr NZ, .l_4
+        and %00000111
+        jr NZ, .setVertSpeed
+
+        ; clear press piston tiles
         call getScrTileAddr
         inc hl
         ld (hl), 0
         inc hl
         ld (hl), 0
+        ; set tile update
         ld de, scrTileUpd - scrTiles - 2
         add hl, de
         ld (hl), 1
         inc hl
         ld (hl), 1
-        jr .l_4
-.l_2:
+        jr .setVertSpeed
+
+.down:
         inc (ix+Obj.walkPhase)
+
+        ; draw press piston tiles
         call getScrTileAddr
-        ld c, #BD
+        ; tile index
+        ld c, 189
         ld a, (State.level)
         cp Level.iceland
-        jr NZ, .l_3
+        jr NZ, .drawPiston
         dec c
-.l_3:
+.drawPiston:
         inc hl
         ld (hl), c
         inc hl
-        inc c
+        inc c                   ; next tile index
         ld (hl), c
+        ; set tile update
         ld de, scrTileUpd - scrTiles - 2
         add hl, de
         ld (hl), 1
         inc hl
         ld (hl), 1
+
         ld a, (ix+Obj.y)
         and %00000111
-        jr NZ, .l_4
+        jr NZ, .setVertSpeed
+
         call getScrTileAddr
-        ld de, 45
+        ld de, 44 + 1
         add hl, de
         ld a, (hl)
         call getTileType
         or a
-        jr NZ, .l_5
-.l_4:
+        jr NZ, .bottomReached
+
+.setVertSpeed:
         ld a, (ix+Obj.walkPhase)
         ld l, a
         ld h, 0
-        ld de, c_f2d1
+        ld de, pressSpeedTable
         add hl, de
         ld a, (hl)
         ld (ix+Obj.mo.vertSpeed), a
         ret
-.l_5:
+
+.bottomReached:
+        ; start moving up
         ld (ix+Obj.mo.direction), 1<<Dir.up
         ld (ix+Obj.mo.vertSpeed), 0
         ret

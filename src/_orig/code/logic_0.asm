@@ -524,7 +524,7 @@ heroRiding:  ; #d308
         ret
 
 
-; Check if the hero's bottom is near the object's top (?)
+; Check if the hero's bottom is near the top of a rideable object
 ;   arg `ix`: hero
 ;       `iy`: object
 ;   ret `a`: #FF and flag NZ if is, `a`: 0 and flag Z if isn't
@@ -764,8 +764,10 @@ performSmartIfPressed:  ; #d4e5
         pop bc
         djnz .object
 
+    IFNDEF _MOD ; TODO: Remove!
         xor a
         ld (State.hasSmart), a
+    ENDIF
 
     IFDEF _MOD
         jp printSmart

@@ -19,7 +19,7 @@ gameStart:  ; #cc5a
         ld a, (State.bossKilled)
         or a
         jr Z, .normal
-        ; wait until all clouds disappear
+        ; wait until all explosion clouds disappear
         ld ix, scene.obj1
         ld de, Obj              ; object size
         ld b, 7                 ; object count
@@ -34,31 +34,49 @@ gameStart:  ; #cc5a
         jp .levelStart
 
 .normal:
+
         call performSmartIfPressed  ; TODO: replace
         call cleanUpScene           ; TODO: can be inlined
+
         call enemyBulletTimer       ; TODO: can be inlined
+        _DEBUG_BORDER Colour.red
         call performMotionOfAllObjs   ; (time: long)
+        _DEBUG_BORDER Colour.black
         call moveObjects            ; TODO: can be inlined (time: medium)
+        _DEBUG_BORDER Colour.magenta
         call putNextObjsToScene     ; (time: medium)
+        _DEBUG_BORDER Colour.black
         call bossLogic              ; TODO: can be inlined
         call checkTransitEnter      ; TODO: can be inlined
         call decBlinkTime           ; TODO: can be inlined
+        _DEBUG_BORDER Colour.green
         call processHeroCollisions  ; TODO: can be inlined (time: medium)
+        _DEBUG_BORDER Colour.black
         call heroRiding             ; TODO: can be inlined
+        _DEBUG_BORDER Colour.cyan
         call processHero            ; TODO: can be inlined (time: long)
+        _DEBUG_BORDER Colour.black
         call enterShop              ; TODO: can be inlined
         call shopLogic              ; TODO: can be inlined
+        _DEBUG_BORDER Colour.yellow
         call processFire            ; TODO: can be inlined (time: medium)
+        _DEBUG_BORDER Colour.black
         call updateConveyors        ; TODO: can be inlined
         call rollConveyorTiles      ; TODO: can be inlined
+        _DEBUG_BORDER Colour.white
         call drawObjectsChecked     ; (time: extreme)
+        _DEBUG_BORDER Colour.black
 
-        ; _DEBUG_BORDER Colour.black
+    IFDEF _MOD
+        ld c, 2
+    ELSE
         ld c, 3
+    ENDIF
         call waitFrames
-        ; _DEBUG_BORDER Colour.blue
+        _DEBUG_BORDER Colour.blue
 
         call updateScreenTiles  ; (time: extreme)
+        _DEBUG_BORDER Colour.black
 
         ld a, (State.advance)
         or a
@@ -70,7 +88,9 @@ gameStart:  ; #cc5a
         set Flag.exists, (ix+Obj.flags) ; why?
 
         call advanceInMap       ; TODO: can be inlined
+        _DEBUG_BORDER Colour.white
         call putNextObjsToScene
+        _DEBUG_BORDER Colour.black
 
 .skipAdvance:
         call pauseGameIfPressed ; TODO: replace
