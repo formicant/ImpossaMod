@@ -15,7 +15,7 @@
         "--fullpath=rel",
         "--outprefix=build/",
         "--sld=build/impossamod.sld",
-        "src/_main.asm"
+        "mod/_main.asm"
       ]
     },
     {
@@ -31,7 +31,7 @@
         "--fullpath=rel",
         "--outprefix=build/",
         "--sld=build/orig_debug.sld",
-        "src/_orig/_debug.asm"
+        "orig/_debug.asm"
       ]
     },
     {
@@ -61,7 +61,7 @@
         "--syntax=b",
         "--fullpath=rel",
         "--outprefix=build/",
-        "src/_orig/_main.asm"
+        "orig/_main.asm"
       ]
     }
   ]

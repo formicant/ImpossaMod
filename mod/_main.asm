@@ -5,12 +5,12 @@
     DEFINE _DEBUG
 
 ; Definitions
-    INCLUDE "_orig/inc/macros.inc"
-    INCLUDE "_orig/inc/basic.inc"
-    INCLUDE "_orig/inc/enums.inc"
-    INCLUDE "_orig/inc/structs.inc"
-    INCLUDE "_orig/inc/port.inc"
-    INCLUDE "_orig/inc/ay.inc"
+    INCLUDE "orig/inc/macros.inc"
+    INCLUDE "orig/inc/basic.inc"
+    INCLUDE "orig/inc/enums.inc"
+    INCLUDE "orig/inc/structs.inc"
+    INCLUDE "orig/inc/port.inc"
+    INCLUDE "orig/inc/ay.inc"
     INCLUDE "inc/MemPage.inc"
     INCLUDE "data/Level.inc"
 
@@ -18,7 +18,7 @@
 ; Slow memory
     ORG #4000
 ; Loading screen
-    INCLUDE "_orig/data/Screen.asm"
+    INCLUDE "orig/data/Screen.asm"
 
 ; Basic loader
     ORG #5CCB
@@ -29,13 +29,13 @@
 codeStart:
     INCLUDE "data/Font.asm"
 
-    INCLUDE "_orig/code/game_loop.asm"
-    INCLUDE "_orig/code/code.asm"
-    INCLUDE "_orig/code/logic_0.asm"
-    INCLUDE "_orig/code/level_select_menu.asm"
-    INCLUDE "_orig/code/game_win.asm"
-    INCLUDE "_orig/code/utils.asm"
-    INCLUDE "_orig/code/logic_1.asm"
+    INCLUDE "orig/code/game_loop.asm"
+    INCLUDE "orig/code/code.asm"
+    INCLUDE "orig/code/logic_0.asm"
+    INCLUDE "orig/code/level_select_menu.asm"
+    INCLUDE "orig/code/game_win.asm"
+    INCLUDE "orig/code/utils.asm"
+    INCLUDE "orig/code/logic_1.asm"
     INCLUDE "code/game_menu.asm"
     INCLUDE "code/panel.asm"
     INCLUDE "code/boss_switch.asm"
@@ -51,17 +51,17 @@ codeStart:
     ORG Tables.disposable         ; will be overwritten with tables
     INCLUDE "code/entry_point.asm"
     INCLUDE "code/memory_loading.asm"
-    ; INCLUDE "_orig/code/ay_sound.asm"    ; length: #D78 = 3448
+    ; INCLUDE "orig/code/ay_sound.asm"    ; length: #D78 = 3448
 
     DISPLAY "Disp free: ", Interrupt.routine - $
 
     _NEXT_ORG #9191
     INCLUDE "code/Interrupt.asm"
 
-    INCLUDE "_orig/code/select_sprite.asm"
-    INCLUDE "_orig/code/logic_2.asm"
-    ; INCLUDE "_orig/code/beeper_sound.asm"
-    INCLUDE "_orig/code/level_loading.asm"
+    INCLUDE "orig/code/select_sprite.asm"
+    INCLUDE "orig/code/logic_2.asm"
+    ; INCLUDE "orig/code/beeper_sound.asm"
+    INCLUDE "orig/code/level_loading.asm"
     INCLUDE "code/drawing.asm"
 
     DISPLAY "Fast free: ", stackTop - $
@@ -76,13 +76,13 @@ codeLength = $ - codeStart
 
 ; Variables
     ORG Level.end
-    INCLUDE "_orig/var/State.asm"
-    INCLUDE "_orig/var/State_objTileIndex.asm"
-    INCLUDE "_orig/var/Scene.asm"
+    INCLUDE "orig/var/State.asm"
+    INCLUDE "orig/var/State_objTileIndex.asm"
+    INCLUDE "orig/var/Scene.asm"
 
 ; Levels
     ORG 0
-    INCLUDE "_orig/data/Headers.asm"
+    INCLUDE "orig/data/Headers.asm"
 
     PAGE MemPage.level0           ; Klondike
     INCLUDE "data/Lev0Klondike.asm"
