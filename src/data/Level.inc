@@ -1,7 +1,6 @@
 ; Level data addresses
     MODULE Level
 
-
 start           EQU #C178
 
 levObjectTypes  EQU #C178
@@ -21,6 +20,5 @@ trajDirTable    EQU #F886
 
 end             EQU #FDE5
 length          EQU end - start
-
 
     ENDMODULE

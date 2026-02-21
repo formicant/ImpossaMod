@@ -1,8 +1,19 @@
-    MODULE Common
+    MODULE Font
 
-
-; Character font
-font:   ; ASCII - 48
+; #CAA5 Character font
+; A non-standard encoding is used
+start:
+        ; ASCII - 32:
+        dh 00 00 00 00 00 00 00 00  ;   space
+        ; ASCII - 39:
+        dh EE EE EE EE EE EE EE 00  ; ( energy full
+        dh E0 EE E8 E8 E8 E8 E0 00  ; ) energy half
+        dh EE EE EE EE EE EE EE 00  ; * energy full
+        dh E0 EE E8 E8 E8 E8 E0 00  ; + energy half
+        dh EE EE EE EE EE EE EE 00  ; , energy full
+        dh E0 EE E8 E8 E8 E8 E0 00  ; - energy half
+        dh 00 EE 88 88 88 88 00 00  ; . energy empty
+        dh FF 42 5E 42 7A 42 FF 00  ; / soup can
         dh 7C C6 C6 C6 C6 C6 7C 00  ; 0
         dh 30 70 30 30 30 30 78 00  ; 1
         dh 7C C6 06 7C C0 C6 FE 00  ; 2
@@ -13,11 +24,7 @@ font:   ; ASCII - 48
         dh FE C6 06 06 06 06 06 00  ; 7
         dh 7C C6 C6 7C C6 C6 7C 00  ; 8
         dh 7C C6 C6 7E 06 C6 7C 00  ; 9
-        dh FF 42 5E 42 7A 42 FF 00  ; : soup can
-        dh 30 60 F0 20 40 80 00 00  ; ; smart
-        dh 00 04 1C 7C 1C 04 00 00  ; < ◄
-        dh BA BC A2 BE A2 BC BA 00  ; = diary
-        dh 00 40 70 7C 70 40 00 00  ; > ►
+        ; ASCII - 44:
         dh 7C C6 06 3C 30 00 30 00  ; ?
         dh 7E C3 DB D3 DB C3 7E 00  ; @ ©
         dh 7C C6 C6 FE C6 C6 C6 00  ; A
@@ -46,11 +53,7 @@ font:   ; ASCII - 48
         dh C6 C6 6C 38 6C C6 C6 00  ; X
         dh CC CC CC 78 30 30 30 00  ; Y
         dh FE C6 0C 18 30 66 FE 00  ; Z
-        dh EE EE EE EE EE EE EE 00  ; [ energy full
-        dh E0 EE E8 E8 E8 E8 E0 00  ; \ energy half
-        dh 00 EE 88 88 88 88 00 00  ; ] energy empty
-        dh 00 10 10 38 38 7C 00 00  ; ^ ▲
-        dh 00 7C 38 38 10 10 00 00  ; _ ▼
-
+        dh 10 18 FC FE FC 18 10 00  ; [ →
+end:
 
     ENDMODULE

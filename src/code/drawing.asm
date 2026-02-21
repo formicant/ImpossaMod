@@ -1069,7 +1069,7 @@ printChar:
         jr C, .space
     .2  add a
         ld c, a
-        ld b, high(Common.font) / 2
+        ld b, high(Font.start) / 2
         rl b
         ; `bc`: char addr in the font
     DUP 7

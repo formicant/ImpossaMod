@@ -1,6 +1,5 @@
     MODULE Screen
 
-
 ; Loading screen
 start:
 
@@ -227,6 +226,5 @@ attrs:  ; #5800
 attrLength  EQU $ - attrs
 
 length      EQU $ - start
-
 
     ENDMODULE

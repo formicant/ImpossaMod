@@ -1075,7 +1075,7 @@ printString:  ; #c67d
         ld l, a
         ld h, 0
     .3  add hl, hl
-        ld de, Common.font
+        ld de, Font.start
         add hl, de
         ex de, hl
         ; `de`: addr in font

@@ -1,0 +1,15 @@
+    ORG Level.start
+    INCLUDE "tiles.asm"
+    ORG Level.objectTable
+    INCLUDE "object_table.asm"
+    ORG Level.blockMap
+    INCLUDE "block_map.asm"
+    INCLUDE "../Common/sprites.asm"
+    INCLUDE "sprites.asm"
+    ORG Level.transitTable
+    INCLUDE "transits.asm"
+    ORG Level.trajVelTable
+    INCLUDE "traj_table.asm"
+    INCLUDE "../Common/object_types.asm"
+    INCLUDE "object_types.asm"
+    INCLUDE "trajectories.asm"

@@ -12,13 +12,13 @@
     INCLUDE "_orig/inc/port.inc"
     INCLUDE "_orig/inc/ay.inc"
     INCLUDE "inc/memory.inc"
-    INCLUDE "inc/level.inc"
+    INCLUDE "data/Level.inc"
 
 
 ; Slow memory
     ORG #4000
 ; Loading screen
-    INCLUDE "_orig/data/loading_screen.asm"
+    INCLUDE "_orig/data/Screen.asm"
 
 ; Basic loader
     ORG #5CCB
@@ -27,7 +27,7 @@
 ; Code
     ORG #6000
 codeStart:
-    INCLUDE "data/font.asm"
+    INCLUDE "data/Font.asm"
 
     INCLUDE "_orig/code/game_loop.asm"
     INCLUDE "_orig/code/code.asm"
@@ -69,8 +69,7 @@ codeStart:
     _NEXT_ORG #AEAE
 stackTop:
 ; Data
-    INCLUDE "_orig/data/sprites.asm"
-    INCLUDE "_orig/data/object_types.asm"
+    INCLUDE "data/Common.asm"
     _NEXT_ORG Level.start
 
 codeLength = $ - codeStart
@@ -82,79 +81,22 @@ codeLength = $ - codeStart
 
 ; Levels
     ORG 0
-    INCLUDE "_orig/data/headers.asm"
+    INCLUDE "_orig/data/Headers.asm"
 
     PAGE MemPage.level0           ; Klondike
-    ORG Level.start
-    _NEXT_ORG Level.levObjectTypes: INCLUDE "_orig/data/0_klondike/object_types.asm"
-    _NEXT_ORG Level.blockMap      : INCLUDE "_orig/data/0_klondike/block_map.asm"
-    _NEXT_ORG Level.transitTable  : INCLUDE "_orig/data/0_klondike/transits.asm"
-    _NEXT_ORG Level.sprites       : INCLUDE "_orig/data/0_klondike/sprites.asm"
-    _NEXT_ORG Level.tilePixels    : INCLUDE "_orig/data/0_klondike/tiles.asm"
-    _NEXT_ORG Level.objectTable   : INCLUDE "_orig/data/0_klondike/object_table.asm"
-    _NEXT_ORG Level.bossLogicAddr : dw Code.bossLogicKlondike
-    _NEXT_ORG Level.trajVelTable  : INCLUDE "_orig/data/0_klondike/traj_table.asm"
-                                    INCLUDE "_orig/data/0_klondike/trajectories.asm"
-                                    INCLUDE "_orig/code/boss0_klondike.asm"
-    _NEXT_ORG Level.end
+    INCLUDE "data/Lev0Klondike.asm"
 
     PAGE MemPage.level1           ; Orient
-    ORG Level.start
-    _NEXT_ORG Level.levObjectTypes: INCLUDE "_orig/data/1_orient/object_types.asm"
-    _NEXT_ORG Level.blockMap      : INCLUDE "_orig/data/1_orient/block_map.asm"
-    _NEXT_ORG Level.transitTable  : INCLUDE "_orig/data/1_orient/transits.asm"
-    _NEXT_ORG Level.sprites       : INCLUDE "_orig/data/1_orient/sprites.asm"
-    _NEXT_ORG Level.tilePixels    : INCLUDE "_orig/data/1_orient/tiles.asm"
-    _NEXT_ORG Level.objectTable   : INCLUDE "_orig/data/1_orient/object_table.asm"
-    _NEXT_ORG Level.bossLogicAddr : dw Code.bossLogicOrient
-    _NEXT_ORG Level.trajVelTable  : INCLUDE "_orig/data/1_orient/traj_table.asm"
-                                    INCLUDE "_orig/data/1_orient/trajectories.asm"
-                                    INCLUDE "_orig/code/boss1_orient.asm"
-    _NEXT_ORG Code.bossLogicExtra : INCLUDE "_orig/code/boss1_extra.asm"
-    _NEXT_ORG Level.end
+    INCLUDE "data/Lev1Orient.asm"
 
     PAGE MemPage.level2           ; Amazon
-    ORG Level.start
-    _NEXT_ORG Level.levObjectTypes: INCLUDE "_orig/data/2_amazon/object_types.asm"
-    _NEXT_ORG Level.blockMap      : INCLUDE "_orig/data/2_amazon/block_map.asm"
-    _NEXT_ORG Level.transitTable  : INCLUDE "_orig/data/2_amazon/transits.asm"
-    _NEXT_ORG Level.sprites       : INCLUDE "_orig/data/2_amazon/sprites.asm"
-    _NEXT_ORG Level.tilePixels    : INCLUDE "_orig/data/2_amazon/tiles.asm"
-    _NEXT_ORG Level.objectTable   : INCLUDE "_orig/data/2_amazon/object_table.asm"
-    _NEXT_ORG Level.bossLogicAddr : dw Code.bossLogicAmazon
-    _NEXT_ORG Level.trajVelTable  : INCLUDE "_orig/data/2_amazon/traj_table.asm"
-                                    INCLUDE "_orig/data/2_amazon/trajectories.asm"
-                                    INCLUDE "_orig/code/boss2_amazon.asm"
-    _NEXT_ORG Level.end
+    INCLUDE "data/Lev2Amazon.asm"
 
     PAGE MemPage.level3           ; Iceland
-    ORG Level.start
-    _NEXT_ORG Level.levObjectTypes: INCLUDE "_orig/data/3_iceland/object_types.asm"
-    _NEXT_ORG Level.blockMap      : INCLUDE "_orig/data/3_iceland/block_map.asm"
-    _NEXT_ORG Level.transitTable  : INCLUDE "_orig/data/3_iceland/transits.asm"
-    _NEXT_ORG Level.sprites       : INCLUDE "_orig/data/3_iceland/sprites.asm"
-    _NEXT_ORG Level.tilePixels    : INCLUDE "_orig/data/3_iceland/tiles.asm"
-    _NEXT_ORG Level.objectTable   : INCLUDE "_orig/data/3_iceland/object_table.asm"
-    _NEXT_ORG Level.bossLogicAddr : dw Code.bossLogicIceland
-    _NEXT_ORG Level.trajVelTable  : INCLUDE "_orig/data/3_iceland/traj_table.asm"
-                                    INCLUDE "_orig/data/3_iceland/trajectories.asm"
-                                    INCLUDE "_orig/code/boss3_iceland.asm"
-                                    INCLUDE "_orig/code/boss3_extra.asm"
-    _NEXT_ORG Level.end
+    INCLUDE "data/Lev3Iceland.asm"
 
     PAGE MemPage.level4           ; Bermuda
-    ORG Level.start
-    _NEXT_ORG Level.levObjectTypes: INCLUDE "_orig/data/4_bermuda/object_types.asm"
-    _NEXT_ORG Level.blockMap      : INCLUDE "_orig/data/4_bermuda/block_map.asm"
-    _NEXT_ORG Level.transitTable  : INCLUDE "_orig/data/4_bermuda/transits.asm"
-    _NEXT_ORG Level.sprites       : INCLUDE "_orig/data/4_bermuda/sprites.asm"
-    _NEXT_ORG Level.tilePixels    : INCLUDE "_orig/data/4_bermuda/tiles.asm"
-    _NEXT_ORG Level.objectTable   : INCLUDE "_orig/data/4_bermuda/object_table.asm"
-    _NEXT_ORG Level.bossLogicAddr : dw Code.bossLogicBermuda
-    _NEXT_ORG Level.trajVelTable  : INCLUDE "_orig/data/4_bermuda/traj_table.asm"
-                                    INCLUDE "_orig/data/4_bermuda/trajectories.asm"
-                                    INCLUDE "_orig/code/boss4_bermuda.asm"
-    _NEXT_ORG Level.end
+    INCLUDE "data/Lev4Bermuda.asm"
 
     PAGE 0
 
