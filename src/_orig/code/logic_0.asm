@@ -21,7 +21,7 @@ addEnergy:  ; #d09a
 
 
 ; Decrement energy by one point
-;   `ix`: scene.hero
+;   `ix`: Scene.hero
 ; Used by c_d709 and c_e6e1.
 decEnergy:  ; #d0af
         ld a, (ix+Obj.blinkTime)
@@ -45,7 +45,7 @@ decEnergy:  ; #d0af
 ; Decrement blinking time for all scene objects
 ; Used by c_cc25.
 decBlinkTime:  ; #d0d0
-        ld ix, scene
+        ld ix, Scene.objects
         ld b, 8                 ; object count
         ld de, Obj              ; object size
 .object:
@@ -156,7 +156,7 @@ clearGameState:  ; #d133
 ;   `bc`: hero's position (x, y), blocks
 ; Used by c_d1c1.
 initHero:  ; #d153
-        ld ix, scene.hero
+        ld ix, Scene.hero
         ld l, b
         ld h, 0
     .5  add hl, hl
@@ -272,8 +272,8 @@ initLevel:  ; #d1c1
 ; Used by c_cecc.
 findConveyors:  ; #d213
         ld a, (conveyorTileIndices.left)
-        ld (scrTiles.stop + 1), a   ; stop-value
-        ld hl, scrTiles.row1 + 3    ; before first visible tile
+        ld (Tables.scrTiles.stop + 1), a   ; stop-value
+        ld hl, Tables.scrTiles.row1 + 3    ; before first visible tile
         ld de, (conveyorTileIndices)
         ld ix, State.conveyors
 .scan:
@@ -284,7 +284,7 @@ findConveyors:  ; #d213
         cp e
         jp NZ, .scan
 .leftConveyor:
-        ld bc, scrTiles.stop + 1
+        ld bc, Tables.scrTiles.stop + 1
         push hl
         xor a
         sbc hl, bc
@@ -324,7 +324,7 @@ findConveyors:  ; #d213
 ; Mark all conveyor screen tiles to be updated
 ; Used by c_cc25.
 updateConveyors:  ; #d278
-        ld de, scrTileUpd - scrTiles
+        ld de, Tables.scrTileUpd - Tables.scrTiles
         ld ix, State.conveyors
 .conveyor:
         ld l, (ix+Conveyor.start+0)
@@ -334,7 +334,7 @@ updateConveyors:  ; #d278
         ret Z
 
         ld b, (ix+Conveyor.length)
-        add hl, de              ; conveyor addr in `scrTileUpd`
+        add hl, de              ; conveyor addr in `Tables.scrTileUpd`
 .tile:
         ld (hl), 1              ; update
         inc hl
@@ -344,7 +344,7 @@ updateConveyors:  ; #d278
         jp .conveyor
 
 
-; Clear the `scene` in some crazy way
+; Clear the `Scene` in some crazy way
 ; Used by c_cc25.
 clearScene:  ; #d29a
         ld hl, 0
@@ -357,7 +357,7 @@ clearScene:  ; #d29a
         ld b, h
         ; `bc`: number of bytes to clear
 
-        ld hl, scene
+        ld hl, Scene.objects
 .clearByte:
         ld (hl), 0
         inc hl
@@ -412,7 +412,7 @@ turnIntoCoin:  ; #d2b3
 ; If the hero is riding an object, move the hero accordingly
 ; Used by c_cc25.
 heroRiding:  ; #d308
-        ld ix, scene.hero
+        ld ix, Scene.hero
         bit Flag.riding, (ix+Obj.auxFlags)
         jp NZ, .isRiding
 
@@ -429,7 +429,7 @@ heroRiding:  ; #d308
 
 .l_0:
         ; Find an object at the hero's feet
-        ld iy, scene.obj2
+        ld iy, Scene.obj2
         ld b, 6                 ; object count
 .object:
         call isHeroOnTopObject
@@ -641,9 +641,9 @@ makeObjectBig:  ; #d443
         ret
 
 
-; Get addr in `scrTiles` for object
+; Get addr in `Tables.scrTiles` for object
 ;   arg `ix`: object
-;   ret `hl`: tile addr in `scrTiles`
+;   ret `hl`: tile addr in `Tables.scrTiles`
 ;   spoils `af`
 ; Used by c_dce1, c_dd09, c_dd46, c_dd73, c_df85, c_f1d7, c_f2e7 and  c_f618.
 getScrTileAddr:  ; #d460
@@ -671,7 +671,7 @@ getScrTileAddr:  ; #d460
     .2  add hl, hl
         add hl, bc
         add hl, de
-        ld (.hl), hl            ; `a`/ 8 * 44 (row offset in scrTiles)
+        ld (.hl), hl            ; `a`/ 8 * 44 (row offset in Tables.scrTiles)
 
         ld l, (ix+Obj.x+0)
         ld h, (ix+Obj.x+1)
@@ -703,11 +703,11 @@ getScrTileAddr:  ; #d460
     EDUP
         ex de, hl
         ; `de` x coord in tiles
-.hl+*   ld hl, -0               ; row offset in scrTiles
+.hl+*   ld hl, -0               ; row offset in Tables.scrTiles
         add hl, de
-        ld de, scrTiles
+        ld de, Tables.scrTiles
         add hl, de
-        ; `hl`: tile addr in `scrTiles`
+        ; `hl`: tile addr in `Tables.scrTiles`
         pop de
         pop bc
         ret
@@ -716,7 +716,7 @@ getScrTileAddr:  ; #d460
 ; Remove objects from the scene that should be removed (?)
 ; Used by c_cc25.
 cleanUpScene:  ; #d4cd
-        ld ix, scene.obj1
+        ld ix, Scene.obj1
         ld b, 7                 ; object count
         ld de, Obj              ; object size
 .object:
@@ -741,7 +741,7 @@ performSmartIfPressed:  ; #d4e5
         ret NZ
 
         ; perform smart
-        ld iy, scene.obj2
+        ld iy, Scene.obj2
         ld b, 6                 ; object count
 .object:
         push bc

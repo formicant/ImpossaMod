@@ -26,7 +26,7 @@ entryPoint:
         ; if 128K
 .loadAllLevels:
         ; load all levels into memory pages
-        ld hl, levelMemPages
+        ld hl, Tables.levelMemPages
 .level:
         ld a, (hl)
         out (c), a              ; set level RAM page
@@ -51,7 +51,7 @@ entryPoint:
         pop hl, bc
         inc l
         ld a, l
-        cp low(levelMemPages.end)
+        cp low(Tables.levelMemPages.end)
         jr C, .level
 
         ld a, #10
@@ -71,7 +71,7 @@ entryPoint:
 
 .initInterrupts:
         ld sp, stackTop
-        ld a, high(interruptTable)
+        ld a, high(Tables.interruptTable)
         ld i, a
         im 2
         ei

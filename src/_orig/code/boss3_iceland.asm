@@ -10,14 +10,14 @@ bossLogicIceland:  ; #fad3
         ld a, (State.bossKilled)
         or a
         ret NZ
-        ld ix, scene.obj2
+        ld ix, Scene.obj2
         ld a, #37
         call createObject
-        ld ix, scene.obj3
+        ld ix, Scene.obj3
         ld a, #38
         call createObject
-        ld ix, scene.obj2
-        ld iy, scene.obj3
+        ld ix, Scene.obj2
+        ld iy, Scene.obj3
         ld (ix+Obj.y), #60
         ld l, (ix+Obj.x+0)
         ld h, (ix+Obj.x+1)
@@ -34,7 +34,7 @@ bossLogicIceland:  ; #fad3
         ld (State.bulletTime), a
         ret
 .l_0:
-        ld ix, scene.obj2
+        ld ix, Scene.obj2
         ld l, (ix+Obj.x+0)
         ld h, (ix+Obj.x+1)
         bit Dir.left, (ix+Obj.mo.direction)

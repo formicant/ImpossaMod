@@ -65,7 +65,7 @@ pauseGameIfPressed:  ; #cd5c
 .l_2:
         call checkPauseKey
         jr Z, .l_2
-        ld hl, scrTileUpd.row23 + 4
+        ld hl, Tables.scrTileUpd.row23 + 4
         ld b, 10
 .l_3:
         ld (hl), 1
@@ -92,10 +92,10 @@ moveToMapSpan:  ; #cd9b
 ; Used by c_cc25.
 advanceInMap:  ; #cdae
         _DEBUG_BORDER Colour.yellow
-        ld hl, scrTileUpd
-        ld de, scrTileUpd + 1
+        ld hl, Tables.scrTileUpd
+        ld de, Tables.scrTileUpd + 1
         ld (hl), 0
-        ld bc, scrTileUpd.length - 1
+        ld bc, Tables.scrTileUpd.length - 1
         ldir
         call drawObjectsUnchecked
         call cleanUpObjTiles
@@ -103,28 +103,28 @@ advanceInMap:  ; #cdae
         ld c, 3
         call waitFrames
         _DEBUG_BORDER Colour.cyan
-        ld hl, scrTiles.row1 + 4
+        ld hl, Tables.scrTiles.row1 + 4
         exx
-        ld hl, scrTiles.row1 + 6
-        ld de, scrTileUpd.row1 + 6
+        ld hl, Tables.scrTiles.row1 + 6
+        ld de, Tables.scrTileUpd.row1 + 6
         call moveScreenTiles
         _DEBUG_BORDER Colour.black
         ld c, 1
         call waitFrames
         _DEBUG_BORDER Colour.green
-        ld hl, scrTiles.row1 + 6
+        ld hl, Tables.scrTiles.row1 + 6
         exx
-        ld hl, scrTiles.row1 + 10
-        ld de, scrTileUpd.row1 + 10
+        ld hl, Tables.scrTiles.row1 + 10
+        ld de, Tables.scrTileUpd.row1 + 10
         call moveScreenTiles
         _DEBUG_BORDER Colour.black
         ld c, 5
         call waitFrames
         _DEBUG_BORDER Colour.magenta
-        ld hl, scrTiles.row1 + 10
+        ld hl, Tables.scrTiles.row1 + 10
         exx
-        ld hl, scrTiles.row1 + 12
-        ld de, scrTileUpd.row1 + 12
+        ld hl, Tables.scrTiles.row1 + 12
+        ld de, Tables.scrTileUpd.row1 + 12
         call moveScreenTiles
         _DEBUG_BORDER Colour.red
         call advanceObjectsInMap
@@ -135,10 +135,10 @@ advanceInMap:  ; #cdae
         call scrollScrTiles
         call fillNextScrTiles
 
-        ld hl, scrTileUpd
-        ld de, scrTileUpd + 1
+        ld hl, Tables.scrTileUpd
+        ld de, Tables.scrTileUpd + 1
         ld (hl), 0
-        ld bc, scrTileUpd.length - 1
+        ld bc, Tables.scrTileUpd.length - 1
         ldir
 
         _DEBUG_BORDER Colour.blue
@@ -152,7 +152,7 @@ advanceInMap:  ; #cdae
 ; Used by c_cdae.
 cleanUpObjTiles:  ; #ce23
         ld de, -3
-        ld hl, scrTileUpd.row1
+        ld hl, Tables.scrTileUpd.row1
         ld c, 4
         xor a
         ld b, a
@@ -193,8 +193,8 @@ cleanUpObjTiles:  ; #ce23
 ; Move screen tiles to the left by 8 tiles
 ; Used by c_cdae.
 scrollScrTiles:  ; #ce57
-        ld de, scrTiles.row0
-        ld hl, scrTiles.row0 + 8
+        ld de, Tables.scrTiles.row0
+        ld hl, Tables.scrTiles.row0 + 8
         ld a, 24
 .row:
     .36 ldi
@@ -209,7 +209,7 @@ scrollScrTiles:  ; #ce57
         ret
 
 
-; Fills right off-screen area of scrTiles with tiles form level map
+; Fills right off-screen area of Tables.scrTiles with tiles form level map
 ; Used by c_cdae.
 fillNextScrTiles:  ; #ceb2
         ld hl, (State.screenX)
@@ -222,11 +222,11 @@ fillNextScrTiles:  ; #ceb2
         add hl, de
         ld de, Level.blockMap
         add hl, de
-        ld de, scrTiles.row0 + 36
+        ld de, Tables.scrTiles.row0 + 36
         ld b, 2
         jp fillScrTiles
 
-; Fills entire scrTiles with tiles form level map
+; Fills entire Tables.scrTiles with tiles form level map
 ; Used by c_cd9b.
 fillAllScrTiles:  ; #cecc
         ld hl, (State.screenX)
@@ -237,12 +237,12 @@ fillAllScrTiles:  ; #cecc
         add hl, de
         ld de, Level.blockMap
         add hl, de
-        ld de, scrTiles.row0 + 4
+        ld de, Tables.scrTiles.row0 + 4
         ld b, 10
 
-; Fills some area in scrTiles with tiles form level map
+; Fills some area in Tables.scrTiles with tiles form level map
 ;   `hl`: start addr in blockMap
-;   `de`: start addr in scrTiles
+;   `de`: start addr in Tables.scrTiles
 ;   `b`: width in blocks
 fillScrTiles:
 .block_column:
@@ -288,7 +288,7 @@ fillScrTiles:
 ; Used by c_cdae.
 advanceObjectsInMap:  ; #cf17
         ld b, 8                 ; object count
-        ld ix, scene
+        ld ix, Scene.objects
 .object:
         ld l, (ix+Obj.x+0)
         ld h, (ix+Obj.x+1)      ; `hl`: x coord in pixels

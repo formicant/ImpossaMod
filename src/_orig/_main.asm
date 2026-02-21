@@ -13,7 +13,7 @@
 ; Loading screen
     ORG #4000
     INCLUDE "data/Screen.asm"
-    INCLUDE "var/tables.asm"
+    INCLUDE "var/Tables.asm"
 
 ; Basic loader
     ORG #5CCB   ; overlap
@@ -34,7 +34,10 @@ codeStart:
     ORG #BDDF
     INCLUDE "code/sound.asm"
     INCLUDE "code/beeper_sound.asm"
-    INCLUDE "var/scene.asm"
+    
+    INCLUDE "var/State_objTileIndex.asm"
+    INCLUDE "var/Scene.asm"
+    
     ORG #BEB4   ; overlap
     INCLUDE "code/init_interrupts.asm"
     INCLUDE "code/interrupt.asm"
@@ -66,7 +69,7 @@ codeStart:
     INCLUDE "code/boss1_extra.asm"
 
     ORG #FE01
-    INCLUDE "var/state.asm"
+    INCLUDE "var/State.asm"
 
 ; Save game
     EMPTYTAP "original.tap"

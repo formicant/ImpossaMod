@@ -136,7 +136,7 @@ exitY       byte    ; exit y block coord
 ;   length: 3
     STRUCT Conveyor
 
-start       word    ; addr in `scrTiles` of the first conveyor tile
+start       word    ; addr in `Tables.scrTiles` of the first conveyor tile
 length      byte    ; number of consequent conveyor tiles
 
     ENDS

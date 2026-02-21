@@ -20,7 +20,7 @@ gameStart:  ; #cc5a
         or a
         jr Z, .normal
         ; wait until all explosion clouds disappear
-        ld ix, scene.obj1
+        ld ix, Scene.obj1
         ld de, Obj              ; object size
         ld b, 7                 ; object count
 .bossPart:
@@ -84,7 +84,7 @@ gameStart:  ; #cc5a
 
         xor a
         ld (State.advance), a
-        ld ix, scene.hero
+        ld ix, Scene.hero
         set Flag.exists, (ix+Obj.flags) ; why?
 
         call advanceInMap       ; TODO: can be inlined

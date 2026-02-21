@@ -8,7 +8,7 @@ bossLogicExtra:
 boss3extra:  ; #fbb9
         push ix
         ld b, #04
-        ld ix, scene.obj2
+        ld ix, Scene.obj2
         ld de, Obj
 .l_0:
         ld a, (ix+Obj.mo.direction)

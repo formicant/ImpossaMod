@@ -14,10 +14,10 @@ bossLogicAmazon:  ; #fa65
         ld a, (State.bossKilled)
         or a
         ret NZ
-        ld ix, scene.obj2
+        ld ix, Scene.obj2
         ld a, #2B
         call createObject
-        ld ix, scene.obj3
+        ld ix, Scene.obj3
         ld a, #2C
         call createObject
         call generateRandom
@@ -30,8 +30,8 @@ bossLogicAmazon:  ; #fa65
         ld e, (hl)
         inc hl
         ld a, (hl)
-        ld ix, scene.obj2
-        ld iy, scene.obj3
+        ld ix, Scene.obj2
+        ld iy, Scene.obj3
         ld (ix+Obj.x+0), e
         ld (iy+Obj.x+0), e
         ld (ix+Obj.x+1), #00

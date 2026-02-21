@@ -14,22 +14,22 @@ bossLogicOrient:  ; #f9a4
         ld a, (State.bossKilled)
         or a
         ret NZ
-        ld ix, scene.obj2
+        ld ix, Scene.obj2
         ld a, #32
         call createObject
-        ld ix, scene.obj3
+        ld ix, Scene.obj3
         ld a, #33
         call createObject
-        ld ix, scene.obj4
+        ld ix, Scene.obj4
         ld a, #34
         call createObject
-        ld ix, scene.obj5
+        ld ix, Scene.obj5
         ld a, #35
         call createObject
         ld de, c_f99e
         ld b, #03
-        ld ix, scene.obj2
-        ld iy, scene.obj3
+        ld ix, Scene.obj2
+        ld iy, Scene.obj3
 .l_0:
         push bc
         ld l, (ix+Obj.x+0)
@@ -57,7 +57,7 @@ bossLogicOrient:  ; #f9a4
         ld (State.bulletTime), a
         ret
 .l_1:
-        ld ix, scene.obj2
+        ld ix, Scene.obj2
         bit Dir.up, (ix+Obj.mo.direction)
         jr Z, .l_2
         ld a, (ix+Obj.y)

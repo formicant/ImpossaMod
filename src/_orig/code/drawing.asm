@@ -4,9 +4,9 @@
 ; Draw scene objects with coordinate checks
 ; Used by c_cc25 and c_cdae.
 drawObjectsChecked:  ; #c044
-        ld ix, scene
+        ld ix, Scene.objects
         ld a, 2
-        ld (objTileIndex), a
+        ld (State.objTileIndex), a
         ld b, 8
 .object:
         push bc
@@ -23,9 +23,9 @@ drawObjectsChecked:  ; #c044
 ; Draw scene objects without coordinate checks
 ; Used by c_cdae.
 drawObjectsUnchecked:  ; #c060
-        ld ix, scene
+        ld ix, Scene.objects
         ld a, 2
-        ld (objTileIndex), a
+        ld (State.objTileIndex), a
         ld b, 8
 .object:
         push bc
@@ -116,32 +116,32 @@ drawObject:
     EDUP
         ; `de`: x coord in tiles
 
-        ld bc, scrTiles
+        ld bc, Tables.scrTiles
         add hl, bc
         add hl, de
         ex de, hl
-        ; `de`: addr in `scrTiles`
+        ; `de`: addr in `Tables.scrTiles`
         ; `hl`: x coord in tiles
 
-        ld a, (objTileIndex)
+        ld a, (State.objTileIndex)
         ld l, a
         ld h, 0
    .3   add hl, hl
-        ld bc, objTiles
+        ld bc, Tables.objTiles
         add hl, bc
-        ; `hl`: tile addr in `objTiles`
+        ; `hl`: tile addr in `Tables.objTiles`
         push hl : pop iy
-        ; `iy`: tile addr in `objTiles`
+        ; `iy`: tile addr in `Tables.objTiles`
         ld a, (ix+Obj.y)            ; y coord
         and %00000111
         ld c, a
         ld b, 0
         add iy, bc
-        ; `iy`: pixel row addr in `objTiles`
+        ; `iy`: pixel row addr in `Tables.objTiles`
 
         ex de, hl
-        ; `de`: tile addr in `objTiles`
-        ; `hl`: addr in `scrTiles`
+        ; `de`: tile addr in `Tables.objTiles`
+        ; `hl`: addr in `Tables.scrTiles`
 
         ld bc, #0303            ; big sprite size
         bit Flag.isBig, (ix+Obj.flags)
@@ -175,22 +175,22 @@ drawObject:
         ld a, (ix+Obj.colour)            ; object attr
         ld (.attr), a
         exx
-        ld a, (objTileIndex)
+        ld a, (State.objTileIndex)
         ld l, a
-        ld h, high(objTileAttrs)
-        ; `hl`: addr in `objTileAttrs`
+        ld h, high(Tables.objTileAttrs)
+        ; `hl`: addr in `Tables.objTileAttrs`
         exx
-        ; `hl`: addr in `scrTiles`
+        ; `hl`: addr in `Tables.scrTiles`
 .attrTileColumn:
         push hl
         push bc
 .attrTile:
-        ld a, (hl)              ; tile in `scrTiles`
+        ld a, (hl)              ; tile in `Tables.scrTiles`
         ld e, a
         ld d, high(Level.tileAttrs)
         ld a, (de)              ; tile attr
         exx
-        ; `hl`: addr in `objTileAttrs`
+        ; `hl`: addr in `Tables.objTileAttrs`
         and %00111000           ; paper
         ld c, a
 .attr+* ld a, -0                ; (ix+Obj.o_9), object attr
@@ -199,7 +199,7 @@ drawObject:
         ld (hl), a              ; set object tile attr
         inc l
         exx
-        ; `hl`: addr in `scrTiles`
+        ; `hl`: addr in `Tables.scrTiles`
         ld de, 44
         add hl, de              ; one tile row down
         dec c                   ; dec height
@@ -211,8 +211,8 @@ drawObject:
         djnz .attrTileColumn
 
         pop bc                  ; size in tiles
-        pop de                  ; tile addr in `objTiles`
-        pop hl                  ; addr in `scrTiles`
+        pop de                  ; tile addr in `Tables.objTiles`
+        pop hl                  ; addr in `Tables.scrTiles`
 
 .pixelTileColumn:
         push bc
@@ -220,7 +220,7 @@ drawObject:
 .pixelTile:
         push bc
         push hl
-        ld c, (hl)              ; tile in `scrTiles`
+        ld c, (hl)              ; tile in `Tables.scrTiles`
         ld b, high(Level.tileTypes)
         ld a, (bc)              ; tile type
         and a
@@ -231,38 +231,38 @@ drawObject:
         ld bc, 8
         ex de, hl
         add hl, bc
-        ex de, hl               ; `de`: next tile addr in `objTiles`
-        ld a, (objTileIndex)
+        ex de, hl               ; `de`: next tile addr in `Tables.objTiles`
+        ld a, (State.objTileIndex)
         inc a
-        ld (objTileIndex), a    ; next object tile index
+        ld (State.objTileIndex), a    ; next object tile index
         jp .skipPixels
 
 .isBackground:
         ; draw background
-        ld bc, scrTileUpd - scrTiles
-        add hl, bc              ; `hl`: addr in `scrTileUpd`
+        ld bc, Tables.scrTileUpd - Tables.scrTiles
+        add hl, bc              ; `hl`: addr in `Tables.scrTileUpd`
         ld a, (hl)              ; upd value
         ld c, a
         cp 2
         jr C, .notObjTile
 
         ; there'a already an object there, draw on top
-        ld a, (objTileIndex)
+        ld a, (State.objTileIndex)
         ld (hl), a              ; set object tile index
         inc a
-        ld (objTileIndex), a    ; next object tile index
+        ld (State.objTileIndex), a    ; next object tile index
         ld l, c                 ; upd value
         ld h, 0
-        ld bc, objTiles
+        ld bc, Tables.objTiles
         jp .copyBgPixels
 
 .notObjTile:
-        ld a, (objTileIndex)
+        ld a, (State.objTileIndex)
         ld (hl), a              ; set object tile index
         inc a
-        ld (objTileIndex), a    ; next object tile index
-        ld bc, scrTiles - scrTileUpd
-        add hl, bc              ; `hl`: addr in `scrTiles`
+        ld (State.objTileIndex), a    ; next object tile index
+        ld bc, Tables.scrTiles - Tables.scrTileUpd
+        add hl, bc              ; `hl`: addr in `Tables.scrTiles`
         ld l, (hl)              ; tile
         ld h, 0
         ld bc, Level.tilePixels
@@ -271,18 +271,18 @@ drawObject:
     .3  add hl, hl
         add hl, bc
         ; `hl`: addr of background object tile pixels or background tile pixels
-        ; `de`: new addr in `objTiles`
+        ; `de`: new addr in `Tables.objTiles`
     .8  ldi
 
 .skipPixels:
-        pop hl                  ; addr in `scrTiles`
+        pop hl                  ; addr in `Tables.scrTiles`
         ld bc, 44
         add hl, bc              ; one tile row down
         pop bc
         dec c                   ; dec height
         jp NZ, .pixelTile
 
-        pop hl                  ; addr in `scrTiles`
+        pop hl                  ; addr in `Tables.scrTiles`
         inc hl                  ; one tile to the right
         pop bc
         djnz .pixelTileColumn
@@ -292,9 +292,9 @@ drawObject:
         ; continue
 
 
-; Draw a small (16×16) sprite into `objTiles`
-;   `ix`: object addr in `scene`
-;   `iy`: pixel row addr in `objTiles`
+; Draw a small (16×16) sprite into `Tables.objTiles`
+;   `ix`: object addr in `Scene`
+;   `iy`: pixel row addr in `Tables.objTiles`
 ; (Disables interrupts!)
 drawSmallSprite:
         ld a, (ix+Obj.x)
@@ -327,7 +327,7 @@ drawSmallSprite:
         di
         ld (.sp), sp
         ld sp, hl
-        ld h, high(mirrorTable)
+        ld h, high(Tables.mirror)
         ld a, 16                ; sprite pixel height
 
 .pixelRow:
@@ -369,9 +369,9 @@ drawSmallSprite:
         ret
 
 
-; Draw a small (16×16) sprite into `objTiles` with pixel shift
-;   `ix`: object addr in `scene`
-;   `iy`: pixel row addr in `objTiles`
+; Draw a small (16×16) sprite into `Tables.objTiles` with pixel shift
+;   `ix`: object addr in `Scene`
+;   `iy`: pixel row addr in `Tables.objTiles`
 ;   `a`: pixel shift (1..7)
 ; (Disables interrupts!)
 drawShiftedSmallSprite:  ; #c245
@@ -409,7 +409,7 @@ drawShiftedSmallSprite:  ; #c245
         di
         ld (.sp), sp
         ld sp, hl
-        ld h, high(mirrorTable)
+        ld h, high(Tables.mirror)
         ld ixh, 16              ; sprite pixel height
 
 .pixelRow:
@@ -420,7 +420,7 @@ drawShiftedSmallSprite:  ; #c245
 .mirror:
         ld b, h                 ; spr0
         ld c, l                 ; spr1
-        ld h, high(mirrorTable)
+        ld h, high(Tables.mirror)
         ld a, e                 ; msk1
         ld l, d                 ; msk0
         ld e, (hl)              ; mirror(msk0)
@@ -477,9 +477,9 @@ drawShiftedSmallSprite:  ; #c245
         ret
 
 
-; Draw a big (24×21) sprite into `objTiles`
-;   `ix`: object addr in `scene`
-;   `iy`: pixel row addr in `objTiles`
+; Draw a big (24×21) sprite into `Tables.objTiles`
+;   `ix`: object addr in `Scene`
+;   `iy`: pixel row addr in `Tables.objTiles`
 ; (Disables interrupts!)
 drawBigSprite:  ; #c314
         ld a, (ix+Obj.x)
@@ -516,7 +516,7 @@ drawBigSprite:  ; #c314
         ld (.sp), sp
         ld sp, hl
         exx
-        ld h, high(mirrorTable)
+        ld h, high(Tables.mirror)
         exx
         ld ixh, 21              ; sprite pixel height
 
@@ -592,9 +592,9 @@ drawBigSprite:  ; #c314
         ret
 
 
-; Draw a big (24×21) sprite into `objTiles`
-;   `ix`: object addr in `scene`
-;   `iy`: pixel row addr in `objTiles`
+; Draw a big (24×21) sprite into `Tables.objTiles`
+;   `ix`: object addr in `Scene`
+;   `iy`: pixel row addr in `Tables.objTiles`
 ;   `a`: pixel shift (1..7)
 ; (Disables interrupts!)
 drawShiftedBigSprite:  ; #c3ac
@@ -655,7 +655,7 @@ drawShiftedBigSprite:  ; #c3ac
 
 .jrMir: jr .pixelShift          ; `jr` or `nop`
 .mirror:
-        ld h, high(mirrorTable)
+        ld h, high(Tables.mirror)
         ld a, (hl)
         ld l, d
         ld d, (hl)
@@ -664,7 +664,7 @@ drawShiftedBigSprite:  ; #c3ac
         ld e, a
         exx
         ld b, h
-        ld h, high(mirrorTable)
+        ld h, high(Tables.mirror)
         ld a, (hl)
         ld l, b
         ld b, (hl)
@@ -735,9 +735,9 @@ drawShiftedBigSprite:  ; #c3ac
 
 ; Move screen tiles
 ; (Used in screen scrolling)
-;   `hl'`: old visible area position in scrTiles
-;   `hl`: new visible area position in in scrTiles
-;   `de`: new visible area position in in scrTileUpd
+;   `hl'`: old visible area position in Tables.scrTiles
+;   `hl`: new visible area position in in Tables.scrTiles
+;   `de`: new visible area position in in Tables.scrTileUpd
 ; Used by c_cdae.
 moveScreenTiles:  ; #c4c0
         exx
@@ -756,7 +756,7 @@ moveScreenTiles:  ; #c4c0
         exa
         ld b, 32
 .tile:
-        ld a, (de)              ; `a`: upd (value in `scrTileUpd`)
+        ld a, (de)              ; `a`: upd (value in `Tables.scrTileUpd`)
         and a
         jp Z, .noUpdate
         dec a                   ; `a`: upd - 1
@@ -783,7 +783,7 @@ moveScreenTiles:  ; #c4c0
         djnz .tile
 
 .nextRow:
-        ; skip off-screen scrTiles
+        ; skip off-screen Tables.scrTiles
         ld bc, 12
         add hl, bc
         ex de, hl
@@ -839,7 +839,7 @@ moveScreenTiles:  ; #c4c0
         push hl
         ld l, a
         inc l                   ; `l`: objTileIndex
-        ld h, high(objTileAttrs)
+        ld h, high(Tables.objTileAttrs)
         ld l, (hl)              ; object tile attr
         ld (ix), l              ; apply attr
         pop hl
@@ -848,7 +848,7 @@ moveScreenTiles:  ; #c4c0
         ld l, a                 ; `l`: objTileIndex - 1
         ld h, 0
     .3  add hl, hl
-        ld bc, objTiles + 8     ; (index - 1) compensation
+        ld bc, Tables.objTiles + 8     ; (index - 1) compensation
         add hl, bc
         jp .copyPixels
 
@@ -858,7 +858,7 @@ moveScreenTiles:  ; #c4c0
 updateScreenTiles:  ; #c561
         ; mark row ends with -1
         ld bc, #18FF            ; `b`: 24, `c`: -1
-        ld hl, scrTileUpd.row1 + 36
+        ld hl, Tables.scrTileUpd.row1 + 36
         ld de, 44
 .rowEnd:
         ld (hl), c
@@ -866,13 +866,13 @@ updateScreenTiles:  ; #c561
         djnz .rowEnd
         ; mark screen third ends with -2
         ld a, -2
-        ld (scrTileUpd.row7 + 36), a
-        ld (scrTileUpd.row15 + 36), a
+        ld (Tables.scrTileUpd.row7 + 36), a
+        ld (Tables.scrTileUpd.row15 + 36), a
         ; mark screen end with -3
         ld a, -3
-        ld (scrTileUpd.row23 + 36), a
+        ld (Tables.scrTileUpd.row23 + 36), a
         ld de, Screen.pixels.row1 - 1
-        ld hl, scrTileUpd.row1 + 3
+        ld hl, Tables.scrTileUpd.row1 + 3
 
         ; scan through screen tiles
 .tile:
@@ -919,7 +919,7 @@ updateScreenTiles:  ; #c561
         ld l, a
         ld h, 0
     .3  add hl, hl
-        ld bc, objTiles - 8 * 2 ; (index + 2) compensation
+        ld bc, Tables.objTiles - 8 * 2 ; (index + 2) compensation
         add hl, bc
         ; copy pixels to the screen
     DUP 7
@@ -933,7 +933,7 @@ updateScreenTiles:  ; #c561
 
         ; apply attribute
         push de
-        ld b, high(objTileAttrs)
+        ld b, high(Tables.objTileAttrs)
     .2  dec a                   ; `a`: objTileIndex
         ld c, a
         ld a, (bc)              ; object tile attr
@@ -953,8 +953,8 @@ updateScreenTiles:  ; #c561
         ld (hl), 0              ; set upd = 0 (no update)
         push hl
         push de
-        ; get addr in `scrTiles
-        ld bc, scrTiles - scrTileUpd
+        ; get addr in `Tables.scrTiles
+        ld bc, Tables.scrTiles - Tables.scrTileUpd
         add hl, bc
         ld a, (hl)              ; tile index
         ld l, a
@@ -989,13 +989,13 @@ updateScreenTiles:  ; #c561
         jp .tile
 
 
-; Fill entire `scrTileUpd` buffer with 1's (needs updating)
+; Fill entire `Tables.scrTileUpd` buffer with 1's (needs updating)
 ; (Disables interrupts!)
 ; Used by c_cd9b.
 setScrTileUpd:  ; #c636
         di
         ld (.sp), sp
-        ld sp, scrTileUpd.end
+        ld sp, Tables.scrTileUpd.end
         ld hl, #0101
         ld b, 32
 .row:

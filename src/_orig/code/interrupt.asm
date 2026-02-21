@@ -3,8 +3,6 @@
 
     DISP #FEFE
 
-interruptTable  EQU #FD00
-
 ; In the original, stored at #BED4 and moved to #FEFE by `initInterrupts`
 interruptRoutine:  ; #fefe
         di

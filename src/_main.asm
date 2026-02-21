@@ -46,9 +46,9 @@ codeStart:
 
 ; Fast memory
     _NEXT_ORG #8000
-    INCLUDE "data/tables.asm"
+    INCLUDE "var/Tables.asm"
 
-    ORG Code.disposable         ; will be overwritten with tables
+    ORG Tables.disposable         ; will be overwritten with tables
     INCLUDE "code/entry_point.asm"
     INCLUDE "code/memory_loading.asm"
     ; INCLUDE "_orig/code/ay_sound.asm"    ; length: #D78 = 3448
@@ -76,8 +76,9 @@ codeLength = $ - codeStart
 
 ; Variables
     ORG Level.end
-    INCLUDE "_orig/var/state.asm"
-    INCLUDE "_orig/var/scene.asm"
+    INCLUDE "_orig/var/State.asm"
+    INCLUDE "_orig/var/State_objTileIndex.asm"
+    INCLUDE "_orig/var/Scene.asm"
 
 ; Levels
     ORG 0
@@ -85,16 +86,12 @@ codeLength = $ - codeStart
 
     PAGE MemPage.level0           ; Klondike
     INCLUDE "data/Lev0Klondike.asm"
-
     PAGE MemPage.level1           ; Orient
     INCLUDE "data/Lev1Orient.asm"
-
     PAGE MemPage.level2           ; Amazon
     INCLUDE "data/Lev2Amazon.asm"
-
     PAGE MemPage.level3           ; Iceland
     INCLUDE "data/Lev3Iceland.asm"
-
     PAGE MemPage.level4           ; Bermuda
     INCLUDE "data/Lev4Bermuda.asm"
 

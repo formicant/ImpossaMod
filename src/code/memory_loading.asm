@@ -14,7 +14,7 @@ loadLevelFromMemory:
         call fillScreenAttrs
 
         ; get level memory page
-        ld hl, levelMemPages
+        ld hl, Tables.levelMemPages
         ld a, (State.level)
         add l
         ld l, a

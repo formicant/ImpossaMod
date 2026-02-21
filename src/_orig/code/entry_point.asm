@@ -12,7 +12,7 @@ entryPoint:  ; #cc25
 
         ; init mirroring table
         ld b, 0
-        ld h, high(mirrorTable)
+        ld h, high(Tables.mirror)
 .byte:
         ld l, b
         ld a, b

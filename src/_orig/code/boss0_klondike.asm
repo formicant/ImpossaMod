@@ -14,16 +14,16 @@ bossLogicKlondike:  ; #f8f4
         ld a, (State.bossKilled)
         or a
         ret NZ
-        ld ix, scene.obj2
+        ld ix, Scene.obj2
         ld a, #36
         call createObject
-        ld ix, scene.obj3
+        ld ix, Scene.obj3
         ld a, #34
         call createObject
-        ld ix, scene.obj4
+        ld ix, Scene.obj4
         ld a, #35
         call createObject
-        ld ix, scene.obj5
+        ld ix, Scene.obj5
         ld a, #33
         call createObject
         call generateRandom
@@ -38,7 +38,7 @@ bossLogicKlondike:  ; #f8f4
         ld h, (hl)
         ld l, a
         ld b, #04
-        ld ix, scene.obj2
+        ld ix, Scene.obj2
         ld de, Obj
 .l_0:
         ld (ix+Obj.x+0), l
@@ -59,7 +59,7 @@ bossLogicKlondike:  ; #f8f4
         ld a, (hl)
         cp #41
         jr NZ, .l_2
-        ld ix, scene.obj4
+        ld ix, Scene.obj4
         ld hl, Lev0Klondike.lS.bossAnt2
         ld (ix+Obj.sprite+0), l
         ld (ix+Obj.sprite+1), h
@@ -80,7 +80,7 @@ bossLogicKlondike:  ; #f8f4
 ; This entry point is used by c_fa65.
 .l_4:
         ld b, #04
-        ld ix, scene.obj2
+        ld ix, Scene.obj2
         ld de, Obj
 .l_5:
         ld (ix+Obj.flags), 0    ; remove object

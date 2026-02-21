@@ -1,10 +1,9 @@
-    MODULE Code
-
+    MODULE Tables
 
     ALIGN 256
 
 ; Bit mirroring, const, 256 bytes
-mirrorTable:                    ; #8000
+mirror:                         ; #8000
         dh 00 80 40 C0 20 A0 60 E0 10 90 50 D0 30 B0 70 F0
         dh 08 88 48 C8 28 A8 68 E8 18 98 58 D8 38 B8 78 F8
         dh 04 84 44 C4 24 A4 64 E4 14 94 54 D4 34 B4 74 F4
@@ -25,19 +24,19 @@ mirrorTable:                    ; #8000
 
 ; Interrupt table, const, 257 bytes
 interruptTable:                 ; #8100
-        block 256, high(interruptRoutine)
+        block 256, high(Code.interruptRoutine)
 objTiles:                       ; #8200
-        db high(interruptRoutine)
+        db high(Code.interruptRoutine)
 
 disposable:
         ; Code that executes once at game start can be placed here
         ; It will be overwritten with data
         block 15                ; unused
 
-; `objTiles + 16`. Contains parts of objects drawn on top of map tiles
+; `Tables.objTiles + 16`. Contains parts of objects drawn on top of map tiles
         block 1008              ; 126 tiles × 8 pixelRows
 
-; Attributes for `objTiles`
+; Attributes for `Tables.objTiles`
 objTileAttrs:                   ; #8600
         block 2                 ; unused
         block 126               ; 126 tiles
@@ -53,14 +52,14 @@ scrTiles:                       ; #8680
 .stop:  block 44 * 4
 
 ; Which tiles should be updated
-; Layout is the same as in `scrTiles`
+; Layout is the same as in `Tables.scrTiles`
 ; Possible values:
 ;  -3: screen end marker
 ;  -2: screen third end marker
 ;  -1: screen row end marker
 ;   0: don't update
 ;   1: update
-;   2..160: object tile index in `objTiles`
+;   2..160: object tile index in `Tables.objTiles`
 scrTileUpd:                     ; #8C00
         block 44 * 4
 .row0:  block 44
@@ -68,7 +67,7 @@ scrTileUpd:                     ; #8C00
 .row7:  block 44 * 8
 .row15: block 44 * 8
 .row23: block 44 * 5
-.length EQU $ - scrTileUpd      ; #580 = 1408
+.length EQU $ - Tables.scrTileUpd      ; #580 = 1408
 .end:                           ; #9180
 
 
@@ -80,6 +79,5 @@ levelMemPages:                  ; #9180
         db (1<<Port.memory.rom48) | MemPage.level3  ; Iceland
         db (1<<Port.memory.rom48) | MemPage.level4  ; Bermuda
 .end:                           ; #9185
-
 
     ENDMODULE

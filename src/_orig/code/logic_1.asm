@@ -20,7 +20,7 @@ jumpVelocityTable:  ; #d6f1
 ; Process hero's behaviour
 ; Used by c_cc25.
 processHero:  ; #d709
-        ld ix, scene.hero
+        ld ix, Scene.hero
         call collectStateTiles
 
         ld a, (State.heroState)
@@ -1258,8 +1258,8 @@ processFire:  ; #df85
         ret Z
 
         ; fire pressed
-        ld ix, scene.hero
-        ld iy, scene.obj1       ; bullet, bomb, or bubble
+        ld ix, Scene.hero
+        ld iy, Scene.obj1       ; bullet, bomb, or bubble
         ld a, (State.weapon)
         or a
         jp NZ, .useWeapon
@@ -1506,12 +1506,12 @@ processFire:  ; #df85
 
 .alreadyInAttack:
         ; `a`: attack
-        ld ix, scene.obj1       ; bullet, bomb, or bubble
+        ld ix, Scene.obj1       ; bullet, bomb, or bubble
         cp Attack.kick
         jr NZ, .notKicking
 
 .kicking:
-        ld ix, scene.hero
+        ld ix, Scene.hero
         ld hl, State.attackTime
         ld a, (hl)
         or a
@@ -1533,7 +1533,7 @@ processFire:  ; #df85
 .skipStanding:
         xor a
         ld (State.attack), a
-        ld ix, scene.obj1       ; kick bubble
+        ld ix, Scene.obj1       ; kick bubble
         ld (ix+Obj.flags), a    ; remove object
         ret
 
@@ -1549,7 +1549,7 @@ processFire:  ; #df85
 
         dec (hl)
         push ix
-        ld ix, scene.hero
+        ld ix, Scene.hero
         ld hl, cS.heroThrows
         ld (ix+Obj.sprite+0), l
         ld (ix+Obj.sprite+1), h
@@ -1769,10 +1769,10 @@ selfGuidedBullet:  ; #e31c
         ret
 
 .l_0:
-        ld ix, scene.obj1       ; bullet
+        ld ix, Scene.obj1       ; bullet
 
         ; search for target object
-        ld iy, scene.obj2
+        ld iy, Scene.obj2
         ld de, Obj              ; object size
         ld b, 6                 ; object count
 .object:

@@ -4,7 +4,7 @@
 ; (Modifies some object properties?)
 ; Used by c_cc25.
 moveObjects:  ; #e56f
-        ld ix, scene.obj1
+        ld ix, Scene.obj1
         ld b, 7                 ; object count
 .object:
         push bc
@@ -85,7 +85,7 @@ removeObjects:  ; #e5f2
         push ix
         push de
         ld de, Obj
-        ld ix, scene.obj1
+        ld ix, Scene.obj1
         ld b, 7
 .object:
         ld (ix+Obj.flags), 0    ; remove object
@@ -100,7 +100,7 @@ removeObjects:  ; #e5f2
 ; Check if the hero enters a transit
 ; Used by c_cc25.
 checkTransitEnter:  ; #e60a
-        ld ix, scene.hero
+        ld ix, Scene.hero
         ld a, (State.jumpPhase)
         ld (State.tmpJumpPh), a
 
@@ -208,7 +208,7 @@ checkTransitEnter:  ; #e60a
         ret
 
 
-; Get address for a new object in `scene`
+; Get address for a new object in `Scene`
 ;   ret `ix`: object addr
 ;       `C` flag iff there is place for a new object
 ; Used by c_f564 and c_f74a.
@@ -216,7 +216,7 @@ allocateObject:  ; #e6c2
         push de
         push bc
         ld b, 6                 ; object count
-        ld ix, scene.obj2
+        ld ix, Scene.obj2
         ld de, Obj              ; object size
 .object:
         bit Flag.exists, (ix+Obj.flags)
@@ -246,7 +246,7 @@ processHeroCollisions:  ; #e6e1
         or a
         ret NZ
 
-        ld ix, scene.hero
+        ld ix, Scene.hero
         ld l, (ix+Obj.x+0)
         ld h, (ix+Obj.x+1)
         ld (tmpHeroX), hl
@@ -254,7 +254,7 @@ processHeroCollisions:  ; #e6e1
         ld (ix+Obj.x+0), l
         ld (ix+Obj.x+1), h
 
-        ld iy, scene.obj2
+        ld iy, Scene.obj2
         ld b, 6                 ; object count
 .object:
         push bc
@@ -549,7 +549,7 @@ enterShop:  ; #e920
         call findAndPutObjectsToScene
 
         ; find shop mole
-        ld ix, scene.obj2
+        ld ix, Scene.obj2
         ld b, 6                 ; object count
         ld de, Obj              ; object size
 .object:
@@ -560,7 +560,7 @@ enterShop:  ; #e920
         djnz .object
 
 .initShopMole:
-        ld iy, scene.hero
+        ld iy, Scene.hero
         ld a, (iy+Obj.x+0)
         add 32
         ld (ix+Obj.x+0), a
@@ -594,8 +594,8 @@ shopLogic:  ; #e9b1
         ret NZ
 
         ; find item where hero stands
-        ld ix, scene.hero
-        ld iy, scene.obj2
+        ld ix, Scene.hero
+        ld iy, Scene.obj2
         ld b, 6                 ; object count
 .object:
         push bc
@@ -780,7 +780,7 @@ shopLogic:  ; #e9b1
 ;   arg `hl`: addr pointing to coords (x, y) in tiles relative to screen
 ; Used by c_e920 and c_e9b1.
 placeHero:  ; #eace
-        ld ix, scene.hero
+        ld ix, Scene.hero
         ld a, (hl)
     .5  add a
         add 32
@@ -821,8 +821,8 @@ kickBubbleSizes:  ; #eaf7
 ;   ret flag C if object is not damaged, NC if damaged
 ; Used by c_df85.
 checkEnemiesForDamage:  ; #eb00
-        ld ix, scene.obj1       ; bullet, bomb, or kick bubble
-        ld iy, scene.obj2
+        ld ix, Scene.obj1       ; bullet, bomb, or kick bubble
+        ld iy, Scene.obj2
         ld b, 6                 ; object count
 .object:
         push bc
@@ -1073,7 +1073,7 @@ damageEnemy:  ; #ec00
 
         push ix
         push de
-        ld ix, scene.obj2
+        ld ix, Scene.obj2
         ld b, 4                 ; object count
         ld de, Obj              ; object size
 .bossPartBlink:
@@ -1091,7 +1091,7 @@ damageEnemy:  ; #ec00
 .bossKilled:
         push ix
         push de
-        ld ix, scene.obj2
+        ld ix, Scene.obj2
         ld b, 4                 ; object count
         ld de, Obj              ; object size
 .bossPartExplosion:
@@ -1130,7 +1130,7 @@ damageEnemy:  ; #ec00
 ; For every object in the scene, process its motion
 ; Used by c_cc25.
 performMotionOfAllObjs:  ; #ecee
-        ld ix, scene.obj2
+        ld ix, Scene.obj2
         ld b, 6                 ; object count
 .object:
         push bc
@@ -1272,7 +1272,7 @@ aimAtHero:  ; #edc0
         ld (ix+Obj.aim.curY+1), 0
 
         ; find hero's centre minus half bullet size
-        ld iy, scene.hero
+        ld iy, Scene.hero
         ld l, (iy+Obj.x+0)
         ld h, (iy+Obj.x+1)
         ld a, (iy+Obj.width)
@@ -1731,7 +1731,7 @@ selfGuidedMotion:  ; #f0f3
         set Flag.fixedX, (ix+Obj.flags)
 
 .horizontal:
-        ld iy, scene.hero
+        ld iy, Scene.hero
         ld l, (ix+Obj.x+0)
         ld h, (ix+Obj.x+1)
         ld c, (ix+Obj.width)
@@ -2030,7 +2030,7 @@ pressPlatformMotion:  ; #f2e7
         inc hl
         ld (hl), 0
         ; set tile update
-        ld de, scrTileUpd - scrTiles - 2
+        ld de, Tables.scrTileUpd - Tables.scrTiles - 2
         add hl, de
         ld (hl), 1
         inc hl
@@ -2055,7 +2055,7 @@ pressPlatformMotion:  ; #f2e7
         inc c                   ; next tile index
         ld (hl), c
         ; set tile update
-        ld de, scrTileUpd - scrTiles - 2
+        ld de, Tables.scrTileUpd - Tables.scrTiles - 2
         add hl, de
         ld (hl), 1
         inc hl
@@ -2304,7 +2304,7 @@ checkStillEnemyActivation:  ; #f488
 
         ; test vertical zone range
         ; hero_top <= obj_y - stillActY + stillActH
-        ld iy, scene.hero
+        ld iy, Scene.hero
         ld a, (ix+Obj.activeZone.y)
         neg
         add (ix+Obj.y)
@@ -2530,7 +2530,7 @@ bulletMotion:  ; #f618
         cp 1
         call Z, aimedBulletMotion
 
-        ld iy, scene.hero
+        ld iy, Scene.hero
         call checkObjectCollision
         jr C, .noCollision
 
@@ -2710,7 +2710,7 @@ putNextObjsToScene:  ; #f6e7
 ; Set waiting flags in objects that are not visible yet
 ; and reset in already visible objects
 setWaitingFlags:
-        ld ix, scene.obj2
+        ld ix, Scene.obj2
         ld b, 6                 ; object count
 .object:
         bit Flag.exists, (ix+Obj.flags)

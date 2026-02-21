@@ -1,4 +1,8 @@
-    MODULE Code
+    MODULE Tables
+
+; 257 bytes containing the address of the interrupt routine
+; Initialised at runtime
+interruptTable  EQU #FD00
 
 
 ; Indices of the tiles currently on the screen
@@ -38,17 +42,17 @@ scrTiles: ; #5B00
         block 44                ; #6028
         block 44                ; #6054
 .end:                           ; #6080
-.length EQU $ - scrTiles        ; #580 = 1408
+.length EQU $ - Tables.scrTiles        ; #580 = 1408
 
 ; Which tiles should be updated
-; Layout is the same as in `scrTiles`
+; Layout is the same as in `Tables.scrTiles`
 ; Possible values:
 ;  -3: screen end marker
 ;  -2: screen third end marker
 ;  -1: screen row end marker
 ;   0: don't update
 ;   1: update
-;   2..160: object tile index in `objTiles`
+;   2..160: object tile index in `Tables.objTiles`
 scrTileUpd: ; #6080
         block 44                ; #6080
         block 44                ; #60AC
@@ -83,7 +87,7 @@ scrTileUpd: ; #6080
         block 44                ; #65A8
         block 44                ; #65D4
 .end:                           ; #6600
-.length EQU $ - scrTileUpd      ; #580 = 1408
+.length EQU $ - Tables.scrTileUpd      ; #580 = 1408
 
 
 ; Contains parts of objects drawn on top of map tiles
@@ -94,15 +98,14 @@ objTiles: ; #6600
 
     ALIGN 256
 ; Bit mirroring. Initialised in the code
-mirrorTable: ; #6A00
+mirror: ; #6A00
         block 256
 
 
     ALIGN 256
-; Attributes for `objTiles`
+; Attributes for `Tables.objTiles`
 objTileAttrs: ; #6B00
         block 2                 ; unused
         block 126               ; 126 tiles
-
 
     ENDMODULE

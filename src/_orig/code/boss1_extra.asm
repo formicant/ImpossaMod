@@ -6,7 +6,7 @@
 c_fbb9:  ; #fbb9
         push ix
         ld b, #04
-        ld ix, scene.obj2
+        ld ix, Scene.obj2
         ld de, Obj
 .l_0:
         ld a, (ix+Obj.mo.direction)
@@ -22,15 +22,15 @@ c_fbb9:  ; #fbb9
 ; Used by Orient
 c_fbd2:  ; #fbd2
         push ix
-        ld ix, scene.obj2
-        ld iy, scene.obj3
+        ld ix, Scene.obj2
+        ld iy, Scene.obj3
         call c_fbf9
         ld a, (ix+Obj.emitBullets)
         ld c, (iy+Obj.emitBullets)
         ld (ix+Obj.emitBullets), c
         ld (iy+Obj.emitBullets), a
-        ld ix, scene.obj4
-        ld iy, scene.obj5
+        ld ix, Scene.obj4
+        ld iy, Scene.obj5
         call c_fbf9
         pop ix
         ret

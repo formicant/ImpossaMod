@@ -10,8 +10,8 @@
     INCLUDE "transits.asm"
     ORG Level.trajVelTable
     INCLUDE "traj_table.asm"
-    ORG Common.objectTypes + 10
-        db 8    ; overridden property (TODO: is it significant?)
+    ORG Common.objectTypes + OT.auxFlags
+        db 1<<Flag.nonEnemy     ; overridden property (TODO: is it significant?)
     ORG Level.levObjectTypes
     INCLUDE "object_types.asm"
     INCLUDE "trajectories.asm"

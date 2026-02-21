@@ -49,7 +49,7 @@ codeStart:
     ORG #BDDF
     INCLUDE "code/sound.asm"
     INCLUDE "code/beeper_sound.asm"
-    INCLUDE "var/scene.asm"
+    INCLUDE "var/Scene.asm"
     ORG #BEB4   ; overlap
     INCLUDE "code/init_interrupts.asm"
     INCLUDE "code/interrupt.asm"

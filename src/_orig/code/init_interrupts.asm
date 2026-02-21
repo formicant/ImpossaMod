@@ -14,7 +14,7 @@ initInterrupts:  ; #beb4
         ldir
 
         ; create the interrupt table (257 bytes at #FD00..#FE00)
-        ld hl, interruptTable
+        ld hl, Tables.interruptTable
         ld b, 0  ; 256
 .l_0:
         ld (hl), high(interruptRoutine)
@@ -23,7 +23,7 @@ initInterrupts:  ; #beb4
         ld (hl), high(interruptRoutine)
 
         ; enable interrupts
-        ld a, high(interruptTable)
+        ld a, high(Tables.interruptTable)
         ld i, a
         im 2
         ei
