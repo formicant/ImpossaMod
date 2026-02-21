@@ -636,7 +636,7 @@ shopLogic:  ; #e9b1
         ; `hl`: item name
         ld c, Colour.brWhite
         ld hl, #000F            ; at 0, 15
-        call printString
+        call Utils.printString
 
         ; get item price
         ld a, (State.shopItem)
@@ -712,7 +712,7 @@ shopLogic:  ; #e9b1
         ld hl, #000F            ; at 0, 15
         ld de, textTooMuch
         ld c, Colour.brWhite
-        call printString
+        call Utils.printString
 .waitFireRelease:
         ld a, (controlState)
         bit Key.fire, a

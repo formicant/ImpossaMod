@@ -125,7 +125,7 @@ printScoreAt:
 
         ; last digit
         ld a, (de)
-        call printChar
+        call Utils.printChar
         ret
 
 addScoreSetCarry:
@@ -151,9 +151,9 @@ printSmart:
         ld a, (State.hasSmart)
         or a
         ld a, -1                ; space
-        jp Z, printChar
+        jp Z, Utils.printChar
         ld a, ';' - '0'         ; smart (font char code)
-        jp printChar
+        jp Utils.printChar
 
 
 ; Display soup cans in the panel (right to left)
@@ -163,7 +163,7 @@ printSoupCans:
         ld e, a
 .can:
         ld a, ':' - '0'         ; soup can char code
-        call printChar
+        call Utils.printChar
         dec l
         dec e
         jp NZ, .can
@@ -228,7 +228,7 @@ printCoinCountAt:
         inc l
         pop bc
         ld a, c                 ; units
-        jp printChar
+        jp Utils.printChar
 
 
 ; Display energy in the panel
@@ -246,14 +246,14 @@ printEnergy:
         jr Z, .half
 
         ld a, '[' - '0'         ; energy full (font char code)
-        call printChar
+        call Utils.printChar
         inc l
     .2  inc e
         jp .fullChar
 
 .half:
         ld a, '\' - '0'         ; energy half (font char code)
-        call printChar
+        call Utils.printChar
         inc l
     .2  inc e
 
@@ -266,7 +266,7 @@ printEnergy:
         ret Z
 
         ld a, ']' - '0'         ; energy empty (font char code)
-        call printChar
+        call Utils.printChar
         inc l
     .2  inc e
         jp .emptyChar
@@ -277,7 +277,7 @@ clearEnergy:
         ld hl, Screen.pixels.row0 + 15
         ld e, 17
 .space:
-        call printChar.space
+        call Utils.printChar.space
         inc l
         dec e
         jr NZ, .space
@@ -311,14 +311,14 @@ printDigitWithoutLeadingZeros:
         jp NZ, .firstSignificant
 
         dec a                   ; space
-        jp printChar
+        jp Utils.printChar
 
 .firstSignificant:
         exa
         dec a                   ; not a leading zero
 .significant:
         exa
-        jp printChar
+        jp Utils.printChar
 
 
     ENDMODULE

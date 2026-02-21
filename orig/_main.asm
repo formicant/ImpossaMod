@@ -41,7 +41,8 @@ codeStart:
     ORG #BEB4   ; overlap
     INCLUDE "code/Interrupt/_index.asm"
     ORG #C044
-    INCLUDE "code/drawing.asm"
+    INCLUDE "code/Drawing/_index.asm"
+    INCLUDE "code/Utils/printString.asm"
     INCLUDE "code/game_menu.asm"
     INCLUDE "code/utils.asm"
     INCLUDE "code/controls.asm"

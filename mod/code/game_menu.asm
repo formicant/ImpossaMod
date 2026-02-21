@@ -104,35 +104,35 @@ printGameMenuText:  ; #c76f
         ld hl, #040A
         ld de, gameMenuText     ; 'impossamole'
         ld c, Colour.brWhite
-        call printString
+        call Utils.printString
         ld hl, #1605
         inc de                  ; '@ 1990 gremlin graphics'
         ld c, Colour.brCyan
-        call printString
+        call Utils.printString
         ld hl, #0809
         inc de                  ; '0 start game'
         ld c, Colour.brWhite
-        call printString
+        call Utils.printString
         ld hl, #0909
         inc de                  ; '1 keyboard'
         ld c, Colour.brYellow
-        call printString
+        call Utils.printString
         ld hl, #0A09
         inc de                  ; '2 kempston'
         ld c, Colour.brMagenta
-        call printString
+        call Utils.printString
         ld hl, #0B09
         inc de                  ; '3 cursor'
         ld c, Colour.brGreen
-        call printString
+        call Utils.printString
         ld hl, #0C09
         inc de                  ; '4 interface 2'
         ld c, Colour.brCyan
-        call printString
+        call Utils.printString
         ld hl, #1305
         inc de                  ; 'written by core design'
         ld c, Colour.brGreen
-        call printString
+        call Utils.printString
 
         ; make digits (0..4) white
         ld hl, Screen.attrs.row9 + 9
@@ -147,7 +147,7 @@ printGameMenuText:  ; #c76f
         ld hl, #0F07            ; at 15, 7
         ld de, textLastScore
         ld c, Colour.brMagenta
-        call printString
+        call Utils.printString
 
         ld hl, Screen.pixels.row15 + 18
         jp printScoreAt

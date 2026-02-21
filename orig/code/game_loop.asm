@@ -64,7 +64,7 @@ gameStart:  ; #cc5a
         call updateConveyors        ; TODO: can be inlined
         call rollConveyorTiles      ; TODO: can be inlined
         _DEBUG_BORDER Colour.white
-        call drawObjectsChecked     ; (time: extreme)
+        call Drawing.drawObjectsChecked     ; (time: extreme)
         _DEBUG_BORDER Colour.black
 
     IFDEF _MOD
@@ -75,7 +75,7 @@ gameStart:  ; #cc5a
         call Interrupt.waitFrames
         _DEBUG_BORDER Colour.blue
 
-        call updateScreenTiles  ; (time: extreme)
+        call Drawing.updateScreenTiles  ; (time: extreme)
         _DEBUG_BORDER Colour.black
 
         ld a, (State.advance)

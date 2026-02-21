@@ -29,6 +29,7 @@
 codeStart:
     INCLUDE "data/Font.asm"
 
+    INCLUDE "code/Utils/printString.asm"
     INCLUDE "orig/code/game_loop.asm"
     INCLUDE "orig/code/code.asm"
     INCLUDE "orig/code/logic_0.asm"
@@ -62,7 +63,7 @@ codeStart:
     INCLUDE "orig/code/logic_2.asm"
     ; INCLUDE "orig/code/beeper_sound.asm"
     INCLUDE "orig/code/level_loading.asm"
-    INCLUDE "code/drawing.asm"
+    INCLUDE "orig/code/Drawing/_index.asm"
 
     DISPLAY "Fast free: ", stackTop - $
 

@@ -21,7 +21,7 @@ levelSelectionMenu:  ; #d553
         ld hl, #0809
         ld de, textSelectLevel
         ld c, Colour.brYellow
-        call printString
+        call Utils.printString
         ld hl, State.levelsDone
         ld b, #05
         xor a
@@ -36,7 +36,7 @@ levelSelectionMenu:  ; #d553
         ld de, levelNames.bermuda
         ld hl, #0B0C            ; at 11, 12
         ld c, Colour.brWhite
-        call printString
+        call Utils.printString
         ld a, Level.bermuda
         ld (State.level), a
 .l_1:
@@ -83,7 +83,7 @@ levelSelectionMenu:  ; #d553
         ex de, hl
         ld hl, #0B0C
         ld c, Colour.brWhite
-        call printString
+        call Utils.printString
         ld bc, #00FA
         call delay
         ld a, (controlState)
@@ -98,7 +98,7 @@ levelSelectionMenu:  ; #d553
         ld hl, #0E0B
         ld de, textPressFire
         ld c, Colour.brWhite
-        call printString
+        call Utils.printString
 .l_8:
         ld a, (controlState)
         bit Key.fire, a
@@ -131,7 +131,7 @@ loadLevelIfNeeded:  ; #d62c
         ld de, textStartTape
         ld hl, #0C0B
         ld c, Colour.brWhite
-        call printString
+        call Utils.printString
         call loadLevel
         jr NC, .l_1
         ld a, (State.level)
@@ -146,11 +146,11 @@ loadLevelIfNeeded:  ; #d62c
         ld hl, #0C0B
         ld de, textLoadError
         ld c, Colour.brYellow
-        call printString
+        call Utils.printString
         inc de
         ld hl, #0E0B
         ld c, Colour.brWhite
-        call printString
+        call Utils.printString
 .l_2:
         ld a, (controlState)
         bit Key.fire, a

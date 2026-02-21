@@ -84,7 +84,7 @@ printScore:
 .yx+*   ld hl, -0               ; `h`: y coord, `l`: x coord
         ld de, scoreString
         ld c, Colour.brWhite
-        jp printString
+        jp Utils.printString
 
 addScoreSetCarry:
         sub 10
@@ -136,7 +136,7 @@ printNumber:
         ld (State.coinDigits + 0), a
         pop bc
         ld de, State.coinDigits
-        jp printString
+        jp Utils.printString
 
 
 soupCanStrings:
@@ -159,7 +159,7 @@ printSoupCans:  ; #d026
         ex de, hl
         ld hl, #0007
         ld c, Colour.brMagenta
-        jp printString
+        jp Utils.printString
 
 
 ; Energy characters
@@ -218,8 +218,8 @@ printEnergy:  ; #d04e
 
         ld hl, #000F            ; at 0, 15
         ld de, State.energyText
-        call printString
-        call applyLifeIndicatorAttrs
+        call Utils.printString
+        call Utils.applyLifeIndicatorAttrs
         ret
 
 

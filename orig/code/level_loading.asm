@@ -21,7 +21,7 @@ loadLevel:  ; #c9ac
         ld hl, #0C09            ; at 12, 9
         ld de, textFound
         ld c, Colour.brWhite
-        call printString
+        call Utils.printString
 
         ld a, (Level.start)     ; found level
     .3  add a
@@ -33,7 +33,7 @@ loadLevel:  ; #c9ac
 
         ld hl, #0C0F            ; at 12, 15
         ld c, Colour.brYellow
-        call printString
+        call Utils.printString
 
         ld a, (Level.start)     ; found level
         ld b, a

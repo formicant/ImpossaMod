@@ -18,7 +18,7 @@ gameWin:  ; #d6c0
 .line:
         push bc
         push hl
-        call printString
+        call Utils.printString
         inc de
         pop hl
         inc h
