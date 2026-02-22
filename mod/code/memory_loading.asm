@@ -1,14 +1,13 @@
-    MODULE Code
+    MODULE Loading
 
-
-
-; In 128K mode, this code should replace `loadLevel`
+; In 128K mode, this code should replace `loadBytes`
 loadLevelFromMemoryStored
-    DISP Menu.loadLevel
+    DISP Loading.loadBytes
 
 ; Copy level from its memory page into fast memory page 0
 ; Screen is used as temporary buffer
 loadLevelFromMemory:
+        di
         ; set black attrs to hide the artifacts
         xor a
         call Utils.fillScreenAttrs
@@ -63,6 +62,7 @@ loadLevelFromMemory:
         jr NZ, .step            ; if next step length != 0
 
         scf                     ; no loading error
+        ei
         ret
 
 .lastStep:
@@ -85,10 +85,9 @@ copyMemoryBlock:
         jp PE, .loop
         ret
 
-    ASSERT $ <= Menu.loadLevelEnd
+    ASSERT $ <= Loading.end
     ENT
 
 loadLevelFromMemoryLength   EQU $ - loadLevelFromMemoryStored
-
 
     ENDMODULE

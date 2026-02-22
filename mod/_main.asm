@@ -39,7 +39,7 @@ codeStart:
     INCLUDE "orig/code/logic_1.asm"
     INCLUDE "code/Panel/_index.asm"
     INCLUDE "code/boss_switch.asm"
-    INCLUDE "code/controls.asm"
+    INCLUDE "code/Control.asm"
     INCLUDE "code/sound.asm"
 
     DISPLAY "Slow free: ", #8000 - $
@@ -58,6 +58,7 @@ codeStart:
     _NEXT_ORG #9191
     INCLUDE "code/Interrupt.asm"
 
+    INCLUDE "orig/code/Loading.asm"
     INCLUDE "orig/code/select_sprite.asm"
     INCLUDE "orig/code/logic_2.asm"
     ; INCLUDE "orig/code/beeper_sound.asm"

@@ -47,6 +47,7 @@ codeStart:
     INCLUDE "code/rollConveyorTiles.asm"
     INCLUDE "code/Control.asm"
     INCLUDE "code/Menu/levelLoading.asm"
+    INCLUDE "code/Loading.asm"
 
     INCLUDE "data/Font.asm"
 
