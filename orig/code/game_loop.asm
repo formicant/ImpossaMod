@@ -30,7 +30,7 @@ gameStart:  ; #cc5a
         djnz .bossPart
         ; level complete
         ld bc, 5000
-        call delay              ; 5 s delay
+        call Utils.delay        ; 5 s delay
         jp .levelStart
 
 .normal:

@@ -149,7 +149,7 @@ getFrogSprite:  ; #e52d
         jr NZ, .jumping
 
 .breathing:
-        call generateRandom
+        call Utils.generateRandom
         bit 7, a
         jr NZ, .setMirror
 

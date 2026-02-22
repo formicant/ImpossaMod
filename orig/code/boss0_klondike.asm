@@ -26,7 +26,7 @@ bossLogicKlondike:  ; #f8f4
         ld ix, Scene.obj5
         ld a, #33
         call createObject
-        call generateRandom
+        call Utils.generateRandom
         and #03
         add a
         ld l, a

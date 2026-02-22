@@ -34,6 +34,7 @@ codeStart:
     INCLUDE "orig/code/game_loop.asm"
     INCLUDE "orig/code/moveToMapSpan.asm"
     INCLUDE "orig/code/advanceInMap.asm"
+    INCLUDE "orig/code/energy.asm"
     INCLUDE "orig/code/logic_0.asm"
     INCLUDE "orig/code/rollConveyorTiles.asm"
     INCLUDE "orig/code/logic_1.asm"

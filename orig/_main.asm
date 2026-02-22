@@ -22,7 +22,7 @@
 ; Code
     ORG #5E00
 codeStart:
-    INCLUDE "code/detect_model.asm"
+    INCLUDE "code/Utils/detectModel.asm"
 
     ORG #5E80
     DISP #C000
@@ -58,6 +58,9 @@ codeStart:
     INCLUDE "code/moveToMapSpan.asm"
     INCLUDE "code/advanceInMap.asm"
     INCLUDE "code/Panel/_index.asm"
+    INCLUDE "code/energy.asm"
+    INCLUDE "code/Utils/delay.asm"
+    INCLUDE "code/Utils/random.asm"
     INCLUDE "code/logic_0.asm"
     INCLUDE "code/Menu/levelSelectMenu.asm"
     INCLUDE "code/Menu/gameWin.asm"

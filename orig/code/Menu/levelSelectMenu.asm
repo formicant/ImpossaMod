@@ -84,7 +84,7 @@ levelSelectionMenu:  ; #d553
         ld c, Colour.brWhite
         call Utils.printString
         ld bc, #00FA
-        call Code.delay
+        call Utils.delay
         ld a, (Control.controlState)
         bit Key.fire, a
         jr Z, .l_3

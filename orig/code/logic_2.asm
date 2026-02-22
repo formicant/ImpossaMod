@@ -1618,7 +1618,7 @@ walkOrFallMotion:
 randomMotion: ; randomDirection
         bit 0, (ix+Obj.mo.coordConstr)
         jr Z, .l_11
-        call generateRandom
+        call Utils.generateRandom
         cp 10
         jr NC, .l_11
         ld a, (ix+Obj.mo.direction)
@@ -1627,7 +1627,7 @@ randomMotion: ; randomDirection
 .l_11:
         bit 1, (ix+Obj.mo.coordConstr)
         jr Z, .l_12
-        call generateRandom
+        call Utils.generateRandom
         cp 10
         jr NC, .l_12
         ld a, (ix+Obj.mo.direction)
@@ -2363,7 +2363,7 @@ checkDynamiteExplosion:  ; #f4e9
         ret NZ
 
 .isDynamite:
-        call generateRandom
+        call Utils.generateRandom
         cp 2
         ret NC
         ; explosion cloud
@@ -2585,7 +2585,7 @@ bulletMotion:  ; #f618
 randomlyChangeDirection:  ; #f670
         bit Flag.changesDir, (ix+Obj.auxFlags)
         ret Z
-        call generateRandom
+        call Utils.generateRandom
         cp 8
         ret NC
 
@@ -2617,11 +2617,11 @@ randomlyStandStill:  ; #f697
         dec (ix+Obj.stillTime)
         ret
 .l_0:
-        call generateRandom
+        call Utils.generateRandom
         cp 4
         ret NC
 
-        call generateRandom
+        call Utils.generateRandom
         and 31
         ld (ix+Obj.stillTime), a
         ret

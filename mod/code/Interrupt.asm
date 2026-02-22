@@ -1,6 +1,5 @@
     MODULE Interrupt
 
-
 routine:
     ASSERT low($) == high($)
         push af, hl
@@ -27,9 +26,9 @@ routine:
         ld (shortFrameCounter), a
 
         ; increment long frame counter
-        ld hl, (Code.longFrameCounter.low)
+        ld hl, (Utils.longFrameCounter.low)
         inc hl
-        ld (Code.longFrameCounter.low), hl
+        ld (Utils.longFrameCounter.low), hl
         ld a, l
         or h
         jr Z, .incLongFrameHigh
@@ -39,9 +38,9 @@ routine:
         ret
 
 .incLongFrameHigh:
-        ld hl, (Code.longFrameCounter.high)
+        ld hl, (Utils.longFrameCounter.high)
         inc hl
-        ld (Code.longFrameCounter.high), hl
+        ld (Utils.longFrameCounter.high), hl
 
         pop hl, af
         ei
@@ -61,11 +60,5 @@ waitFrames:
 ; measures frames inside one game progression unit
 shortFrameCounter:
         db 0
-
-; 32-bit frame counter, used in random number generation
-@Code.longFrameCounter:
-.low:   dw 0
-.high:  dw 0
-
 
     ENDMODULE

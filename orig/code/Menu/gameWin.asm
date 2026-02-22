@@ -27,7 +27,7 @@ gameWin:  ; #d6c0
         djnz .line
 
         ld bc, 30000
-        call Code.delay
+        call Utils.delay
 .waitKey:
         ld a, (Control.controlState)
         or a

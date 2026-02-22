@@ -8,7 +8,7 @@ entryPoint:  ; #cc25
         ld (State.loadedLevel), a
         ld sp, 0
         call Interrupt.init
-        call detectSpectrumModel
+        call Utils.detectSpectrumModel
 
         ; init mirroring table
         ld b, 0

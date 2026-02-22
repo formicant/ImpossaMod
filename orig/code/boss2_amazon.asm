@@ -20,7 +20,7 @@ bossLogicAmazon:  ; #fa65
         ld ix, Scene.obj3
         ld a, #2C
         call createObject
-        call generateRandom
+        call Utils.generateRandom
         and #01
         add a
         ld l, a

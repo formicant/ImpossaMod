@@ -86,7 +86,7 @@ gameMenu:  ; #c6d5
         djnz .l_7
 
         ld bc, 20
-        call Code.delay              ; delay ~20 ms
+        call Utils.delay              ; delay ~20 ms
         call Control.checkStartKey
         jp NZ, .l_0
 .l_9:
