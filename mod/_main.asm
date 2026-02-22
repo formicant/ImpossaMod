@@ -2,7 +2,7 @@
     DEVICE ZXSPECTRUM128
 
     DEFINE _MOD
-    DEFINE _DEBUG
+    ; DEFINE _DEBUG
 
 ; Definitions
     INCLUDE "orig/inc/macros.inc"
@@ -29,16 +29,15 @@
 codeStart:
     INCLUDE "data/Font.asm"
 
-    INCLUDE "code/Utils/printString.asm"
+    INCLUDE "code/Utils/_index.asm"
+    INCLUDE "code/Menu/_index.asm"
     INCLUDE "orig/code/game_loop.asm"
-    INCLUDE "orig/code/code.asm"
+    INCLUDE "orig/code/moveToMapSpan.asm"
+    INCLUDE "orig/code/advanceInMap.asm"
     INCLUDE "orig/code/logic_0.asm"
-    INCLUDE "orig/code/level_select_menu.asm"
-    INCLUDE "orig/code/game_win.asm"
-    INCLUDE "orig/code/utils.asm"
+    INCLUDE "orig/code/rollConveyorTiles.asm"
     INCLUDE "orig/code/logic_1.asm"
-    INCLUDE "code/game_menu.asm"
-    INCLUDE "code/panel.asm"
+    INCLUDE "code/Panel/_index.asm"
     INCLUDE "code/boss_switch.asm"
     INCLUDE "code/controls.asm"
     INCLUDE "code/sound.asm"
@@ -62,7 +61,6 @@ codeStart:
     INCLUDE "orig/code/select_sprite.asm"
     INCLUDE "orig/code/logic_2.asm"
     ; INCLUDE "orig/code/beeper_sound.asm"
-    INCLUDE "orig/code/level_loading.asm"
     INCLUDE "orig/code/Drawing/_index.asm"
 
     DISPLAY "Fast free: ", stackTop - $

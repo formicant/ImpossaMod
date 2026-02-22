@@ -83,7 +83,7 @@ processHero:  ; #d709
         ld a, HeroState.jump
         ld (State.heroState), a
 
-        ld a, (controlState)
+        ld a, (Control.controlState)
         and (1<<Key.left) | (1<<Key.right)
         jp Z, .jumpUp
 
@@ -154,7 +154,7 @@ processHero:  ; #d709
 
 ; (Some game logic from call table #D6E7?)
 heroStands:  ; #d7f6
-        ld a, (controlState)
+        ld a, (Control.controlState)
         bit Key.up, a
         jr Z, .notUp
 
@@ -179,7 +179,7 @@ heroStands:  ; #d7f6
         jp Z, .climb
 
 .notDown:
-        ld a, (controlState)
+        ld a, (Control.controlState)
         bit Key.left, a
         jp NZ, .keyLeft
         bit Key.right, a
@@ -281,7 +281,7 @@ heroStands:  ; #d7f6
         ld a, HeroState.jump
         ld (State.heroState), a
 
-        ld a, (controlState)
+        ld a, (Control.controlState)
         and (1<<Key.left) | (1<<Key.right)
         jp Z, .jumpUp
 
@@ -309,7 +309,7 @@ heroStands:  ; #d7f6
         ld (ix+Obj.sprite+1), h
 
         ld a, Sound.jump
-        call playSound
+        call Sound.playSound
         jp heroJumps
 
 ; This entry point is used by c_d94c, c_da95 and c_db4e.
@@ -354,7 +354,7 @@ heroWalks:  ; #d94c
         jp C, .fall
 
 .notFalling:
-        ld a, (controlState)
+        ld a, (Control.controlState)
         bit Key.up, a
         jp NZ, .stop
         bit Key.down, a
@@ -403,7 +403,7 @@ heroWalks:  ; #d94c
         ld (State.stepTime), a
 
 .checkWalkingLeft:
-        ld a, (controlState)
+        ld a, (Control.controlState)
         bit Key.left, a
         jp Z, .stop
         jr .checkIce
@@ -441,7 +441,7 @@ heroWalks:  ; #d94c
         ld (State.stepTime), a
 
 .checkWalkingRight:
-        ld a, (controlState)
+        ld a, (Control.controlState)
         bit Key.right, a
         jp Z, .stop
 
@@ -495,7 +495,7 @@ heroWalks:  ; #d94c
         xor a
         ld (State.stepPeriod), a
 
-        ld a, (controlState)
+        ld a, (Control.controlState)
         and (1<<Key.left) | (1<<Key.right)
         jp Z, .fallDown
 
@@ -533,7 +533,7 @@ heroJumps:  ; #da95
         ld (ix+Obj.sprite+0), l
         ld (ix+Obj.sprite+1), h
 
-        ld a, (controlState)
+        ld a, (Control.controlState)
         bit Key.up, a
         jr Z, .skipGrabLadder
 
@@ -631,7 +631,7 @@ heroJumps:  ; #da95
 ; (Some game logic from call table #D6E7?)
 ; Used by c_d94c.
 heroFalls:  ; #db4e
-        ld a, (controlState)
+        ld a, (Control.controlState)
         bit Key.up, a
         jr Z, .skipGrabLadder
 
@@ -703,7 +703,7 @@ heroFalls:  ; #db4e
         cp TileType.ladderTop
         jp NC, heroWalks.stop
 
-        ld a, (controlState)
+        ld a, (Control.controlState)
         bit Key.left, a
         jr NZ, .keyLeft
         bit Key.right, a
@@ -728,7 +728,7 @@ heroFalls:  ; #db4e
 ; (Some game logic from call table #D6E7?)
 ; Used by c_d7f6.
 heroClimbs:  ; #dbfc
-        ld a, (controlState)
+        ld a, (Control.controlState)
         bit Key.up, a
         jr Z, .notUp
 
@@ -759,7 +759,7 @@ heroClimbs:  ; #dbfc
         ld (ix+Obj.y), a
 
 .notUp:
-        ld a, (controlState)
+        ld a, (Control.controlState)
         bit Key.down, a
         jr Z, .notDown
 
@@ -796,7 +796,7 @@ heroClimbs:  ; #dbfc
         jp NC, heroWalks.stop
 
 .l_4:
-        ld a, (controlState)
+        ld a, (Control.controlState)
         bit Key.left, a
         jr Z, .notLeft
         ld a, (State.tileCentre)
@@ -818,7 +818,7 @@ heroClimbs:  ; #dbfc
         ld (ix+Obj.x), a
 
 .notLeft:
-        ld a, (controlState)
+        ld a, (Control.controlState)
         bit Key.right, a
         jr Z, .notRight
 
@@ -1253,7 +1253,7 @@ processFire:  ; #df85
         cp HeroState.fall
         ret NC                  ; fall or climb
 
-        ld a, (controlState)
+        ld a, (Control.controlState)
         bit Key.fire, a
         ret Z
 
@@ -1266,7 +1266,7 @@ processFire:  ; #df85
 
         ; no weapon
         ld a, Sound.kickOrThrow
-        call playSound
+        call Sound.playSound
 
         ; set kicking sprite
         ld hl, cS.heroKicks
@@ -1324,7 +1324,7 @@ processFire:  ; #df85
 
 .shatterbomb:
         ld a, Sound.kickOrThrow
-        call playSound
+        call Sound.playSound
 
         ; set throwing sprite
         ld hl, cS.heroThrows
@@ -1379,7 +1379,7 @@ processFire:  ; #df85
 
 .powerGun:
         ld a, Sound.powerShot
-        call playSound
+        call Sound.playSound
 
         ld a, (State.soupCans)
         dec a
@@ -1444,7 +1444,7 @@ processFire:  ; #df85
 
 .laserGun:
         ld a, Sound.laserShot
-        call playSound
+        call Sound.playSound
 
         ld a, (State.soupCans)
         dec a
@@ -1608,7 +1608,7 @@ processFire:  ; #df85
 
 .bombExploded:
         ld a, Sound.explosion
-        call playSound
+        call Sound.playSound
 
         ; turn into explosion cloud
         ld a, (ix+Obj.x+0)

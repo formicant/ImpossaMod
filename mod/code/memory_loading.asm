@@ -4,14 +4,14 @@
 
 ; In 128K mode, this code should replace `loadLevel`
 loadLevelFromMemoryStored
-    DISP loadLevel
+    DISP Menu.loadLevel
 
 ; Copy level from its memory page into fast memory page 0
 ; Screen is used as temporary buffer
 loadLevelFromMemory:
         ; set black attrs to hide the artifacts
         xor a
-        call fillScreenAttrs
+        call Utils.fillScreenAttrs
 
         ; get level memory page
         ld hl, Tables.levelMemPages
@@ -85,7 +85,7 @@ copyMemoryBlock:
         jp PE, .loop
         ret
 
-    ASSERT $ <= loadLevelEnd
+    ASSERT $ <= Menu.loadLevelEnd
     ENT
 
 loadLevelFromMemoryLength   EQU $ - loadLevelFromMemoryStored

@@ -1,93 +1,5 @@
     MODULE Code
 
-
-textGameOver:  ; #cd19
-        db "GAME OVER"C
-
-; Used by c_cc25.
-showGameOver:  ; #cd22
-        call clearScreenPixels
-        ld a, Colour.brWhite    ; bright white ink, black paper
-        call fillScreenAttrs
-        ld hl, #0A0B
-        ld de, textGameOver
-        ld c, Colour.brYellow
-        call Utils.printString
-.l_0:
-        ld a, (controlState)
-        bit Key.fire, a
-        jr NZ, .l_0
-        ld bc, 30000
-.l_1:
-        ld a, (controlState)
-        bit Key.fire, a
-        jr NZ, .l_3
-        exx
-        ld b, #C8
-.l_2:
-        djnz .l_2
-        exx
-        dec bc
-        ld a, b
-        or c
-        jr NZ, .l_1
-.l_3:
-        ret
-
-
-textPaused:  ; #cd52
-        db "  PAUSED  "C
-
-; Pause the game
-; Used by c_cc25.
-pauseGameIfPressed:  ; #cd5c
-        call checkPauseKey
-        ret NZ
-.l_0:
-        call checkPauseKey
-        jr Z, .l_0
-        ld hl, #1700            ; at 23, 0
-        ld de, textPaused
-        ld c, Colour.brWhite
-        call Utils.printString
-.l_1:
-        call checkPauseKey
-        jr NZ, .l_1
-        call checkCheatKey
-        jr NZ, .l_2
-        ld a, (controlState)
-        bit Key.up, a
-        jr Z, .l_2
-        ld a, #22
-        ld (State.maxEnergy), a
-        ld a, #32
-        call addEnergy
-.l_2:
-        call checkPauseKey
-        jr Z, .l_2
-        ld hl, Tables.scrTileUpd.row23 + 4
-        ld b, 10
-.l_3:
-        ld (hl), 1
-        inc hl
-        djnz .l_3
-        ret
-
-
-; Move to a new map span
-;   `hl`: span start, tiles
-;   `de`: span end, tiles
-; Used by c_d1c1, c_e60a, c_e920 and c_e9b1.
-moveToMapSpan:  ; #cd9b
-        ld (State.screenX), hl
-        ld hl, -32
-        add hl, de
-        ld (State.mapSpanEnd), hl
-        call findAndPutObjectsToScene
-        call Drawing.setScrTileUpd
-        jp fillAllScrTiles
-
-
 ; Scroll the screen an add new objects to the scene
 ; Used by c_cc25.
 advanceInMap:  ; #cdae
@@ -144,8 +56,8 @@ advanceInMap:  ; #cdae
         _DEBUG_BORDER Colour.blue
         call Drawing.drawObjectsChecked
         call Drawing.updateScreenTiles
-        ld de, scoreTable.walk
-        jp addScoreRaw
+        ld de, Panel.scoreTable.walk
+        jp Panel.addScoreRaw
 
 
 ; Mark object tiles to be updated during screen scrolling
@@ -316,6 +228,5 @@ advanceObjectsInMap:  ; #cf17
         add ix, de
         djnz .object
         ret
-
 
     ENDMODULE

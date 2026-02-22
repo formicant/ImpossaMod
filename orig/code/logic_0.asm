@@ -17,7 +17,7 @@ addEnergy:  ; #d09a
         ld a, b
 .skip:
         ld (State.energy), a
-        jp printEnergy
+        jp Panel.printEnergy
 
 
 ; Decrement energy by one point
@@ -38,8 +38,8 @@ decEnergy:  ; #d0af
         ld (State.energy), a
         ld (ix+Obj.blinkTime), 7
         ld a, Sound.energyLoss
-        call playSound
-        jp printEnergy
+        call Sound.playSound
+        jp Panel.printEnergy
 
 
 ; Decrement blinking time for all scene objects
@@ -142,7 +142,7 @@ clearGameState:  ; #d133
         ld a, 18
         ld (State.maxEnergy), a
 
-        call clearScore
+        call Panel.clearScore
         ld b, 5
         ld hl, State.levelsDone
 .level:
@@ -220,10 +220,10 @@ initLevel:  ; #d1c1
 
     IFNDEF _MOD
         ; panel info
-        call printCoinCount
-        call printScore
-        call printEnergy
-        call printSoupCans
+        call Panel.printCoinCount
+        call Panel.printScore
+        call Panel.printEnergy
+        call Panel.printSoupCans
     ENDIF
 
         xor a
@@ -234,7 +234,7 @@ initLevel:  ; #d1c1
         ld (State.hasSmart), a
 
     IFDEF _MOD
-        call printPanel
+        call Panel.printPanel
     ENDIF
 
         ; set hero's start position
@@ -731,7 +731,7 @@ cleanUpScene:  ; #d4cd
 
 ; Used by c_cc25.
 performSmartIfPressed:  ; #d4e5
-        call checkSmartKey
+        call Control.checkSmartKey
         ret NZ
         ld a, (State.hasSmart)
         or a
@@ -770,7 +770,7 @@ performSmartIfPressed:  ; #d4e5
     ENDIF
 
     IFDEF _MOD
-        jp printSmart
+        jp Panel.printSmart
     ELSE
         ret
     ENDIF

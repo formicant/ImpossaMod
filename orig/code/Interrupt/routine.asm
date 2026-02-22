@@ -13,7 +13,7 @@ routine:  ; #fefe
         ld (shortFrameCounter), a
         
         call Code.incrementLongFrameCounter
-        call Code.pollControlKeys
+        call Control.pollControlKeys
 .callAySound:
     .3  nop
         

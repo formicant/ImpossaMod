@@ -1,5 +1,4 @@
-    MODULE Code
-
+    MODULE Control
 
 ; Set flag Z if [C] key is pressed
 ; Used by c_cd5c.
@@ -176,6 +175,5 @@ pollControlKeys:  ; #c8f8
 .l_17:
         pop hl
         ret
-
 
     ENDMODULE

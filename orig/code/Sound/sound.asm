@@ -1,5 +1,4 @@
-    MODULE Code
-
+    MODULE Sound
 
 ; Play sound (beeper or AY)
 ; Used by c_d0af, c_d7f6, c_df85, c_e6e1, c_ec00 and c_ed08.
@@ -74,6 +73,5 @@ callAyProcedure:  ; #be15
 
 ; #FF if Spectrum 48K, #00 if Spectrum 128K
 is48k:  db -0
-
 
     ENDMODULE

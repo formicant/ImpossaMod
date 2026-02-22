@@ -1,5 +1,4 @@
-    MODULE Code
-
+    MODULE Menu
 
 textSelectLevel:  ; #d51e
         db "SELECT  LEVEL"C
@@ -15,9 +14,9 @@ levelNames:  ; #d52b
 ; Show level selection menu
 ; Used by c_cc25.
 levelSelectionMenu:  ; #d553
-        call clearScreenPixels
+        call Utils.clearScreenPixels
         ld a, Colour.brWhite    ; bright white ink, black paper
-        call fillScreenAttrs
+        call Utils.fillScreenAttrs
         ld hl, #0809
         ld de, textSelectLevel
         ld c, Colour.brYellow
@@ -40,16 +39,16 @@ levelSelectionMenu:  ; #d553
         ld a, Level.bermuda
         ld (State.level), a
 .l_1:
-        ld a, (controlState)
+        ld a, (Control.controlState)
         bit Key.fire, a
         jr NZ, .l_1
 .l_2:
-        ld a, (controlState)
+        ld a, (Control.controlState)
         bit Key.fire, a
         jr Z, .l_2
         jp .l_7
 .l_3:
-        ld a, (controlState)
+        ld a, (Control.controlState)
         ld c, a
         ld a, (State.level)
         bit Key.down, c
@@ -85,8 +84,8 @@ levelSelectionMenu:  ; #d553
         ld c, Colour.brWhite
         call Utils.printString
         ld bc, #00FA
-        call delay
-        ld a, (controlState)
+        call Code.delay
+        ld a, (Control.controlState)
         bit Key.fire, a
         jr Z, .l_3
 .l_7:
@@ -94,13 +93,13 @@ levelSelectionMenu:  ; #d553
         jp NC, levelSelectionMenu
         ld a, Colour.black
         out (Port.general), a   ; set black border
-        call clearScreenPixels
+        call Utils.clearScreenPixels
         ld hl, #0E0B
         ld de, textPressFire
         ld c, Colour.brWhite
         call Utils.printString
 .l_8:
-        ld a, (controlState)
+        ld a, (Control.controlState)
         bit Key.fire, a
         jr Z, .l_8
         ret
@@ -127,7 +126,7 @@ loadLevelIfNeeded:  ; #d62c
         scf
         ret
 .l_0:
-        call clearScreenPixels
+        call Utils.clearScreenPixels
         ld de, textStartTape
         ld hl, #0C0B
         ld c, Colour.brWhite
@@ -142,7 +141,7 @@ loadLevelIfNeeded:  ; #d62c
         push af
         ld a, #FF
         ld (State.loadedLevel), a
-        call clearScreenPixels
+        call Utils.clearScreenPixels
         ld hl, #0C0B
         ld de, textLoadError
         ld c, Colour.brYellow
@@ -152,11 +151,10 @@ loadLevelIfNeeded:  ; #d62c
         ld c, Colour.brWhite
         call Utils.printString
 .l_2:
-        ld a, (controlState)
+        ld a, (Control.controlState)
         bit Key.fire, a
         jr Z, .l_2
         pop af
         ret
-
 
     ENDMODULE

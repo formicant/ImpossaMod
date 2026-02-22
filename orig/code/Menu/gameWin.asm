@@ -1,5 +1,4 @@
-    MODULE Code
-
+    MODULE Menu
 
 ; Game epilogue text
 epilogueText:  ; #d679
@@ -28,13 +27,12 @@ gameWin:  ; #d6c0
         djnz .line
 
         ld bc, 30000
-        call delay
+        call Code.delay
 .waitKey:
-        ld a, (controlState)
+        ld a, (Control.controlState)
         or a
         jr Z, .waitKey
         pop hl
-        jp gameStart
-
+        jp Code.gameStart
 
     ENDMODULE

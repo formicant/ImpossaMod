@@ -19,7 +19,7 @@ entryPoint:
         out (c), a              ; set RAM page 0 again
 
         ld a, (hl)              ; #FF if 48K, #00 if 128K
-        ld (is48k), a           ; copy the value to permanent `is48k` variable
+        ld (Sound.is48k), a           ; copy the value to permanent `is48k` variable
         or a
         jp NZ, .initInterrupts  ; skip if 48K
 
@@ -63,7 +63,7 @@ entryPoint:
         ; replace tape level loader with memory level loader
         ld hl, loadLevelFromMemoryStored
         ld bc, loadLevelFromMemoryLength
-        ld de, loadLevel
+        ld de, Menu.loadLevel
         ldir
 
         ; move AY-related code and data
@@ -80,7 +80,7 @@ entryPoint:
         ld a, -1                ; no level is loaded into page 0
         ld (State.loadedLevel), a
 
-        call setControlKeys
+        call Control.setControlKeys
 
         jp gameStart
 

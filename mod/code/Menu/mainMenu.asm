@@ -1,5 +1,4 @@
-    MODULE Code
-
+    MODULE Menu
 
 ; Attribute address of active menu item
 activeMenuItemAttrAddr:  ; #c6d3
@@ -9,29 +8,29 @@ activeMenuItemAttrAddr:  ; #c6d3
 ; Used by c_cc25.
 gameMenu:  ; #c6d5
         xor a
-        call callPlayMenuMusic
+        call Sound.callPlayMenuMusic
 
-        call clearScreenPixels
+        call Utils.clearScreenPixels
         ld a, Colour.brWhite    ; bright white ink, black paper
-        call fillScreenAttrs
-        ld a, 0
-        out (Port.general), a   ; set border black
+        call Utils.fillScreenAttrs
+        ld a, Colour.black
+        out (Port.general), a   ; set black border
 
         call printGameMenuText
         call clampActiveMenuItemAttrs
 
 .l_0:   ; menu loop
-        call hasMusicEnded
+        call Sound.hasMusicEnded
         jr NZ, .l_1             ; skip if not ended
         xor a
-        call callPlayMenuMusic
+        call Sound.callPlayMenuMusic
 .l_1:
-        ld a, (controlType)
+        ld a, (Control.controlType)
         exa
         ld bc, Port.keys_12345
         in a, (c)
         and Port.keyMask
-        bit Port.key1, a
+        bit Port.key1, a        ; select [1] (keyboard)
         jr NZ, .l_2
         exa
         or a
@@ -40,7 +39,7 @@ gameMenu:  ; #c6d5
         xor a                   ; controlType: keyboard
         jr .l_5
 .l_2:
-        bit 1, a                ; key [2] (kempston)
+        bit Port.key2, a        ; select [2] (kempston)
         jr NZ, .l_3
         exa
         cp 1
@@ -49,7 +48,7 @@ gameMenu:  ; #c6d5
         ld a, 1                 ; controlType: kempston
         jr .l_5
 .l_3:
-        bit 2, a                ; key [3] (cursor)
+        bit Port.key3, a        ; select [3] (cursor)
         jr NZ, .l_4
         exa
         cp 2
@@ -58,7 +57,7 @@ gameMenu:  ; #c6d5
         ld a, 2                 ; controlType: cursor
         jr .l_5
 .l_4:
-        bit 3, a                ; key [4] (interface 2)
+        bit Port.key4, a        ; select [4] (interface 2)
         jr NZ, .l_6
         exa
         cp 3
@@ -67,7 +66,7 @@ gameMenu:  ; #c6d5
         ld a, 3                 ; controlType: interface 2
 .l_5:
         ld (activeMenuItemAttrAddr), hl
-        ld (controlType), a
+        ld (Control.controlType), a
 
         call printGameMenuText
         call clampActiveMenuItemAttrs
@@ -87,15 +86,15 @@ gameMenu:  ; #c6d5
         djnz .l_7
 
         ld bc, 20
-        call delay              ; delay ~20 ms
-        call checkStartKey
+        call Code.delay              ; delay ~20 ms
+        call Control.checkStartKey
         jp NZ, .l_0
 .l_9:
-        call checkStartKey
+        call Control.checkStartKey
         jr Z, .l_9
 
         ld a, 1
-        call callPlayMenuMusic
+        call Sound.callPlayMenuMusic
         ret
 
 ; Print game menu text
@@ -148,12 +147,10 @@ printGameMenuText:  ; #c76f
         ld de, textLastScore
         ld c, Colour.brMagenta
         call Utils.printString
-        ld hl, #0F12            ; at 15, 18
-        ld (printScore.yx), hl
-        call printScore
-        ld hl, #0000            ; at 0, 0
-        ld (printScore.yx), hl
-        ret
+
+        ld hl, Screen.pixels.row15 + 18
+        jp Panel.printScoreAt
+
 
 ; Checks attributes of the active menu item
 ; and sets them to bright blue if greater than bright white
@@ -183,6 +180,5 @@ gameMenuText:  ; #c7f2
 
 textLastScore:
         db "LAST SCORE"C
-
 
     ENDMODULE

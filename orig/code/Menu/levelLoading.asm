@@ -1,5 +1,4 @@
-    MODULE Code
-
+    MODULE Menu
 
 textFound:  ; #c9a7
         db "FOUND"C
@@ -17,7 +16,7 @@ loadLevel:  ; #c9ac
         ei
         ret
 .found:
-        call clearScreenPixels
+        call Utils.clearScreenPixels
         ld hl, #0C09            ; at 12, 9
         ld de, textFound
         ld c, Colour.brWhite
@@ -184,6 +183,5 @@ c_ca84:  ; #ca84
         ret
 
 loadLevelEnd:
-
 
     ENDMODULE

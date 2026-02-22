@@ -2,14 +2,14 @@
 
 
 gameStart:  ; #cc5a
-        call gameMenu
+        call Menu.gameMenu
         call clearGameState
 
 .levelStart:
-        call levelSelectionMenu
-        call clearScreenPixels
+        call Menu.levelSelectionMenu
+        call Utils.clearScreenPixels
         ld a, Colour.brWhite    ; bright white ink, black paper
-        call fillScreenAttrs
+        call Utils.fillScreenAttrs
         call clearScene
         call removeObjects      ; not needed (?)
         call initLevel
@@ -93,8 +93,8 @@ gameStart:  ; #cc5a
         _DEBUG_BORDER Colour.black
 
 .skipAdvance:
-        call pauseGameIfPressed ; TODO: replace
-        call checkQuitKey       ; TODO: remove
+        call Menu.pauseGameIfPressed ; TODO: replace
+        call Control.checkQuitKey   ; TODO: remove
         jp Z, gameStart
 
         ld a, (State.isDead)
@@ -112,7 +112,7 @@ gameStart:  ; #cc5a
         jr .alive
 
 .noDiary:
-        call showGameOver       ; TODO: can be inlined
+        call Menu.showGameOver       ; TODO: can be inlined
         jp gameStart
 
 .alive:

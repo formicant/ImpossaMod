@@ -22,7 +22,7 @@ detectSpectrumModel:  ; #5e00
         ld a, e
         ld (#C000), a
         ld a, #FF
-        ld (is48k), a
+        ld (Sound.is48k), a
         ei
         ret
 

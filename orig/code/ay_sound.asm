@@ -629,11 +629,11 @@ setAyReg:  ; #c9e7
 
 ; Unused?
 callPlayMenuMusic:  ; #c9f4
-        jp Code.callPlayMenuMusic
+        jp Sound.callPlayMenuMusic
 
 ; Unused?
 callAySoundFrame:  ; #c9f7
-        jp Code.callAySoundFrame
+        jp Sound.callAySoundFrame
 
 
 ; Non-zero if sound/music is playing, zero if silent

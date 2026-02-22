@@ -1,4 +1,4 @@
-    MODULE Code
+    MODULE Control
 
 
 ; Never works
@@ -9,7 +9,7 @@ checkCheatKey:
 
 ; Set flag Z if quit key is pressed
 checkQuitKey:
-        ld a, (controlState)
+        ld a, (Control.controlState)
         cpl
         bit Key.quit, a
         ret
@@ -23,14 +23,14 @@ checkStartKey:
 
 ; Set flag Z if pause key is pressed
 checkPauseKey:
-        ld a, (controlState)
+        ld a, (Control.controlState)
         cpl
         bit Key.pause, a
         ret
 
 ; Set flag Z if smart key is pressed
 checkSmartKey:
-        ld a, (controlState)
+        ld a, (Control.controlState)
         cpl
         bit Key.smart, a
         ret

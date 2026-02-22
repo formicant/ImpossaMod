@@ -295,14 +295,14 @@ processHeroCollisions:  ; #e6e1
         ld (State.weaponTime), hl
         ld (iy+Obj.flags), 0    ; remove object
         ld a, Sound.pickWeapon
-        jp playSound
+        jp Sound.playSound
 
 .l_2:
         cp ObjType.shopMole
         jr Z, .skipSound
         push af
         ld a, Sound.pickItem
-        call playSound
+        call Sound.playSound
         pop af
 .skipSound:
 
@@ -315,7 +315,7 @@ processHeroCollisions:  ; #e6e1
         ld (State.soupCans), a
 .maxSoupCans:
         ld (iy+Obj.flags), 0    ; remove object
-        jp printSoupCans
+        jp Panel.printSoupCans
 
 .notSoupCan:
         cp ObjType.slimyWorms
@@ -335,7 +335,7 @@ processHeroCollisions:  ; #e6e1
         add 25
     ENDIF
         ld (State.coins), a
-        jp printCoinCount
+        jp Panel.printCoinCount
 
 .notCoin:
         cp ObjType.pintaADay
@@ -364,7 +364,7 @@ processHeroCollisions:  ; #e6e1
         jr NC, .scoreItem
 
         ; shop mole
-        ld a, (controlState)
+        ld a, (Control.controlState)
         bit Key.down, a
         ret Z
         ld (iy+Obj.flags), 0    ; remove object
@@ -375,7 +375,7 @@ processHeroCollisions:  ; #e6e1
 .scoreItem:
         ld (iy+Obj.flags), 0    ; remove object
         ld a, (iy+Obj.score)
-        jp addScore
+        jp Panel.addScore
 
 .levelSpecific:
         cp ObjType.pressPlatf
@@ -606,14 +606,14 @@ shopLogic:  ; #e9b1
         add iy, de
         djnz .object
     IFDEF _MOD
-        jp printPanel
+        jp Panel.printPanel
     ELSE
-        jp printEnergy
+        jp Panel.printEnergy
     ENDIF
 
 .found:
     IFDEF _MOD
-        call clearEnergy
+        call Panel.clearEnergy
     ENDIF
 
         ld a, (iy+Obj.objType)
@@ -650,15 +650,15 @@ shopLogic:  ; #e9b1
         jr Z, .skipPrice
 
     IFDEF _MOD
-        call printPrice
+        call Panel.printPrice
     ELSE
         ld hl, #001C            ; at 0, 28
         ld c, Colour.brWhite
-        call printNumber
+        call Panel.printNumber
     ENDIF
 
 .skipPrice:
-        ld a, (controlState)
+        ld a, (Control.controlState)
         bit Key.fire, a
         ret Z
 
@@ -698,9 +698,9 @@ shopLogic:  ; #e9b1
         ld (State.heroState), a
 
     IFDEF _MOD
-        jp printPanel
+        jp Panel.printPanel
     ELSE
-        jp printEnergy
+        jp Panel.printEnergy
     ENDIF
 
 .buyItem:
@@ -714,14 +714,14 @@ shopLogic:  ; #e9b1
         ld c, Colour.brWhite
         call Utils.printString
 .waitFireRelease:
-        ld a, (controlState)
+        ld a, (Control.controlState)
         bit Key.fire, a
         jr NZ, .waitFireRelease
         ret
 
 .canBuy:
         ld (State.coins), a
-        call printCoinCount
+        call Panel.printCoinCount
         ld (iy+Obj.flags), 0    ; remove object
 
         ld a, (State.shopItem)
@@ -743,7 +743,7 @@ shopLogic:  ; #e9b1
         ld (State.soupCans), a
 .tooMuchSoup:
         ld (iy+Obj.flags), 0    ; remove object
-        jp printSoupCans
+        jp Panel.printSoupCans
 
 .notSoupCan:
         cp 5                    ; slimy worms
@@ -1025,7 +1025,7 @@ damageEnemy:  ; #ec00
         ld (iy+Obj.blinkTime), 4
 
         ld a, Sound.damageEnemy
-        call playSound
+        call Sound.playSound
         jr .damaged
 
 ; This entry point is used by c_d4e5.
@@ -1047,7 +1047,7 @@ damageEnemy:  ; #ec00
         ld (iy+Obj.spriteSet), -1
         ld (iy+Obj.colour), Colour.brWhite
         ld a, Sound.explosion
-        call playSound
+        call Sound.playSound
 
 .damaged:
         xor a
@@ -1069,7 +1069,7 @@ damageEnemy:  ; #ec00
 
         ld (State.bossHealth), a
         ld a, Sound.damageEnemy
-        call playSound
+        call Sound.playSound
 
         push ix
         push de
@@ -1113,8 +1113,8 @@ damageEnemy:  ; #ec00
         ld (State.bossKilled), a
 
         ; level complete
-        ld de, scoreTable.done
-        call addScoreRaw
+        ld de, Panel.scoreTable.done
+        call Panel.addScoreRaw
         ld a, (State.level)
         ld hl, State.levelsDone
         ld e, a
@@ -1123,7 +1123,7 @@ damageEnemy:  ; #ec00
         ld (hl), 1
 
         ld a, Sound.explosion
-        call playSound
+        call Sound.playSound
         jr .damaged
 
 
@@ -1232,7 +1232,7 @@ fallingMotion: ; #ed5f
         ld (ix+Obj.spriteSet), -1
         ld (ix+Obj.colour), Colour.brWhite
         ld a, Sound.explosion
-        jp playSound
+        jp Sound.playSound
 
 .fallAndStay:
         call collectTileTypes
@@ -2551,7 +2551,7 @@ bulletMotion:  ; #f618
 .heroAlive:
         ld (State.energy), a
         ld (iy+Obj.blinkTime), 7
-        jp printEnergy
+        jp Panel.printEnergy
 
 .noCollision:
         ld a, (State.level)

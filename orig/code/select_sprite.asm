@@ -131,7 +131,7 @@ getExplosionSprite:  ; #e4fc
 
         ; add score
         ld a, (ix+Obj.score)
-        call addScore
+        call Panel.addScore
 
         pop hl
         ret

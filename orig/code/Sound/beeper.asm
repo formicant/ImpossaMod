@@ -1,5 +1,4 @@
-    MODULE Code
-
+    MODULE Sound
 
 ; Beeper sounds (15 × 3 bytes)
 beeperSounds:  ; #be3a
@@ -93,6 +92,5 @@ playBeeperSound:  ; #be67
 .high:  djnz .high
 
         ret
-
 
     ENDMODULE

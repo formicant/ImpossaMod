@@ -1,0 +1,6 @@
+    INCLUDE "panel.asm"
+    INCLUDE "score.asm"
+    INCLUDE "smallItems.asm"
+    INCLUDE "coins.asm"
+    INCLUDE "energy.asm"
+    INCLUDE "digit.asm"

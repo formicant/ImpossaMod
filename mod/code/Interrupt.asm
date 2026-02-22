@@ -19,7 +19,7 @@ routine:
         rl h                    ; add bit to the control state
     EDUP
         ld a, h
-        ld (Code.controlState), a
+        ld (Control.controlState), a
 
         ; increment short frame counter
         ld a, (shortFrameCounter)
