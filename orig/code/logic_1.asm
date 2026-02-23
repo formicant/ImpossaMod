@@ -55,14 +55,14 @@ processHero:  ; #d709
 .skipRecoil:
         ; check conveyors
         ld a, (State.tileFootL)
-        call getTileType
+        call Tiles.getTileType
         cp TileType.conveyorL
         jp Z, .dragLeft
         cp TileType.conveyorR
         jp Z, .dragRight
 
         ld a, (State.tileFootR)
-        call getTileType
+        call Tiles.getTileType
         cp TileType.conveyorL
         jp Z, .dragLeft
         cp TileType.conveyorR
@@ -70,11 +70,11 @@ processHero:  ; #d709
 
         ; check water/spikes
         ld a, (State.tileFootL)
-        call getTileType
+        call Tiles.getTileType
         cp TileType.waterSpikes
         jr Z, .waterSpikes
         ld a, (State.tileFootR)
-        call getTileType
+        call Tiles.getTileType
         cp TileType.waterSpikes
         jr NZ, .checkAdvance
 
@@ -160,7 +160,7 @@ heroStands:  ; #d7f6
 
 .keyUp:
         ld a, (State.tileCentre)
-        call getTileType
+        call Tiles.getTileType
         cp TileType.ladder
         jp Z, .climb
         cp TileType.ladderTop
@@ -174,7 +174,7 @@ heroStands:  ; #d7f6
 
 .keyDown:
         ld a, (State.tileFootC)
-        call getTileType
+        call Tiles.getTileType
         cp TileType.ladderTop
         jp Z, .climb
 
@@ -190,31 +190,31 @@ heroStands:  ; #d7f6
 
         ; check foot tiles
         ld a, (State.tileFootL)
-        call getTileType
+        call Tiles.getTileType
         cp TileType.ladderTop
         jr NC, .notFalling
         ld a, (State.tileFootR)
-        call getTileType
+        call Tiles.getTileType
         cp TileType.ladderTop
         jp C, heroWalks.fall
 
 .notFalling:
         ; check for ice
         ld a, (State.tileFootL)
-        call getTileType
+        call Tiles.getTileType
         cp TileType.ice
         jr Z, .ice
         ld a, (State.tileFootR)
-        call getTileType
+        call Tiles.getTileType
         cp TileType.ice
         jr Z, .ice
 
         ld a, (State.tileFootL)
-        call getTileType
+        call Tiles.getTileType
         cp TileType.conveyorL
         ret NC                  ; ret if conveyor, slow, water/spikes (?)
         ld a, (State.tileFootR)
-        call getTileType
+        call Tiles.getTileType
         cp TileType.conveyorL
         jp C, heroWalks.stop    ; if space, ladder, platform, wall (?)
         ret                     ; ret if conveyor, slow, water/spikes (?)
@@ -345,11 +345,11 @@ heroWalks:  ; #d94c
 
         ; check tiles below
         ld a, (State.tileFootL)
-        call getTileType
+        call Tiles.getTileType
         cp TileType.ladderTop
         jr NC, .notFalling
         ld a, (State.tileFootR)
-        call getTileType
+        call Tiles.getTileType
         cp TileType.ladderTop
         jp C, .fall
 
@@ -362,7 +362,7 @@ heroWalks:  ; #d94c
 
 .keyDown:
         ld a, (State.tileFootC)
-        call getTileType
+        call Tiles.getTileType
         cp TileType.ladderTop
         jp Z, heroStands.climb
 
@@ -376,11 +376,11 @@ heroWalks:  ; #d94c
         jp NZ, .stop
 
         ld a, (State.tileFootL)
-        call getTileType
+        call Tiles.getTileType
         cp TileType.slow
         jr Z, .slowLeft
         ld a, (State.tileFootR)
-        call getTileType
+        call Tiles.getTileType
         cp TileType.slow
         jr NZ, .walkLeft
 
@@ -414,11 +414,11 @@ heroWalks:  ; #d94c
         jp NZ, .stop
 
         ld a, (State.tileFootL)
-        call getTileType
+        call Tiles.getTileType
         cp TileType.slow
         jr Z, .slowRight
         ld a, (State.tileFootR)
-        call getTileType
+        call Tiles.getTileType
         cp TileType.slow
         jr NZ, .walkRight
 
@@ -447,11 +447,11 @@ heroWalks:  ; #d94c
 
 .checkIce:
         ld a, (State.tileFootL)
-        call getTileType
+        call Tiles.getTileType
         cp TileType.ice
         jr Z, .ice
         ld a, (State.tileFootR)
-        call getTileType
+        call Tiles.getTileType
         cp TileType.ice
         ret NZ
 
@@ -539,7 +539,7 @@ heroJumps:  ; #da95
 
         ; grab ladder if present
         ld a, (State.tileCentre)
-        call getTileType
+        call Tiles.getTileType
         cp TileType.ladder
         jp Z, heroStands.climb
         cp TileType.ladderTop
@@ -598,11 +598,11 @@ heroJumps:  ; #da95
         exa
         call collectTilesAbove
         ld a, (State.tileAbovL)
-        call getTileType
+        call Tiles.getTileType
         cp TileType.wall
         jr NC, .obstacleAbove
         ld a, (State.tileAbovR)
-        call getTileType
+        call Tiles.getTileType
         cp TileType.wall
         jr NC, .obstacleAbove
         ret
@@ -610,11 +610,11 @@ heroJumps:  ; #da95
 .down:
         call collectTwoTilesBelow
         ld a, (State.tileFootL)
-        call getTileType
+        call Tiles.getTileType
         cp TileType.ladderTop
         jp NC, heroWalks.stop
         ld a, (State.tileFootR)
-        call getTileType
+        call Tiles.getTileType
         cp TileType.ladderTop
         jp NC, heroWalks.stop
         ret
@@ -637,7 +637,7 @@ heroFalls:  ; #db4e
 
         ; grab ladder if present
         ld a, (State.tileCentre)
-        call getTileType
+        call Tiles.getTileType
         cp TileType.ladder
         jp Z, heroStands.climb
         cp TileType.ladderTop
@@ -695,11 +695,11 @@ heroFalls:  ; #db4e
 
         ; check tiles below
         ld a, (State.tileFootL)
-        call getTileType
+        call Tiles.getTileType
         cp TileType.ladderTop
         jp NC, heroWalks.stop
         ld a, (State.tileFootR)
-        call getTileType
+        call Tiles.getTileType
         cp TileType.ladderTop
         jp NC, heroWalks.stop
 
@@ -733,22 +733,22 @@ heroClimbs:  ; #dbfc
         jr Z, .notUp
 
         ld a, (State.tileCentre)
-        call getTileType
+        call Tiles.getTileType
         or a
         jr NZ, .checkTilesAbove
         ld a, (State.tileFootC)
-        call getTileType
+        call Tiles.getTileType
         or a
         jp Z, heroWalks.fall
 
 .checkTilesAbove:
         call collectTilesAbove
         ld a, (State.tileAbovL)
-        call getTileType
+        call Tiles.getTileType
         cp TileType.wall
         jr NC, .notUp
         ld a, (State.tileAbovR)
-        call getTileType
+        call Tiles.getTileType
         cp TileType.wall
         jr NC, .notUp
 
@@ -764,11 +764,11 @@ heroClimbs:  ; #dbfc
         jr Z, .notDown
 
         ld a, (State.tileCentre)
-        call getTileType
+        call Tiles.getTileType
         or a
         jr NZ, .l_2
         ld a, (State.tileFootC)
-        call getTileType
+        call Tiles.getTileType
         or a
         jp Z, heroWalks.fall
 
@@ -791,7 +791,7 @@ heroClimbs:  ; #dbfc
 
         call collectCentreTileBelow
         ld a, (State.tileFootC)
-        call getTileType
+        call Tiles.getTileType
         cp TileType.ladderTop
         jp NC, heroWalks.stop
 
@@ -800,12 +800,12 @@ heroClimbs:  ; #dbfc
         bit Key.left, a
         jr Z, .notLeft
         ld a, (State.tileCentre)
-        call getTileType
+        call Tiles.getTileType
         or a
         jr NZ, .left
 
         ld a, (State.tileFootC)
-        call getTileType
+        call Tiles.getTileType
         or a
         jp Z, heroWalks.fall
 
@@ -823,12 +823,12 @@ heroClimbs:  ; #dbfc
         jr Z, .notRight
 
         ld a, (State.tileCentre)
-        call getTileType
+        call Tiles.getTileType
         or a
         jr NZ, .right
 
         ld a, (State.tileFootC)
-        call getTileType
+        call Tiles.getTileType
         or a
         jp Z, heroWalks.fall
 
@@ -869,7 +869,7 @@ collectCentreTileBelow:  ; #dce1
         add 21
         ld (ix+Obj.y), a
 
-        call getScrTileAddr
+        call Tiles.getScrTileAddr
         ld a, (hl)
         ld (State.tileFootC), a
 
@@ -894,7 +894,7 @@ collectTwoTilesBelow:  ; #dd09
         add 24
         ld (ix+Obj.y), a
 
-        call getScrTileAddr
+        call Tiles.getScrTileAddr
         ld a, (hl)
         ld (State.tileFootL), a
         inc hl
@@ -923,7 +923,7 @@ collectTilesAbove:  ; #dd46
         add -1
         ld (ix+Obj.y), a
 
-        call getScrTileAddr
+        call Tiles.getScrTileAddr
         ld a, (hl)
         ld (State.tileAbovL), a
         inc hl
@@ -949,7 +949,7 @@ collectStateTiles:  ; #dd73
         adc a, 0
         ld (ix+Obj.x+1), a
 
-        call getScrTileAddr
+        call Tiles.getScrTileAddr
         ld bc, 44
         ld a, (hl)
         ld (State.tileTopL), a
@@ -970,7 +970,7 @@ collectStateTiles:  ; #dd73
         adc a, 0
         ld (ix+Obj.x+1), a
 
-        call getScrTileAddr
+        call Tiles.getScrTileAddr
         ld bc, 44
         ld a, (hl)
         ld (State.tileTopR), a
@@ -995,7 +995,7 @@ collectStateTiles:  ; #dd73
         add 21
         ld (ix+Obj.y), a
 
-        call getScrTileAddr
+        call Tiles.getScrTileAddr
         ld a, (hl)
         ld (State.tileFootL), a
         inc hl                  ; move right
@@ -1013,7 +1013,7 @@ collectStateTiles:  ; #dd73
         add -8
         ld (ix+Obj.y), a
 
-        call getScrTileAddr
+        call Tiles.getScrTileAddr
         ld a, (hl)
         ld (State.tileCentre), a
         add hl, bc              ; move down
@@ -1061,34 +1061,34 @@ isObstacleToTheLeft:  ; #de37
         jr NZ, .climbing
 
         ld a, (State.tileTopL)
-        call getTileType
+        call Tiles.getTileType
         cp TileType.platform
         jr NC, .true
         ld a, (State.tileMidL)
-        call getTileType
+        call Tiles.getTileType
         cp TileType.platform
         jr NC, .true
         ld a, (State.tileBotL)
-        call getTileType
+        call Tiles.getTileType
         cp TileType.platform
         jr NC, .true
         ld a, (State.tileUndrL)
-        call getTileType
+        call Tiles.getTileType
         cp TileType.platform
         jr NC, .true
         jp .false
 
 .climbing:
         ld a, (State.tileTopL)
-        call getTileType
+        call Tiles.getTileType
         cp TileType.wall
         jr NC, .true
         ld a, (State.tileMidL)
-        call getTileType
+        call Tiles.getTileType
         cp TileType.wall
         jr NC, .true
         ld a, (State.tileBotL)
-        call getTileType
+        call Tiles.getTileType
         cp TileType.wall
         jr NC, .true
 
@@ -1100,7 +1100,7 @@ isObstacleToTheLeft:  ; #de37
         jp M, .false            ; moving upwards
 
         ld a, (State.tileUndrR)
-        call getTileType
+        call Tiles.getTileType
         cp TileType.wall
         jr NC, .true
 
@@ -1129,34 +1129,34 @@ isObstacleToTheRight:  ; #deb1
         jr NZ, .climbing
 
         ld a, (State.tileTopR)
-        call getTileType
+        call Tiles.getTileType
         cp TileType.platform
         jr NC, .true
         ld a, (State.tileMidR)
-        call getTileType
+        call Tiles.getTileType
         cp TileType.platform
         jr NC, .true
         ld a, (State.tileBotR)
-        call getTileType
+        call Tiles.getTileType
         cp TileType.platform
         jr NC, .true
         ld a, (State.tileUndrR)
-        call getTileType
+        call Tiles.getTileType
         cp TileType.platform
         jr NC, .true
         jp .false
 
 .climbing:
         ld a, (State.tileTopR)
-        call getTileType
+        call Tiles.getTileType
         cp TileType.wall
         jr NC, .true
         ld a, (State.tileMidR)
-        call getTileType
+        call Tiles.getTileType
         cp TileType.wall
         jr NC, .true
         ld a, (State.tileBotR)
-        call getTileType
+        call Tiles.getTileType
         cp TileType.wall
         jr NC, .true
         ld a, (State.heroState)
@@ -1166,7 +1166,7 @@ isObstacleToTheRight:  ; #deb1
         or a
         jp M, .false            ; moving upwards
         ld a, (State.tileUndrR)
-        call getTileType
+        call Tiles.getTileType
         cp TileType.wall
         jr NC, .true
 
@@ -1592,7 +1592,7 @@ processFire:  ; #df85
         adc a, 0
         ld (ix+Obj.x+1), a
 
-        call getScrTileAddr     ; `hl`: tile addr
+        call Tiles.getScrTileAddr     ; `hl`: tile addr
 
         ld a, (ix+Obj.x+0)
         add -4
@@ -1602,7 +1602,7 @@ processFire:  ; #df85
         ld (ix+Obj.x+1), a
 
         ld a, (hl)
-        call getTileType
+        call Tiles.getTileType
         cp TileType.ladderTop
         ret C                   ; space or ladder
 
@@ -1693,7 +1693,7 @@ processFire:  ; #df85
         add 8
         ld (ix+Obj.y), a
 
-        call getScrTileAddr     ; `hl`: tile addr
+        call Tiles.getScrTileAddr     ; `hl`: tile addr
 
         ld a, (ix+Obj.x)
         add -4
@@ -1706,7 +1706,7 @@ processFire:  ; #df85
         ld (ix+Obj.y), a
 
         ld a, (hl)
-        call getTileType
+        call Tiles.getTileType
         cp TileType.ladderTop
         jp NC, .removeBombOrBullet
 

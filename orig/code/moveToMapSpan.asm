@@ -11,6 +11,6 @@ moveToMapSpan:  ; #cd9b
         ld (State.mapSpanEnd), hl
         call findAndPutObjectsToScene
         call Drawing.setScrTileUpd
-        jp fillAllScrTiles
+        jp Tiles.fillAllScrTiles
 
     ENDMODULE

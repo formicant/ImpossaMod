@@ -9,10 +9,10 @@ rollConveyorTiles:  ; #c884
         ret Z
         cp Level.iceland
         ret Z
-        ld a, (conveyorTileIndices.left)
+        ld a, (Tiles.conveyorTileIndices.left)
         or a
         call NZ, .left
-        ld a, (conveyorTileIndices.right)
+        ld a, (Tiles.conveyorTileIndices.right)
         or a
         call NZ, .right
         ret

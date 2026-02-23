@@ -61,7 +61,7 @@ gameStart:  ; #cc5a
         _DEBUG_BORDER Colour.yellow
         call processFire            ; TODO: can be inlined (time: medium)
         _DEBUG_BORDER Colour.black
-        call updateConveyors        ; TODO: can be inlined
+        call Tiles.updateConveyors        ; TODO: can be inlined
         call rollConveyorTiles      ; TODO: can be inlined
         _DEBUG_BORDER Colour.white
         call Drawing.drawObjectsChecked     ; (time: extreme)
