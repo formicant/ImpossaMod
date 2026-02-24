@@ -2,7 +2,7 @@
 
 
 ; Boss logic switch by level
-bossLogic:
+switch:
         ld a, (State.bossFight)
         or a
         ret Z

@@ -5,84 +5,32 @@
     ; DEFINE _DEBUG
 
 ; Definitions
-    INCLUDE "orig/inc/macros.inc"
-    INCLUDE "orig/inc/basic.inc"
-    INCLUDE "orig/inc/enums.inc"
-    INCLUDE "orig/inc/structs.inc"
-    INCLUDE "orig/inc/port.inc"
-    INCLUDE "orig/inc/ay.inc"
-    INCLUDE "inc/MemPage.inc"
-    INCLUDE "data/Level.inc"
-
+    INCLUDE "inc/_index.inc"
 
 ; Slow memory
     ORG #4000
 ; Loading screen
     INCLUDE "orig/data/Screen.asm"
-
 ; Basic loader
     ORG #5CCB
-    INCLUDE "basic_loader.asm"
+    INCLUDE "basicLoader.asm"
 
-; Code
+; Code block
     ORG #6000
 codeStart:
     INCLUDE "data/Font.asm"
-
-    INCLUDE "code/Utils/_index.asm"
-    INCLUDE "code/Menu/_index.asm"
-    INCLUDE "orig/code/game_loop.asm"
-    INCLUDE "orig/code/moveToMapSpan.asm"
-    INCLUDE "orig/code/advanceInMap.asm"
-    INCLUDE "orig/code/Tiles/tiles.asm"
-    INCLUDE "orig/code/advanceObjectsInMap.asm"
-    INCLUDE "orig/code/energy.asm"
-    INCLUDE "orig/code/initHero.asm"
-    INCLUDE "orig/code/Tiles/conveyorTileIndices.asm"
-    INCLUDE "orig/code/initLevel.asm"
-    INCLUDE "orig/code/Tiles/conveyors.asm"
-    INCLUDE "orig/code/Scene/clearScene.asm"
-    INCLUDE "orig/code/logic_0.asm"
-    INCLUDE "orig/code/Scene/visibility.asm"
-    INCLUDE "orig/code/Tiles/getScrTileAddr.asm"
-    INCLUDE "orig/code/Scene/cleanUpScene.asm"
-    INCLUDE "orig/code/smart.asm"
-    INCLUDE "orig/code/Tiles/rollConveyorTiles.asm"
-    INCLUDE "orig/code/logic_1.asm"
-    INCLUDE "code/Panel/_index.asm"
-    INCLUDE "code/Boss/switch.asm"
-    INCLUDE "code/Control.asm"
-    INCLUDE "code/sound.asm"
-
+    INCLUDE "code/_slow.asm"
     DISPLAY "Slow free: ", #8000 - $
 
 ; Fast memory
     _NEXT_ORG #8000
     INCLUDE "var/Tables.asm"
-
-    ORG Tables.disposable         ; will be overwritten with tables
-    INCLUDE "code/entry_point.asm"
-    INCLUDE "code/memory_loading.asm"
-    ; INCLUDE "orig/code/ay_sound.asm"    ; length: #D78 = 3448
-
+    ORG Tables.disposable       ; will be overwritten with tables
+    INCLUDE "code/_disp.asm"
     DISPLAY "Disp free: ", Interrupt.routine - $
 
-    _NEXT_ORG #9191
-    INCLUDE "code/Interrupt.asm"
-
-    INCLUDE "orig/code/Loading.asm"
-    INCLUDE "orig/code/select_sprite.asm"
-    INCLUDE "orig/code/Scene/moveObjects.asm"
-    INCLUDE "orig/code/transit.asm"
-    INCLUDE "orig/code/Scene/allocateObject.asm"
-    INCLUDE "orig/code/heroCollisions.asm"
-    INCLUDE "orig/code/Scene/collisions.asm"
-    INCLUDE "orig/code/logic_2.asm"
-    INCLUDE "orig/code/Tiles/getTileType.asm"
-    INCLUDE "orig/code/enemy.asm"
-    ; INCLUDE "orig/code/beeper_sound.asm"
-    INCLUDE "orig/code/Drawing/_index.asm"
-
+    _NEXT_ORG #9191             ; interrupt routine addr
+    INCLUDE "code/_fast.asm"
     DISPLAY "Fast free: ", stackTop - $
 
     _NEXT_ORG #AEAE
@@ -95,30 +43,26 @@ codeLength = $ - codeStart
 
 ; Variables
     ORG Level.end
-    INCLUDE "orig/var/State.asm"
-    INCLUDE "orig/var/State_objTileIndex.asm"
-    INCLUDE "orig/var/Scene.asm"
+    INCLUDE "var/_index.asm"
 
 ; Levels
     ORG 0
     INCLUDE "orig/data/Headers.asm"
 
-    PAGE MemPage.level0           ; Klondike
+    PAGE MemPage.level0         ; Klondike
     INCLUDE "data/Lev0Klondike.asm"
-    PAGE MemPage.level1           ; Orient
+    PAGE MemPage.level1         ; Orient
     INCLUDE "data/Lev1Orient.asm"
-    PAGE MemPage.level2           ; Amazon
+    PAGE MemPage.level2         ; Amazon
     INCLUDE "data/Lev2Amazon.asm"
-    PAGE MemPage.level3           ; Iceland
+    PAGE MemPage.level3         ; Iceland
     INCLUDE "data/Lev3Iceland.asm"
-    PAGE MemPage.level4           ; Bermuda
+    PAGE MemPage.level4         ; Bermuda
     INCLUDE "data/Lev4Bermuda.asm"
-
     PAGE 0
 
-
 ; Output
-    SAVESNA "impossamod.sna", Code.entryPoint.sna
+    SAVESNA "impossamod.sna", Main.entryPoint.sna
 
     EMPTYTAP "impossamod.tap"
     SAVETAP "impossamod.tap", BASIC, "ImpossaMod", Basic.start, Basic.length, 1

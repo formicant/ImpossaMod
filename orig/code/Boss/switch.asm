@@ -1,9 +1,8 @@
     MODULE Boss
 
-
 ; Boss logic switch by level
 ; Used by c_cc25.
-bossLogic:  ; #f8cb
+switch:  ; #f8cb
         ld a, (State.bossFight)
         or a
         ret Z
@@ -25,6 +24,5 @@ bossLogic:  ; #f8cb
         jp Z, bossLogicBermuda
 
         ret
-
 
     ENDMODULE

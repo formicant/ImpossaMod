@@ -2,17 +2,17 @@
     INCLUDE "tiles.asm"
         block Level.objectTable - $         ; cleanup
     ORG Level.objectTable
-    INCLUDE "object_table.asm"
+    INCLUDE "objectTable.asm"
         block Level.blockMap - $            ; cleanup
     ORG Level.blockMap
-    INCLUDE "block_map.asm"
+    INCLUDE "blockMap.asm"
     ORG Level.sprites
     INCLUDE "sprites.asm"
         block Level.transitTable - $        ; cleanup
     ORG Level.transitTable
     INCLUDE "transits.asm"
-    INCLUDE "traj_table.asm"
+    INCLUDE "trajTable.asm"
     ORG Level.levObjectTypes
-    INCLUDE "object_types.asm"
+    INCLUDE "objectTypes.asm"
     INCLUDE "trajectories.asm"
         block Level.end - $                 ; cleanup

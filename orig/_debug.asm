@@ -34,17 +34,17 @@ codeStart:
     ORG Level.start
     INCLUDE "data/0_klondike/tiles.asm"
     ORG Level.objectTable
-    INCLUDE "data/0_klondike/object_table.asm"
+    INCLUDE "data/0_klondike/objectTable.asm"
     ORG Level.blockMap
-    INCLUDE "data/0_klondike/block_map.asm"
+    INCLUDE "data/0_klondike/blockMap.asm"
     INCLUDE "data/sprites.asm"
     INCLUDE "data/0_klondike/sprites.asm"
     ORG Level.transitTable
     INCLUDE "data/0_klondike/transits.asm"
     ORG Level.trajVelTable
-    INCLUDE "data/0_klondike/traj_table.asm"
-    INCLUDE "data/object_types.asm"
-    INCLUDE "data/0_klondike/object_types.asm"
+    INCLUDE "data/0_klondike/trajTable.asm"
+    INCLUDE "data/objectTypes.asm"
+    INCLUDE "data/0_klondike/objectTypes.asm"
     INCLUDE "data/0_klondike/trajectories.asm"
     ORG #BDDF
     INCLUDE "code/sound.asm"

@@ -4,7 +4,7 @@
 ; Used by c_d1c1, c_e6e1 and c_e9b1.
 printCoinCount:  ; #cfe6
         ld a, (State.coins)
-        ld hl, #000B            ; at 0, 12
+        ld hl, _ROW 0 _COL 11
         ld c, Colour.brYellow
         jp printNumber
 

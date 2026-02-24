@@ -7,16 +7,16 @@
 routine:  ; #fefe
         di
         push af, bc, de, hl, ix, iy
-        
-        ld a, (shortFrameCounter)
+
+        ld a, (frames)
         inc a
-        ld (shortFrameCounter), a
-        
-        call Utils.incrementLongFrameCounter
-        call Control.pollControlKeys
+        ld (frames), a
+
+        call Utils.incrementTime
+        call Control.pollKeys
 .callAySound:
     .3  nop
-        
+
         pop iy, ix, hl, de, bc, af
         ei
         ret
@@ -24,15 +24,15 @@ routine:  ; #fefe
 ; Wait for `c` frames
 waitFrames:  ; #ff21
         ei
-.l_0:   ld a, (shortFrameCounter)
+.l_0:   ld a, (frames)
         cp c
         jp C, .l_0
         xor a
-        ld (shortFrameCounter), a
+        ld (frames), a
         ret
 
 ; measures frames inside one game progression unit
-shortFrameCounter:  ; #ff2e
+frames:  ; #ff2e
         db -0
 
 length EQU $ - routine

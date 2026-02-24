@@ -1,4 +1,4 @@
-    INCLUDE "mainMenu.asm"
+    INCLUDE "orig/code/Menu/mainMenu.asm"
     INCLUDE "orig/code/Menu/levelSelectMenu.asm"
     INCLUDE "orig/code/Menu/levelLoading.asm"
     INCLUDE "orig/code/Menu/gameOver.asm"

@@ -17,7 +17,7 @@ levelSelectionMenu:  ; #d553
         call Utils.clearScreenPixels
         ld a, Colour.brWhite    ; bright white ink, black paper
         call Utils.fillScreenAttrs
-        ld hl, #0809
+        ld hl, _ROW 8 _COL 9
         ld de, textSelectLevel
         ld c, Colour.brYellow
         call Utils.printString
@@ -33,22 +33,22 @@ levelSelectionMenu:  ; #d553
         cp 4
         jr NZ, .l_3
         ld de, levelNames.bermuda
-        ld hl, #0B0C            ; at 11, 12
+        ld hl, _ROW 11 _COL 12
         ld c, Colour.brWhite
         call Utils.printString
         ld a, Level.bermuda
         ld (State.level), a
 .l_1:
-        ld a, (Control.controlState)
+        ld a, (Control.state)
         bit Key.fire, a
         jr NZ, .l_1
 .l_2:
-        ld a, (Control.controlState)
+        ld a, (Control.state)
         bit Key.fire, a
         jr Z, .l_2
         jp .l_7
 .l_3:
-        ld a, (Control.controlState)
+        ld a, (Control.state)
         ld c, a
         ld a, (State.level)
         bit Key.down, c
@@ -80,12 +80,12 @@ levelSelectionMenu:  ; #d553
         ld de, levelNames
         add hl, de
         ex de, hl
-        ld hl, #0B0C
+        ld hl, _ROW 11 _COL 12
         ld c, Colour.brWhite
         call Utils.printString
-        ld bc, #00FA
+        ld bc, 250
         call Utils.delay
-        ld a, (Control.controlState)
+        ld a, (Control.state)
         bit Key.fire, a
         jr Z, .l_3
 .l_7:
@@ -94,12 +94,12 @@ levelSelectionMenu:  ; #d553
         ld a, Colour.black
         out (Port.general), a   ; set black border
         call Utils.clearScreenPixels
-        ld hl, #0E0B
+        ld hl, _ROW 14 _COL 11
         ld de, textPressFire
         ld c, Colour.brWhite
         call Utils.printString
 .l_8:
-        ld a, (Control.controlState)
+        ld a, (Control.state)
         bit Key.fire, a
         jr Z, .l_8
         ret
@@ -128,7 +128,7 @@ loadLevelIfNeeded:  ; #d62c
 .l_0:
         call Utils.clearScreenPixels
         ld de, textStartTape
-        ld hl, #0C0B
+        ld hl, _ROW 12 _COL 11
         ld c, Colour.brWhite
         call Utils.printString
         call loadLevel
@@ -142,16 +142,16 @@ loadLevelIfNeeded:  ; #d62c
         ld a, #FF
         ld (State.loadedLevel), a
         call Utils.clearScreenPixels
-        ld hl, #0C0B
+        ld hl, _ROW 12 _COL 11
         ld de, textLoadError
         ld c, Colour.brYellow
         call Utils.printString
         inc de
-        ld hl, #0E0B
+        ld hl, _ROW 14 _COL 11
         ld c, Colour.brWhite
         call Utils.printString
 .l_2:
-        ld a, (Control.controlState)
+        ld a, (Control.state)
         bit Key.fire, a
         jr Z, .l_2
         pop af

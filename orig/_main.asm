@@ -2,96 +2,40 @@
     DEVICE ZXSPECTRUM48
 
 ; Definitions
-    INCLUDE "inc/macros.inc"
-    INCLUDE "inc/basic.inc"
-    INCLUDE "inc/enums.inc"
-    INCLUDE "inc/structs.inc"
-    INCLUDE "inc/port.inc"
-    INCLUDE "inc/ay.inc"
-    INCLUDE "data/Level.inc"
+    INCLUDE "inc/_index.inc"
 
 ; Loading screen
     ORG #4000
     INCLUDE "data/Screen.asm"
     INCLUDE "var/Tables.asm"
-
 ; Basic loader
     ORG #5CCB   ; overlap
-    INCLUDE "basic_loader.asm"
+    INCLUDE "basicLoader.asm"
 
-; Code
+; Code block
     ORG #5E00
 codeStart:
     INCLUDE "code/Utils/detectModel.asm"
 
     ORG #5E80
     DISP #C000
-    INCLUDE "code/ay_sound.asm"
+    INCLUDE "code/Sound/ay.asm"
     ENT
 
     INCLUDE "data/Lev0Klondike/_index.asm"
 
     ORG #BDDF
     INCLUDE "code/Sound/_index.asm"
-    
+
     INCLUDE "var/State_objTileIndex.asm"
     INCLUDE "var/Scene.asm"
-    
+
     ORG #BEB4   ; overlap
     INCLUDE "code/Interrupt/_index.asm"
     ORG #C044
-    INCLUDE "code/Drawing/_index.asm"
-    INCLUDE "code/Utils/printString.asm"
-    INCLUDE "code/Menu/mainMenu.asm"
-    INCLUDE "code/Utils/clearScreen.asm"
-    INCLUDE "code/Tiles/rollConveyorTiles.asm"
-    INCLUDE "code/Control.asm"
-    INCLUDE "code/Menu/levelLoading.asm"
-    INCLUDE "code/Loading.asm"
-
+    INCLUDE "code/_part1.asm"
     INCLUDE "data/Font.asm"
-
-    INCLUDE "code/entry_point.asm"
-    INCLUDE "code/game_loop.asm"
-    INCLUDE "code/Menu/gameOver.asm"
-    INCLUDE "code/Menu/pause.asm"
-    INCLUDE "code/moveToMapSpan.asm"
-    INCLUDE "code/advanceInMap.asm"
-    INCLUDE "code/Tiles/tiles.asm"
-    INCLUDE "code/advanceObjectsInMap.asm"
-    INCLUDE "code/Panel/_index.asm"
-    INCLUDE "code/energy.asm"
-    INCLUDE "code/Utils/delay.asm"
-    INCLUDE "code/Utils/random.asm"
-    INCLUDE "code/initHero.asm"
-    INCLUDE "code/Tiles/conveyorTileIndices.asm"
-    INCLUDE "code/initLevel.asm"
-    INCLUDE "code/Tiles/conveyors.asm"
-    INCLUDE "code/Scene/clearScene.asm"
-    INCLUDE "code/logic_0.asm"
-    INCLUDE "code/Scene/visibility.asm"
-    INCLUDE "code/Tiles/getScrTileAddr.asm"
-    INCLUDE "code/Scene/cleanUpScene.asm"
-    INCLUDE "code/smart.asm"
-    INCLUDE "code/Menu/levelSelectMenu.asm"
-    INCLUDE "code/Menu/gameWin.asm"
-    INCLUDE "code/logic_1.asm"
-    INCLUDE "code/select_sprite.asm"
-    INCLUDE "code/Scene/moveObjects.asm"
-    INCLUDE "code/transit.asm"
-    INCLUDE "code/Scene/allocateObject.asm"
-    INCLUDE "code/heroCollisions.asm"
-    INCLUDE "code/Scene/collisions.asm"
-    INCLUDE "code/logic_2.asm"
-    INCLUDE "code/Tiles/getTileType.asm"
-    INCLUDE "code/enemy.asm"
-    INCLUDE "code/Boss/switch.asm"
-    INCLUDE "code/Boss/lev0Klondike.asm"
-    INCLUDE "code/Boss/lev1Orient.asm"
-    INCLUDE "code/Boss/lev2Amazon.asm"
-    INCLUDE "code/Boss/lev3Iceland.asm"
-    INCLUDE "code/Boss/lev4Bermuda.asm"
-    INCLUDE "code/Boss/lev1Extra.asm"
+    INCLUDE "code/_part2.asm"
 
     ORG #FE01
     INCLUDE "var/State.asm"

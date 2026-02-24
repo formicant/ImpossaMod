@@ -1,0 +1,33 @@
+; Level data addresses
+    MODULE Level
+
+; Level indices
+klondike    EQU 0
+orient      EQU 1
+amazon      EQU 2
+iceland     EQU 3
+bermuda     EQU 4
+
+
+; Level data addresses
+start           EQU #C178
+
+levObjectTypes  EQU #C178
+blockMap        EQU #C658
+transitTable    EQU #D030
+sprites         EQU #D124
+tilePixels      EQU #DE00
+tileAttrs       EQU #E600
+tileTypes       EQU #E700
+tileBlocks      EQU #E800
+objectTable     EQU #F544
+bossLogicAddr   EQU #F862
+trajVelTable    EQU #F864
+trajDirTable    EQU #F886
+; trajectories  (variable)
+; bossLogic     (variable)
+
+end             EQU #FDE5
+length          EQU end - start
+
+    ENDMODULE

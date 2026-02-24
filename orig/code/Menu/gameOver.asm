@@ -8,17 +8,17 @@ showGameOver:  ; #cd22
         call Utils.clearScreenPixels
         ld a, Colour.brWhite    ; bright white ink, black paper
         call Utils.fillScreenAttrs
-        ld hl, #0A0B
+        ld hl, _ROW 10 _COL 11
         ld de, textGameOver
         ld c, Colour.brYellow
         call Utils.printString
 .l_0:
-        ld a, (Control.controlState)
+        ld a, (Control.state)
         bit Key.fire, a
         jr NZ, .l_0
         ld bc, 30000
 .l_1:
-        ld a, (Control.controlState)
+        ld a, (Control.state)
         bit Key.fire, a
         jr NZ, .l_3
         exx

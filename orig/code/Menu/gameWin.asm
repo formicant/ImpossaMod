@@ -10,7 +10,7 @@ epilogueText:  ; #d679
 ; Successful end of the game
 ; Used by c_d553.
 gameWin:  ; #d6c0
-        ld hl, #0806            ; at 8, 6
+        ld hl, _ROW 8 _COL 6
         ld de, epilogueText
         ld c, Colour.brRed
         ld b, 4
@@ -29,10 +29,10 @@ gameWin:  ; #d6c0
         ld bc, 30000
         call Utils.delay
 .waitKey:
-        ld a, (Control.controlState)
+        ld a, (Control.state)
         or a
         jr Z, .waitKey
         pop hl
-        jp Code.gameStart
+        jp Main.gameStart
 
     ENDMODULE

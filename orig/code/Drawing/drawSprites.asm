@@ -30,7 +30,8 @@ drawSmallSprite:
         ld (.off1), a
         ld (.off2), a
 
-        call Code.getSpriteAddr      ; `hl`: sprite addr
+        call Enemy.getSpriteAddr
+        ; `hl`: sprite addr
 
         di
         ld (.sp), sp
@@ -112,7 +113,8 @@ drawShiftedSmallSprite:  ; #c245
         ld (.of21), a
         ld (.of22), a
 
-        call Code.getSpriteAddr      ; `hl`: sprite addr
+        call Enemy.getSpriteAddr
+        ; `hl`: sprite addr
 
         di
         ld (.sp), sp
@@ -218,7 +220,8 @@ drawBigSprite:  ; #c314
         ld (.of21), a
         ld (.of22), a
 
-        call Code.getSpriteAddr      ; `hl`: sprite addr
+        call Enemy.getSpriteAddr
+        ; `hl`: sprite addr
 
         di
         ld (.sp), sp
@@ -345,7 +348,8 @@ drawShiftedBigSprite:  ; #c3ac
         ld (.of31), a
         ld (.od32), a
 
-        call Code.getSpriteAddr      ; `hl`: sprite addr
+        call Enemy.getSpriteAddr
+        ; `hl`: sprite addr
 
         di
         ld (.sp), sp

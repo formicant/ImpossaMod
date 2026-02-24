@@ -1,0 +1,6 @@
+    INCLUDE "orig/code/Enemy/turnIntoCoin.asm"
+    INCLUDE "orig/code/Enemy/pressPlatform.asm"
+    INCLUDE "orig/code/Enemy/stillEnemy.asm"
+    INCLUDE "orig/code/Enemy/dynamite.asm"
+    INCLUDE "orig/code/Enemy/coinJump.asm"
+    INCLUDE "orig/code/Enemy/randomChanges.asm"

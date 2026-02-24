@@ -1,17 +1,17 @@
     ORG Level.start
     INCLUDE "tiles.asm"
     ORG Level.objectTable
-    INCLUDE "object_table.asm"
+    INCLUDE "objectTable.asm"
     ORG Level.blockMap
-    INCLUDE "block_map.asm"
+    INCLUDE "blockMap.asm"
     ORG Level.sprites
     INCLUDE "sprites.asm"
     ORG Level.transitTable
     INCLUDE "transits.asm"
     ORG Level.trajVelTable
-    INCLUDE "traj_table.asm"
+    INCLUDE "trajTable.asm"
     ORG Common.objectTypes + OT.auxFlags
         db 1<<Flag.nonEnemy     ; overridden property (TODO: is it significant?)
     ORG Level.levObjectTypes
-    INCLUDE "object_types.asm"
+    INCLUDE "objectTypes.asm"
     INCLUDE "trajectories.asm"

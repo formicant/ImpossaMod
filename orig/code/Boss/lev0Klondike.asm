@@ -9,23 +9,29 @@ c_f8ec:  ; #f8ec
 ; Used by c_f8cb.
 bossLogicKlondike:  ; #f8f4
         ld a, (State.bossFight)
-        cp #01
+        cp 1
         jr NZ, .l_1
+
         ld a, (State.bossKilled)
         or a
         ret NZ
+
         ld ix, Scene.obj2
-        ld a, #36
+        ld a, 54
         call Scene.createObject
+
         ld ix, Scene.obj3
-        ld a, #34
+        ld a, 52
         call Scene.createObject
+
         ld ix, Scene.obj4
-        ld a, #35
+        ld a, 53
         call Scene.createObject
+
         ld ix, Scene.obj5
-        ld a, #33
+        ld a, ObjType.klondike.bossBurrow
         call Scene.createObject
+
         call Utils.generateRandom
         and #03
         add a

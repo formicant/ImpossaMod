@@ -54,10 +54,10 @@ printEnergy:  ; #d04e
         ld hl, State.energyText + 16
         set 7, (hl)
 
-        ld hl, #000F            ; at 0, 15
+        ld hl, _ROW 0 _COL 15
         ld de, State.energyText
         call Utils.printString
-        call Utils.applyLifeIndicatorAttrs
+        call Panel.applyLifeIndicatorAttrs
         ret
 
     ENDMODULE

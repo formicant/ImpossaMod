@@ -18,7 +18,7 @@ printSoupCans:  ; #d026
         ld de, soupCanStrings
         add hl, de
         ex de, hl
-        ld hl, #0007
+        ld hl, _ROW 0 _COL 7
         ld c, Colour.brMagenta
         jp Utils.printString
 

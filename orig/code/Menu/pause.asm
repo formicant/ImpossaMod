@@ -11,7 +11,7 @@ pauseGameIfPressed:  ; #cd5c
 .l_0:
         call Control.checkPauseKey
         jr Z, .l_0
-        ld hl, #1700            ; at 23, 0
+        ld hl, _ROW 23 _COL 0
         ld de, textPaused
         ld c, Colour.brWhite
         call Utils.printString
@@ -20,13 +20,13 @@ pauseGameIfPressed:  ; #cd5c
         jr NZ, .l_1
         call Control.checkCheatKey
         jr NZ, .l_2
-        ld a, (Control.controlState)
+        ld a, (Control.state)
         bit Key.up, a
         jr Z, .l_2
         ld a, #22
         ld (State.maxEnergy), a
         ld a, #32
-        call Code.addEnergy
+        call Hero.addEnergy
 .l_2:
         call Control.checkPauseKey
         jr Z, .l_2

@@ -13,8 +13,8 @@ gameMenu:  ; #c6d5
         call Utils.clearScreenPixels
         ld a, Colour.brWhite    ; bright white ink, black paper
         call Utils.fillScreenAttrs
-        ld a, 0
-        out (Port.general), a   ; set border black
+        ld a, Colour.black
+        out (Port.general), a   ; set black border
 
         call printGameMenuText
         call clampActiveMenuItemAttrs
@@ -25,12 +25,12 @@ gameMenu:  ; #c6d5
         xor a
         call Sound.callPlayMenuMusic
 .l_1:
-        ld a, (Control.controlType)
+        ld a, (Control.type)
         exa
         ld bc, Port.keys_12345
         in a, (c)
         and Port.keyMask
-        bit Port.key1, a
+        bit Port.key1, a        ; select [1] (keyboard)
         jr NZ, .l_2
         exa
         or a
@@ -39,7 +39,7 @@ gameMenu:  ; #c6d5
         xor a                   ; controlType: keyboard
         jr .l_5
 .l_2:
-        bit 1, a                ; key [2] (kempston)
+        bit Port.key2, a        ; select [2] (kempston)
         jr NZ, .l_3
         exa
         cp 1
@@ -48,7 +48,7 @@ gameMenu:  ; #c6d5
         ld a, 1                 ; controlType: kempston
         jr .l_5
 .l_3:
-        bit 2, a                ; key [3] (cursor)
+        bit Port.key3, a        ; select [3] (cursor)
         jr NZ, .l_4
         exa
         cp 2
@@ -57,7 +57,7 @@ gameMenu:  ; #c6d5
         ld a, 2                 ; controlType: cursor
         jr .l_5
 .l_4:
-        bit 3, a                ; key [4] (interface 2)
+        bit Port.key4, a        ; select [4] (interface 2)
         jr NZ, .l_6
         exa
         cp 3
@@ -66,7 +66,7 @@ gameMenu:  ; #c6d5
         ld a, 3                 ; controlType: interface 2
 .l_5:
         ld (activeMenuItemAttrAddr), hl
-        ld (Control.controlType), a
+        ld (Control.type), a
 
         call printGameMenuText
         call clampActiveMenuItemAttrs
@@ -86,7 +86,7 @@ gameMenu:  ; #c6d5
         djnz .l_7
 
         ld bc, 20
-        call Utils.delay         ; delay ~20 ms
+        call Utils.delay              ; delay ~20 ms
         call Control.checkStartKey
         jp NZ, .l_0
 .l_9:
@@ -100,35 +100,42 @@ gameMenu:  ; #c6d5
 ; Print game menu text
 ; Used by c_c6d5.
 printGameMenuText:  ; #c76f
-        ld hl, #040A
+        ld hl, _ROW 4 _COL 10
         ld de, gameMenuText     ; 'impossamole'
         ld c, Colour.brWhite
         call Utils.printString
-        ld hl, #1605
+
+        ld hl, _ROW 22 _COL 5
         inc de                  ; '@ 1990 gremlin graphics'
         ld c, Colour.brCyan
         call Utils.printString
-        ld hl, #0809
+
+        ld hl, _ROW 8 _COL 9
         inc de                  ; '0 start game'
         ld c, Colour.brWhite
         call Utils.printString
-        ld hl, #0909
+
+        ld hl, _ROW 9 _COL 9
         inc de                  ; '1 keyboard'
         ld c, Colour.brYellow
         call Utils.printString
-        ld hl, #0A09
+
+        ld hl, _ROW 10 _COL 9
         inc de                  ; '2 kempston'
         ld c, Colour.brMagenta
         call Utils.printString
-        ld hl, #0B09
+
+        ld hl, _ROW 11 _COL 9
         inc de                  ; '3 cursor'
         ld c, Colour.brGreen
         call Utils.printString
-        ld hl, #0C09
+
+        ld hl, _ROW 12 _COL 9
         inc de                  ; '4 interface 2'
         ld c, Colour.brCyan
         call Utils.printString
-        ld hl, #1305
+
+        ld hl, _ROW 19 _COL 5
         inc de                  ; 'written by core design'
         ld c, Colour.brGreen
         call Utils.printString
@@ -143,16 +150,23 @@ printGameMenuText:  ; #c76f
         djnz .l_0
 
         ; print last score
-        ld hl, #0F07            ; at 15, 7
+        ld hl, _ROW 15 _COL 7
         ld de, textLastScore
         ld c, Colour.brMagenta
         call Utils.printString
-        ld hl, #0F12            ; at 15, 18
+
+    IFDEF _MOD
+        ld hl, Screen.pixels.row15 + 18
+        jp Panel.printScoreAt
+    ELSE
+        ld hl, _ROW 15 _COL 18
         ld (Panel.printScore.yx), hl
         call Panel.printScore
-        ld hl, #0000            ; at 0, 0
+        ld hl, _ROW 0 _COL 0
         ld (Panel.printScore.yx), hl
         ret
+    ENDIF
+
 
 ; Checks attributes of the active menu item
 ; and sets them to bright blue if greater than bright white

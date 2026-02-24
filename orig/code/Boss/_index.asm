@@ -1,0 +1,7 @@
+    INCLUDE "switch.asm"
+    INCLUDE "lev0Klondike.asm"
+    INCLUDE "lev1Orient.asm"
+    INCLUDE "lev2Amazon.asm"
+    INCLUDE "lev3Iceland.asm"
+    INCLUDE "lev4Bermuda.asm"
+    INCLUDE "lev1Extra.asm"

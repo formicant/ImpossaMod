@@ -54,10 +54,9 @@ printString:
 
 
 ; Print a single character without attrs
-;   arg `hl`: screen address
-;       `a`: font char code (ASCII - 48)
-;           (space is printed if `a` >= #B0)
-;   spoils `af`, `bc`
+;   `hl`: screen address
+;   `a`: font char code (ASCII - 48), space is printed if `a` >= #B0
+; spoils: `af`, `bc`
 printChar:
         add a
         jr C, .space

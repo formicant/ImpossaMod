@@ -6,11 +6,11 @@ generateRandom:  ; #d0fc
         push hl, de
 
         ld hl, (randomSeed)
-        ld de, (longFrameCounter.low)
+        ld de, (time.low)
         add hl, de
         ld de, 13
         add hl, de
-        ld de, (longFrameCounter.high)
+        ld de, (time.high)
         adc hl, de
         xor l
         xor d
@@ -27,7 +27,7 @@ randomSeed:  ; #d11b
 
 
 ; 32-bit frame counter, used in random number generation
-longFrameCounter:  ; #d11d
+time:  ; #d11d
 .low:   dw 0
 .high:  dw 0
 
@@ -35,17 +35,17 @@ longFrameCounter:  ; #d11d
 
 ; Increment the 32-bit frame counter
 ; Called in every interrupt
-incrementLongFrameCounter:  ; #d121
-        ld hl, (longFrameCounter.low)
+incrementTime:  ; #d121
+        ld hl, (time.low)
         inc hl
-        ld (longFrameCounter.low), hl
+        ld (time.low), hl
         ld a, l
         or h
         ret NZ
 
-        ld hl, (longFrameCounter.high)
+        ld hl, (time.high)
         inc hl
-        ld (longFrameCounter.high), hl
+        ld (time.high), hl
         ret
 
     ENDIF

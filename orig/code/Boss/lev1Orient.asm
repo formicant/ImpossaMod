@@ -1,6 +1,5 @@
     MODULE Boss
 
-
 ; Orient boss data
 c_f99e:  ; #f99e
         db #18, #00, #00, #15, #18, #15
@@ -9,23 +8,29 @@ c_f99e:  ; #f99e
 ; Used by c_f8cb.
 bossLogicOrient:  ; #f9a4
         ld a, (State.bossFight)
-        cp #01
+        cp 1
         jr NZ, .l_1
+
         ld a, (State.bossKilled)
         or a
         ret NZ
+
         ld ix, Scene.obj2
         ld a, #32
         call Scene.createObject
+
         ld ix, Scene.obj3
         ld a, #33
         call Scene.createObject
+
         ld ix, Scene.obj4
         ld a, #34
         call Scene.createObject
+
         ld ix, Scene.obj5
         ld a, #35
         call Scene.createObject
+
         ld de, c_f99e
         ld b, #03
         ld ix, Scene.obj2
@@ -92,6 +97,5 @@ bossLogicOrient:  ; #f9a4
         ld c, #03
         call c_fbb9
         jp c_fbd2
-
 
     ENDMODULE

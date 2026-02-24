@@ -9,7 +9,7 @@ loadLevel:  ; #c9ac
     IFDEF _MOD
         ld a, (Sound.is48k)
         or a
-        jp Z, Loading.loadBytes
+        jp Z, Utils.loadBytes
     ENDIF
 
         di
@@ -17,13 +17,13 @@ loadLevel:  ; #c9ac
         ld de, 1                ; header length
         scf
         ld a, #80               ; non-standard header flag
-        call Loading.loadBytes
+        call Utils.loadBytes
         jr C, .found
         ei
         ret
 .found:
         call Utils.clearScreenPixels
-        ld hl, #0C09            ; at 12, 9
+        ld hl, _ROW 12 _COL 9
         ld de, textFound
         ld c, Colour.brWhite
         call Utils.printString
@@ -36,7 +36,7 @@ loadLevel:  ; #c9ac
         add hl, de
         ex de, hl               ; `de`: level name
 
-        ld hl, #0C0F            ; at 12, 15
+        ld hl, _ROW 12 _COL 15
         ld c, Colour.brYellow
         call Utils.printString
 
@@ -50,7 +50,7 @@ loadLevel:  ; #c9ac
         ld de, Level.length
         scf
         ld a, #FF               ; code block flag
-        call Loading.loadBytes
+        call Utils.loadBytes
         ei
         ret
 
