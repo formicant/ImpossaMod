@@ -1581,7 +1581,7 @@ processFire:  ; #df85
         add (ix+Obj.y)
         ld (ix+Obj.y), a
 
-        call isObjectVisible
+        call Scene.isObjectVisible
         jp NC, .removeBombOrBullet      ; if outside the screen
 
         ; check tile at the bomb's location
@@ -1679,7 +1679,7 @@ processFire:  ; #df85
         ret
 
 .bulletIsFlying:
-        call isObjectVisible
+        call Scene.isObjectVisible
         jr NC, .removeBombOrBullet
 
         ; check tile at the bullet's location

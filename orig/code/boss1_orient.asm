@@ -16,16 +16,16 @@ bossLogicOrient:  ; #f9a4
         ret NZ
         ld ix, Scene.obj2
         ld a, #32
-        call createObject
+        call Scene.createObject
         ld ix, Scene.obj3
         ld a, #33
-        call createObject
+        call Scene.createObject
         ld ix, Scene.obj4
         ld a, #34
-        call createObject
+        call Scene.createObject
         ld ix, Scene.obj5
         ld a, #35
-        call createObject
+        call Scene.createObject
         ld de, c_f99e
         ld b, #03
         ld ix, Scene.obj2

@@ -10,8 +10,8 @@ gameStart:  ; #cc5a
         call Utils.clearScreenPixels
         ld a, Colour.brWhite    ; bright white ink, black paper
         call Utils.fillScreenAttrs
-        call clearScene
-        call removeObjects      ; not needed (?)
+        call Scene.clearScene
+        call Scene.removeObjects      ; not needed (?)
         call initLevel
 
 .gameLoop:
@@ -36,15 +36,15 @@ gameStart:  ; #cc5a
 .normal:
 
         call performSmartIfPressed  ; TODO: replace
-        call cleanUpScene           ; TODO: can be inlined
+        call Scene.cleanUpScene           ; TODO: can be inlined
 
         call enemyBulletTimer       ; TODO: can be inlined
         _DEBUG_BORDER Colour.red
         call performMotionOfAllObjs   ; (time: long)
         _DEBUG_BORDER Colour.black
-        call moveObjects            ; TODO: can be inlined (time: medium)
+        call Scene.moveObjects            ; TODO: can be inlined (time: medium)
         _DEBUG_BORDER Colour.magenta
-        call putNextObjsToScene     ; (time: medium)
+        call Scene.putNextObjsToScene     ; (time: medium)
         _DEBUG_BORDER Colour.black
         call bossLogic              ; TODO: can be inlined
         call checkTransitEnter      ; TODO: can be inlined
@@ -62,7 +62,7 @@ gameStart:  ; #cc5a
         call processFire            ; TODO: can be inlined (time: medium)
         _DEBUG_BORDER Colour.black
         call Tiles.updateConveyors        ; TODO: can be inlined
-        call rollConveyorTiles      ; TODO: can be inlined
+        call Tiles.rollConveyorTiles      ; TODO: can be inlined
         _DEBUG_BORDER Colour.white
         call Drawing.drawObjectsChecked     ; (time: extreme)
         _DEBUG_BORDER Colour.black
@@ -89,7 +89,7 @@ gameStart:  ; #cc5a
 
         call advanceInMap       ; TODO: can be inlined
         _DEBUG_BORDER Colour.white
-        call putNextObjsToScene
+        call Scene.putNextObjsToScene
         _DEBUG_BORDER Colour.black
 
 .skipAdvance:

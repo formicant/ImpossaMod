@@ -1,4 +1,4 @@
-    MODULE Code
+    MODULE Tiles
 
 ; In Klondike, Orient, Bermuda, rolls top and bottom pixel rows
 ; of the conveyor tiles in opposite directions

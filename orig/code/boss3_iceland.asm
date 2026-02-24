@@ -12,10 +12,10 @@ bossLogicIceland:  ; #fad3
         ret NZ
         ld ix, Scene.obj2
         ld a, #37
-        call createObject
+        call Scene.createObject
         ld ix, Scene.obj3
         ld a, #38
-        call createObject
+        call Scene.createObject
         ld ix, Scene.obj2
         ld iy, Scene.obj3
         ld (ix+Obj.y), #60

@@ -12,10 +12,10 @@ bossLogicBermuda:  ; #fb45
         ret NZ
         ld ix, Scene.obj2
         ld a, #38
-        call createObject
+        call Scene.createObject
         ld ix, Scene.obj3
         ld a, #39
-        call createObject
+        call Scene.createObject
         ld ix, Scene.obj2
         ld iy, Scene.obj3
         ld l, (ix+Obj.x+0)

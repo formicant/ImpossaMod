@@ -90,7 +90,7 @@ checkEnemyDamage:  ; #eb19
         ld (ix+Obj.height), a
 
         ; check collision between kick bubble and the object
-        call checkObjectCollision
+        call Scene.checkObjectCollision
 
         ; restore kick bubble x coord
         pop hl
@@ -115,7 +115,7 @@ checkEnemyDamage:  ; #eb19
         ld a, (ix+Obj.x+1)
         adc a, #00
         ld (ix+Obj.x+1), a
-        call checkObjectCollision
+        call Scene.checkObjectCollision
         exa
         ld a, (ix+Obj.x+0)
         add #FC
@@ -152,7 +152,7 @@ checkEnemyDamage:  ; #eb19
         ld (ix+Obj.width), a
         ld a, (bc)
         ld (ix+Obj.height), a
-        call checkObjectCollision
+        call Scene.checkObjectCollision
         pop hl
         ld (ix+Obj.x+0), l
         ld (ix+Obj.x+1), h
@@ -162,7 +162,7 @@ checkEnemyDamage:  ; #eb19
 
 .gun:
         ; check bullet collision
-        call checkObjectCollision
+        call Scene.checkObjectCollision
         ret C                   ; ret if no collision
         ; collision
         jr damageEnemy
@@ -230,7 +230,7 @@ damageEnemy:  ; #ec00
         push ix
         push iy
         push iy : pop ix
-        call makeObjectBig
+        call Scene.makeObjectBig
         pop iy
         pop ix
 .big:
@@ -410,7 +410,7 @@ fallingMotion: ; #ed5f
         ; if any other tile type, explode
         bit Flag.isBig, (ix+Obj.flags)
         jr NZ, .big
-        call makeObjectBig
+        call Scene.makeObjectBig
 .big:
         ld a, (ix+Obj.objType)
         cp ObjType.klondike.stalactite
@@ -896,7 +896,7 @@ rangeMotion: ; backAndForth
 ; Remove object if it moved outside the screen
 ;   arg `ix`: object
 removeIfOffScreen:
-        call isObjectVisibleOrWaiting
+        call Scene.isObjectVisibleOrWaiting
         ret C
         ; if object became invisible
         ld (ix+Obj.flags), 0    ; remove object
@@ -1479,7 +1479,7 @@ trajectoryMotion:  ; #f37e
         ld (ix+Obj.mo.trajBack), 0
 
 .end:   ; repeats `removeIfOffScreen`
-        call isObjectVisibleOrWaiting
+        call Scene.isObjectVisibleOrWaiting
         ret C
         ; if the object became invisible
         ld (ix+Obj.flags), 0    ; remove object
@@ -1639,7 +1639,7 @@ emitEnemyBullet:  ; #f564
         ret Z
 
         push ix
-        call allocateObject
+        call Scene.allocateObject
         push ix : pop iy
         pop ix
         ret NC                  ; ret if no place for new object
@@ -1722,7 +1722,7 @@ bulletMotion:  ; #f618
         call Z, aimedBulletMotion
 
         ld iy, Scene.hero
-        call checkObjectCollision
+        call Scene.checkObjectCollision
         jr C, .noCollision
 
 .collision:
@@ -1764,7 +1764,7 @@ bulletMotion:  ; #f618
         ret
 
 .skipTileCheck:
-        call isObjectVisible
+        call Scene.isObjectVisible
         ret C                   ; ret if visible
         ; invisible
         ld (ix+Obj.flags), 0    ; remove bullet
@@ -1818,7 +1818,7 @@ randomlyStandStill:  ; #f697
         ret
 
     ENDMODULE
-    MODULE Code
+    MODULE Scene
 
 ; Object type offset by level
 levelObjTypeOffests:  ; #f6b5
@@ -2094,7 +2094,7 @@ createObject:
         ld a, (ix+Obj.mo.direction)
         ld l, a
         ld h, 0
-        ld de, directionTransform
+        ld de, Code.directionTransform
         add hl, de
         ld a, (hl)
         ld (ix+Obj.mo.direction), a

@@ -16,10 +16,10 @@ bossLogicAmazon:  ; #fa65
         ret NZ
         ld ix, Scene.obj2
         ld a, #2B
-        call createObject
+        call Scene.createObject
         ld ix, Scene.obj3
         ld a, #2C
-        call createObject
+        call Scene.createObject
         call Utils.generateRandom
         and #01
         add a

@@ -9,7 +9,7 @@ moveToMapSpan:  ; #cd9b
         ld hl, -32
         add hl, de
         ld (State.mapSpanEnd), hl
-        call findAndPutObjectsToScene
+        call Scene.findAndPutObjectsToScene
         call Drawing.setScrTileUpd
         jp Tiles.fillAllScrTiles
 
