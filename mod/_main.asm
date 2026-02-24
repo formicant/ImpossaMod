@@ -50,7 +50,7 @@ codeStart:
     INCLUDE "orig/code/Tiles/rollConveyorTiles.asm"
     INCLUDE "orig/code/logic_1.asm"
     INCLUDE "code/Panel/_index.asm"
-    INCLUDE "code/boss_switch.asm"
+    INCLUDE "code/Boss/switch.asm"
     INCLUDE "code/Control.asm"
     INCLUDE "code/sound.asm"
 

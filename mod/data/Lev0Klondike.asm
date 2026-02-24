@@ -5,8 +5,8 @@
     _NEXT_ORG Level.sprites       : INCLUDE "orig/data/Lev0Klondike/sprites.asm"
     _NEXT_ORG Level.tilePixels    : INCLUDE "orig/data/Lev0Klondike/tiles.asm"
     _NEXT_ORG Level.objectTable   : INCLUDE "orig/data/Lev0Klondike/object_table.asm"
-    _NEXT_ORG Level.bossLogicAddr : dw Code.bossLogicKlondike
+    _NEXT_ORG Level.bossLogicAddr : dw Boss.bossLogicKlondike
     _NEXT_ORG Level.trajVelTable  : INCLUDE "orig/data/Lev0Klondike/traj_table.asm"
                                     INCLUDE "orig/data/Lev0Klondike/trajectories.asm"
-                                    INCLUDE "orig/code/boss0_klondike.asm"
+                                    INCLUDE "orig/code/Boss/lev0Klondike.asm"
     _NEXT_ORG Level.end

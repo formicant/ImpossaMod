@@ -1,11 +1,9 @@
-    MODULE Code
+    MODULE Boss
 
-
-bossLogicExtra:
 
 ; (Some boss logic?)
 ; Used by Orient, Iceland
-boss3extra:  ; #fbb9
+c_fbb9:  ; #fbb9
         push ix
         ld b, #04
         ld ix, Scene.obj2

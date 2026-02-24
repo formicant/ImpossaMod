@@ -1,4 +1,4 @@
-    MODULE Code
+    MODULE Boss
 
 
 ; Klondike boss positions

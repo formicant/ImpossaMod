@@ -46,7 +46,7 @@ gameStart:  ; #cc5a
         _DEBUG_BORDER Colour.magenta
         call Scene.putNextObjsToScene     ; (time: medium)
         _DEBUG_BORDER Colour.black
-        call bossLogic              ; TODO: can be inlined
+        call Boss.bossLogic              ; TODO: can be inlined
         call checkTransitEnter      ; TODO: can be inlined
         call decBlinkTime           ; TODO: can be inlined
         _DEBUG_BORDER Colour.green

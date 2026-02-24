@@ -5,8 +5,8 @@
     _NEXT_ORG Level.sprites       : INCLUDE "orig/data/Lev2Amazon/sprites.asm"
     _NEXT_ORG Level.tilePixels    : INCLUDE "orig/data/Lev2Amazon/tiles.asm"
     _NEXT_ORG Level.objectTable   : INCLUDE "orig/data/Lev2Amazon/object_table.asm"
-    _NEXT_ORG Level.bossLogicAddr : dw Code.bossLogicAmazon
+    _NEXT_ORG Level.bossLogicAddr : dw Boss.bossLogicAmazon
     _NEXT_ORG Level.trajVelTable  : INCLUDE "orig/data/Lev2Amazon/traj_table.asm"
                                     INCLUDE "orig/data/Lev2Amazon/trajectories.asm"
-                                    INCLUDE "orig/code/boss2_amazon.asm"
+                                    INCLUDE "orig/code/Boss/lev2Amazon.asm"
     _NEXT_ORG Level.end

@@ -5,9 +5,9 @@
     _NEXT_ORG Level.sprites       : INCLUDE "orig/data/Lev3Iceland/sprites.asm"
     _NEXT_ORG Level.tilePixels    : INCLUDE "orig/data/Lev3Iceland/tiles.asm"
     _NEXT_ORG Level.objectTable   : INCLUDE "orig/data/Lev3Iceland/object_table.asm"
-    _NEXT_ORG Level.bossLogicAddr : dw Code.bossLogicIceland
+    _NEXT_ORG Level.bossLogicAddr : dw Boss.bossLogicIceland
     _NEXT_ORG Level.trajVelTable  : INCLUDE "orig/data/Lev3Iceland/traj_table.asm"
                                     INCLUDE "orig/data/Lev3Iceland/trajectories.asm"
-                                    INCLUDE "orig/code/boss3_iceland.asm"
-                                    INCLUDE "orig/code/boss3_extra.asm"
+                                    INCLUDE "orig/code/Boss/lev3Iceland.asm"
+                                    INCLUDE "orig/code/Boss/lev3Extra.asm"
     _NEXT_ORG Level.end

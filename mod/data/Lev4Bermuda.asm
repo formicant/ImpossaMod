@@ -5,8 +5,8 @@
     _NEXT_ORG Level.sprites       : INCLUDE "orig/data/Lev4Bermuda/sprites.asm"
     _NEXT_ORG Level.tilePixels    : INCLUDE "orig/data/Lev4Bermuda/tiles.asm"
     _NEXT_ORG Level.objectTable   : INCLUDE "orig/data/Lev4Bermuda/object_table.asm"
-    _NEXT_ORG Level.bossLogicAddr : dw Code.bossLogicBermuda
+    _NEXT_ORG Level.bossLogicAddr : dw Boss.bossLogicBermuda
     _NEXT_ORG Level.trajVelTable  : INCLUDE "orig/data/Lev4Bermuda/traj_table.asm"
                                     INCLUDE "orig/data/Lev4Bermuda/trajectories.asm"
-                                    INCLUDE "orig/code/boss4_bermuda.asm"
+                                    INCLUDE "orig/code/Boss/lev4Bermuda.asm"
     _NEXT_ORG Level.end
