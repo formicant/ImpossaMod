@@ -10,22 +10,20 @@ bermuda     EQU 4
 
 
 ; Level data addresses
-start           EQU #C178
+start           EQU #C228
 
-levObjectTypes  EQU #C178
-blockMap        EQU #C658
-transitTable    EQU #D030
-sprites         EQU #D124
-tilePixels      EQU #DE00
-tileAttrs       EQU #E600
-tileTypes       EQU #E700
-tileBlocks      EQU #E800
-objectTable     EQU #F544
-bossLogicAddr   EQU #F862
-trajVelTable    EQU #F864
-trajDirTable    EQU #F886
+levObjectTypes  EQU #C228
+objectTable     EQU #C708
+blockMap        EQU #CA28
+tilePixels      EQU #D400
+tileAttrs       EQU #DC00
+tileTypes       EQU #DD00
+tileBlocks      EQU #DE00
+sprites         EQU #EB44
+transitTable    EQU #F820
+trajVelTable    EQU #F916
+trajDirTable    EQU #F938
 ; trajectories  (variable)
-; bossLogic     (variable)
 
 end             EQU #FDE5
 length          EQU end - start

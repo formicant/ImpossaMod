@@ -6,7 +6,7 @@ start:
             BORDER, NOT, PI, ':',\
             PAPER, NOT, PI, ':',\
             INK, NOT, PI, ':',\
-            CLEAR, VAL, '"24575":',\
+            CLEAR, VAL, '"24063":',\
             PRINT, '#', NOT, PI, ';',\
                 AT, NOT, PI, ',', NOT, PI, ';',\
                 INK, NOT, PI, ',,,,:',\

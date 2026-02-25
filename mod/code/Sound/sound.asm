@@ -2,12 +2,13 @@
 
 ; Play sound (beeper or AY)
 playSound:
+        ld c, a
+        ld a, (useBeeper)
+        or a
+        ld a, c
+        jp NZ, playBeeperSound
+        
         ret
-        ; ld c, a
-        ; ld a, (useBeeper)
-        ; or a
-        ; ld a, c
-        ; jp NZ, playBeeperSound
         ; TODO:
         ; jp playAySound
 

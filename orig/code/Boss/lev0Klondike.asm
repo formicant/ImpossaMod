@@ -1,9 +1,13 @@
     MODULE Boss
 
 
-; Klondike boss positions
-c_f8ec:  ; #f8ec
-        db #98, #AB, #D8, #AB, #98, #4B, #D8, #4B
+; Klondike boss possible positions
+klondikePositions:
+        ;   x    y
+        db 152, 171
+        db 216, 171
+        db 152,  75
+        db 216,  75
 
 ; Klondike boss logic
 ; Used by c_f8cb.
@@ -16,6 +20,7 @@ bossLogicKlondike:  ; #f8f4
         or a
         ret NZ
 
+.createBoss:
         ld ix, Scene.obj2
         ld a, 54
         call Scene.createObject
@@ -32,66 +37,77 @@ bossLogicKlondike:  ; #f8f4
         ld a, ObjType.klondike.bossBurrow
         call Scene.createObject
 
+        ; choose random position
         call Utils.generateRandom
-        and #03
+        and %00000011
         add a
         ld l, a
-        ld h, #00
-        ld de, c_f8ec
+        ld h, 0
+        ld de, klondikePositions
         add hl, de
         ld a, (hl)
         inc hl
-        ld h, (hl)
-        ld l, a
-        ld b, #04
+        ld h, (hl)              ; y
+        ld l, a                 ; x
+        
+        ; set position (same for all parts)
+        ld b, 4
         ld ix, Scene.obj2
-        ld de, Obj
-.l_0:
+        ld de, Obj              ; object size
+.object:
         ld (ix+Obj.x+0), l
-        ld (ix+Obj.x+1), #00
+        ld (ix+Obj.x+1), 0
         ld (ix+Obj.y), h
         add ix, de
-        djnz .l_0
-        ld a, #02
+        djnz .object
+        
+        ld a, 2
         ld (State.bossFight), a
         xor a
         ld (State.bossInvinc), a
-        ld a, #FF
+        ld a, -1
         ld (State.bulletTime), a
         ret
+        
 .l_1:
         ld hl, State.bossFight
         inc (hl)
         ld a, (hl)
-        cp #41
+        cp 65
         jr NZ, .l_2
+        
         ld ix, Scene.obj4
         ld hl, Lev0Klondike.lS.bossAnt2
         ld (ix+Obj.sprite+0), l
         ld (ix+Obj.sprite+1), h
-        ld a, #FF
+        
+        ld a, -1
         ld (State.bossInvinc), a
-        ld a, #02
+        ld a, 2
         ld (State.bulletTime), a
         ret
+        
 .l_2:
-        cp #69
+        cp 105
         jr NZ, .l_3
-        ld a, #01
+        
+        ld a, 1
         ld (State.bulletTime), a
         ret
+        
 .l_3:
-        cp #96
+        cp 150
         ret C
+        
 ; This entry point is used by c_fa65.
 .l_4:
-        ld b, #04
+        ld b, 4
         ld ix, Scene.obj2
-        ld de, Obj
+        ld de, Obj              ; object size
 .l_5:
         ld (ix+Obj.flags), 0    ; remove object
         djnz .l_5
-        ld a, #01
+        ld a, 1
         ld (State.bossFight), a
         ret
 

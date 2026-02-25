@@ -17,7 +17,7 @@
     INCLUDE "orig/code/Scene/clearScene.asm"
     INCLUDE "orig/code/Scene/visibility.asm"
     INCLUDE "orig/code/Scene/cleanUpScene.asm"
+    INCLUDE "orig/code/Boss/_index.asm"
     INCLUDE "Hero/_slow.asm"
     INCLUDE "Enemy/_slow.asm"
-    INCLUDE "Boss/switch.asm"
     INCLUDE "Sound/sound.asm"

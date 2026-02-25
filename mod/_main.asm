@@ -16,7 +16,7 @@
     INCLUDE "basicLoader.asm"
 
 ; Code block
-    ORG #6000
+    ORG #5E00
 codeStart:
     INCLUDE "data/Font.asm"
     INCLUDE "code/_slow.asm"
@@ -31,9 +31,9 @@ codeStart:
 
     _NEXT_ORG #9191             ; interrupt routine addr
     INCLUDE "code/_fast.asm"
-    DISPLAY "Fast free: ", stackTop - $
+    DISPLAY "Fast free: ", stackTop - $, " (stack)"
 
-    _NEXT_ORG #AEAE
+    _NEXT_ORG #AF5E
 stackTop:
 ; Data
     INCLUDE "data/Common.asm"

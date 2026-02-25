@@ -1,4 +1,3 @@
-    INCLUDE "orig/code/Hero/process.asm"
     INCLUDE "orig/code/Hero/heroStands.asm"
     INCLUDE "orig/code/Hero/heroWalks.asm"
     INCLUDE "orig/code/Hero/heroJumps.asm"
