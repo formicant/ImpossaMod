@@ -1,6 +1,5 @@
     MODULE Boss
 
-
 ; Klondike boss possible positions
 klondikePositions:
         ;   x    y
@@ -11,7 +10,7 @@ klondikePositions:
 
 ; Klondike boss logic
 ; Used by c_f8cb.
-bossLogicKlondike:  ; #f8f4
+bossKlondike:  ; #f8f4
         ld a, (State.bossFight)
         cp 1
         jr NZ, .l_1
@@ -98,18 +97,19 @@ bossLogicKlondike:  ; #f8f4
 .l_3:
         cp 150
         ret C
-        
+        ; continue
+
 ; This entry point is used by c_fa65.
-.l_4:
+removeBoss:
         ld b, 4
         ld ix, Scene.obj2
         ld de, Obj              ; object size
-.l_5:
+.object:
         ld (ix+Obj.flags), 0    ; remove object
-        djnz .l_5
+        djnz .object
+        
         ld a, 1
         ld (State.bossFight), a
         ret
-
 
     ENDMODULE

@@ -7,7 +7,7 @@ c_fa61:  ; #fa61
 
 ; Amazon boss logic
 ; Used by c_f8cb.
-bossLogicAmazon:  ; #fa65
+bossAmazon:  ; #fa65
         ld a, (State.bossFight)
         cp #01
         jr NZ, .l_0
@@ -56,7 +56,7 @@ bossLogicAmazon:  ; #fa65
 .l_1:
         ld a, #50
         ld (State.s_58), a
-        jp bossLogicKlondike.l_4
+        jp removeBoss
 
 
     ENDMODULE

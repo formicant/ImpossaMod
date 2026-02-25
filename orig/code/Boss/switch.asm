@@ -9,19 +9,19 @@ switch:  ; #f8cb
 
         ld a, (State.level)
         or a
-        jp Z, bossLogicKlondike
+        jp Z, bossKlondike
 
         cp Level.orient
-        jp Z, bossLogicOrient
+        jp Z, bossOrient
 
         cp Level.amazon
-        jp Z, bossLogicAmazon
+        jp Z, bossAmazon
 
         cp Level.iceland
-        jp Z, bossLogicIceland
+        jp Z, bossIceland
 
         cp Level.bermuda
-        jp Z, bossLogicBermuda
+        jp Z, bossBermuda
 
         ret
 

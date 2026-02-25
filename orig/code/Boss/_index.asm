@@ -4,4 +4,4 @@
     INCLUDE "lev2Amazon.asm"
     INCLUDE "lev3Iceland.asm"
     INCLUDE "lev4Bermuda.asm"
-    INCLUDE "lev1Extra.asm"
+    INCLUDE "common.asm"

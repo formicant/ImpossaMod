@@ -6,7 +6,7 @@ c_f99e:  ; #f99e
 
 ; Orient boss logic
 ; Used by c_f8cb.
-bossLogicOrient:  ; #f9a4
+bossOrient:  ; #f9a4
         ld a, (State.bossFight)
         cp 1
         jr NZ, .l_1
