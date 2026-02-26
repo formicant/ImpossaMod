@@ -1,7 +1,6 @@
     MODULE Tiles
 
 ; Mark object tiles to be updated during screen scrolling
-; Used by c_cdae.
 cleanUpObjTiles:  ; #ce23
         ld de, -3
         ld hl, Tables.scrTileUpd.row1
@@ -43,7 +42,6 @@ cleanUpObjTiles:  ; #ce23
 
 
 ; Move screen tiles to the left by 8 tiles
-; Used by c_cdae.
 scrollScrTiles:  ; #ce57
         ld de, Tables.scrTiles.row0
         ld hl, Tables.scrTiles.row0 + 8
@@ -62,7 +60,6 @@ scrollScrTiles:  ; #ce57
 
 
 ; Fills right off-screen area of Tables.scrTiles with tiles form level map
-; Used by c_cdae.
 fillNextScrTiles:  ; #ceb2
         ld hl, (State.screenX)
         ld de, 32
@@ -79,7 +76,6 @@ fillNextScrTiles:  ; #ceb2
         jp fillScrTiles
 
 ; Fills entire Tables.scrTiles with tiles form level map
-; Used by c_cd9b.
 fillAllScrTiles:  ; #cecc
         ld hl, (State.screenX)
         ld e, l

@@ -124,7 +124,6 @@ heroWalks:  ; #d94c
         ld (State.stepTime), a
         ret
 
-; This entry point is used by c_d7f6, c_da95, c_db4e and c_dbfc.
 .stop:
         xor a
         ld (State.heroState), a
@@ -148,7 +147,6 @@ heroWalks:  ; #d94c
         ld (ix+Obj.sprite+1), h
         ret
 
-; This entry point is used by c_d7f6, c_da95, c_dbfc and c_e6e1.
 .fall:
         xor a
         ld (State.pressTime), a

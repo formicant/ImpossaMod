@@ -2,11 +2,10 @@
 
 ; Attribute address of active menu item
 activeMenuItemAttrAddr:  ; #c6d3
-        dw Screen.attrs.row9 + 11
+        dw Screen.attrs.row9 _COL 11
 
-; Game menu
-; Used by c_cc25.
-gameMenu:  ; #c6d5
+; Show the main menu and let the user select options
+mainMenu:  ; #c6d5
         xor a
         call Sound.callPlayMenuMusic
 
@@ -16,38 +15,44 @@ gameMenu:  ; #c6d5
         ld a, Colour.black
         out (Port.general), a   ; set black border
 
-        call printGameMenuText
+        call printMainMenuText
         call clampActiveMenuItemAttrs
 
-.l_0:   ; menu loop
+.menuLoop:
         call Sound.hasMusicEnded
-        jr NZ, .l_1             ; skip if not ended
+        jr NZ, .musicNotEnded
         xor a
         call Sound.callPlayMenuMusic
-.l_1:
+.musicNotEnded:
+
         ld a, (Control.type)
+
+        ; check keys
         exa
         ld bc, Port.keys_12345
         in a, (c)
         and Port.keyMask
         bit Port.key1, a        ; select [1] (keyboard)
-        jr NZ, .l_2
+        jr NZ, .not1
+
         exa
         or a
-        jr Z, .l_6
+        jr Z, .l_6              ; already set
+
         ld hl, Screen.attrs.row9 + 11
         xor a                   ; controlType: keyboard
         jr .l_5
-.l_2:
+.not1:
         bit Port.key2, a        ; select [2] (kempston)
-        jr NZ, .l_3
+        jr NZ, .not2
+
         exa
         cp 1
         jr Z, .l_6
         ld hl, Screen.attrs.row10 + 11
         ld a, 1                 ; controlType: kempston
         jr .l_5
-.l_3:
+.not2:
         bit Port.key3, a        ; select [3] (cursor)
         jr NZ, .l_4
         exa
@@ -68,7 +73,7 @@ gameMenu:  ; #c6d5
         ld (activeMenuItemAttrAddr), hl
         ld (Control.type), a
 
-        call printGameMenuText
+        call printMainMenuText
         call clampActiveMenuItemAttrs
 
 .l_6:   ; change active item's colour
@@ -88,7 +93,7 @@ gameMenu:  ; #c6d5
         ld bc, 20
         call Utils.delay              ; delay ~20 ms
         call Control.checkStartKey
-        jp NZ, .l_0
+        jp NZ, .menuLoop
 .l_9:
         call Control.checkStartKey
         jr Z, .l_9
@@ -98,8 +103,7 @@ gameMenu:  ; #c6d5
         ret
 
 ; Print game menu text
-; Used by c_c6d5.
-printGameMenuText:  ; #c76f
+printMainMenuText:  ; #c76f
         ld hl, _ROW 4 _COL 10
         ld de, gameMenuText     ; 'impossamole'
         ld c, Colour.brWhite
@@ -170,7 +174,6 @@ printGameMenuText:  ; #c76f
 
 ; Checks attributes of the active menu item
 ; and sets them to bright blue if greater than bright white
-; Used by c_c6d5.
 clampActiveMenuItemAttrs:  ; #c7e1
         ld hl, (activeMenuItemAttrAddr)
         ld b, #0C

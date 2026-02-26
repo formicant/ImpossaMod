@@ -17,7 +17,6 @@ heroWalkPhases:  ; #e401
 
 
 ; (Some game logic with weapons?)
-; Used by c_d709.
 setWalkPhase:  ; #e419
         ld a, (State.pressTime)
         or a

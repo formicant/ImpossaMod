@@ -1,7 +1,6 @@
     MODULE Scene
 
 ; (Modifies some object properties?)
-; Used by c_cc25.
 moveObjects:  ; #e56f
         ld ix, obj1
         ld b, 7                 ; object count
@@ -16,7 +15,6 @@ moveObjects:  ; #e56f
 
 
 ; (Modifies some object properties?)
-; Used by c_e56f.
 moveObject:  ; #e582
         bit Flag.exists, (ix+Obj.flags)
         ret Z
@@ -79,7 +77,6 @@ moveObject:  ; #e582
 
 
 ; Mark all scene objects except the hero as non-existent
-; Used by c_cc25, c_e60a, c_e920 and c_e9b1.
 removeObjects:  ; #e5f2
         push ix
         push de

@@ -35,7 +35,6 @@ textTooMuch:  ; #e910
 
 
 ; Place the hero into the shop
-; Used by c_cc25.
 enterShop:  ; #e920
         ld a, (State.inShop)
         bit 7, a
@@ -111,7 +110,6 @@ enterShop:  ; #e920
         ret
 
 ; Shop logic
-; Used by c_cc25.
 shopLogic:  ; #e9b1
         ld a, (State.inShop)
         cp #7F
@@ -301,7 +299,6 @@ shopLogic:  ; #e9b1
 
 ; Place hero by the coords from (hl)
 ;   arg `hl`: addr pointing to coords (x, y) in tiles relative to screen
-; Used by c_e920 and c_e9b1.
 placeHero:  ; #eace
         ld ix, Scene.hero
         ld a, (hl)

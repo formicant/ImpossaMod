@@ -5,7 +5,6 @@ energyChars:  ; #d03d
         db "(((****,,,,,,,,,,"  ; energy full, they look all the same
 
 ; Print energy in the panel
-; Used by c_d09a, c_d0af, c_d1c1, c_e9b1 and c_f618.
 printEnergy:  ; #d04e
         ld hl, State.energyText
         push hl

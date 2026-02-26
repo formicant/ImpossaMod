@@ -1,7 +1,6 @@
     MODULE Scene
 
 ; Clear the `Scene` in some crazy way
-; Used by c_cc25.
 clearScene:  ; #d29a
         ld hl, 0
         ld de, Obj              ; object size

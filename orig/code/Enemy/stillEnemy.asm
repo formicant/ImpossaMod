@@ -1,7 +1,6 @@
     MODULE Enemy
 
 ; Check if hero is inside the activation zone of a still enemy
-; Used by c_ecee.
 checkStillEnemyActivation:  ; #f488
         ld a, (ix+Obj.activeZone.w)
         or a

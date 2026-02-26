@@ -1,6 +1,5 @@
     MODULE Hero
 
-; Used by c_cc25.
 performSmartIfPressed:  ; #d4e5
         call Control.checkSmartKey
         ret NZ

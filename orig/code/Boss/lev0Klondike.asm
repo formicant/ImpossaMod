@@ -9,7 +9,6 @@ klondikePositions:
         db 216,  75
 
 ; Klondike boss logic
-; Used by c_f8cb.
 bossKlondike:  ; #f8f4
         ld a, (State.bossFight)
         cp 1
@@ -48,7 +47,7 @@ bossKlondike:  ; #f8f4
         inc hl
         ld h, (hl)              ; y
         ld l, a                 ; x
-        
+
         ; set position (same for all parts)
         ld b, 4
         ld ix, Scene.obj2
@@ -59,7 +58,7 @@ bossKlondike:  ; #f8f4
         ld (ix+Obj.y), h
         add ix, de
         djnz .object
-        
+
         ld a, 2
         ld (State.bossFight), a
         xor a
@@ -67,39 +66,38 @@ bossKlondike:  ; #f8f4
         ld a, -1
         ld (State.bulletTime), a
         ret
-        
+
 .l_1:
         ld hl, State.bossFight
         inc (hl)
         ld a, (hl)
         cp 65
         jr NZ, .l_2
-        
+
         ld ix, Scene.obj4
         ld hl, Lev0Klondike.lS.bossAnt2
         ld (ix+Obj.sprite+0), l
         ld (ix+Obj.sprite+1), h
-        
+
         ld a, -1
         ld (State.bossInvinc), a
         ld a, 2
         ld (State.bulletTime), a
         ret
-        
+
 .l_2:
         cp 105
         jr NZ, .l_3
-        
+
         ld a, 1
         ld (State.bulletTime), a
         ret
-        
+
 .l_3:
         cp 150
         ret C
         ; continue
 
-; This entry point is used by c_fa65.
 removeBoss:
         ld b, 4
         ld ix, Scene.obj2
@@ -107,7 +105,7 @@ removeBoss:
 .object:
         ld (ix+Obj.flags), 0    ; remove object
         djnz .object
-        
+
         ld a, 1
         ld (State.bossFight), a
         ret

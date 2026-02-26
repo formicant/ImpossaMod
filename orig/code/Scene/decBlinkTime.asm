@@ -1,7 +1,6 @@
     MODULE Scene
 
 ; Decrement blinking time for all scene objects
-; Used by c_cc25.
 decBlinkTime:  ; #d0d0
         ld ix, Scene.objects
         ld b, 8                 ; object count

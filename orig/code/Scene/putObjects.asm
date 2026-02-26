@@ -10,7 +10,6 @@ levelObjTypeOffests:  ; #f6b5
 
 
 ; Find position in level object table and put objects to the scene
-; Used by c_cd9b and c_e920.
 findAndPutObjectsToScene:  ; #f6ba
         ld bc, Level.objectTable
 .object:
@@ -46,7 +45,6 @@ findAndPutObjectsToScene:  ; #f6ba
 
 
 ; Get next objects from the object table
-; Used by c_cc25.
 putNextObjsToScene:  ; #f6e7
         ld bc, (State.nextObject)
 .object:
@@ -115,7 +113,6 @@ setWaitingFlags:
 ; Initialise object from the object type
 ;   arg `bc`: object addr in `objectTable` + 2 (points to y coord)
 ;       `hl`: x coord on screen in tiles
-; Used by c_f6ba and c_f6e7.
 putObjectToScene:  ; #f74a
         call allocateObject     ; `ix`: new object addr in the scene
         ret NC                  ; ret if no place for new object
@@ -157,7 +154,6 @@ putObjectToScene:  ; #f74a
 ; Create a new object of the given type
 ;   `a`: object type (index in `objectTypes`)
 ;   `ix`: object addr in the scene
-; used by c_f8f4, c_f9a4, c_fa65, c_fad3 and c_fb45.
 createObject:
         exx
         ld l, a

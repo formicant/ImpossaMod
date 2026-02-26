@@ -3,7 +3,6 @@
 
 ; Initialise interrupts
 ; This procedure is overwritten by some buffer(?) after execution
-; Used by entryPoint
 init:  ; #beb4
         di
 

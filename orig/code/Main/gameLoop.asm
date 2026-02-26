@@ -1,17 +1,19 @@
     MODULE Main
 
-
+; Start from the main menu
 gameStart:  ; #cc5a
-        call Menu.gameMenu
-        call Hero.clearGameState
+        call Menu.mainMenu
+        call clearGameState
 
 .levelStart:
         call Menu.levelSelectionMenu
+
         call Utils.clearScreenPixels
         ld a, Colour.brWhite    ; bright white ink, black paper
         call Utils.fillScreenAttrs
+
         call Scene.clearScene
-        call Scene.removeObjects      ; not needed (?)
+        call Scene.removeObjects  ; (not needed?)
         call Hero.initLevel
 
 .gameLoop:

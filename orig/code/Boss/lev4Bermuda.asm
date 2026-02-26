@@ -2,7 +2,6 @@
 
 
 ; Bermuda boss logic
-; Used by c_f8cb.
 bossBermuda:  ; #fb45
         ld a, (State.bossFight)
         cp #01

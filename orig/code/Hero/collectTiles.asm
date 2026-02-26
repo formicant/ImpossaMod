@@ -1,7 +1,6 @@
     MODULE Hero
 
 ; Get one central tile below the object and store it in the state
-; Used by c_dbfc.
 collectCentreTileBelow:  ; #dce1
         ld a, (ix+Obj.x)
         add 12
@@ -23,7 +22,6 @@ collectCentreTileBelow:  ; #dce1
         ret
 
 ; Get two tiles below the object and store them in the state
-; Used by c_da95 and c_db4e.
 collectTwoTilesBelow:  ; #dd09
         ld a, (ix+Obj.x)
         add 6
@@ -55,7 +53,6 @@ collectTwoTilesBelow:  ; #dd09
 
 ; Get tiles above the object and store them in the state
 ;   arg `ix`: object
-; Used by c_da95 and c_dbfc.
 collectTilesAbove:  ; #dd46
         ld a, (ix+Obj.x)
         add 6
@@ -81,7 +78,6 @@ collectTilesAbove:  ; #dd46
 
 ; Get tiles behind different parts of the object and store them in the state
 ;   arg `ix`: object
-; Used by c_d709.
 collectStateTiles:  ; #dd73
         ld a, (ix+Obj.x)
         add 4
@@ -188,7 +184,6 @@ collectStateTiles:  ; #dd73
 ; Check if tiles to the left are impenetrable
 ;   arg `ix`: hero
 ;   ret `a`: #FF and flag NZ if true, `a`: 0 and flag Z if false
-; Used by c_d308, c_d709, c_d7f6, c_d94c, c_da95, c_db4e and c_dbfc.
 isObstacleToTheLeft:  ; #de37
         ld l, (ix+Obj.x+0)
         ld h, (ix+Obj.x+1)
@@ -257,7 +252,6 @@ isObstacleToTheLeft:  ; #de37
 ; Check if tiles to the right are impenetrable
 ;   arg `ix`: hero
 ;   ret `a`: #FF and flag NZ if true, `a`: 0 and flag Z if false
-; Used by c_d308, c_d709, c_d7f6, c_d94c, c_da95, c_db4e and c_dbfc.
 isObstacleToTheRight:  ; #deb1
         ld l, (ix+Obj.x+0)
         ld h, (ix+Obj.x+1)

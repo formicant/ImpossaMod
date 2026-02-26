@@ -1,7 +1,6 @@
     MODULE Hero
 
 ; (Some game logic from call table #D6E7?)
-; Used by c_d94c.
 heroFalls:  ; #db4e
         ld a, (Control.state)
         bit Key.up, a

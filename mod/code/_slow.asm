@@ -4,6 +4,7 @@
     INCLUDE "Menu/_index.asm"
     INCLUDE "Panel/_index.asm"
     INCLUDE "Control/control.asm"
+    INCLUDE "orig/code/Main/clearGameState.asm"
     INCLUDE "orig/code/Location/moveToMapSpan.asm"
     INCLUDE "orig/code/Location/advanceInMap.asm"
     INCLUDE "orig/code/Location/advanceObjectsInMap.asm"

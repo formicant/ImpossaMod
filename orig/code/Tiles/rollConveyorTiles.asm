@@ -2,7 +2,6 @@
 
 ; In Klondike, Orient, Bermuda, rolls top and bottom pixel rows
 ; of the conveyor tiles in opposite directions
-; Used by c_cc25.
 rollConveyorTiles:  ; #c884
         ld a, (State.level)
         cp Level.amazon

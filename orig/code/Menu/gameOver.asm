@@ -3,7 +3,6 @@
 textGameOver:  ; #cd19
         db "GAME OVER"C
 
-; Used by c_cc25.
 showGameOver:  ; #cd22
         call Utils.clearScreenPixels
         ld a, Colour.brWhite    ; bright white ink, black paper

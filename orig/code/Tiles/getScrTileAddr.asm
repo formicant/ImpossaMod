@@ -4,7 +4,6 @@
 ;   arg `ix`: object
 ;   ret `hl`: tile addr in `Tables.scrTiles`
 ;   spoils `af`
-; Used by c_dce1, c_dd09, c_dd46, c_dd73, c_df85, c_f1d7, c_f2e7 and  c_f618.
 getScrTileAddr:  ; #d460
         push bc
         push de

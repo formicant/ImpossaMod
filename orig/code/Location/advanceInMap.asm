@@ -1,7 +1,6 @@
     MODULE Location
 
 ; Scroll the screen an add new objects to the scene
-; Used by c_cc25.
 advanceInMap:  ; #cdae
         _DEBUG_BORDER Colour.yellow
         ld hl, Tables.scrTileUpd

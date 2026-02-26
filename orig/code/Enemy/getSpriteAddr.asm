@@ -5,7 +5,6 @@
 ;   arg `ix`: object
 ;   ret `hl`: sprite addr
 ; (Called from drawing.asm)
-; Used by c_c07c, c_c245, c_c314 and c_c3ac.
 getSpriteAddr:  ; #e47a
         ld l, (ix+Obj.sprite+0)
         ld h, (ix+Obj.sprite+1) ; `hl`: base sprite addr
@@ -102,7 +101,6 @@ explosionPhases:  ; #e4ee
 ; Get explosion cloud phase sprite address
 ;   arg `ix`: object
 ;   ret `hl`: phase sprite addr
-; Used by c_e47a.
 getExplosionSprite:  ; #e4fc
         set Flag.waiting, (ix+Obj.flags)
         set Flag.fixedX, (ix+Obj.flags)
@@ -142,7 +140,6 @@ getExplosionSprite:  ; #e4fc
 ;       `hl`: base sprite addr
 ;       `de`: sprite size in bytes
 ;   ret `hl`: phase sprite addr
-; Used by c_e47a.
 getFrogSprite:  ; #e52d
         ld a, (ix+Obj.mo.trajDir)
         or a
@@ -175,7 +172,6 @@ getFrogSprite:  ; #e52d
 ;   arg `ix`: burrow object
 ;       `hl`: burrow sprite addr
 ;   ret `hl`: burrow or shop mole sprite addr
-; Used by c_e47a.
 getBurrowSprite:  ; #e54f
         bit Flag.waiting, (ix+Obj.flags)
         ret NZ
@@ -190,7 +186,6 @@ getBurrowSprite:  ; #e54f
 
 ; Invert object's mirror flag (unused?)
 ;   arg `ix`: object
-; Used by c_e47a.
 turnAround:  ; #e566
         ld a, (ix+Obj.flags)
         xor 1<<Flag.mirror

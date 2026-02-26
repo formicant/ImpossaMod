@@ -1,7 +1,6 @@
     MODULE Scene
 
 ; Remove objects from the scene that should be removed (?)
-; Used by c_cc25.
 cleanUpScene:  ; #d4cd
         ld ix, obj1
         ld b, 7                 ; object count

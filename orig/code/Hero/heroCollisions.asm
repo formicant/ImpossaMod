@@ -5,7 +5,6 @@ tmpHeroX:  ; #e6df
         dw -0
 
 ; Find collisions between the hero and other objects and do appropriate action
-; Used by c_cc25.
 processHeroCollisions:  ; #e6e1
         ld a, (State.inShop)
         or a

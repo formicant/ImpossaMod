@@ -7,7 +7,6 @@
 ;       `de`: block length
 ;       flag C should be set
 ;   ret flag C: ok, NC: error
-; Used by c_c9ac.
 loadBytes:  ; #c9fb
         inc d                   ; reset Z (`d` != #FF)
         exa                     ; `a'`: block type
@@ -63,7 +62,6 @@ loadBytes:  ; #c9fb
         jr c_ca69
 
 ; (some tape loading subroutine?)
-; Used by c_ca69.
 c_ca4a:  ; #ca4a
         exa
         jr NZ, .l_0
@@ -91,7 +89,6 @@ c_ca4a:  ; #ca4a
         ld b, #B2
 
 ; (some tape loading subroutine?)
-; Used by c_c9fb.
 c_ca69:  ; #ca69
         ld l, #01
 .l_0:
@@ -113,11 +110,9 @@ c_ca69:  ; #ca69
         ret
 
 ; (some tape loading subroutine?)
-; Used by c_c9fb and c_ca69.
 c_ca84:  ; #ca84
         call .l_0
         ret NC
-; This entry point is used by c_c9fb.
 .l_0:
         ld a, #16
 .l_1:

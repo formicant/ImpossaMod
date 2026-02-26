@@ -5,7 +5,6 @@
 ;   `hl'`: old visible area position in Tables.scrTiles
 ;   `hl`: new visible area position in in Tables.scrTiles
 ;   `de`: new visible area position in in Tables.scrTileUpd
-; Used by c_cdae.
 moveScreenTiles:  ; #c4c0
         exx
         ld de, Screen.pixels.row1
@@ -121,7 +120,6 @@ moveScreenTiles:  ; #c4c0
 
 
 ; Update all visible screen tiles which need updating
-; Used by c_cc25 and c_cdae.
 updateScreenTiles:  ; #c561
         ; mark row ends with -1
         ld bc, #18FF            ; `b`: 24, `c`: -1
@@ -258,7 +256,6 @@ updateScreenTiles:  ; #c561
 
 ; Fill entire `Tables.scrTileUpd` buffer with 1's (needs updating)
 ; (Disables interrupts!)
-; Used by c_cd9b.
 setScrTileUpd:  ; #c636
         di
         ld (.sp), sp

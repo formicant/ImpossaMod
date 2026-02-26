@@ -22,7 +22,6 @@ beeperSounds:  ; #be3a
 
 ; Play beeper sound
 ;   `a`: sound index (0..14)
-; Used by playSound.
 playBeeperSound:  ; #be67
         ld l, a
         add a

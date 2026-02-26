@@ -2,7 +2,6 @@
 
 ; Turn a defeated enemy into a coin
 ;   `iy`: enemy object
-; Used by c_ec00.
 turnIntoCoin:  ; #d2b3
         bit Flag.isBig, (iy+Obj.flags)
         jr Z, .small            ; never happens(?), always big

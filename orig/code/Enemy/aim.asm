@@ -3,7 +3,6 @@
 ; Aim an enemy bullet shot at the hero
 ;   arg `ix`: bullet
 ;       `a`: bullet speed
-; Used by c_f564.
 aimAtHero:  ; #edc0
         ld (ix+Obj.aim.speed), a
 
@@ -123,7 +122,6 @@ aimAtHero:  ; #edc0
 
 
 ; Move enemy bullet along a line towards aimed target
-; Used by c_f618.
 aimedBulletMotion:  ; #ee93
         ld a, (ix+Obj.spriteSet)
         cp -1

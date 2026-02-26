@@ -1,7 +1,6 @@
     MODULE Tiles
 
 ; Find conveyors among the screen tiles
-; Used by c_cecc.
 findConveyors:  ; #d213
         ld a, (conveyorTileIndices.left)
         ld (Tables.scrTiles.stop + 1), a   ; stop-value
@@ -54,7 +53,6 @@ findConveyors:  ; #d213
 
 
 ; Mark all conveyor screen tiles to be updated
-; Used by c_cc25.
 updateConveyors:  ; #d278
         ld de, Tables.scrTileUpd - Tables.scrTiles
         ld ix, State.conveyors

@@ -22,7 +22,6 @@ scoreTable:  ; #cf5d
 
 ; Add score by index
 ;   `a`: index in the score table (1..6)
-; Used by c_e4fc and c_e6e1.
 addScore:  ; #cf85
         or a
         ret Z
@@ -40,7 +39,6 @@ addScore:  ; #cf85
 
 ; Add score by addr
 ;   `de`: addr of the last digit in the score table
-; This entry point is used by c_cdae and c_ec00.
 addScoreRaw:
         ld hl, score + 5
         or a
@@ -65,7 +63,6 @@ addScoreRaw:
         ld (hl), a
 
 ; Print score number
-; This entry point is used by c_c76f and c_d1c1.
 printScore:
         ld hl, score
         ld de, scoreString
@@ -90,15 +87,16 @@ addScoreSetCarry:
         scf
         jp addScoreRaw.l_1
 
-; Clear score at #CF57?
-; Used by c_d133.
+
+; Set score to zero
+; spoils: `f`, `b`, `hl`
 clearScore:  ; #cfdb
         ld hl, score
-        ld b, #06
-.l_0:
-        ld (hl), #00
+        ld b, 6
+.digit:
+        ld (hl), 0
         inc hl
-        djnz .l_0
+        djnz .digit
         ret
 
     ENDMODULE

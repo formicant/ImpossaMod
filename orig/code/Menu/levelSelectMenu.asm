@@ -12,7 +12,6 @@ levelNames:  ; #d52b
         db "BERMUDA "C
 
 ; Show level selection menu
-; Used by c_cc25.
 levelSelectionMenu:  ; #d553
         call Utils.clearScreenPixels
         ld a, Colour.brWhite    ; bright white ink, black paper
@@ -116,7 +115,6 @@ textLoading:  ; #d624
         db " LOADING"C
 
 ; Load level if needed
-; Used by c_d553.
 loadLevelIfNeeded:  ; #d62c
         ld a, (State.loadedLevel)
         ld b, a

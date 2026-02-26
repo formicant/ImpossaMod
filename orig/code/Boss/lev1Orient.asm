@@ -5,7 +5,6 @@ c_f99e:  ; #f99e
         db #18, #00, #00, #15, #18, #15
 
 ; Orient boss logic
-; Used by c_f8cb.
 bossOrient:  ; #f9a4
         ld a, (State.bossFight)
         cp 1

@@ -257,7 +257,6 @@ noisePeriod:  ; #c778
 ;   `iy`: instrument addr
 ;   `hl`: period
 ;   `c`: duration
-; Used by p_cb0c and p_cd25.
 playTone:  ; #c779
         di
         ld a, iyl
@@ -366,7 +365,6 @@ initAy:  ; #c7fe
 
 
 ; Write values to AY registers
-; Used by p_cb0c.
 setAyValues:  ; #c83f
         ld a, (mixerValue)
         and mixOff
@@ -615,7 +613,6 @@ justReturn:  ; #c9e6
 
 
 ; Writes value `a` to AY register `c`
-; Used by p_c779.
 setAyReg:  ; #c9e7
         push bc
         ld e, c

@@ -1,7 +1,6 @@
     MODULE Hero
 
 ; (Some game logic from call table #D6E7?)
-; Used by c_d7f6.
 heroClimbs:  ; #dbfc
         ld a, (Control.state)
         bit Key.up, a
@@ -120,7 +119,6 @@ heroClimbs:  ; #dbfc
 
 
 ; Alter hero's feet when climbing
-; Used by c_dbfc.
 climbStep:  ; #dcce
         ld a, (State.stepTime)
         inc a

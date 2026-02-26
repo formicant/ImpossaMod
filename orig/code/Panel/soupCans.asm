@@ -6,7 +6,6 @@ soupCanStrings:
 .three: db "///"C
 
 ; Print soup cans in the panel
-; Used by c_d1c1, c_e6e1 and c_e9b1.
 printSoupCans:  ; #d026
         ld a, (State.soupCans)
         dec a

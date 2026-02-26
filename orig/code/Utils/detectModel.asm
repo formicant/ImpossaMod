@@ -2,7 +2,6 @@
 
 
 ; 48K/128K detection
-; Used by c_cc25.
 detectSpectrumModel:  ; #5e00
         di
         ld a, (#C000)

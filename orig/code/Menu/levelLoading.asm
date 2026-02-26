@@ -4,7 +4,6 @@ textFound:  ; #c9a7
         db "FOUND"C
 
 ; Load level from tape
-; Used by c_d62c.
 loadLevel:  ; #c9ac
     IFDEF _MOD
         ld a, (Sound.is48k)

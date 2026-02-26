@@ -1,7 +1,6 @@
     MODULE Hero
 
 ; Init level / game state
-; Used by c_cc25.
 initLevel:  ; #d1c1
         ld a, 1
         ld (State.soupCans), a

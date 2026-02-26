@@ -1,7 +1,6 @@
     MODULE Hero
 
 ; (Some game logic from call table #D6E7?)
-; Used by c_d7f6.
 heroJumps:  ; #da95
         ; set sprite
         ld hl, cS.heroJumps

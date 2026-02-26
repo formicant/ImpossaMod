@@ -4,7 +4,6 @@ textPaused:  ; #cd52
         db "  PAUSED  "C
 
 ; Pause the game
-; Used by c_cc25.
 pauseGameIfPressed:  ; #cd5c
         call Control.checkPauseKey
         ret NZ

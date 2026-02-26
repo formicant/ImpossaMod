@@ -1,30 +1,7 @@
     MODULE Hero
 
-; Clear the game state before the start of the game
-; Used by c_cc25.
-clearGameState:  ; #d133
-        ld hl, State.start
-        ld de, State.start + 1
-        ld bc, State.length - 1
-        ld (hl), 0
-        ldir
-
-        ld a, 18
-        ld (State.maxEnergy), a
-
-        call Panel.clearScore
-        ld b, 5
-        ld hl, State.levelsDone
-.level:
-        ld (hl), 0
-        inc hl
-        djnz .level
-        ret
-
-
 ; Initialise the hero object and place it to the start position
 ;   `bc`: hero's position (x, y), blocks
-; Used by c_d1c1.
 initHero:  ; #d153
         ld ix, Scene.hero
         ld l, b

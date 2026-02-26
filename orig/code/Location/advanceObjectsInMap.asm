@@ -1,7 +1,6 @@
     MODULE Location
 
 ; Advance scene objects in map
-; Used by c_cdae.
 advanceObjectsInMap:  ; #cf17
         ld b, 8                 ; object count
         ld ix, Scene.objects

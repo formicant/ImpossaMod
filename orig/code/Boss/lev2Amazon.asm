@@ -6,7 +6,6 @@ c_fa61:  ; #fa61
         db #E4, #7B, #44, #7B
 
 ; Amazon boss logic
-; Used by c_f8cb.
 bossAmazon:  ; #fa65
         ld a, (State.bossFight)
         cp #01

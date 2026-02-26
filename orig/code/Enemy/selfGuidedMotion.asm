@@ -2,7 +2,6 @@
 
 ; Move object towards the hero
 ;   arg `ix`: object
-; Used by c_ed08.
 selfGuidedMotion:  ; #f0f3
         ld (ix+Obj.mo.horizSpeed), 2
         ld (ix+Obj.mo.vertSpeed), 2

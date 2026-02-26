@@ -1,7 +1,6 @@
     MODULE Panel
 
 ; Print coins in the panel
-; Used by c_d1c1, c_e6e1 and c_e9b1.
 printCoinCount:  ; #cfe6
         ld a, (State.coins)
         ld hl, _ROW 0 _COL 11

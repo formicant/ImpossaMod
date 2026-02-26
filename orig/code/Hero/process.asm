@@ -17,7 +17,6 @@ jumpVelocityTable:  ; #d6f1
 
 
 ; Process hero's behaviour
-; Used by c_cc25.
 processHero:  ; #d709
         ld ix, Scene.hero
         call collectStateTiles

@@ -4,7 +4,6 @@
 ;   `de`: string address
 ;   `h`: y, `l`: x
 ;   `c`: attribute
-; Used by c_c76f, c_c9ac, c_cd22, c_cd5c, c_cf85, c_cfe6, c_d026,
 ; c_d04e, c_d553, c_d62c, c_d6c0 and c_e9b1.
 printString:  ; #c67d
         push bc

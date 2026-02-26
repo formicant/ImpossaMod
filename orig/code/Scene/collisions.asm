@@ -4,7 +4,6 @@
 ;   arg `ix`: object 1
 ;       `iy`: object 2
 ;   ret flag C: no collision, NC: collision
-; Used by c_e6e1, c_e9b1, c_eb19 and c_f618.
 checkObjectCollision:  ; #e80a
         bit Flag.exists, (iy+Obj.flags)
         jr NZ, .obj2Exists

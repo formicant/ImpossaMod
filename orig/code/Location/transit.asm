@@ -1,7 +1,6 @@
     MODULE Location
 
 ; Check if the hero enters a transit
-; Used by c_cc25.
 checkTransitEnter:  ; #e60a
         ld ix, Scene.hero
         ld a, (State.jumpPhase)

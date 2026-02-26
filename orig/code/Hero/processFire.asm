@@ -35,7 +35,6 @@ powerBulletTable:  ; #df76       w   h
 
 
 ; Decrement weapon time and perform fire if pressed
-; Used by c_cc25.
 processFire:  ; #df85
         ld a, (State.pressTime)
         or a

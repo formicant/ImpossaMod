@@ -1,7 +1,6 @@
     MODULE Hero
 
 ; If the hero is riding an object, move the hero accordingly
-; Used by c_cc25.
 heroRiding:  ; #d308
         ld ix, Scene.hero
         bit Flag.riding, (ix+Obj.auxFlags)
@@ -119,7 +118,6 @@ heroRiding:  ; #d308
 ;   arg `ix`: hero
 ;       `iy`: object
 ;   ret `a`: #FF and flag NZ if is, `a`: 0 and flag Z if isn't
-; Used by c_d308.
 isHeroOnTopObject:  ; #d3bb
         bit Flag.exists, (iy+Obj.flags)
         ret Z

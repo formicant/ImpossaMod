@@ -10,7 +10,6 @@ kickBubbleSizes:  ; #eaf7
 
 ; Check if kick, bomb, or bullet damages any object in the scene
 ;   ret flag C if object is not damaged, NC if damaged
-; Used by c_df85.
 checkEnemiesForDamage:  ; #eb00
         ld ix, Scene.obj1       ; bullet, bomb, or kick bubble
         ld iy, Scene.obj2
@@ -31,7 +30,6 @@ checkEnemiesForDamage:  ; #eb00
 ;   arg `ix`: bullet, bomb, or kick bubble
 ;       `iy`: object
 ;   ret flag C if object is not damaged, NC if damaged
-; Used by c_eb00.
 checkEnemyDamage:  ; #eb19
         ld a, (iy+Obj.objType)
         or a
@@ -177,7 +175,6 @@ weaponDamageTable:  ; #ebf4
 .lGun:  db -2, -3, -4
 
 ; Damage/kill enemy?
-; Used by c_eb19.
 damageEnemy:  ; #ec00
         ld a, (iy+Obj.spriteSet)
         cp -1
@@ -219,7 +216,6 @@ damageEnemy:  ; #ec00
         call Sound.playSound
         jr .damaged
 
-; This entry point is used by c_d4e5.
 .kill:
         bit Flag.givesCoin, (iy+Obj.auxFlags)
         jp NZ, turnIntoCoin
@@ -244,7 +240,6 @@ damageEnemy:  ; #ec00
         xor a
         ret
 
-; This entry point is used by c_eb19.
 .notDamaged:
         scf
         ret

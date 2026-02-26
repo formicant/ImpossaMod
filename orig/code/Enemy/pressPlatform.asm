@@ -6,7 +6,6 @@ pressSpeedTable:  ; #f2d1
 
 ; Move a press or a platform
 ;   arg `ix`: press/platform object
-; Used by c_ed08.
 pressPlatformMotion:  ; #f2e7
         ld a, (ix+Obj.mo.horizSpeed)
         or a

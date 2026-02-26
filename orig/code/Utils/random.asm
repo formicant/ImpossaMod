@@ -1,7 +1,6 @@
     MODULE Utils
 
 ; Random number generation
-; Used by c_e52d, c_ef72, c_f4e9, c_f670, c_f697, c_f8f4 and c_fa65.
 generateRandom:  ; #d0fc
         push hl, de
 

@@ -2,7 +2,6 @@
 
 ; Add energy
 ;   `a`: energy points to add
-; Used by c_cc25, c_cd5c, c_e6e1 and c_e9b1.
 addEnergy:  ; #d09a
         exa
         ld a, (State.maxEnergy)
@@ -21,7 +20,6 @@ addEnergy:  ; #d09a
 
 ; Decrement energy by one point
 ;   `ix`: Scene.hero
-; Used by c_d709 and c_e6e1.
 decEnergy:  ; #d0af
         ld a, (ix+Obj.blinkTime)
         or a

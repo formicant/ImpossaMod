@@ -1,7 +1,6 @@
     MODULE Boss
 
 ; Boss logic switch by level
-; Used by c_cc25.
 switch:  ; #f8cb
         ld a, (State.bossFight)
         or a

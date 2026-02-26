@@ -1,7 +1,6 @@
     MODULE Drawing
 
 ; Draw scene objects with coordinate checks
-; Used by c_cc25 and c_cdae.
 drawObjectsChecked:  ; #c044
         ld ix, Scene.objects
         ld a, 2
@@ -20,7 +19,6 @@ drawObjectsChecked:  ; #c044
 
 
 ; Draw scene objects without coordinate checks
-; Used by c_cdae.
 drawObjectsUnchecked:  ; #c060
         ld ix, Scene.objects
         ld a, 2
@@ -39,7 +37,6 @@ drawObjectsUnchecked:  ; #c060
 
 
 ; Draw an object with coordinate checks
-; Used by c_c044.
 drawObjectChecked:  ; #c07c
         ld l, (ix+Obj.x+0)
         ld h, (ix+Obj.x+1)            ; `hl`: x coord
@@ -82,7 +79,6 @@ drawObjectChecked:  ; #c07c
 
 
 ; Draw an object
-; Used by c_c060.
 drawObject:
         bit Flag.exists, (ix+Obj.flags)
         ret Z

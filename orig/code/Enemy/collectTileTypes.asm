@@ -2,7 +2,6 @@
 
 ; Get tile types behind different parts of the object and store them in the state
 ;   arg `ix`: object
-; Used by c_ed08, c_ef72, c_f0f3 and c_f518.
 collectTileTypes:  ; #f1d7
         bit Flag.isBig, (ix+Obj.flags)
         jr NZ, .big

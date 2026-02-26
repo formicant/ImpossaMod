@@ -7,7 +7,6 @@ coinJumpVelocity:  ; #f506
         db #7F
 
 ; Precess the motion of a coin appearing from a defeated enemy
-; Used by c_ed08.
 coinJumpMotion:  ; #f518
         ld a, (ix+Obj.mo.step)
         ld l, a

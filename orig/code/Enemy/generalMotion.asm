@@ -2,7 +2,6 @@
 
 ; Choose motion type based on `motionSub`
 ;   arg `ix`: object
-; Used by c_ed08.
 generalMotion:  ; #ef72
         ld a, (ix+Obj.mo.subType)
         cp Motion.general.walk

@@ -17,7 +17,6 @@ directionTransform:  ; #f373
 
 ; Move object along its trajectory
 ;   arg `ix`: object
-; Used by c_ed08.
 trajectoryMotion:  ; #f37e
         bit Flag.waiting, (ix+Obj.flags)
         ret NZ

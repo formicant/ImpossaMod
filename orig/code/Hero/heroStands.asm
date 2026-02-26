@@ -160,7 +160,6 @@ heroStands:  ; #d7f6
         call Sound.playSound
         jp heroJumps
 
-; This entry point is used by c_d94c, c_da95 and c_db4e.
 .climb:
         ld a, (State.pressTime)
         or a

@@ -1,7 +1,6 @@
     MODULE Enemy
 
 ; Change object direction with some probability
-; Used by c_ef72.
 randomlyChangeDirection:  ; #f670
         bit Flag.changesDir, (ix+Obj.auxFlags)
         ret Z
@@ -26,7 +25,6 @@ randomlyChangeDirection:  ; #f670
 
 
 ; (Some game logic?)
-; Used by c_ef72.
 randomlyStandStill:  ; #f697
         bit Flag.standsStill, (ix+Obj.auxFlags)
         ret Z

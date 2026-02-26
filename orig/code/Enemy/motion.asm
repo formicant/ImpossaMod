@@ -1,7 +1,6 @@
     MODULE Enemy
 
 ; For every object in the scene, process its motion
-; Used by c_cc25.
 performMotionOfAllObjs:  ; #ecee
         ld ix, Scene.obj2
         ld b, 6                 ; object count
@@ -20,7 +19,6 @@ performMotionOfAllObjs:  ; #ecee
 
 ; Check object motion type and do appropriate actions
 ;   arg `ix`: object
-; Used by c_ecee.
 performObjectMotion:  ; #ed08
         bit Flag.exists, (ix+Obj.flags)
         ret Z

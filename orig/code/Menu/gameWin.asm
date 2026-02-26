@@ -8,7 +8,6 @@ epilogueText:  ; #d679
         db "    OUR PLANET"C
 
 ; Successful end of the game
-; Used by c_d553.
 gameWin:  ; #d6c0
         ld hl, _ROW 8 _COL 6
         ld de, epilogueText

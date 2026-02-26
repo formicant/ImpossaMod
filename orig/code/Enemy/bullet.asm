@@ -1,7 +1,6 @@
     MODULE Enemy
 
 ; Tick the enemy bullet emission timer
-; Used by c_cc25.
 enemyBulletTimer:  ; #f553
         ld a, (State.bulletTime)
         or a
@@ -18,7 +17,6 @@ enemyBulletTimer:  ; #f553
 
 ; Emit enemy bullet
 ;   arg `ix`: object
-; Used by c_ed08.
 emitEnemyBullet:  ; #f564
         ld a, (State.bulletTime)
         or a
@@ -107,7 +105,6 @@ emitEnemyBullet:  ; #f564
         ret
 
 ; Move an enemy bullet and check collision
-; Used by c_ed08.
 bulletMotion:  ; #f618
         ld a, (ix+Obj.emitBullets)
         cp 1

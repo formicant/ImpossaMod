@@ -10,6 +10,7 @@
     INCLUDE "Scene/decBlinkTime.asm"
     INCLUDE "Utils/delay.asm"
     INCLUDE "Utils/random.asm"
+    INCLUDE "Main/clearGameState.asm"
     INCLUDE "Hero/initHero.asm"
     INCLUDE "Location/startPositions.asm"
     INCLUDE "Tiles/conveyorTileIndices.asm"

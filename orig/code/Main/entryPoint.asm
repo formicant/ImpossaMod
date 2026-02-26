@@ -1,12 +1,12 @@
     MODULE Main
 
-
 ; Entry point
 entryPoint:  ; #cc25
         di
-.lev+*  ld a, #FF
+.lev+*  ld a, -1                ; no level is loaded (why?)
         ld (State.loadedLevel), a
-        ld sp, 0
+
+        ld sp, 0                ; stack top at #10000
         call Interrupt.init
         call Utils.detectSpectrumModel
 
@@ -25,6 +25,5 @@ entryPoint:  ; #cc25
         djnz .byte
 
         jp gameStart
-
 
     ENDMODULE

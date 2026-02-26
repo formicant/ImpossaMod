@@ -34,7 +34,6 @@ dirToAngle:  ; #e311
 .upL:   db 5
 
 ; Control a self-guided bullet (power gun with 3 soup cans)
-; Used by c_df85.
 selfGuidedBullet:  ; #e31c
         ld a, (selfGuidedTime)
         or a

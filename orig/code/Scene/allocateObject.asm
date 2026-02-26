@@ -3,7 +3,6 @@
 ; Get address for a new object in `Scene`
 ;   ret `ix`: object addr
 ;       `C` flag iff there is place for a new object
-; Used by c_f564 and c_f74a.
 allocateObject:  ; #e6c2
         push de
         push bc

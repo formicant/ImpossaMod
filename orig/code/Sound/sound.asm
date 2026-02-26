@@ -1,7 +1,6 @@
     MODULE Sound
 
 ; Play sound (beeper or AY)
-; Used by c_d0af, c_d7f6, c_df85, c_e6e1, c_ec00 and c_ed08.
 playSound:  ; #bddf
         ld c, a
         ld a, (is48k)
@@ -12,7 +11,6 @@ playSound:  ; #bddf
         jp callAyProcedure
 
 
-; Used by c_c6d5.
 callPlayMenuMusic:  ; #bdee
         ld hl, AY.playMenuMusic ; addr in RAM page 1
         jp callAyProcedure

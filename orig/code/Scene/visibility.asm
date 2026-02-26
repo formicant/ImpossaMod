@@ -2,7 +2,6 @@
 
 ; Return flag C if object is in the visible area or to the right of it
 ;   `ix`: object
-; Used by c_ef72 and c_f37e.
 isObjectVisibleOrWaiting:  ; #d407
         ld hl, 352
         ld (isObjectVisibleRaw.de), hl
@@ -10,7 +9,6 @@ isObjectVisibleOrWaiting:  ; #d407
 
 ; Return flag C if object is in the visible area
 ;   `ix`: object
-; used by c_df85 and c_f618.
 isObjectVisible:
         ld hl, 288
         ld (isObjectVisibleRaw.de), hl
@@ -49,7 +47,6 @@ isObjectVisibleRaw:
 
 ; Make object big
 ;   `ix`: object
-; Used by c_ec00 and c_ed08.
 makeObjectBig:  ; #d443
         ; adjust coords
         ld l, (ix+Obj.x+0)

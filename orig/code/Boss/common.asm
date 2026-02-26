@@ -36,7 +36,6 @@ c_fbd2:  ; #fbd2
         ret
 
 ; (Some boss logic?)
-; Used by c_fbd2.
 c_fbf9:  ; #fbf9
         ld l, (ix+Obj.sprite+0)
         ld h, (ix+Obj.sprite+1)
