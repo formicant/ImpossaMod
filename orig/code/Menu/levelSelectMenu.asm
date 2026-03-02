@@ -11,30 +11,38 @@ levelNames:  ; #d52b
 .bermuda
         db "BERMUDA "C
 
-; Show level selection menu
+
+; Show level selection menu and let the user select level
 levelSelectionMenu:  ; #d553
         call Utils.clearScreenPixels
         ld a, Colour.brWhite    ; bright white ink, black paper
         call Utils.fillScreenAttrs
+
         ld hl, _ROW 8 _COL 9
         ld de, textSelectLevel
         ld c, Colour.brYellow
         call Utils.printString
+
         ld hl, State.levelsDone
-        ld b, #05
+        ld b, Level.count
         xor a
-.l_0:
+.isLevelDone:
         add (hl)
         inc hl
-        djnz .l_0
-        cp 5
+        djnz .isLevelDone
+
+        cp Level.bermuda + 1
         jp Z, gameWin
-        cp 4
+
+        cp Level.bermuda
         jr NZ, .l_3
+
+        ; all but Bermuda done
         ld de, levelNames.bermuda
         ld hl, _ROW 11 _COL 12
         ld c, Colour.brWhite
         call Utils.printString
+
         ld a, Level.bermuda
         ld (State.level), a
 .l_1:
@@ -45,22 +53,28 @@ levelSelectionMenu:  ; #d553
         ld a, (Control.state)
         bit Key.fire, a
         jr Z, .l_2
-        jp .l_7
+        jp .startLevel
+
 .l_3:
         ld a, (Control.state)
         ld c, a
         ld a, (State.level)
         bit Key.down, c
-        jr Z, .l_4
-        dec a
-        jr .l_5
-.l_4:
+        jr Z, .notDown
+        ; down
+        dec a                   ; previous level
+        jr .checkLevel
+.notDown:
         bit Key.up, c
-        jr Z, .l_5
-        inc a
-.l_5:
-        and #03
+        jr Z, .checkLevel
+        ; up
+        inc a                   ; next level
+
+.checkLevel:
+        and %00000011           ; mod 4
         ld (State.level), a
+
+        ; check if the level is already done
         ld l, a
         ld h, 0
         ld de, State.levelsDone
@@ -69,8 +83,9 @@ levelSelectionMenu:  ; #d553
         or a
         jr Z, .l_6
         ld a, (State.level)
-        inc a
-        jr .l_5
+        inc a                   ; next level
+        jr .checkLevel
+
 .l_6:
         ld a, (State.level)
     .3  add a
@@ -79,20 +94,27 @@ levelSelectionMenu:  ; #d553
         ld de, levelNames
         add hl, de
         ex de, hl
+        ; `de`: level name addr
         ld hl, _ROW 11 _COL 12
         ld c, Colour.brWhite
         call Utils.printString
+
         ld bc, 250
         call Utils.delay
+
         ld a, (Control.state)
         bit Key.fire, a
         jr Z, .l_3
-.l_7:
+
+.startLevel:
         call loadLevelIfNeeded
+        ; if loading error
         jp NC, levelSelectionMenu
+
         ld a, Colour.black
         out (Port.general), a   ; set black border
         call Utils.clearScreenPixels
+
         ld hl, _ROW 14 _COL 11
         ld de, textPressFire
         ld c, Colour.brWhite
@@ -104,7 +126,7 @@ levelSelectionMenu:  ; #d553
         ret
 
 
-; Tape messages
+; Messages
 textLoadError:  ; #d606
         db "LOAD ERROR"C
 textPressFire:  ; #d610
@@ -114,45 +136,55 @@ textStartTape:  ; #d61A
 textLoading:  ; #d624
         db " LOADING"C
 
+
 ; Load level if needed
 loadLevelIfNeeded:  ; #d62c
         ld a, (State.loadedLevel)
         ld b, a
         ld a, (State.level)
         cp b
-        jr NZ, .l_0
-        scf
+        jr NZ, .loadingNeeded
+
+        ; already loaded
+        scf                     ; no error
         ret
-.l_0:
+
+.loadingNeeded:
         call Utils.clearScreenPixels
         ld de, textStartTape
         ld hl, _ROW 12 _COL 11
         ld c, Colour.brWhite
         call Utils.printString
+
         call loadLevel
-        jr NC, .l_1
+        jr NC, .error
         ld a, (State.level)
         ld (State.loadedLevel), a
-        scf
+        scf                     ; no error
         ret
-.l_1:
+
+.error:
         push af
-        ld a, #FF
+        ld a, -1                ; no level loaded
         ld (State.loadedLevel), a
+
         call Utils.clearScreenPixels
         ld hl, _ROW 12 _COL 11
         ld de, textLoadError
         ld c, Colour.brYellow
         call Utils.printString
-        inc de
+
+        inc de                  ; `textPressFire`
         ld hl, _ROW 14 _COL 11
         ld c, Colour.brWhite
         call Utils.printString
-.l_2:
+
+.waitFire:
         ld a, (Control.state)
         bit Key.fire, a
-        jr Z, .l_2
-        pop af
+        jr Z, .waitFire
+
+        pop af                  ; flag C (error)
         ret
 
     ENDMODULE

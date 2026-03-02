@@ -13,3 +13,13 @@ pause   EQU 6
 quit    EQU 7
 
     ENDMODULE
+
+
+    MODULE ControlType
+
+keyboard    EQU 0
+kempston    EQU 1
+cursor      EQU 2
+interface2  EQU 3
+
+    ENDMODULE

@@ -7,6 +7,8 @@ amazon      EQU 2
 iceland     EQU 3
 bermuda     EQU 4
 
+count       EQU 5
+
 
 ; Level data addresses
 start           EQU #6C00

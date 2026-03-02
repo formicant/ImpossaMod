@@ -4,6 +4,7 @@
 activeMenuItemAttrAddr:  ; #c6d3
         dw Screen.attrs.row9 _COL 11
 
+
 ; Show the main menu and let the user select options
 mainMenu:  ; #c6d5
         xor a
@@ -32,75 +33,77 @@ mainMenu:  ; #c6d5
         ld bc, Port.keys_12345
         in a, (c)
         and Port.keyMask
+
         bit Port.key1, a        ; select [1] (keyboard)
         jr NZ, .not1
-
         exa
         or a
-        jr Z, .l_6              ; already set
-
-        ld hl, Screen.attrs.row9 + 11
-        xor a                   ; controlType: keyboard
-        jr .l_5
+        jr Z, .highlight        ; `a` = ControlType.keyboard
+        ld hl, Screen.attrs.row9 _COL 11
+        xor a                   ; `a`: ControlType.keyboard
+        jr .select
 .not1:
         bit Port.key2, a        ; select [2] (kempston)
         jr NZ, .not2
-
         exa
-        cp 1
-        jr Z, .l_6
-        ld hl, Screen.attrs.row10 + 11
-        ld a, 1                 ; controlType: kempston
-        jr .l_5
+        cp ControlType.kempston
+        jr Z, .highlight
+        ld hl, Screen.attrs.row10 _COL 11
+        ld a, ControlType.kempston
+        jr .select
 .not2:
         bit Port.key3, a        ; select [3] (cursor)
-        jr NZ, .l_4
+        jr NZ, .not3
         exa
-        cp 2
-        jr Z, .l_6
-        ld hl, Screen.attrs.row11 + 11
-        ld a, 2                 ; controlType: cursor
-        jr .l_5
-.l_4:
+        cp ControlType.cursor
+        jr Z, .highlight
+        ld hl, Screen.attrs.row11 _COL 11
+        ld a, ControlType.cursor
+        jr .select
+.not3:
         bit Port.key4, a        ; select [4] (interface 2)
-        jr NZ, .l_6
+        jr NZ, .highlight
         exa
-        cp 3
-        jr Z, .l_6
-        ld hl, Screen.attrs.row12 + 11
-        ld a, 3                 ; controlType: interface 2
-.l_5:
+        cp ControlType.interface2
+        jr Z, .highlight
+        ld hl, Screen.attrs.row12 _COL 11
+        ld a, ControlType.interface2
+
+.select:
         ld (activeMenuItemAttrAddr), hl
         ld (Control.type), a
-
         call printMainMenuText
         call clampActiveMenuItemAttrs
 
-.l_6:   ; change active item's colour
+.highlight:
+        ; change active item's colour
         ld hl, (activeMenuItemAttrAddr)
         ld b, 12
-.l_7:
+.char:
         ld a, (hl)
         inc a                   ; next ink colour
         cp Colour.brWhite + 1
-        jr C, .l_8              ; if greater than bright white
-        ld a, Colour.brBlue       ;   return to blue
-.l_8:
+        jr C, .setColour        ; if greater than bright white
+        ld a, Colour.brBlue     ;   return to blue
+.setColour:
         ld (hl), a
         inc l
-        djnz .l_7
+        djnz .char
 
         ld bc, 20
-        call Utils.delay              ; delay ~20 ms
+        call Utils.delay        ; delay ~1 frame
+
         call Control.checkStartKey
         jp NZ, .menuLoop
-.l_9:
+
+.startKeyPressed:
         call Control.checkStartKey
-        jr Z, .l_9
+        jr Z, .startKeyPressed
 
         ld a, 1
         call Sound.callPlayMenuMusic
         ret
+
 
 ; Print game menu text
 printMainMenuText:  ; #c76f
@@ -145,13 +148,13 @@ printMainMenuText:  ; #c76f
         call Utils.printString
 
         ; make digits (0..4) white
-        ld hl, Screen.attrs.row9 + 9
+        ld hl, Screen.attrs.row9 _COL 9
         ld b, 5
-.l_0:
+.row:
         ld (hl), Colour.brWhite
         ld de, 32
         add hl, de
-        djnz .l_0
+        djnz .row
 
         ; print last score
         ld hl, _ROW 15 _COL 7
@@ -160,7 +163,7 @@ printMainMenuText:  ; #c76f
         call Utils.printString
 
     IFDEF _MOD
-        ld hl, Screen.pixels.row15 + 18
+        ld hl, Screen.pixels.row15 _COL 18
         jp Panel.printScoreAt
     ELSE
         ld hl, _ROW 15 _COL 18
@@ -172,20 +175,21 @@ printMainMenuText:  ; #c76f
     ENDIF
 
 
-; Checks attributes of the active menu item
-; and sets them to bright blue if greater than bright white
+; Check attributes of the active menu item
+; and set them to bright blue if greater than bright white
 clampActiveMenuItemAttrs:  ; #c7e1
         ld hl, (activeMenuItemAttrAddr)
-        ld b, #0C
+        ld b, 12
         ld a, (hl)
         cp Colour.brWhite + 1
-        jr C, .l_0
+        jr C, .setColour
         ld a, Colour.brBlue
-.l_0:
+.setColour:
         ld (hl), a
         inc l
-        djnz .l_0
+        djnz .setColour
         ret
+
 
 gameMenuText:  ; #c7f2
         db "IMPOSSAMOLE"C
