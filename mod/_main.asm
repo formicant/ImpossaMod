@@ -19,6 +19,7 @@
     ORG #5E00
 codeStart:
     INCLUDE "data/Font.asm"
+    INCLUDE "orig/var/State_is48k.asm"  ; TODO: move
     INCLUDE "code/_slow.asm"
     DISPLAY "Slow free: ", #8000 - $
 

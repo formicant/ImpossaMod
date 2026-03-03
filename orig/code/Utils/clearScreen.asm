@@ -1,7 +1,8 @@
     MODULE Utils
 
-; Clears screen pixels, leaves attributes untouched
-clearScreenPixels:  ; #c869
+; Clear screen pixels, leaves attributes untouched
+; spoils: `bc`, `de`, `hl`
+clearScreenPixels:
         ld hl, Screen.pixels
         ld de, Screen.pixels + 1
         ld bc, Screen.pixLength - 1
@@ -10,8 +11,10 @@ clearScreenPixels:  ; #c869
         ret
 
 
-; Fills screen attributes with value `a`
-fillScreenAttrs:  ; #c877
+; Fill screen attributes with the given value
+;   `a`: attribute value
+; spoils: `bc`, `de`, `hl`
+fillScreenAttrs:
         ld hl, Screen.attrs
         ld de, Screen.attrs + 1
         ld bc, Screen.attrLength - 1

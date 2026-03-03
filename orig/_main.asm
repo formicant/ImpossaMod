@@ -25,8 +25,9 @@ codeStart:
     INCLUDE "data/Lev0Klondike/_index.asm"
 
     ORG #BDDF
-    INCLUDE "code/Sound/_index.asm"
-
+    INCLUDE "code/Sound/sound.asm"
+    INCLUDE "var/State_is48k.asm"
+    INCLUDE "code/Sound/beeper.asm"
     INCLUDE "var/State_objTileIndex.asm"
     INCLUDE "var/Scene.asm"
 

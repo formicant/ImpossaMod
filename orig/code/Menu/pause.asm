@@ -1,40 +1,52 @@
     MODULE Menu
 
-textPaused:  ; #cd52
+textPaused:
         db "  PAUSED  "C
 
-; Pause the game
-pauseGameIfPressed:  ; #cd5c
+
+; Pause the game if the pause key is pressed
+pauseGameIfPressed:
         call Control.checkPauseKey
         ret NZ
-.l_0:
+
+.waitPauseRelease:
         call Control.checkPauseKey
-        jr Z, .l_0
+        jr Z, .waitPauseRelease
+
+        ; print "paused"
         ld hl, _ROW 23 _COL 0
         ld de, textPaused
         ld c, Colour.brWhite
         call Utils.printString
-.l_1:
+
+.waitPressAgain:
         call Control.checkPauseKey
-        jr NZ, .l_1
+        jr NZ, .waitPressAgain
+
+        ; cheat is activated by [Pause]+[C]+[Up]
         call Control.checkCheatKey
-        jr NZ, .l_2
+        jr NZ, .waitReleaseAgain
         ld a, (Control.state)
         bit Key.up, a
-        jr Z, .l_2
-        ld a, #22
+        jr Z, .waitReleaseAgain
+
+        ; cheat: max energy
+        ld a, 34
         ld (State.maxEnergy), a
-        ld a, #32
+        ld a, 50
         call Hero.addEnergy
-.l_2:
+
+.waitReleaseAgain:
         call Control.checkPauseKey
-        jr Z, .l_2
-        ld hl, Tables.scrTileUpd.row23 + 4
-        ld b, 10
-.l_3:
-        ld (hl), 1
+        jr Z, .waitReleaseAgain
+
+        ; update tiles under the "paused" text
+        ld hl, Tables.scrTileUpd.row23 _COL 4
+        ld b, 10                ; tile count
+.tile:
+        ld (hl), 1              ; update
         inc hl
-        djnz .l_3
+        djnz .tile
         ret
 
     ENDMODULE

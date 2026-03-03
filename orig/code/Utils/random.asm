@@ -1,7 +1,10 @@
     MODULE Utils
 
-; Random number generation
-generateRandom:  ; #d0fc
+; Generate next random number
+; returns:
+;   `a`: random number (0..255)
+; spoils: `f`
+generateRandom:
         push hl, de
 
         ld hl, (randomSeed)
@@ -26,15 +29,17 @@ randomSeed:  ; #d11b
 
 
 ; 32-bit frame counter, used in random number generation
-time:  ; #d11d
+time:
 .low:   dw 0
 .high:  dw 0
+
 
     IFNDEF _MOD                 ; moved to the interrupt routine
 
 ; Increment the 32-bit frame counter
 ; Called in every interrupt
-incrementTime:  ; #d121
+; spoils: `af`, `hl`
+incrementTime:
         ld hl, (time.low)
         inc hl
         ld (time.low), hl

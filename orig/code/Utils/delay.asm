@@ -1,9 +1,11 @@
     MODULE Utils
 
-; Delay for approximately `bc` milliseconds
-delay:  ; #d0f0
+; Wait for a specified period of time
+;   `bc`: delay time in milliseconds
+; spoils: `af`, `bc`
+delay:
         push bc
-        ld b, #FF
+        ld b, 255
 .loop:
         djnz .loop
         pop bc

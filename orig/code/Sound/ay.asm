@@ -134,21 +134,21 @@ instruments: ; #C584
 ; Game sound effects (15 × 13 bytes)
 aySounds:  ; #c5d4
         ;        env  dec sus  rel envP  ?  viP  viS  flag   period dur
-        Effect { #7F, -23, 1,  -1, #7F, #00, 0,  163, %001 }, 1498,  1  ; [0]
-        Effect { #1B,  -1, 1,  -1, #50, #00, 0,    1, %001 },   47,  1  ; [1]
-        Effect { #7F, -23, 1,  -1, #7F, #00, 0, -215, %001 },  846,  1  ; [2]
-        Effect { #08, -14, 1,  -7, #6B, #FF, 0,    0, %101 }, 3900,  2  ; [3] damage enemy
-        Effect { #0E, -14, 1,  -7, #29, #FF, 0,    0, %010 },   88,  1  ; [4]
-        Effect { #7F,  -4, 1,  -1, #44, #00, 0,  -20, %001 }, 2154,  1  ; [5]
-        Effect { #7F,  -3, 1,  -1, #60, #00, 0, -256, %010 },  240,  1  ; [6] kill enemy
-        Effect { #0C,   0, 0,   0, #71, #00, 0,  156, %101 }, 4027, 15  ; [7]
-        Effect { #0A,  -6, 1, -10, #00, #00, 0,   -1, %101 },   35, 28  ; [8]
-        Effect { #14, -20, 1,  -1, #7F, #01, 0,    0, %010 },  124, 10  ; [9]
-        Effect { #7F,  -3, 1,  -1, #7F, #04, 0,  -32, %001 }, 2413,  1  ; [10]
-        Effect { #7F,  -6, 1,  -1, #7F, #00, 0,  -14, %001 },  637,  1  ; [11]
-        Effect { #7F, -10, 1,  -1, #7F, #00, 0,    0, %001 }, 3460,  1  ; [12] energy loss
-        Effect { #7F,  -7, 1,  -1, #7F, #00, 0,    0, %001 },  200,  1  ; [13]
-        Effect { #7F,  -3, 8, -35, #7E, #00, 0, -803, %001 }, 1010,  1  ; [14]
+        Effect { #7F, -23, 1,  -1, #7F, #00, 0,  163, %001 }, 1498,  1  ; (unused)
+        Effect { #1B,  -1, 1,  -1, #50, #00, 0,    1, %001 },   47,  1  ; (unused)
+        Effect { #7F, -23, 1,  -1, #7F, #00, 0, -215, %001 },  846,  1  ; (unused)
+        Effect { #08, -14, 1,  -7, #6B, #FF, 0,    0, %101 }, 3900,  2  ; damageEnemy
+        Effect { #0E, -14, 1,  -7, #29, #FF, 0,    0, %010 },   88,  1  ; kickOrThrow
+        Effect { #7F,  -4, 1,  -1, #44, #00, 0,  -20, %001 }, 2154,  1  ; jump
+        Effect { #7F,  -3, 1,  -1, #60, #00, 0, -256, %010 },  240,  1  ; killEnemy
+        Effect { #0C,   0, 0,   0, #71, #00, 0,  156, %101 }, 4027, 15  ; (unused)
+        Effect { #0A,  -6, 1, -10, #00, #00, 0,   -1, %101 },   35, 28  ; laserGun
+        Effect { #14, -20, 1,  -1, #7F, #01, 0,    0, %010 },  124, 10  ; (unused)
+        Effect { #7F,  -3, 1,  -1, #7F, #04, 0,  -32, %001 }, 2413,  1  ; powerGun
+        Effect { #7F,  -6, 1,  -1, #7F, #00, 0,  -14, %001 },  637,  1  ; pickItem
+        Effect { #7F, -10, 1,  -1, #7F, #00, 0,    0, %001 }, 3460,  1  ; energyLoss
+        Effect { #7F,  -7, 1,  -1, #7F, #00, 0,    0, %001 },  200,  1  ; pickWeapon
+        Effect { #7F,  -3, 8, -35, #7E, #00, 0, -803, %001 }, 1010,  1  ; (unused)
 
 
 ; Period value for each note
@@ -257,6 +257,7 @@ noisePeriod:  ; #c778
 ;   `iy`: instrument addr
 ;   `hl`: period
 ;   `c`: duration
+; disables interrupts
 playTone:  ; #c779
         di
         ld a, iyl
@@ -271,13 +272,14 @@ playTone:  ; #c779
         ld a, (iy+Instr.e_5)
         ld (ix+Ch.ch_7), a
 
+        ; set vibrato
         ld a, (iy+Instr.vibrPeriod)
         and %01111111
         srl a
         jr NZ, .l_0
         ld a, 1
 .l_0:
-        ld (ix+Ch.vibrCounter), a
+        ld (ix+Ch.vibrCounter), a   ; `vibrPeriod` / 2
 
         ld a, (iy+Instr.vibrSlope+0)
         ld (ix+Ch.vibrSlope+0), a
@@ -288,50 +290,53 @@ playTone:  ; #c779
         ld (ix+Ch.vibrValue+0), a
         ld (ix+Ch.vibrValue+1), a
 
+        ; set mixer
         ld a, (mixerValue)
         or (ix+Ch.mixMask)
         ld c, (iy+Instr.flags)
         ld (ix+Ch.flags), c
-        bit 0, c
-        jr Z, .l_1
-        and (ix+Ch.mixTone)
-.l_1:
-        bit 1, c
-        jr Z, .l_2
-        and (ix+Ch.mixNoise)
-.l_2:
+        bit Flag.tone, c
+        jr Z, .noTone
+        and (ix+Ch.mixTone)     ; tone on
+.noTone:
+        bit Flag.noise, c
+        jr Z, .noNoise
+        and (ix+Ch.mixNoise)    ; noise on
+.noNoise:
         ld (mixerValue), a
-        bit 2, c
-        jr NZ, .l_3
 
+        bit Flag.envelope, c
+        jr NZ, .envelope
+
+        ; set phase
         ld hl, attackPhase
         ld (ix+Ch.phaseAddr+0), l
         ld (ix+Ch.phaseAddr+1), h
         ret
 
-.l_3:
+.envelope:
         ; set envelope
-        call doNothing
+        call beginRegUpdate
 
         ld a, (iy+Instr.attackSpd)  ; here, envelope shape
         ld c, regEnvShape
         call setAyReg
 
         ld a, (iy+Instr.attackLev)  ; here, envelope period
-        ld c, regEnvPer
+        ld c, regEnvPer         ; (low)
         call setAyReg
-        inc c
+        inc c                   ; (high)
         xor a
         call setAyReg
 
         ld (ix+Ch.volume), #FF
 
-        jp justReturn
+        jp endRegUpdate
 
 
 ; Initialise AY registers and some struct fields
 initAy:  ; #c7fe
-        call doNothing
+        call beginRegUpdate
 
         ld c, regMixer
         ld a, (mixerValue)
@@ -361,7 +366,7 @@ initAy:  ; #c7fe
         ld (ayChB.volume), a
         ld (ayChC.volume), a
 
-        jp justReturn
+        jp endRegUpdate
 
 
 ; Write values to AY registers
@@ -378,7 +383,7 @@ setAyValues:  ; #c83f
         ld ix, ayChC
         call applyEffect
 
-        call doNothing
+        call beginRegUpdate
         ld ix, ayChA
 
         ; regMixer
@@ -452,7 +457,7 @@ setAyValues:  ; #c83f
     .3  srl a
         call setAyReg
 
-        jp justReturn
+        jp endRegUpdate
 
 
 applyEffect:  ; #c8fb
@@ -603,16 +608,23 @@ p_c9a3:  ; # c9a3
         ret
 
 
-; Why?
-doNothing:  ; #c9e5
+; Do nothing
+; Called before updating AY register values
+; Apparently, contained some debug or abandoned code
+beginRegUpdate:  ; #c9e5
         ret
 
-; Why?
-justReturn:  ; #c9e6
+; Do nothing
+; Called after updating AY register values
+; Apparently, contained some debug or abandoned code
+endRegUpdate:  ; #c9e6
         ret
 
 
-; Writes value `a` to AY register `c`
+; Write a value to an AY register
+;   `c`: AY register index
+;   `a`: value to write
+; spoils: `e`
 setAyReg:  ; #c9e7
         push bc
         ld e, c
@@ -624,11 +636,11 @@ setAyReg:  ; #c9e7
         ret
 
 
-; Unused?
+; Unused
 callPlayMenuMusic:  ; #c9f4
         jp Sound.callPlayMenuMusic
 
-; Unused?
+; Unused
 callAySoundFrame:  ; #c9f7
         jp Sound.callAySoundFrame
 
@@ -636,6 +648,7 @@ callAySoundFrame:  ; #c9f7
 ; Non-zero if sound/music is playing, zero if silent
 isPlaying:  ; #c9fa
         db 0
+
 
 ; (unused ? 50 bytes)
 p_c9fb:  ; #c9fb
@@ -647,6 +660,7 @@ p_c9fb:  ; #c9fb
         dh C7 CD 79 C7 DD CB 11 FE
         dh FB C9
 
+
 ; #ca2d
 ;              0      1      3      5      7    9   10   11   12   13   14   15     16   18   19   20
 sectA:  Sect #00, #646F, #0D65, #090A, #646C, #20, #28, #69, #78, #2B, #73, #70, #6374, #6F, #6C, #29
@@ -655,7 +669,7 @@ sectC:  Sect #10, #7469, #0D65, #090A, #6572, #74, #0D, #0A, #0D, #0A, #3B, #2D,
 
 
 ; Table containing offsets in the `instruments` table pointing to instruments
-; 3 × 8 bytes. Initialised at runtime as 0, 10, 20, 30, 40, 50, 60, 70
+; 3 × 8 bytes. Initialised at runtime as instruments 0 to 7
 instrOffsets:  ; #ca6c
         dh 2D 2D 2D 2D 20 63 6F 69  ; junk values
         dh 6E 20 6A 75 6D 70 69 6E  ; junk values
@@ -680,7 +694,7 @@ playMenuMusic:  ; #ca84
         jr NC, .l_0
         inc h
 .l_0:
-        ; `hl`: p_c4cb + 6 * `a`
+        ; `hl`: music init addr
         ld e, (hl)
         inc hl
         ld d, (hl)
@@ -723,9 +737,9 @@ playMenuMusic:  ; #ca84
         ld (sectB.duration), a
         ld (sectC.duration), a
 
-        ; init with (0, 10, 20, …, 70)
+        ; init with (0 * Instr,  …, 7 * Instr)
         ld hl, instrOffsets
-        ld bc, #030A  ; `b`= 3, `c`= 10
+        ld bc, _HIGH 3 _LOW Instr
 .l_1:
         xor a
 .l_2:
@@ -1101,7 +1115,9 @@ p_cc95:  ; #cc95
 playAySound:  ; #cd25
         push hl, de, bc, ix, iy
 
-        ld e, a
+        ld e, a                 ; why?
+
+        ; calculate sound effect addr
         ld l, a
         ld h, 0
     .2  add hl, hl
@@ -1118,22 +1134,25 @@ playAySound:  ; #cd25
         push hl : pop iy
         ; `iy`: sound effect addr
 
-        ld a, (channelCounter)
+        ; choose next channel
+        ld a, (lastUsedChannel)
         inc a
         cp 3
-        jp C, .l_0
+        jp C, .selectChannel
         xor a
-.l_0:
-        ld (channelCounter), a
 
+.selectChannel:
+        ld (lastUsedChannel), a
         ld ix, ayChA
         and a
-        jp Z, .l_1
+        jp Z, .playTone
         ld ix, ayChB
         cp 1
-        jp Z, .l_1
+        jp Z, .playTone
         ld ix, ayChC
-.l_1:
+        ; `ix`: channel struct addr
+
+.playTone:
         ld l, (iy+Effect.period+0)
         ld h, (iy+Effect.period+1)
         ld c, (iy+Effect.duration)
@@ -1143,8 +1162,8 @@ playAySound:  ; #cd25
         ret
 
 
-; (channel counter (0..2)?)
-channelCounter:  ; #cd77
+; Channel used for playing the last sound effect (0..2)
+lastUsedChannel:  ; #cd77
         db 0
 
 

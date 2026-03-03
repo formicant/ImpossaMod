@@ -1,4 +1,3 @@
-; Level data addresses
     MODULE Level
 
 ; Level indices
@@ -7,6 +6,8 @@ orient      EQU 1
 amazon      EQU 2
 iceland     EQU 3
 bermuda     EQU 4
+
+count       EQU 5
 
 
 ; Level data addresses

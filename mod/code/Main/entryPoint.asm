@@ -1,10 +1,9 @@
     MODULE Main
 
-; Code that executes once at game start and can be disposed of afterwards
-
-
 romLoadBytes    EQU #0556       ; ROM tape loading routine
 
+
+; Code that executes once at game start and can be disposed of afterwards
 
 entryPoint:
         ; Detect Spectrum model (48K/128K)
@@ -19,7 +18,7 @@ entryPoint:
         out (c), a              ; set RAM page 0 again
 
         ld a, (hl)              ; #FF if 48K, #00 if 128K
-        ld (Sound.is48k), a           ; copy the value to permanent `is48k` variable
+        ld (Sound.is48k), a     ; copy the value to permanent `is48k` variable
         or a
         jp NZ, .initInterrupts  ; skip if 48K
 
@@ -86,6 +85,5 @@ entryPoint:
 
 .loadingError:
         jp 0
-
 
     ENDMODULE

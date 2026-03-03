@@ -1,26 +1,27 @@
     MODULE Menu
 
 ; Game epilogue text
-epilogueText:  ; #d679
+epilogueText:
         db "  GOOD WORK MONTY"C
         db "THE FIVE SCROLLS ARE"C
         db "SAFE  YOU HAVE SAVED"C
         db "    OUR PLANET"C
 
+
 ; Successful end of the game
-gameWin:  ; #d6c0
+gameWin:
         ld hl, _ROW 8 _COL 6
         ld de, epilogueText
         ld c, Colour.brRed
-        ld b, 4
+
+        ld b, 4                 ; line count
 .line:
         push bc
         push hl
         call Utils.printString
         inc de
         pop hl
-        inc h
-        inc h
+    .2  inc h
         pop bc
         inc c
         djnz .line

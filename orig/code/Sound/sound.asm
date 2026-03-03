@@ -3,7 +3,7 @@
 ; Play sound (beeper or AY)
 playSound:  ; #bddf
         ld c, a
-        ld a, (is48k)
+        ld a, (State.is48k)
         and a
         ld a, c
         jp NZ, playBeeperSound
@@ -25,7 +25,7 @@ callAySoundFrame:  ; #bdf4
 ; Return Z if menu music has ended, NZ if it is playing or 48K
 ; (Reads memory page 1)
 hasMusicEnded:  ; #bdfa
-        ld a, (is48k)
+        ld a, (State.is48k)
         and a
         ret NZ
 
@@ -48,7 +48,7 @@ hasMusicEnded:  ; #bdfa
 ; Possible call addresses: #CA84 (playMenuMusic), #CB0C (aySoundFrame), #CD25 (playAySound)
 callAyProcedure:  ; #be15
         ld (.val), a
-        ld a, (is48k)
+        ld a, (State.is48k)
         and a
         ret NZ
 
@@ -67,9 +67,5 @@ callAyProcedure:  ; #be15
         out (c), a              ; set RAM page 0
         ei
         ret
-
-
-; #FF if Spectrum 48K, #00 if Spectrum 128K
-is48k:  db -0
 
     ENDMODULE

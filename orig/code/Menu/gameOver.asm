@@ -1,35 +1,43 @@
     MODULE Menu
 
-textGameOver:  ; #cd19
+textGameOver:
         db "GAME OVER"C
 
-showGameOver:  ; #cd22
+
+; Show the Game Over screen
+showGameOver:
         call Utils.clearScreenPixels
         ld a, Colour.brWhite    ; bright white ink, black paper
         call Utils.fillScreenAttrs
+
         ld hl, _ROW 10 _COL 11
         ld de, textGameOver
         ld c, Colour.brYellow
         call Utils.printString
-.l_0:
+
+.waitFirePress:
         ld a, (Control.state)
         bit Key.fire, a
-        jr NZ, .l_0
+        jr NZ, .waitFirePress
+
         ld bc, 30000
-.l_1:
+.waitFireRelease:
         ld a, (Control.state)
         bit Key.fire, a
-        jr NZ, .l_3
+        jr NZ, .end
+
         exx
-        ld b, #C8
-.l_2:
-        djnz .l_2
+        ld b, 200
+.delay:
+        djnz .delay
         exx
+
         dec bc
         ld a, b
         or c
-        jr NZ, .l_1
-.l_3:
+        jr NZ, .waitFireRelease
+
+.end:
         ret
 
     ENDMODULE

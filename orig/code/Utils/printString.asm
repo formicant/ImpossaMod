@@ -1,25 +1,29 @@
     MODULE Utils
 
-; Print string
+; Print a string of characters
+; (The last character should have its 7th bit set)
 ;   `de`: string address
-;   `h`: y, `l`: x
+;   `h`: y char coord (0..23)
+;   `l`: x char coord (0..31)
 ;   `c`: attribute
-; c_d04e, c_d553, c_d62c, c_d6c0 and c_e9b1.
-printString:  ; #c67d
+; returns:
+;   `de`: addr of the last string char
+; spoils: `af`, `b`, `hl`, `bc'`, `hl'`
+printString:
         push bc
         ld a, h
         and %00011000
         or  high(Screen.pixels)
         ld b, h
         ld h, a
-        ; `h`: screen pixel addr high byte
+        ; `h`: screen pixel addr (high)
 
         ld a, b
         and %00000111
     .3  rrca
         or l
         ld l, a
-        ; `l`: screen pixel and attr addr low byte
+        ; `l`: screen pixel and attr addr (low)
 
         push hl
         exx
@@ -31,9 +35,9 @@ printString:  ; #c67d
         ld h, a
         pop bc
         exx
-        ; `h'`: screen attr addr high byte
+        ; `h'`: screen attr addr (high)
 
-.l_0:
+.char:
         push de, hl
         ld a, (de)
         res 7, a
@@ -41,15 +45,18 @@ printString:  ; #c67d
 
         ex de, hl
         cp ' '
-        jr NZ, .l_1
+        jr NZ, .decode
+.space:
         xor a
-        jr .l_2
-.l_1:
+        jr .getFromFont
+
+.decode:
         sub 39
         cp 21
-        jr C, .l_2
+        jr C, .getFromFont
         sub 5
-.l_2:
+
+.getFromFont:
         ; `a`: font char code
         ld l, a
         ld h, 0
@@ -57,19 +64,19 @@ printString:  ; #c67d
         ld de, Font.start
         add hl, de
         ex de, hl
-        ; `de`: addr in font
+        ; `de`: char addr in the font
 
         pop hl
         push hl
 
         ; draw char
         ld b, 8
-.l_3:
+.pixelRow:
         ld a, (de)
         ld (hl), a
         inc h
         inc de
-        djnz .l_3
+        djnz .pixelRow
 
         ; set attr
         exx
@@ -80,11 +87,13 @@ printString:  ; #c67d
         exx
         pop hl
         inc hl
+
         pop de
         ld a, (de)
-        bit 7, a
+        bit 7, a                ; check the last char marker bit
         ret NZ
+
         inc de
-        jr .l_0
+        jr .char
 
     ENDMODULE

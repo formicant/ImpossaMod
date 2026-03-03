@@ -1,19 +1,19 @@
     MODULE Menu
 
-textSelectLevel:  ; #d51e
+textSelectLevel:
         db "SELECT  LEVEL"C
 
-levelNames:  ; #d52b
+levelNames:
         db "KLONDIKE"C
         db " ORIENT "C
         db " AMAZON "C
         db "ICELAND "C
-.bermuda
+.bermuda:
         db "BERMUDA "C
 
 
-; Show level selection menu and let the user select level
-levelSelectionMenu:  ; #d553
+; Show level selection menu and let the user select a level
+levelSelectionMenu:
         call Utils.clearScreenPixels
         ld a, Colour.brWhite    ; bright white ink, black paper
         call Utils.fillScreenAttrs
@@ -35,7 +35,7 @@ levelSelectionMenu:  ; #d553
         jp Z, gameWin
 
         cp Level.bermuda
-        jr NZ, .l_3
+        jr NZ, .selectLevel
 
         ; all but Bermuda done
         ld de, levelNames.bermuda
@@ -45,17 +45,17 @@ levelSelectionMenu:  ; #d553
 
         ld a, Level.bermuda
         ld (State.level), a
-.l_1:
+.waitFirePress:
         ld a, (Control.state)
         bit Key.fire, a
-        jr NZ, .l_1
-.l_2:
+        jr NZ, .waitFirePress
+.waitFireRelease:
         ld a, (Control.state)
         bit Key.fire, a
-        jr Z, .l_2
+        jr Z, .waitFireRelease
         jp .startLevel
 
-.l_3:
+.selectLevel:
         ld a, (Control.state)
         ld c, a
         ld a, (State.level)
@@ -81,12 +81,12 @@ levelSelectionMenu:  ; #d553
         add hl, de
         ld a, (hl)
         or a
-        jr Z, .l_6
+        jr Z, .printLevelName
         ld a, (State.level)
         inc a                   ; next level
         jr .checkLevel
 
-.l_6:
+.printLevelName:
         ld a, (State.level)
     .3  add a
         ld l, a
@@ -104,7 +104,7 @@ levelSelectionMenu:  ; #d553
 
         ld a, (Control.state)
         bit Key.fire, a
-        jr Z, .l_3
+        jr Z, .selectLevel
 
 .startLevel:
         call loadLevelIfNeeded
@@ -119,26 +119,27 @@ levelSelectionMenu:  ; #d553
         ld de, textPressFire
         ld c, Colour.brWhite
         call Utils.printString
-.l_8:
+
+.waitFire:
         ld a, (Control.state)
         bit Key.fire, a
-        jr Z, .l_8
+        jr Z, .waitFire
         ret
 
 
 ; Messages
-textLoadError:  ; #d606
+textLoadError:
         db "LOAD ERROR"C
-textPressFire:  ; #d610
+textPressFire:
         db "PRESS FIRE"C
-textStartTape:  ; #d61A
+textStartTape:
         db "START TAPE"C
-textLoading:  ; #d624
+textLoading:
         db " LOADING"C
 
 
 ; Load level if needed
-loadLevelIfNeeded:  ; #d62c
+loadLevelIfNeeded:
         ld a, (State.loadedLevel)
         ld b, a
         ld a, (State.level)

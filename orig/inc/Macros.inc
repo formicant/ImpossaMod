@@ -49,10 +49,18 @@
         _ADD_RR_A h, l
     ENDM
 
-; Substitutions for print coordinates
+
+; Substitutions for constructing a word value from its high and low part
+; ```
+;   ld bc, _HIGH 16 _LOW 136
+; ```
+    DEFINE _HIGH #100 *
+    DEFINE _LOW +
+    
+; Same as _HIGH and _LOW but for print coordinates
 ; ```
 ;   ld hl, _ROW 12 _COL 7
 ;   call Utils.printString
 ; ```
-    DEFINE _ROW #100 *
-    DEFINE _COL +
+    DEFINE _ROW _HIGH
+    DEFINE _COL _LOW

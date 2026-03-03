@@ -1,12 +1,14 @@
     MODULE Utils
 
 ; Load block from tape
-; (slightly modified ROM routine #0556)
-;   arg `a`: block type (#80 level header, #FF data block)
-;       `ix`: block start addr
-;       `de`: block length
-;       flag C should be set
-;   ret flag C: ok, NC: error
+; (Slightly modified ROM routine #0556)
+;   `a`: block type (#80 level header, #FF data block)
+;   `ix`: block start addr
+;   `de`: block length
+;   flag C should be set
+; returns:
+;   flag C: success, NC: error
+; disables interrupts (and does not enable on exit!)
 loadBytes:  ; #c9fb
         inc d                   ; reset Z (`d` != #FF)
         exa                     ; `a'`: block type

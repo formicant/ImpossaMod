@@ -1,12 +1,12 @@
     MODULE Menu
 
 ; Attribute address of active menu item
-activeMenuItemAttrAddr:  ; #c6d3
+activeMenuItemAttrAddr:
         dw Screen.attrs.row9 _COL 11
 
 
 ; Show the main menu and let the user select options
-mainMenu:  ; #c6d5
+mainMenu:
         xor a
         call Sound.callPlayMenuMusic
 
@@ -106,7 +106,7 @@ mainMenu:  ; #c6d5
 
 
 ; Print game menu text
-printMainMenuText:  ; #c76f
+printMainMenuText:
         ld hl, _ROW 4 _COL 10
         ld de, gameMenuText     ; 'impossamole'
         ld c, Colour.brWhite
@@ -177,7 +177,7 @@ printMainMenuText:  ; #c76f
 
 ; Check attributes of the active menu item
 ; and set them to bright blue if greater than bright white
-clampActiveMenuItemAttrs:  ; #c7e1
+clampActiveMenuItemAttrs:
         ld hl, (activeMenuItemAttrAddr)
         ld b, 12
         ld a, (hl)
@@ -191,7 +191,7 @@ clampActiveMenuItemAttrs:  ; #c7e1
         ret
 
 
-gameMenuText:  ; #c7f2
+gameMenuText:
         db "IMPOSSAMOLE"C
         db "@ 1990 GREMLIN GRAPHICS"C
         db "0 START GAME"C
