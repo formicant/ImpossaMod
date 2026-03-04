@@ -3,114 +3,232 @@
 
 ; Copied to RAM page 1 #C000
 
-score:  ; #c000
-.part0:
-        dh 80 2C 30 2D 30 2C 30 31 30 2C 30 2D 30 2C 30 25 30 FF
-.part1:
-        dh 7F 30 FF
-.part2:
-        dh 80 91 1C 30 92 20 30 1F 30 22 30 20 30 93 23 30 22 30 94 27 30 90 FF
-.part3:
-        dh 81 01 18 01 18 FF
-.part4:
-        dh 81 01 18 01 18 01 18 01 18 01 18 01 18 01 0C 01 0C 01 0C 01 0C 01 18 01 18 01 18 01 18 01 18 01 18 01 0C 01 0C 01 0C 01 0C FF
-.part5:
-        dh 82 12 06 36 06 1E 06 2A 06 12 06 36 06 1E 06 2A 06 12 06 36 06 1E 06 2A 06 12 06 36 06 1E 06 2A 06 12 06 36 06 1E 06 2A 06 12 06 36 06 1E 06 2A 06 12 06 36 06 1E 06 2A 06 12 06 36 06 1E 06 2A 06 12 06 36 06 1E 06 2A 06 12 06 36 06 1E 06 2A 06 12 06 36 06 1E 06 2A 06 12 06 36 06 1E 06 2A 06 12 06 36 06 1E 06 2A 06 12 06 36 06 1E 06 12 06 12 06 12 06 12 0C 12 0C 12 06 12 06 FF
-.part6:
-        dh 81 91 23 12 23 12 23 12 92 27 12 27 0C 27 0C 29 12 29 12 29 12 22 12 22 0C 22 0C 90 FF
-.part7:
-        dh 81 0D 06 0D 06 0D 0C 0D 0C 0D 06 0D 0C 0D 0C 0D 06 08 0C 0B 0C FF
-.part8:
-        dh 81 10 06 10 06 10 0C 10 0C 10 06 10 06 0B 06 0B 06 0B 0C 0B 0C 0B 06 0B 06 FF
-.part9:
-        dh 81 0D 06 19 0C 0D 06 19 0C 0D 06 19 0C 0D 06 19 0C 0B 0C 08 0C FF
-.part10:
-        dh 81 0D 06 0D 06 0D 0C 0D 12 0D 0C 0D 06 0D 0C 0D 0C 19 06 19 06 FF
-.part11:
-        dh 81 10 06 10 06 10 0C 10 0C 10 06 10 06 0B 06 0B 06 0B 0C 0B 0C 0B 06 0B 06 FF
-.part12:
-        dh 81 0D 06 0D 06 19 0C 0D 0C 19 06 0D 0C 0D 06 19 0C 0D 0C 19 0C 09 06 09 06 15 0C 09 0C 15 06 0B 0C 0B 06 17 0C 0B 0C 17 0C 0D 06 0D 06 19 0C 0D 0C 19 06 0D 0C 0D 06 19 0C 0D 0C 19 0C 10 06 10 06 1C 0C 10 0C 1C 06 0B 0C 0B 06 17 0C 0B 0C 17 0C FF
-.part13:
-        dh 81 0D 06 0D 0C 0D 06 0D 0C 0D 06 0D 12 0B 0C 10 0C 0B 0C 09 06 09 0C 09 0C 09 0C 09 06 0B 0C 08 0C 0B 0C 0D 0C FF
-.part14:
-        dh 83 2A 0C 2A 0C 1E 0C 2A 0C 2A 06 2A 0C 2A 06 1E 0C 1E 0C 2A 0C 2A 0C 1E 12 2A 0C 2A 06 2A 06 2A 06 1E 06 12 06 06 06 06 06 06 0C 06 0C 2A 0C 1E 0C 1E 0C 2A 0C 1E 0C 2A 0C 1E 0C 1E 0C 2A 0C 2A 06 2A 06 2A 06 36 06 36 06 2A 06 1E 06 12 06 06 06 06 06 FF
-.part15:
-        dh 84 19 0C 20 06 20 06 1F 0C 20 0C 25 0C 24 0C 25 0C 27 0C 19 0C 21 06 21 06 20 0C 21 0C 23 0C 21 0C 20 0C 1C 0C 19 0C 20 06 20 06 1F 0C 20 0C 25 0C 24 0C 25 0C 27 0C 28 0C 2A 06 2C 06 2D 0C 2C 06 2A 06 2C 0C 2A 0C 28 0C 27 0C FF
-.part16:
-        dh 84 25 0C 20 0C 25 0C 2C 0C 28 18 27 18 25 0C 20 0C 25 0C 2C 0C 28 0C 27 0C 25 0C 23 0C 25 0C 20 0C 25 0C 2C 0C 28 18 27 0C 23 0C 21 30 20 30 FF
-.part17:
-        dh 84 25 78 28 06 27 06 28 06 27 06 28 0C 2A 0C 28 0C 23 0C 25 78 28 06 27 06 28 06 27 06 28 0C 2A 0C 28 0C 29 0C FF
-.part18:
-        dh 80 2A 78 2D 06 2C 06 2D 06 2C 06 2D 0C 2F 0C 2D 0C 28 0C 2A 60 85 2A 60 FF
-.part19:
-        dh 84 14 0C 17 0C 16 0C 17 0C 14 0C 23 0C 22 0C 20 0C 1B 0C 1E 0C 1D 0C 1E 0C 1B 0C 2A 0C 29 0C 27 0C 1E 0C 21 0C 20 0C 21 0C 1E 0C 2D 0C 2C 0C 2A 0C 34 0C 33 0C 31 0C 28 0C 27 0C 25 0C 1C 0C 1B 0C FF
-.part20:
-        dh 84 14 0C 17 0C 16 0C 17 0C 14 0C 23 0C 22 0C 20 0C 1B 0C 1E 0C 1D 0C 1E 0C 1B 0C 2A 0C 29 0C 27 0C 1E 0C 21 0C 20 0C 21 0C 1E 0C 2D 0C 2C 0C 2A 0C 22 0C 25 0C 24 0C 25 0C 22 0C 25 0C 28 0C 2B 0C FF
-.part21:
-        dh 84 94 2C 0C 2C 18 2D 18 2C 18 2A 0C 2C 60 90 86 01 03 FF
-.part22:
-        dh 7F 60 7F 60 7F 60 7F 60 FF
-.part23:
-        dh 84 17 60 85 17 60 7F 60 7F 60 FF
-.part24:
-.part25:
-        dh 82 12 60 12 60 12 60 12 06 12 06 12 06 12 06 12 06 12 06 12 06 12 06 12 06 12 06 12 06 12 06 12 06 12 06 12 06 12 06 FF
-.part26:
-        dh 81 0D 0C 0D 0C 0D 0C 0D 0C 0D 0C 0D 0C 0D 0C 0D 0C 0D 0C 0D 0C 0D 0C 0D 0C 0D 0C 0D 06 0D 06 0D 0C 0D 06 0D 06 0D 0C 0D 0C 0D 0C 0D 0C 0D 0C 0D 0C 0D 0C 0D 0C 0D 06 0D 06 0D 0C 0D 0C 0D 06 0D 0C 0D 06 0D 06 0D 06 0D 0C 0D 06 0D 06 FF
-.part27:
-        dh 81 14 06 14 06 14 0C 14 12 14 0C 14 06 14 0C 14 0C 14 06 14 06 0F 06 0F 06 0F 0C 0F 0C 0F 06 0F 0C 0F 0C 0F 06 0F 0C 0F 06 0F 06 12 06 12 06 12 0C 12 12 12 0C 12 06 12 0C 12 0C 12 06 12 06 0D 06 0D 06 0D 0C 0D 12 0D 0C 0D 06 0D 0C 0D 0C 0D 06 0D 06 FF
-.part28:
-        dh 81 14 06 14 06 14 0C 14 12 14 0C 14 06 14 0C 14 0C 14 06 14 06 0F 06 0F 06 0F 0C 0F 0C 0F 06 0F 0C 0F 0C 0F 06 0F 0C 0F 06 0F 06 12 06 12 06 12 0C 12 12 12 0C 12 06 12 0C 12 0C 12 06 12 06 16 06 0A 06 0A 0C 0A 12 0A 0C 0A 06 0A 0C 0A 0C 0A 06 0A 06 FF
-.part29:
-        dh 81 08 0C 08 18 09 18 08 18 06 0C 08 60 FF
+scorePart0:
+        db Note.instrument|0
+        dh 2C 30 2D 30 2C 30 31 30 2C 30 2D 30 2C 30 25 30
+        db Note.end
+
+scorePart1:
+        dh 7F 30
+        db Note.end
+
+scorePart2:
+        db Note.instrument|0
+        dh 91 1C 30 92 20 30 1F 30 22 30 20 30 93 23 30 22 30 94 27 30 90
+        db Note.end
+
+scorePart3:
+        db Note.instrument|1
+        dh 01 18 01 18
+        db Note.end
+
+scorePart4:
+        db Note.instrument|1
+        dh 01 18 01 18 01 18 01 18 01 18 01 18 01 0C 01 0C 01 0C 01 0C 01 18 01 18 01 18 01 18 01 18 01 18 01 0C 01 0C 01 0C 01 0C
+        db Note.end
+
+scorePart5:
+        db Note.instrument|2
+        dh 12 06 36 06 1E 06 2A 06 12 06 36 06 1E 06 2A 06 12 06 36 06 1E 06 2A 06 12 06 36 06 1E 06 2A 06 12 06 36 06 1E 06 2A 06 12 06 36 06 1E 06 2A 06 12 06 36 06 1E 06 2A 06 12 06 36 06 1E 06 2A 06 12 06 36 06 1E 06 2A 06 12 06 36 06 1E 06 2A 06 12 06 36 06 1E 06 2A 06 12 06 36 06 1E 06 2A 06 12 06 36 06 1E 06 2A 06 12 06 36 06 1E 06 12 06 12 06 12 06 12 0C 12 0C 12 06 12 06
+        db Note.end
+
+scorePart6:
+        db Note.instrument|1
+        dh 91 23 12 23 12 23 12 92 27 12 27 0C 27 0C 29 12 29 12 29 12 22 12 22 0C 22 0C 90
+        db Note.end
+
+scorePart7:
+        db Note.instrument|1
+        dh 0D 06 0D 06 0D 0C 0D 0C 0D 06 0D 0C 0D 0C 0D 06 08 0C 0B 0C
+        db Note.end
+
+scorePart8:
+        db Note.instrument|1
+        dh 10 06 10 06 10 0C 10 0C 10 06 10 06 0B 06 0B 06 0B 0C 0B 0C 0B 06 0B 06
+        db Note.end
+
+scorePart9:
+        db Note.instrument|1
+        dh 0D 06 19 0C 0D 06 19 0C 0D 06 19 0C 0D 06 19 0C 0B 0C 08 0C
+        db Note.end
+
+scorePart10:
+        db Note.instrument|1
+        dh 0D 06 0D 06 0D 0C 0D 12 0D 0C 0D 06 0D 0C 0D 0C 19 06 19 06
+        db Note.end
+
+scorePart11:
+        db Note.instrument|1
+        dh 10 06 10 06 10 0C 10 0C 10 06 10 06 0B 06 0B 06 0B 0C 0B 0C 0B 06 0B 06
+        db Note.end
+
+scorePart12:
+        db Note.instrument|1
+        dh 0D 06 0D 06 19 0C 0D 0C 19 06 0D 0C 0D 06 19 0C 0D 0C 19 0C 09 06 09 06 15 0C 09 0C 15 06 0B 0C 0B 06 17 0C 0B 0C 17 0C 0D 06 0D 06 19 0C 0D 0C 19 06 0D 0C 0D 06 19 0C 0D 0C 19 0C 10 06 10 06 1C 0C 10 0C 1C 06 0B 0C 0B 06 17 0C 0B 0C 17 0C
+        db Note.end
+
+scorePart13:
+        db Note.instrument|1
+        dh 0D 06 0D 0C 0D 06 0D 0C 0D 06 0D 12 0B 0C 10 0C 0B 0C 09 06 09 0C 09 0C 09 0C 09 06 0B 0C 08 0C 0B 0C 0D 0C
+        db Note.end
+
+scorePart14:
+        db Note.instrument|3
+        dh 2A 0C 2A 0C 1E 0C 2A 0C 2A 06 2A 0C 2A 06 1E 0C 1E 0C 2A 0C 2A 0C 1E 12 2A 0C 2A 06 2A 06 2A 06 1E 06 12 06 06 06 06 06 06 0C 06 0C 2A 0C 1E 0C 1E 0C 2A 0C 1E 0C 2A 0C 1E 0C 1E 0C 2A 0C 2A 06 2A 06 2A 06 36 06 36 06 2A 06 1E 06 12 06 06 06 06 06
+        db Note.end
+
+scorePart15:
+        db Note.instrument|4
+        dh 19 0C 20 06 20 06 1F 0C 20 0C 25 0C 24 0C 25 0C 27 0C 19 0C 21 06 21 06 20 0C 21 0C 23 0C 21 0C 20 0C 1C 0C 19 0C 20 06 20 06 1F 0C 20 0C 25 0C 24 0C 25 0C 27 0C 28 0C 2A 06 2C 06 2D 0C 2C 06 2A 06 2C 0C 2A 0C 28 0C 27 0C
+        db Note.end
+
+scorePart16:
+        db Note.instrument|4
+        dh 25 0C 20 0C 25 0C 2C 0C 28 18 27 18 25 0C 20 0C 25 0C 2C 0C 28 0C 27 0C 25 0C 23 0C 25 0C 20 0C 25 0C 2C 0C 28 18 27 0C 23 0C 21 30 20 30
+        db Note.end
+
+scorePart17:
+        db Note.instrument|4
+        dh 25 78 28 06 27 06 28 06 27 06 28 0C 2A 0C 28 0C 23 0C 25 78 28 06 27 06 28 06 27 06 28 0C 2A 0C 28 0C 29 0C
+        db Note.end
+
+scorePart18:
+        db Note.instrument|0
+        dh 2A 78 2D 06 2C 06 2D 06 2C 06 2D 0C 2F 0C 2D 0C 28 0C 2A 60
+        db Note.instrument|5
+        dh 2A 60
+        db Note.end
+
+scorePart19:
+        db Note.instrument|4
+        dh 14 0C 17 0C 16 0C 17 0C 14 0C 23 0C 22 0C 20 0C 1B 0C 1E 0C 1D 0C 1E 0C 1B 0C 2A 0C 29 0C 27 0C 1E 0C 21 0C 20 0C 21 0C 1E 0C 2D 0C 2C 0C 2A 0C 34 0C 33 0C 31 0C 28 0C 27 0C 25 0C 1C 0C 1B 0C
+        db Note.end
+
+scorePart20:
+        db Note.instrument|4
+        dh 14 0C 17 0C 16 0C 17 0C 14 0C 23 0C 22 0C 20 0C 1B 0C 1E 0C 1D 0C 1E 0C 1B 0C 2A 0C 29 0C 27 0C 1E 0C 21 0C 20 0C 21 0C 1E 0C 2D 0C 2C 0C 2A 0C 22 0C 25 0C 24 0C 25 0C 22 0C 25 0C 28 0C 2B 0C
+        db Note.end
+
+scorePart21:
+        db Note.instrument|4
+        dh 94 2C 0C 2C 18 2D 18 2C 18 2A 0C 2C 60 90
+        db Note.instrument|6
+        dh 01 03
+        db Note.end
+
+scorePart22:
+        dh 7F 60 7F 60 7F 60 7F 60
+        db Note.end
+
+scorePart23:
+        db Note.instrument|4
+        dh 17 60
+        db Note.instrument|5
+        dh 17 60 7F 60 7F 60
+        db Note.end
+
+scorePart24:
+scorePart25:
+        db Note.instrument|2
+        dh 12 60 12 60 12 60 12 06 12 06 12 06 12 06 12 06 12 06 12 06 12 06 12 06 12 06 12 06 12 06 12 06 12 06 12 06 12 06
+        db Note.end
+
+scorePart26:
+        db Note.instrument|1
+        dh  0D 0C 0D 0C 0D 0C 0D 0C 0D 0C 0D 0C 0D 0C 0D 0C 0D 0C 0D 0C 0D 0C 0D 0C 0D 0C 0D 06 0D 06 0D 0C 0D 06 0D 06 0D 0C 0D 0C 0D 0C 0D 0C 0D 0C 0D 0C 0D 0C 0D 0C 0D 06 0D 06 0D 0C 0D 0C 0D 06 0D 0C 0D 06 0D 06 0D 06 0D 0C 0D 06 0D 06
+        db Note.end
+
+scorePart27:
+        db Note.instrument|1
+        dh 14 06 14 06 14 0C 14 12 14 0C 14 06 14 0C 14 0C 14 06 14 06 0F 06 0F 06 0F 0C 0F 0C 0F 06 0F 0C 0F 0C 0F 06 0F 0C 0F 06 0F 06 12 06 12 06 12 0C 12 12 12 0C 12 06 12 0C 12 0C 12 06 12 06 0D 06 0D 06 0D 0C 0D 12 0D 0C 0D 06 0D 0C 0D 0C 0D 06 0D 06
+        db Note.end
+
+scorePart28:
+        db Note.instrument|1
+        dh 14 06 14 06 14 0C 14 12 14 0C 14 06 14 0C 14 0C 14 06 14 06 0F 06 0F 06 0F 0C 0F 0C 0F 06 0F 0C 0F 0C 0F 06 0F 0C 0F 06 0F 06 12 06 12 06 12 0C 12 12 12 0C 12 06 12 0C 12 0C 12 06 12 06 16 06 0A 06 0A 0C 0A 12 0A 0C 0A 06 0A 0C 0A 0C 0A 06 0A 06
+        db Note.end
+
+scorePart29:
+        db Note.instrument|1
+        dh 08 0C 08 18 09 18 08 18 06 0C 08 60
+        db Note.end
 
 
 ; used in playMenuMusic
-musicInitAddrs: ; #C4CB
-.start: dw startA, startB, startC
-.stop:  dw stopCh, stopCh, stopCh
+scoreInitAddrs: ; #C4CB
+.start: dw scoreA, scoreB, scoreC
+.stop:  dw scoreEnd, scoreEnd, scoreEnd
 
-startA:
-        dh 88 03 04 1A 83 07
-        dh 08 09 FE
-        dh F9 09 FE 00 09 FE F9 09
-        dh FE 00 83 0A 0B 0C 82 0D
-        dh 0C 83 0A 0B 0C 82 0D 0C
-        dh 0C FE 05 0C FE 00 1B 1C
-        dh 1D FF
-startB:
-        dh 00 02 FE 05 02 8E
-        dh 05 FF
-startC:
-        dh 16 16 19 17 82 06
-        dh 0E 0F 10 16 0E 0F 10 10
-        dh 11 12 13 14 15 FF
-stopCh:
-        db 1, -1
+scoreA:
+        db Part.repeat|8, 3
+        db 4, 26
+        db Part.repeat|3, 7
+        db 8, 9
+        db Part.transpose, -7
+        db 9
+        db Part.transpose, 0
+        db 9
+        db Part.transpose, -7
+        db 9
+        db Part.transpose, 0
+        db Part.repeat|3, 10
+        db 11, 12
+        db Part.repeat|2, 13
+        db 12
+        db Part.repeat|3, 10
+        db 11, 12
+        db Part.repeat|2, 13
+        db 12, 12
+        db Part.transpose, 5
+        db 12
+        db Part.transpose, 0
+        db 27, 28, 29
+        db Part.end
 
-scorePartAddrsLow:
-        db low(score.part0),   low(score.part1),   low(score.part2)
-        db low(score.part3),   low(score.part4),   low(score.part5)
-        db low(score.part6),   low(score.part7),   low(score.part8)
-        db low(score.part9),   low(score.part10),  low(score.part11)
-        db low(score.part12),  low(score.part13),  low(score.part14)
-        db low(score.part15),  low(score.part16),  low(score.part17)
-        db low(score.part18),  low(score.part19),  low(score.part20)
-        db low(score.part21),  low(score.part22),  low(score.part23)
-        db low(score.part24),  low(score.part25),  low(score.part26)
-        db low(score.part27),  low(score.part28),  low(score.part29)
-scorePartAddrsHigh:
-        db high(score.part0),  high(score.part1),  high(score.part2)
-        db high(score.part3),  high(score.part4),  high(score.part5)
-        db high(score.part6),  high(score.part7),  high(score.part8)
-        db high(score.part9),  high(score.part10), high(score.part11)
-        db high(score.part12), high(score.part13), high(score.part14)
-        db high(score.part15), high(score.part16), high(score.part17)
-        db high(score.part18), high(score.part19), high(score.part20)
-        db high(score.part21), high(score.part22), high(score.part23)
-        db high(score.part24), high(score.part25), high(score.part26)
-        db high(score.part27), high(score.part28), high(score.part29)
+scoreB:
+        db 0, 2
+        db Part.transpose, 5
+        db 2
+        db Part.repeat|14, 5
+        db Part.end
 
+scoreC:
+        db 22, 22, 25, 23
+        db Part.repeat|2, 6
+        db 14, 15, 16, 22, 14, 15, 16, 16, 17, 18, 19, 20, 21
+        db Part.end
+
+scoreEnd:
+        db 1
+        db Part.end
+
+
+partAddrsLow:
+        db low(scorePart0),   low(scorePart1),   low(scorePart2)
+        db low(scorePart3),   low(scorePart4),   low(scorePart5)
+        db low(scorePart6),   low(scorePart7),   low(scorePart8)
+        db low(scorePart9),   low(scorePart10),  low(scorePart11)
+        db low(scorePart12),  low(scorePart13),  low(scorePart14)
+        db low(scorePart15),  low(scorePart16),  low(scorePart17)
+        db low(scorePart18),  low(scorePart19),  low(scorePart20)
+        db low(scorePart21),  low(scorePart22),  low(scorePart23)
+        db low(scorePart24),  low(scorePart25),  low(scorePart26)
+        db low(scorePart27),  low(scorePart28),  low(scorePart29)
+partAddrsHigh:
+        db high(scorePart0),  high(scorePart1),  high(scorePart2)
+        db high(scorePart3),  high(scorePart4),  high(scorePart5)
+        db high(scorePart6),  high(scorePart7),  high(scorePart8)
+        db high(scorePart9),  high(scorePart10), high(scorePart11)
+        db high(scorePart12), high(scorePart13), high(scorePart14)
+        db high(scorePart15), high(scorePart16), high(scorePart17)
+        db high(scorePart18), high(scorePart19), high(scorePart20)
+        db high(scorePart21), high(scorePart22), high(scorePart23)
+        db high(scorePart24), high(scorePart25), high(scorePart26)
+        db high(scorePart27), high(scorePart28), high(scorePart29)
+
+
+; (?)
+; 5 × 8 bytes
 p_c55c: ; #C55C
         db (1<<7)|(1<<3)|2, (4<<3)|1, (9<<3)|1, 0, 0, 0, 0, 0
         db (1<<7)|(1<<3)|2, (3<<3)|1, (8<<3)|1, 0, 0, 0, 0, 0
@@ -308,10 +426,10 @@ playTone:  ; #c779
         bit Flag.envelope, c
         jr NZ, .envelope
 
-        ; set phase
-        ld hl, attackPhase
-        ld (ix+Ch.phaseAddr+0), l
-        ld (ix+Ch.phaseAddr+1), h
+        ; set ADSR stage
+        ld hl, attackStage
+        ld (ix+Ch.adsrAddr+0), l
+        ld (ix+Ch.adsrAddr+1), h
         ret
 
 .envelope:
@@ -395,7 +513,7 @@ setAyValues:  ; #c83f
         ld c, regPeriodA
         ld a, (ayChA.period+0)
         add (ix+Ch.vibrValue+0)
-        bit 1, (ix+Ch.flags)
+        bit Flag.noise, (ix+Ch.flags)
         jp Z, .l_0
         ld (noisePeriod), a
 .l_0:
@@ -409,7 +527,7 @@ setAyValues:  ; #c83f
         inc c
         ld a, (ayChB.period+0)
         add (ix+Ch+Ch.vibrValue+0)
-        bit 1, (ix+Ch+Ch.flags)
+        bit Flag.noise, (ix+Ch+Ch.flags)
         jp Z, .l_1
         ld (noisePeriod), a
 .l_1:
@@ -423,7 +541,7 @@ setAyValues:  ; #c83f
         inc c
         ld a, (ayChC.period+0)
         add (ix+2*Ch+Ch.vibrValue+0)
-        bit 1, (ix+2*Ch+Ch.flags)
+        bit Flag.noise, (ix+2*Ch+Ch.flags)
         jp Z, .l_2
         ld (noisePeriod), a
 .l_2:
@@ -436,13 +554,13 @@ setAyValues:  ; #c83f
         ; regNoisePer
         inc c
         ld a, (noisePeriod)
-   .3   rrca
+    .3  rrca
         call setAyReg
 
         ; regVolumeA
         ld c, regVolumeA
         ld a, (ayChA.volume)
-     .3 srl a
+    .3  srl a
         call setAyReg
 
         ; regVolumeB
@@ -470,27 +588,33 @@ applyEffect:  ; #c8fb
         ld iyl, a
         ld a, (ix+Ch.instrAddr+1)
         ld iyh, a
+        ; `iy`: instrument
 
         ld a, (ix+Ch.duration)
         and a
-        jr Z, .l_0
+        jr Z, .noDuration
         cp -1
-        jr Z, .l_0
+        jr Z, .noDuration
         dec (ix+Ch.duration)
-.l_0:
-        call p_c9a3
+.noDuration:
+        call doVibrato
 
-        bit 2, (iy+Instr.flags)
-        jp NZ, p_c99c
+        bit Flag.envelope, (iy+Instr.flags)
+        jp NZ, switchOffIfEnded
 
-        ld l, (ix+Ch.phaseAddr+0)
-        ld h, (ix+Ch.phaseAddr+1)
+        ; jump to the current ADSR stage
+        ld l, (ix+Ch.adsrAddr+0)
+        ld h, (ix+Ch.adsrAddr+1)
         jp hl
         ; possible jumps:
-        ; attackPhase, decayPhase, sustainPhase, releasePhase
+        ; `attackStage`, `decayStage`, `sustainStage`, `releaseStage`
 
 
-attackPhase:  ; #c92d
+; Attack - the initial ADSR stage
+; Raise the volume until it reaches the peak level
+;   `ix`: channel
+;   `iy`: instrument
+attackStage:  ; #c92d
         ld a, (ix+Ch.volume)
         add (iy+Instr.attackSpd)
         cp (iy+Instr.attackLev)
@@ -500,13 +624,19 @@ attackPhase:  ; #c92d
 .end:
         ld a, (iy+Instr.attackLev)
         ld (ix+Ch.volume), a
-        ld hl, decayPhase
-        ld (ix+Ch.phaseAddr+0), l
-        ld (ix+Ch.phaseAddr+1), h
+
+        ; set the next stage
+        ld hl, decayStage
+        ld (ix+Ch.adsrAddr+0), l
+        ld (ix+Ch.adsrAddr+1), h
         ret
 
 
-decayPhase:  ; #c94c
+; Decay - the second ADSR stage
+; Drop the volume until it reaches the sustain level
+;   `ix`: channel
+;   `iy`: instrument
+decayStage:  ; #c94c
         ld a, (ix+Ch.volume)
         add (iy+Instr.decaySpd)
         jp M, .end
@@ -517,48 +647,63 @@ decayPhase:  ; #c94c
 .end:
         ld a, (iy+Instr.sustainLev)
         ld (ix+Ch.volume), a
-        ld hl, sustainPhase
-        ld (ix+Ch.phaseAddr+0), l
-        ld (ix+Ch.phaseAddr+1), h
+
+        ; set the next stage
+        ld hl, sustainStage
+        ld (ix+Ch.adsrAddr+0), l
+        ld (ix+Ch.adsrAddr+1), h
         ret
 
 
-sustainPhase:  ; #c96e
+; Sustain - the third ADSR stage
+; Keep the volume during the duration of the note
+;   `ix`: channel
+sustainStage:  ; #c96e
         ld a, (ix+Ch.duration)
         and a
         ret NZ
 
-        ld hl, releasePhase
-        ld (ix+Ch.phaseAddr+0), l
-        ld (ix+Ch.phaseAddr+1), h
+        ; set the next stage
+        ld hl, releaseStage
+        ld (ix+Ch.adsrAddr+0), l
+        ld (ix+Ch.adsrAddr+1), h
         ret
 
 
-releasePhase: ; #c967d
+; Release - the final ADSR stage
+; Drop the volume to zero
+;   `ix`: channel
+;   `iy`: instrument
+releaseStage: ; #c967d
         ld a, (ix+Ch.volume)
         add (iy+Instr.releaseSpd)
         jp M, switchOff
+
         ld (ix+Ch.volume), a
         ret
 
 
+; Switch off a channel
+;   `ix`: channel
 switchOff:
         ld (ix+Ch.volume), 0
         ld a, (mixerValue)
         or (ix+Ch.mixMask)
         ld (mixerValue), a
-        res 7, (ix+Ch.flags)
+        res Flag.f_7, (ix+Ch.flags)
         ret
 
 
-p_c99c:  ; #c99c
+; Switch off a channel if the note has ended
+;   `ix`: channel
+switchOffIfEnded:  ; #c99c
         ld a, (ix+Ch.duration)
         and a
         ret NZ
         jr switchOff
 
 
-p_c9a3:  ; # c9a3
+doVibrato:  ; # c9a3
         ld a, (ix+Ch.ch_7)
         and a
         jr Z, .zero
@@ -663,20 +808,20 @@ p_c9fb:  ; #c9fb
 
 ; #ca2d
 ;              0      1      3      5      7    9   10   11   12   13   14   15     16   18   19   20
-sectA:  Sect #00, #646F, #0D65, #090A, #646C, #20, #28, #69, #78, #2B, #73, #70, #6374, #6F, #6C, #29
-sectB:  Sect #08, #3137, #0909, #733B, #7465, #20, #63, #6F, #6C, #6F, #75, #72, #7420, #6F, #20, #77
-sectC:  Sect #10, #7469, #0D65, #090A, #6572, #74, #0D, #0A, #0D, #0A, #3B, #2D, #2D2D, #2D, #2D, #2D
+sectA:  Sect 0*8, #646F, #0D65, #090A, #646C, #20, #28, #69, #78, #2B, #73, #70, #6374, #6F, #6C, #29
+sectB:  Sect 1*8, #3137, #0909, #733B, #7465, #20, #63, #6F, #6C, #6F, #75, #72, #7420, #6F, #20, #77
+sectC:  Sect 2*8, #7469, #0D65, #090A, #6572, #74, #0D, #0A, #0D, #0A, #3B, #2D, #2D2D, #2D, #2D, #2D
 
 
 ; Table containing offsets in the `instruments` table pointing to instruments
 ; 3 × 8 bytes. Initialised at runtime as instruments 0 to 7
 instrOffsets:  ; #ca6c
-        dh 2D 2D 2D 2D 20 63 6F 69  ; junk values
-        dh 6E 20 6A 75 6D 70 69 6E  ; junk values
-        dh 67 20 2D 2D 2D 2D 2D 2D  ; junk values
+.chA:   dh 2D 2D 2D 2D 20 63 6F 69  ; junk values
+.chB:   dh 6E 20 6A 75 6D 70 69 6E  ; junk values
+.chC:   dh 67 20 2D 2D 2D 2D 2D 2D  ; junk values
 
 
-; Initialises menu AY music
+; Initialise the menu AY music
 ;   `a`: 0 - start, 1 - stop
 playMenuMusic:  ; #ca84
         push af
@@ -688,30 +833,30 @@ playMenuMusic:  ; #ca84
         add l
         add a
         ; `a` *= 6
-        ld hl, musicInitAddrs
+        ld hl, scoreInitAddrs
         add l
         ld l, a
-        jr NC, .l_0
+        jr NC, .noCarry
         inc h
-.l_0:
+.noCarry:
         ; `hl`: music init addr
         ld e, (hl)
         inc hl
         ld d, (hl)
         inc hl
-        ld (sectA.i_1), de
+        ld (sectA.scoreAddr), de
 
         ld e, (hl)
         inc hl
         ld d, (hl)
         inc hl
-        ld (sectB.i_1), de
+        ld (sectB.scoreAddr), de
 
         ld e, (hl)
         inc hl
         ld d, (hl)
         inc hl
-        ld (sectC.i_1), de
+        ld (sectC.scoreAddr), de
 
         ; init with 0
         xor a
@@ -722,17 +867,17 @@ playMenuMusic:  ; #ca84
         ld (sectB.i_15), a
         ld (sectC.i_15), a
 
-        ; init with -1
+        ; init with -1 (true)
         cpl
-        ld (sectA.i_11), a
-        ld (sectB.i_11), a
-        ld (sectC.i_11), a
+        ld (sectA.isPartEnd), a
+        ld (sectB.isPartEnd), a
+        ld (sectC.isPartEnd), a
 
         ; init with 1
         ld a, 1
-        ld (sectA.i_9), a
-        ld (sectB.i_9), a
-        ld (sectC.i_9), a
+        ld (sectA.repeatCount), a
+        ld (sectB.repeatCount), a
+        ld (sectC.repeatCount), a
         ld (sectA.duration), a
         ld (sectB.duration), a
         ld (sectC.duration), a
@@ -740,26 +885,26 @@ playMenuMusic:  ; #ca84
         ; init with (0 * Instr,  …, 7 * Instr)
         ld hl, instrOffsets
         ld bc, _HIGH 3 _LOW Instr
-.l_1:
+.channel:
         xor a
-.l_2:
+.instr:
         ld (hl), a
         inc hl
         add c
         ld (hl), a
         inc hl
         add c
-        cp 80
-        jr NZ, .l_2
-        djnz .l_1
+        cp 8 * Instr
+        jr NZ, .instr
+        djnz .channel
 
-        ; init with some addr(?)
+        ; init with instrument 0
         ld hl, instruments.i0
         ld (sectA.instrAddr), hl
         ld (sectB.instrAddr), hl
         ld (sectC.instrAddr), hl
 
-        ; init with -1
+        ; init with -1 (true)
         ld a, -1
         ld (sectA.isPlaying), a
         ld (sectB.isPlaying), a
@@ -772,6 +917,8 @@ playMenuMusic:  ; #ca84
 ; Called in interrupts
 aySoundFrame:  ; #cb0c
         call setAyValues
+
+        ; check if ended
         ld a, (isPlaying)
         and a
         ret Z
@@ -782,7 +929,7 @@ aySoundFrame:  ; #cb0c
         ld hl, sectC.isPlaying
         or (hl)
         ld (isPlaying), a
-        jr NZ, .l_0
+        jr NZ, .notEnded
 
         xor a
         ld (isPlaying), a
@@ -795,7 +942,7 @@ aySoundFrame:  ; #cb0c
         ld (isPlaying), a
         ret
 
-.l_0:
+.notEnded:
         ld iy, sectA
         ld ix, ayChA
         call .proccessChannel
@@ -808,124 +955,139 @@ aySoundFrame:  ; #cb0c
         ld ix, ayChC
 
 .proccessChannel:
+        ; `ix`: channel
+        ; `iy`: section
         call p_cc95
 
-        ld a, (iy+Sect.i_11)
+        ld a, (iy+Sect.isPartEnd)
         and a
-        jr Z, .l_10
-.l_2:
-        dec (iy+Sect.i_9)
-        jr Z, .l_3
+        jr Z, .getNoteAddr
 
-        ld a, (iy+Sect.scoreAddr+0)
+.partEnd:
+        dec (iy+Sect.repeatCount)
+        jr Z, .newPart
+
+        ; repeat the part
+        ld a, (iy+Sect.partAddr+0)
         ld (iy+Sect.noteAddr+0), a
-        ld a, (iy+Sect.scoreAddr+1)
+        ld a, (iy+Sect.partAddr+1)
         ld (iy+Sect.noteAddr+1), a
-        ld (iy+Sect.i_11), 0
-        jr .l_10
+        ld (iy+Sect.isPartEnd), 0
+        jr .getNoteAddr
 
-.l_3:
-        ld (iy+Sect.i_9), 1
-        ld l, (iy+Sect.i_1+0)
-        ld h, (iy+Sect.i_1+1)
-.l_4:
-        ld a, (hl)
-        cp #80
-        jr C, .l_9
+.newPart:
+        ld (iy+Sect.repeatCount), 1
+        ld l, (iy+Sect.scoreAddr+0)
+        ld h, (iy+Sect.scoreAddr+1)
 
-        cp #FE
-        jr NZ, .l_5
+.getPartIndex:
+        ld a, (hl)              ; part index or special value
 
+        ; check special values
+        cp Part.repeat
+        jr C, .setScorePart
+
+        cp Part.transpose
+        jr NZ, .notTranspose
+
+        ; set transposition
         inc hl
-        ld a, (hl)
+        ld a, (hl)              ; transposition value
         ld (iy+Sect.transpose), a
         inc hl
-        jp .l_4
+        jp .getPartIndex
 
-.l_5:
-        cp #FF                  ; end marker
-        jr NZ, .l_6
+.notTranspose:
+        cp Part.end
+        jr NZ, .notEnd
 
-        ; end music
+        ; end the music
         xor a
         ld (iy+Sect.isPlaying), a
         ret
 
-.l_6:
-        cp #C0
-        jr NC, .l_7
+.notEnd:
+        cp Part.instrument
+        jr NC, .setInstrument
 
+        ; set repeat count
         and %00011111
-        ld (iy+Sect.i_9), a
+        ld (iy+Sect.repeatCount), a
         inc hl
-        jp .l_4
+        jp .getPartIndex
 
-.l_7:
+.setInstrument:
+        ; never used (?)
         and %00000111
-        add (iy+Sect.i_0)
+        add (iy+Sect.chOffset)
         ld de, instrOffsets
         add e
         ld e, a
-        jr NC, .l_8
+        jr NC, .noCarry
         inc d
-.l_8:
-        inc hl
-        ldi                     ; copy val to 0..70 table
-        jp .l_4
+.noCarry:
+        inc hl                  ; points to the new instrument offset value
+        ldi                     ; copy the value to `instrOffsets` table
+        jp .getPartIndex
 
-.l_9:
-        ld (iy+Sect.i_11), 0
+.setScorePart:
+        ld (iy+Sect.isPartEnd), 0
+
         inc hl
-        ld (iy+Sect.i_1+0), l
-        ld (iy+Sect.i_1+1), h
+        ld (iy+Sect.scoreAddr+0), l
+        ld (iy+Sect.scoreAddr+1), h
+
+        ; `a`: score part index
         ld c, a
         ld b, 0
-        ld hl, scorePartAddrsLow
+        ld hl, partAddrsLow
         add hl, bc
-        ; `hl`: addr in p_c520 table (low)
         ld e, (hl)
-        ld hl, scorePartAddrsHigh
+        ld hl, partAddrsHigh
         add hl, bc
-        ; `hl`: addr in p_c53e table (high)
         ld d, (hl)
-        ; `de`: addr in score?
-        ld (iy+Sect.scoreAddr+0), e
-        ld (iy+Sect.scoreAddr+1), d
+        ; `de`: start address of the score part
+        ld (iy+Sect.partAddr+0), e
+        ld (iy+Sect.partAddr+1), d
         jr .l_11
 
-.l_10:
+.getNoteAddr:
         ld e, (iy+Sect.noteAddr+0)
         ld d, (iy+Sect.noteAddr+1)
 
 .l_11:
+        ; `de`: note addr
         dec (iy+Sect.duration)
         jr Z, .zeroDuration
 
-        ld a, (de)
-        cp #80
+        ld a, (de)              ; note or special value
+        cp Note.instrument
         call NC, p_cc5b
+
         ld (iy+Sect.noteAddr+0), e
         ld (iy+Sect.noteAddr+1), d
         ret
 
 .zeroDuration:
-        ld a, (de)
-        cp #80
+        ld a, (de)              ; note or special value
+        cp Note.instrument
         jr C, .l_13
 
         call p_cc5b
-        ld a, (iy+Sect.i_11)
+
+        ld a, (iy+Sect.isPartEnd)
         and a
         jr Z, .zeroDuration
-        jp .l_2
+        jp .partEnd
 
 .l_13:
-        cp #7F
-        jr Z, .l_16             ; pause?
+        cp Note.pause
+        jr Z, .pause
 
-        cp #7E                  ; jump in score?
-        jr NZ, .l_14
+        cp Note.microtonal
+        jr NZ, .note
 
+        ; get microtonal period
         inc de
         ld a, (de)
         ld l, a
@@ -934,10 +1096,12 @@ aySoundFrame:  ; #cb0c
         ld h, a
         jp .l_15
 
-.l_14:
+.note:
+        ; `a`: note
         add (iy+Sect.transpose)
-        add 12                  ; octave
+        add 12                  ; + octave
         ld (iy+Sect.note), a
+
         ld hl, noteTable
         add a
         ld c, a
@@ -949,15 +1113,20 @@ aySoundFrame:  ; #cb0c
         ld h, (hl)
         ld l, a
         ; `hl`: note period
+
 .l_15:
+        ; `hl`: period
         ld a, (iy+Sect.i_15)
         or %11000000
         ld (iy+Sect.i_20), a
+
         inc de
         ld a, (de)              ; duration
         inc de
         ld (iy+Sect.duration), a
         ld c, a
+
+        ; next note addr
         ld (iy+Sect.noteAddr+0), e
         ld (iy+Sect.noteAddr+1), d
 
@@ -965,13 +1134,13 @@ aySoundFrame:  ; #cb0c
         ld a, (iy+Sect.instrAddr+1)
         ld iyh, a
         ld iyl, e
-        ; `iy`: effect addr
-        bit 7, (ix+Ch.flags)
+        ; `iy`: instrument addr
+        bit Flag.f_7, (ix+Ch.flags)
         ret NZ
 
         jp playTone
 
-.l_16:
+.pause:
         inc de
         ld a, (de)
         inc de
@@ -981,13 +1150,16 @@ aySoundFrame:  ; #cb0c
         ret
 
 
+;
+;   `de`: note address
 p_cc5b:  ; #cc5b
-        ld a, (de)
-        cp #88
+        ld a, (de)              ; note (>= #80)
+        cp Note.something
         jr NC, .l_0
 
+        ; `a`: #80..#87 - change instrument
         and %00000111
-        add (iy+Sect.i_0)
+        add (iy+Sect.chOffset)
         ld c, a
         ld b, 0
         ld hl, instrOffsets
@@ -997,33 +1169,41 @@ p_cc5b:  ; #cc5b
         add hl, bc
         ld (iy+Sect.instrAddr+0), l
         ld (iy+Sect.instrAddr+1), h
-        inc de
+
+        inc de                  ; next note
         ret
 
 .l_0:
-        cp #FF
+        cp Note.end
         jr NZ, .l_1
-        ld (iy+Sect.i_11), #FF
+        ld (iy+Sect.isPartEnd), -1
         ret
+
 .l_1:
-        cp #C0
+        cp Note.skip
         jr NC, .l_2
-        and #0F
+
+        ; `a`: #88..#BF
+        and %00001111
         ld (iy+Sect.i_15), a
-        inc de
+
+        inc de                  ; next note
         ret
+
 .l_2:
-        inc de
-        cp #C2
+        inc de                  ; next note
+        cp Note.nothing         ; (?)
         ret Z
-        inc de
-        inc de
-        inc de
+
+    .3  inc de                  ; skip 3 more notes (?)
         ret
 
 
+;
+;   `ix`: channel
+;   `iy`: section
 p_cc95:  ; #cc95
-        bit 7, (ix+Ch.flags)
+        bit Flag.f_7, (ix+Ch.flags)
         ret NZ
 
         ld a, (iy+Sect.i_20)
@@ -1032,6 +1212,7 @@ p_cc95:  ; #cc95
 
         and %00111111
         jr NZ, .l_0
+
         res 7, (iy+Sect.i_20)
         ret
 
