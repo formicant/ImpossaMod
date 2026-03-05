@@ -19,7 +19,7 @@ codeStart:
 
     ORG #5E80
     DISP #C000
-    INCLUDE "code/Sound/ay.asm"
+    INCLUDE "code/AY/_index.asm"
     ENT
 
     INCLUDE "data/Lev0Klondike/_index.asm"

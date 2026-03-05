@@ -16,6 +16,17 @@ regEnvShape EQU #D
 ; Values
 mixOff      EQU %00111111
 
+tempo       EQU 3
+
+; Octave offsets for notes
+
+octave1     EQU -10
+octave2     EQU   2
+octave3     EQU  14
+octave4     EQU  26
+octave5     EQU  38
+octave6     EQU  50
+
 
     MODULE Part
 
@@ -27,12 +38,32 @@ end         EQU #FF
     ENDMODULE
 
 
+; notes inside an octave
     MODULE Note
+
+C   EQU   0
+Cs  EQU   1
+D   EQU   2
+Ds  EQU   3
+E   EQU   4
+F   EQU   5
+Fs  EQU   6
+G   EQU   7
+Gs  EQU   8
+A   EQU   9
+As  EQU  10
+B   EQU  11
+
+    ENDMODULE
+
+
+    MODULE Mark
 
 microtonal  EQU #7E
 pause       EQU #7F
 instrument  EQU #80
-something   EQU #88
+smthThresh  EQU #88
+something   EQU #90
 skip        EQU #C0
 nothing     EQU #C2
 end         EQU #FF

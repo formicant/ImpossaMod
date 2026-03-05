@@ -1,363 +1,5 @@
     MODULE AY
 
-
-; Copied to RAM page 1 #C000
-
-scorePart0:
-        db Note.instrument|0
-        dh 2C 30 2D 30 2C 30 31 30 2C 30 2D 30 2C 30 25 30
-        db Note.end
-
-scorePart1:
-        dh 7F 30
-        db Note.end
-
-scorePart2:
-        db Note.instrument|0
-        dh 91 1C 30 92 20 30 1F 30 22 30 20 30 93 23 30 22 30 94 27 30 90
-        db Note.end
-
-scorePart3:
-        db Note.instrument|1
-        dh 01 18 01 18
-        db Note.end
-
-scorePart4:
-        db Note.instrument|1
-        dh 01 18 01 18 01 18 01 18 01 18 01 18 01 0C 01 0C 01 0C 01 0C 01 18 01 18 01 18 01 18 01 18 01 18 01 0C 01 0C 01 0C 01 0C
-        db Note.end
-
-scorePart5:
-        db Note.instrument|2
-        dh 12 06 36 06 1E 06 2A 06 12 06 36 06 1E 06 2A 06 12 06 36 06 1E 06 2A 06 12 06 36 06 1E 06 2A 06 12 06 36 06 1E 06 2A 06 12 06 36 06 1E 06 2A 06 12 06 36 06 1E 06 2A 06 12 06 36 06 1E 06 2A 06 12 06 36 06 1E 06 2A 06 12 06 36 06 1E 06 2A 06 12 06 36 06 1E 06 2A 06 12 06 36 06 1E 06 2A 06 12 06 36 06 1E 06 2A 06 12 06 36 06 1E 06 12 06 12 06 12 06 12 0C 12 0C 12 06 12 06
-        db Note.end
-
-scorePart6:
-        db Note.instrument|1
-        dh 91 23 12 23 12 23 12 92 27 12 27 0C 27 0C 29 12 29 12 29 12 22 12 22 0C 22 0C 90
-        db Note.end
-
-scorePart7:
-        db Note.instrument|1
-        dh 0D 06 0D 06 0D 0C 0D 0C 0D 06 0D 0C 0D 0C 0D 06 08 0C 0B 0C
-        db Note.end
-
-scorePart8:
-        db Note.instrument|1
-        dh 10 06 10 06 10 0C 10 0C 10 06 10 06 0B 06 0B 06 0B 0C 0B 0C 0B 06 0B 06
-        db Note.end
-
-scorePart9:
-        db Note.instrument|1
-        dh 0D 06 19 0C 0D 06 19 0C 0D 06 19 0C 0D 06 19 0C 0B 0C 08 0C
-        db Note.end
-
-scorePart10:
-        db Note.instrument|1
-        dh 0D 06 0D 06 0D 0C 0D 12 0D 0C 0D 06 0D 0C 0D 0C 19 06 19 06
-        db Note.end
-
-scorePart11:
-        db Note.instrument|1
-        dh 10 06 10 06 10 0C 10 0C 10 06 10 06 0B 06 0B 06 0B 0C 0B 0C 0B 06 0B 06
-        db Note.end
-
-scorePart12:
-        db Note.instrument|1
-        dh 0D 06 0D 06 19 0C 0D 0C 19 06 0D 0C 0D 06 19 0C 0D 0C 19 0C 09 06 09 06 15 0C 09 0C 15 06 0B 0C 0B 06 17 0C 0B 0C 17 0C 0D 06 0D 06 19 0C 0D 0C 19 06 0D 0C 0D 06 19 0C 0D 0C 19 0C 10 06 10 06 1C 0C 10 0C 1C 06 0B 0C 0B 06 17 0C 0B 0C 17 0C
-        db Note.end
-
-scorePart13:
-        db Note.instrument|1
-        dh 0D 06 0D 0C 0D 06 0D 0C 0D 06 0D 12 0B 0C 10 0C 0B 0C 09 06 09 0C 09 0C 09 0C 09 06 0B 0C 08 0C 0B 0C 0D 0C
-        db Note.end
-
-scorePart14:
-        db Note.instrument|3
-        dh 2A 0C 2A 0C 1E 0C 2A 0C 2A 06 2A 0C 2A 06 1E 0C 1E 0C 2A 0C 2A 0C 1E 12 2A 0C 2A 06 2A 06 2A 06 1E 06 12 06 06 06 06 06 06 0C 06 0C 2A 0C 1E 0C 1E 0C 2A 0C 1E 0C 2A 0C 1E 0C 1E 0C 2A 0C 2A 06 2A 06 2A 06 36 06 36 06 2A 06 1E 06 12 06 06 06 06 06
-        db Note.end
-
-scorePart15:
-        db Note.instrument|4
-        dh 19 0C 20 06 20 06 1F 0C 20 0C 25 0C 24 0C 25 0C 27 0C 19 0C 21 06 21 06 20 0C 21 0C 23 0C 21 0C 20 0C 1C 0C 19 0C 20 06 20 06 1F 0C 20 0C 25 0C 24 0C 25 0C 27 0C 28 0C 2A 06 2C 06 2D 0C 2C 06 2A 06 2C 0C 2A 0C 28 0C 27 0C
-        db Note.end
-
-scorePart16:
-        db Note.instrument|4
-        dh 25 0C 20 0C 25 0C 2C 0C 28 18 27 18 25 0C 20 0C 25 0C 2C 0C 28 0C 27 0C 25 0C 23 0C 25 0C 20 0C 25 0C 2C 0C 28 18 27 0C 23 0C 21 30 20 30
-        db Note.end
-
-scorePart17:
-        db Note.instrument|4
-        dh 25 78 28 06 27 06 28 06 27 06 28 0C 2A 0C 28 0C 23 0C 25 78 28 06 27 06 28 06 27 06 28 0C 2A 0C 28 0C 29 0C
-        db Note.end
-
-scorePart18:
-        db Note.instrument|0
-        dh 2A 78 2D 06 2C 06 2D 06 2C 06 2D 0C 2F 0C 2D 0C 28 0C 2A 60
-        db Note.instrument|5
-        dh 2A 60
-        db Note.end
-
-scorePart19:
-        db Note.instrument|4
-        dh 14 0C 17 0C 16 0C 17 0C 14 0C 23 0C 22 0C 20 0C 1B 0C 1E 0C 1D 0C 1E 0C 1B 0C 2A 0C 29 0C 27 0C 1E 0C 21 0C 20 0C 21 0C 1E 0C 2D 0C 2C 0C 2A 0C 34 0C 33 0C 31 0C 28 0C 27 0C 25 0C 1C 0C 1B 0C
-        db Note.end
-
-scorePart20:
-        db Note.instrument|4
-        dh 14 0C 17 0C 16 0C 17 0C 14 0C 23 0C 22 0C 20 0C 1B 0C 1E 0C 1D 0C 1E 0C 1B 0C 2A 0C 29 0C 27 0C 1E 0C 21 0C 20 0C 21 0C 1E 0C 2D 0C 2C 0C 2A 0C 22 0C 25 0C 24 0C 25 0C 22 0C 25 0C 28 0C 2B 0C
-        db Note.end
-
-scorePart21:
-        db Note.instrument|4
-        dh 94 2C 0C 2C 18 2D 18 2C 18 2A 0C 2C 60 90
-        db Note.instrument|6
-        dh 01 03
-        db Note.end
-
-scorePart22:
-        dh 7F 60 7F 60 7F 60 7F 60
-        db Note.end
-
-scorePart23:
-        db Note.instrument|4
-        dh 17 60
-        db Note.instrument|5
-        dh 17 60 7F 60 7F 60
-        db Note.end
-
-scorePart24:
-scorePart25:
-        db Note.instrument|2
-        dh 12 60 12 60 12 60 12 06 12 06 12 06 12 06 12 06 12 06 12 06 12 06 12 06 12 06 12 06 12 06 12 06 12 06 12 06 12 06
-        db Note.end
-
-scorePart26:
-        db Note.instrument|1
-        dh  0D 0C 0D 0C 0D 0C 0D 0C 0D 0C 0D 0C 0D 0C 0D 0C 0D 0C 0D 0C 0D 0C 0D 0C 0D 0C 0D 06 0D 06 0D 0C 0D 06 0D 06 0D 0C 0D 0C 0D 0C 0D 0C 0D 0C 0D 0C 0D 0C 0D 0C 0D 06 0D 06 0D 0C 0D 0C 0D 06 0D 0C 0D 06 0D 06 0D 06 0D 0C 0D 06 0D 06
-        db Note.end
-
-scorePart27:
-        db Note.instrument|1
-        dh 14 06 14 06 14 0C 14 12 14 0C 14 06 14 0C 14 0C 14 06 14 06 0F 06 0F 06 0F 0C 0F 0C 0F 06 0F 0C 0F 0C 0F 06 0F 0C 0F 06 0F 06 12 06 12 06 12 0C 12 12 12 0C 12 06 12 0C 12 0C 12 06 12 06 0D 06 0D 06 0D 0C 0D 12 0D 0C 0D 06 0D 0C 0D 0C 0D 06 0D 06
-        db Note.end
-
-scorePart28:
-        db Note.instrument|1
-        dh 14 06 14 06 14 0C 14 12 14 0C 14 06 14 0C 14 0C 14 06 14 06 0F 06 0F 06 0F 0C 0F 0C 0F 06 0F 0C 0F 0C 0F 06 0F 0C 0F 06 0F 06 12 06 12 06 12 0C 12 12 12 0C 12 06 12 0C 12 0C 12 06 12 06 16 06 0A 06 0A 0C 0A 12 0A 0C 0A 06 0A 0C 0A 0C 0A 06 0A 06
-        db Note.end
-
-scorePart29:
-        db Note.instrument|1
-        dh 08 0C 08 18 09 18 08 18 06 0C 08 60
-        db Note.end
-
-
-; used in playMenuMusic
-scoreInitAddrs: ; #C4CB
-.start: dw scoreA, scoreB, scoreC
-.stop:  dw scoreEnd, scoreEnd, scoreEnd
-
-scoreA:
-        db Part.repeat|8, 3
-        db 4, 26
-        db Part.repeat|3, 7
-        db 8, 9
-        db Part.transpose, -7
-        db 9
-        db Part.transpose, 0
-        db 9
-        db Part.transpose, -7
-        db 9
-        db Part.transpose, 0
-        db Part.repeat|3, 10
-        db 11, 12
-        db Part.repeat|2, 13
-        db 12
-        db Part.repeat|3, 10
-        db 11, 12
-        db Part.repeat|2, 13
-        db 12, 12
-        db Part.transpose, 5
-        db 12
-        db Part.transpose, 0
-        db 27, 28, 29
-        db Part.end
-
-scoreB:
-        db 0, 2
-        db Part.transpose, 5
-        db 2
-        db Part.repeat|14, 5
-        db Part.end
-
-scoreC:
-        db 22, 22, 25, 23
-        db Part.repeat|2, 6
-        db 14, 15, 16, 22, 14, 15, 16, 16, 17, 18, 19, 20, 21
-        db Part.end
-
-scoreEnd:
-        db 1
-        db Part.end
-
-
-partAddrsLow:
-        db low(scorePart0),   low(scorePart1),   low(scorePart2)
-        db low(scorePart3),   low(scorePart4),   low(scorePart5)
-        db low(scorePart6),   low(scorePart7),   low(scorePart8)
-        db low(scorePart9),   low(scorePart10),  low(scorePart11)
-        db low(scorePart12),  low(scorePart13),  low(scorePart14)
-        db low(scorePart15),  low(scorePart16),  low(scorePart17)
-        db low(scorePart18),  low(scorePart19),  low(scorePart20)
-        db low(scorePart21),  low(scorePart22),  low(scorePart23)
-        db low(scorePart24),  low(scorePart25),  low(scorePart26)
-        db low(scorePart27),  low(scorePart28),  low(scorePart29)
-partAddrsHigh:
-        db high(scorePart0),  high(scorePart1),  high(scorePart2)
-        db high(scorePart3),  high(scorePart4),  high(scorePart5)
-        db high(scorePart6),  high(scorePart7),  high(scorePart8)
-        db high(scorePart9),  high(scorePart10), high(scorePart11)
-        db high(scorePart12), high(scorePart13), high(scorePart14)
-        db high(scorePart15), high(scorePart16), high(scorePart17)
-        db high(scorePart18), high(scorePart19), high(scorePart20)
-        db high(scorePart21), high(scorePart22), high(scorePart23)
-        db high(scorePart24), high(scorePart25), high(scorePart26)
-        db high(scorePart27), high(scorePart28), high(scorePart29)
-
-
-; (?)
-; 5 × 8 bytes
-p_c55c: ; #C55C
-        db (1<<7)|(1<<3)|2, (4<<3)|1, (9<<3)|1, 0, 0, 0, 0, 0
-        db (1<<7)|(1<<3)|2, (3<<3)|1, (8<<3)|1, 0, 0, 0, 0, 0
-        db (1<<7)|(1<<3)|2, (5<<3)|1, (9<<3)|1, 0, 0, 0, 0, 0
-        db (1<<7)|(1<<3)|2, (4<<3)|1, (7<<3)|1, 0, 0, 0, 0, 0
-        db (1<<7)|(4<<3)|1, (6<<3)|1,        0, 0, 0, 0, 0, 0
-
-; Instruments used in the music (8 × 10 bytes)
-instruments: ; #C584
-        ;     env  dec sus rel envP  ?  viP viS flag
-.i0:    Instr #60, -1, 48, -1, #30, #10, 6,  1, %001
-.i1:    Instr #7F, -3,  0, -2, #37, #00, 0,  0, %001
-.i2:    Instr #7F, -6,  0, -1, #28, #00, 1, 24, %010
-.i3:    Instr #7F, -4,  0, -1, #28, #00, 1, 24, %010
-.i4:    Instr #7F, -2, 50, -1, #3E, #20, 3,  2, %001
-.i5:    Instr #7F, -1, 50, -1, #40, #00, 0,  1, %001
-.i6:    Instr #7F, -2,  0, -1, #00, #20, 3,  2, %001
-.i7:    Instr #60, -1,  0, -1, #30, #10, 6,  1, %001
-
-
-; Game sound effects (15 × 13 bytes)
-aySounds:  ; #c5d4
-        ;        env  dec sus  rel envP  ?  viP  viS  flag   period dur
-        Effect { #7F, -23, 1,  -1, #7F, #00, 0,  163, %001 }, 1498,  1  ; (unused)
-        Effect { #1B,  -1, 1,  -1, #50, #00, 0,    1, %001 },   47,  1  ; (unused)
-        Effect { #7F, -23, 1,  -1, #7F, #00, 0, -215, %001 },  846,  1  ; (unused)
-        Effect { #08, -14, 1,  -7, #6B, #FF, 0,    0, %101 }, 3900,  2  ; damageEnemy
-        Effect { #0E, -14, 1,  -7, #29, #FF, 0,    0, %010 },   88,  1  ; kickOrThrow
-        Effect { #7F,  -4, 1,  -1, #44, #00, 0,  -20, %001 }, 2154,  1  ; jump
-        Effect { #7F,  -3, 1,  -1, #60, #00, 0, -256, %010 },  240,  1  ; killEnemy
-        Effect { #0C,   0, 0,   0, #71, #00, 0,  156, %101 }, 4027, 15  ; (unused)
-        Effect { #0A,  -6, 1, -10, #00, #00, 0,   -1, %101 },   35, 28  ; laserGun
-        Effect { #14, -20, 1,  -1, #7F, #01, 0,    0, %010 },  124, 10  ; (unused)
-        Effect { #7F,  -3, 1,  -1, #7F, #04, 0,  -32, %001 }, 2413,  1  ; powerGun
-        Effect { #7F,  -6, 1,  -1, #7F, #00, 0,  -14, %001 },  637,  1  ; pickItem
-        Effect { #7F, -10, 1,  -1, #7F, #00, 0,    0, %001 }, 3460,  1  ; energyLoss
-        Effect { #7F,  -7, 1,  -1, #7F, #00, 0,    0, %001 },  200,  1  ; pickWeapon
-        Effect { #7F,  -3, 8, -35, #7E, #00, 0, -803, %001 }, 1010,  1  ; (unused)
-
-
-; Period value for each note
-noteTable:  ; #c697
-        dw 3822 ; [ 0] A♯₀
-        dw 3608 ; [ 1] B₀
-        dw 3405 ; [ 2] C₁
-        dw 3214 ; [ 3] C♯₁
-        dw 3034 ; [ 4] D₁
-        dw 2863 ; [ 5] D♯₁
-        dw 2703 ; [ 6] E₁
-        dw 2551 ; [ 7] F₁
-        dw 2408 ; [ 8] F♯₁
-        dw 2273 ; [ 9] G₁
-        dw 2145 ; [10] G♯₁
-        dw 2025 ; [11] A₁
-        dw 1911 ; [12] A♯₁
-        dw 1804 ; [13] B₁
-        dw 1703 ; [14] C₂
-        dw 1607 ; [15] C♯₂
-        dw 1517 ; [16] D₂
-        dw 1432 ; [17] D♯₂
-        dw 1351 ; [18] E₂
-        dw 1276 ; [19] F₂
-.err20: dw 1236 ; [20] F♯₂ (should be 1204)
-        dw 1136 ; [21] G₂
-        dw 1073 ; [22] G♯₂
-        dw 1012 ; [23] A₂
-.err24: dw  988 ; [24] A♯₂ (should be 956)
-        dw  902 ; [25] B₂
-        dw  851 ; [26] C₃
-        dw  804 ; [27] C♯₃
-        dw  758 ; [28] D₃
-        dw  716 ; [29] D♯₃
-        dw  676 ; [30] E₃
-        dw  638 ; [31] F₃
-        dw  602 ; [32] F♯₃
-        dw  568 ; [33] G₃
-        dw  536 ; [34] G♯₃
-        dw  506 ; [35] A₃
-        dw  478 ; [36] A♯₃
-        dw  451 ; [37] B₃
-        dw  426 ; [38] C₄
-        dw  402 ; [39] C♯₄
-        dw  379 ; [40] D₄
-        dw  358 ; [41] D♯₄
-        dw  338 ; [42] E₄
-        dw  319 ; [43] F₄
-        dw  301 ; [44] F♯₄
-        dw  284 ; [45] G₄
-        dw  268 ; [46] G♯₄
-        dw  253 ; [47] A₄
-        dw  239 ; [48] A♯₄
-        dw  225 ; [49] B₄
-        dw  213 ; [50] C₅
-        dw  201 ; [51] C♯₅
-        dw  190 ; [52] D₅
-        dw  179 ; [53] D♯₅
-        dw  169 ; [54] E₅
-        dw  159 ; [55] F₅
-        dw  150 ; [56] F♯₅
-        dw  142 ; [57] G₅
-        dw  134 ; [58] G♯₅
-        dw  127 ; [59] A₅
-        dw  119 ; [60] A♯₅
-        dw  113 ; [61] B₅
-        dw  106 ; [62] C₆
-        dw  100 ; [63] C♯₆
-        dw   95 ; [64] D₆
-        dw   89 ; [65] D♯₆
-        dw   84 ; [66] E₆
-        dw   80 ; [67] F₆
-        dw   75 ; [68] F♯₆
-        dw   71 ; [69] G₆
-        dw   67 ; [70] G♯₆
-        dw   63 ; [71] A₆
-        dw   60 ; [72] A♯₆
-        dw   56 ; [73] B₆
-        dw   53 ; [74] C₇
-        dw   50 ; [75] C♯₇
-        dw   47 ; [76] D₇
-        dw   45 ; [77] D♯₇
-        dw   42 ; [78] E₇
-        dw   40 ; [79] F₇
-        dw   38 ; [80] F♯₇
-        dw   36 ; [81] G₇
-        dw   34 ; [82] G♯₇
-        dw   32 ; [83] A₇
-.err84: dw   24 ; [84] A♯₇ (should be 30)
-
-
 mixerValue:  ; #c741
         db mixOff
 
@@ -781,12 +423,12 @@ setAyReg:  ; #c9e7
         ret
 
 
-; Unused
-callPlayMenuMusic:  ; #c9f4
+; (Unused)
+unusedCallPlayMenuMusic:  ; #c9f4
         jp Sound.callPlayMenuMusic
 
-; Unused
-callAySoundFrame:  ; #c9f7
+; (Unused)
+unusedCallAySoundFrame:  ; #c9f7
         jp Sound.callAySoundFrame
 
 
@@ -795,15 +437,44 @@ isPlaying:  ; #c9fa
         db 0
 
 
-; (unused ? 50 bytes)
-p_c9fb:  ; #c9fb
-        dh C3 05 CA AF 32 FA C9 C3
-        dh FE C7 F3 6F 5F 26 00 54
-        dh 29 19 29 29 19 FD 21 D4
-        dh C5 EB FD 19 FD 6E 0A FD
-        dh 66 0B FD 4E 0C DD 21 42
-        dh C7 CD 79 C7 DD CB 11 FE
-        dh FB C9
+; (Unused)
+unusedJumpToPlayAySound:  ; #c9fb
+        jp unusedPlayAySound
+
+; (Unused)
+; Initialise AY without playing anything
+unusedInit:
+        xor a
+        ld (isPlaying), a
+        jp initAy
+
+; (Unused)
+; Similar to `playAySound` but uses only channel A
+;   `a`: sound index (0..14)
+unusedPlayAySound:
+        di
+        ; calculate sound effect addr
+        ld l, a
+        ld e, a
+        ld h, 0
+        ld d, h
+        add hl, hl
+        add hl, de
+    .2  add hl, hl
+        add hl, de
+        ; `hl`: `a` * 13
+        ld iy, aySounds
+        ex de, hl
+        add iy, de
+        ; `iy`: sound effect addr
+        ld l, (iy+Effect.period+0)
+        ld h, (iy+Effect.period+1)
+        ld c, (iy+Effect.duration)
+        ld ix, ayChA
+        call playTone
+        set 7, (ix+Ch.flags)
+        ei
+        ret
 
 
 ; #ca2d
@@ -1061,7 +732,7 @@ aySoundFrame:  ; #cb0c
         jr Z, .zeroDuration
 
         ld a, (de)              ; note or special value
-        cp Note.instrument
+        cp Mark.instrument
         call NC, p_cc5b
 
         ld (iy+Sect.noteAddr+0), e
@@ -1070,7 +741,7 @@ aySoundFrame:  ; #cb0c
 
 .zeroDuration:
         ld a, (de)              ; note or special value
-        cp Note.instrument
+        cp Mark.instrument
         jr C, .l_13
 
         call p_cc5b
@@ -1081,10 +752,10 @@ aySoundFrame:  ; #cb0c
         jp .partEnd
 
 .l_13:
-        cp Note.pause
+        cp Mark.pause
         jr Z, .pause
 
-        cp Note.microtonal
+        cp Mark.microtonal
         jr NZ, .note
 
         ; get microtonal period
@@ -1154,7 +825,7 @@ aySoundFrame:  ; #cb0c
 ;   `de`: note address
 p_cc5b:  ; #cc5b
         ld a, (de)              ; note (>= #80)
-        cp Note.something
+        cp Mark.smthThresh
         jr NC, .l_0
 
         ; `a`: #80..#87 - change instrument
@@ -1174,13 +845,13 @@ p_cc5b:  ; #cc5b
         ret
 
 .l_0:
-        cp Note.end
-        jr NZ, .l_1
+        cp Mark.end
+        jr NZ, .notEnd
         ld (iy+Sect.isPartEnd), -1
         ret
 
-.l_1:
-        cp Note.skip
+.notEnd:
+        cp Mark.skip
         jr NC, .l_2
 
         ; `a`: #88..#BF
@@ -1192,7 +863,7 @@ p_cc5b:  ; #cc5b
 
 .l_2:
         inc de                  ; next note
-        cp Note.nothing         ; (?)
+        cp Mark.nothing         ; (?)
         ret Z
 
     .3  inc de                  ; skip 3 more notes (?)
@@ -1275,6 +946,7 @@ p_cc95:  ; #cc95
         ld (iy+Sect.i_16+1), h
 
         ld a, (iy+Sect.note)
+
 .setPeriodByNote:
         add a
         ld hl, noteTable
@@ -1309,7 +981,7 @@ playAySound:  ; #cd25
         ld c, a
         ld b, 0
         add hl, bc
-        ; `hl`: a * 13
+        ; `hl`: `a` * 13
         ld bc, aySounds
         add hl, bc
         push hl : pop iy
@@ -1346,6 +1018,5 @@ playAySound:  ; #cd25
 ; Channel used for playing the last sound effect (0..2)
 lastUsedChannel:  ; #cd77
         db 0
-
 
     ENDMODULE
