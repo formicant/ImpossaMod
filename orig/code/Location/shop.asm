@@ -102,7 +102,7 @@ enterShop:  ; #e920
         ld (ix+Obj.width), 24
         ld (ix+Obj.height), 21
         ld (ix+Obj.objType), ObjType.shopMole
-        ld (ix+Obj.flags), (1<<Flag.exists) | (1<<Flag.isBig)
+        ld (ix+Obj.flags), 1<<Flag.exists | 1<<Flag.isBig
         ld (ix+Obj.health), -2
         ld (ix+Obj.auxFlags), 0
         ld (ix+Obj.emitBullets), 0

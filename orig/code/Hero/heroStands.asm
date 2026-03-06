@@ -130,7 +130,7 @@ heroStands:  ; #d7f6
         ld (State.heroState), a
 
         ld a, (Control.state)
-        and (1<<Key.left) | (1<<Key.right)
+        and 1<<Key.left | 1<<Key.right
         jp Z, .jumpUp
 
         ld b, a

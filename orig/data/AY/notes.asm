@@ -22,11 +22,11 @@ noteTable:  ; #c697
 .o2_Ds: dw 1432
 .o2_E:  dw 1351
 .o2_F:  dw 1276
-.o2_Fs: dw 1236 ; (should be 1204)
+.o2_Fs: dw 1236 ; (mistake, should be 1204)
 .o2_G:  dw 1136
 .o2_Gs: dw 1073
 .o2_A:  dw 1012
-.o2_As: dw  988 ; (should be 956)
+.o2_As: dw  988 ; (mistake, should be 956)
 .o2_B:  dw  902
 .o3_C:  dw  851
 .o3_Cs: dw  804
@@ -86,6 +86,6 @@ noteTable:  ; #c697
 .o7_G:  dw   36
 .o7_Gs: dw   34
 .o7_A:  dw   32
-.o7_As: dw   24 ; (should be 30)
+.o7_As: dw   24 ; (mistake, should be 30)
 
     ENDMODULE

@@ -27,7 +27,7 @@ initHero:  ; #d153
         ld (ix+Obj.sprite+1), h ; set sprite addr
 
         ld (ix+Obj.mo.direction), 1<<Dir.right
-        ld (ix+Obj.flags), (1<<Flag.exists) | (1<<Flag.isBig)
+        ld (ix+Obj.flags), 1<<Flag.exists | 1<<Flag.isBig
         ld (ix+Obj.width), 16
         ld (ix+Obj.height), 21
         ld (ix+Obj.spriteSet), 0      ; ?

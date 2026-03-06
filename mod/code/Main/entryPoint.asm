@@ -11,7 +11,7 @@ entryPoint:
         ld hl, Level.end        ; an unused address in RAM slot 3
 
         ld (hl), #00
-        ld a, (1<<Port.memory.rom48) | 1
+        ld a, 1<<Port.memory.rom48 | 1
         out (c), a              ; set RAM page 1
         ld (hl), #FF
         dec a

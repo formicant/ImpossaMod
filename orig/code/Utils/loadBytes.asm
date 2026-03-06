@@ -15,7 +15,7 @@ loadBytes:  ; #c9fb
         dec d                   ; restore `d` value
 
         di
-        ld a, Colour.white | (1<<Port.tapeOut) ; ?
+        ld a, Colour.white | 1<<Port.tapeOut ; ?
         out (Port.general), a
 
         in a, (Port.general)

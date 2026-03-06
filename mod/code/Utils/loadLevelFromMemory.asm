@@ -46,7 +46,7 @@ loadLevelFromMemory:
         call copyMemoryBlock    ; copy from level page to screen
 
         ld bc, Port.memory
-        ld a, (1<<Port.memory.rom48) | 0
+        ld a, 1<<Port.memory.rom48 | 0
         out (c), a              ; set page 0
         pop de, bc
         ld hl, Screen.start

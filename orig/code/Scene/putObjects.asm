@@ -205,7 +205,7 @@ createObject:
         or a
         jr Z, .skipWaiting
         ld a, (ix+Obj.flags)
-        or (1<<Flag.fixedX) | (1<<Flag.fixedY) | (1<<Flag.waiting)
+        or 1<<Flag.fixedX | 1<<Flag.fixedY | 1<<Flag.waiting
         ld (ix+Obj.flags), a
 .skipWaiting:
         inc hl                  ; +9

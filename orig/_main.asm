@@ -19,6 +19,7 @@ codeStart:
 
     ORG #5E80
     DISP #C000
+    INCLUDE "data/AY/_index.asm"
     INCLUDE "code/AY/_index.asm"
     ENT
 

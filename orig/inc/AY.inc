@@ -13,19 +13,12 @@ regEnvPer   EQU #B
 regEnvShape EQU #D
 
 
-; Values
+; Masks
 mixOff      EQU %00111111
 
-tempo       EQU 3
-
-; Octave offsets for notes
-
-octave1     EQU -10
-octave2     EQU   2
-octave3     EQU  14
-octave4     EQU  26
-octave5     EQU  38
-octave6     EQU  50
+; Constants
+octave      EQU 12  ; notes per octave
+whole       EQU 96  ; duration of the whole note in frames
 
 
     MODULE Part
@@ -41,18 +34,18 @@ end         EQU #FF
 ; notes inside an octave
     MODULE Note
 
-C   EQU   0
-Cs  EQU   1
-D   EQU   2
-Ds  EQU   3
-E   EQU   4
-F   EQU   5
-Fs  EQU   6
-G   EQU   7
-Gs  EQU   8
-A   EQU   9
-As  EQU  10
-B   EQU  11
+C   EQU -22
+Cs  EQU -21
+D   EQU -20
+Ds  EQU -19
+E   EQU -18
+F   EQU -17
+Fs  EQU -16
+G   EQU -15
+Gs  EQU -14
+A   EQU -13
+As  EQU -12
+B   EQU -11
 
     ENDMODULE
 
@@ -65,7 +58,7 @@ instrument  EQU #80
 smthThresh  EQU #88
 something   EQU #90
 skip        EQU #C0
-nothing     EQU #C2
+unused      EQU #C2
 end         EQU #FF
 
     ENDMODULE
@@ -73,10 +66,10 @@ end         EQU #FF
 
     MODULE Flag ; bits of `Ch.flags` and `Instr.flags`
 
-tone        EQU 0
-noise       EQU 1
-envelope    EQU 2
-f_7         EQU 7
+tone    EQU 0
+noise   EQU 1
+env     EQU 2   ; 1: use AY envelope, 0: use ADSR stages
+unused  EQU 7   ; always 0
 
     ENDMODULE
 
@@ -91,7 +84,7 @@ mixMask     byte    ; (const) positive bit mask in `regMixer` for tone and noise
 period      word
 volume      byte
 duration    byte    ; also, vibrato half-period
-ch_7        byte    ; some time. e_5
+vibrDelay   byte    ; time before vibrato starts (-1: never)
 vibrCounter byte
 vibrValue   word
 vibrSlope   word
@@ -109,9 +102,9 @@ decaySpd    byte    ; < 0
 sustainLev  byte
 releaseSpd  byte    ; < 0
 attackLev   byte    ; also, envelope period
-e_5         byte    ; some time. ch_7
-vibrPeriod  byte
-vibrSlope   word
+vibrDelay   byte    ; time before vibrato starts (-1: never)
+vibrPeriod  byte    ; vibrato period
+vibrSlope   word    ; vibrato tone change speed
 flags       byte
 
     ENDS

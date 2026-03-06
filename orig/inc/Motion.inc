@@ -35,8 +35,8 @@ down    EQU 2
 up      EQU 3
 
 ; bit masks
-horizontal  EQU (1<<left) | (1<<right)
-vertical    EQU (1<<up) | (1<<down)
+horizontal  EQU 1<<left | 1<<right
+vertical    EQU 1<<up | 1<<down
 
     ENDMODULE
 

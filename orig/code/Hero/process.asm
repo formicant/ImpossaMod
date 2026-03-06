@@ -82,7 +82,7 @@ processHero:  ; #d709
         ld (State.heroState), a
 
         ld a, (Control.state)
-        and (1<<Key.left) | (1<<Key.right)
+        and 1<<Key.left | 1<<Key.right
         jp Z, .jumpUp
 
         ; jump sideways

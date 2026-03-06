@@ -73,11 +73,11 @@ scrTileUpd:                     ; #8C00
 
 ; Memory pages where levels are stored in 128K mode
 levelMemPages:                  ; #9180
-        db (1<<Port.memory.rom48) | MemPage.level0  ; Klondike
-        db (1<<Port.memory.rom48) | MemPage.level1  ; Orient
-        db (1<<Port.memory.rom48) | MemPage.level2  ; Amazon
-        db (1<<Port.memory.rom48) | MemPage.level3  ; Iceland
-        db (1<<Port.memory.rom48) | MemPage.level4  ; Bermuda
+        db 1<<Port.memory.rom48 | MemPage.level0  ; Klondike
+        db 1<<Port.memory.rom48 | MemPage.level1  ; Orient
+        db 1<<Port.memory.rom48 | MemPage.level2  ; Amazon
+        db 1<<Port.memory.rom48 | MemPage.level3  ; Iceland
+        db 1<<Port.memory.rom48 | MemPage.level4  ; Bermuda
 .end:                           ; #9185
 
     ENDMODULE

@@ -9,13 +9,13 @@ selfGuidedTime:  ; #e308
 ; in eights of a revolution)
 angleToDir:  ; #e309
 .a0:    db 1<<Dir.right
-.a1:    db (1<<Dir.down) | (1<<Dir.right)
+.a1:    db 1<<Dir.down | 1<<Dir.right
 .a2:    db 1<<Dir.down
-.a3:    db (1<<Dir.down) | (1<<Dir.left)
+.a3:    db 1<<Dir.down | 1<<Dir.left
 .a4:    db 1<<Dir.left
-.a5:    db (1<<Dir.up) | (1<<Dir.left)
+.a5:    db 1<<Dir.up | 1<<Dir.left
 .a6:    db 1<<Dir.up
-.a7:    db (1<<Dir.up) | (1<<Dir.right)
+.a7:    db 1<<Dir.up | 1<<Dir.right
 
 ; Table for converting direction to angle
 ; (angles are measured clockwise from the rightward direction

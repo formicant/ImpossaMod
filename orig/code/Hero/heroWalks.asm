@@ -156,7 +156,7 @@ heroWalks:  ; #d94c
         ld (State.stepPeriod), a
 
         ld a, (Control.state)
-        and (1<<Key.left) | (1<<Key.right)
+        and 1<<Key.left | 1<<Key.right
         jp Z, .fallDown
 
         ld b, a
