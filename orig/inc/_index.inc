@@ -1,4 +1,5 @@
     INCLUDE "Macros.inc"
+    INCLUDE "Asm.inc"
     INCLUDE "Basic.inc"
     INCLUDE "Colour.inc"
     INCLUDE "Port.inc"

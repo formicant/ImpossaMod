@@ -65,8 +65,14 @@ entryPoint:
         ld de, Utils.loadBytes
         ldir
 
-        ; move AY-related code and data
-        ; TODO !
+        ; move AY-related data and code
+        ld hl, ayStored
+        ld bc, ayLength
+        ld de, Level.start
+        call Utils.copyMemoryBlock
+
+        ; add AY call to the interrupt routine
+        call Sound.addAySoundFrame
 
 .initInterrupts:
         ld sp, stackTop

@@ -71,17 +71,22 @@ setControlKeys:
         jr Z, .kempston
 
 .keyboard:
-        ld (hl), #3E : inc hl   ; ld a,
-        ld (hl), a   : inc hl   ;   <halfRow>
-        ld (hl), #DB : inc hl   ; in a,
-        ld (hl), #FE : inc hl   ;   (Port.general)
+        ; `ld a, <halfRow>`
+        ; `in a, (Port.general)`
+        ld (hl), Asm.ld_a_n    : inc hl
+        ld (hl), a             : inc hl
+        ld (hl), Asm.in_a_p    : inc hl
+        ld (hl), Port.general  : inc hl
         jr .bitMask
 
 .kempston:
-        ld (hl), #AF : inc hl   ; xor a
-        ld (hl), #DB : inc hl   ; in a,
-        ld (hl), #1F : inc hl   ;   (Port.kempston)
-        ld (hl), #2F : inc hl   ; cpl
+        ; `xor a`
+        ; `in a, (Port.kempston)`
+        ; `cpl`
+        ld (hl), Asm.xor_a     : inc hl
+        ld (hl), Asm.in_a_p    : inc hl
+        ld (hl), Port.kempston : inc hl
+        ld (hl), Asm.cpl       : inc hl
 
 .bitMask:
         inc hl

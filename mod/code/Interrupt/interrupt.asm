@@ -6,8 +6,9 @@ routine:
 
         ; poll control keys
         ld l, 1                 ; const
-        ; actual instructions are inserted here in `setControlKeys`
+
 .keyPollInstructions:
+        ; actual instructions are inserted here in `Control.setControlKeys`
     DUP 8
         nop ; for keyboard:         ; for Kempston:
         nop ;  ld a, <halfRow>      ;  xor a
@@ -19,6 +20,10 @@ routine:
     EDUP
         ld a, h
         ld (Control.state), a
+
+.aySoundCall:
+        ; actual instructions are inserted here in `Sound.setAySoundFrame`
+    .3  nop
 
         ; increment `frames` counter
         ld a, (frames)

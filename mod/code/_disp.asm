@@ -2,4 +2,11 @@
 
     INCLUDE "Main/entryPoint.asm"
     INCLUDE "Utils/loadLevelFromMemory.asm"
-    ; INCLUDE "orig/code/Sound/ay.asm"    ; length: #D78 = 3448
+
+ayStored:
+    DISP Level.start
+    ; INCLUDE "orig/data/AY/_index.asm"
+    INCLUDE "../data/AY.asm"
+    INCLUDE "orig/code/AY/_index.asm"
+    ENT
+ayLength    EQU $ - ayStored

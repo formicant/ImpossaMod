@@ -9,14 +9,17 @@ drawSmallSprite:
         and %00000111           ; x pixel shift
         jr NZ, drawShiftedSmallSprite
 
-        ld hl, #0000            ; `nop : nop`
+        ; `nop : nop`
+        ld hl, _LOW Asm.nop _HIGH Asm.nop
         ld (.jrMir), hl
+
         bit Dir.left, (ix+Obj.mo.direction)
         jr NZ, .skip
         bit Flag.mirror, (ix+Obj.flags)
         jr NZ, .skip
 
-        ld hl, #0A18            ; `jr .skipMirror`
+        ; `jr .skipMirror`
+        ld hl, _LOW Asm.jr _HIGH (.skipMirror - .mirror)
         ld (.jrMir), hl
 .skip:
 
@@ -89,14 +92,17 @@ drawShiftedSmallSprite:  ; #c245
         add b                   ; `a`: jump size = (pixel shift) * 9
         ld (.jrSh), a
 
-        ld hl, #0000            ; `nop : nop`
+        ; `nop : nop`
+        ld hl, _LOW Asm.nop _HIGH Asm.nop
         ld (.jrMir), hl
+
         bit Dir.left, (ix+Obj.mo.direction)
         jr NZ, .skip
         bit Flag.mirror, (ix+Obj.flags)
         jr NZ, .skip
 
-        ld hl, #0F18            ; `jr .pixelShift`
+        ; `jr .pixelShift`
+        ld hl, _LOW Asm.jr _HIGH (.pixelShift - .mirror)
         ld (.jrMir), hl
 .skip:
 
@@ -196,13 +202,16 @@ drawBigSprite:  ; #c314
         and %00000111           ; x pixel shift
         jp NZ, drawShiftedBigSprite
 
-        ld hl, #0000            ; `nop : nop`
+        ; `nop : nop`
+        ld hl, _LOW Asm.nop _HIGH Asm.nop
+
         bit Dir.left, (ix+Obj.mo.direction)
         jr NZ, .skip
         bit Flag.mirror, (ix+Obj.flags)
         jr NZ, .skip
 
-        ld hl, #2718            ; `jr .skipMirror`
+        ; `jr .skipMirror`
+        ld hl, _LOW Asm.jr _HIGH (.skipMirror - .mirror)
 .skip:
         ld (.jrMir), hl
 
@@ -320,14 +329,17 @@ drawShiftedBigSprite:  ; #c3ac
         ; `a`: jump size = (pixel shift) * 13
         ld (.jrSh), a
 
-        ld hl, #0000            ; `nop : nop`
+        ; `nop : nop`
+        ld hl, _LOW Asm.nop _HIGH Asm.nop
         ld (.jrMir), hl
+
         bit Dir.left, (ix+Obj.mo.direction)
         jr NZ, .skip
         bit Flag.mirror, (ix+Obj.flags)
         jr NZ, .skip
 
-        ld hl, #1418            ; `jr .pixelShift`
+        ; `jr .pixelShift`
+        ld hl, _LOW Asm.jr _HIGH (.pixelShift - .mirror)
         ld (.jrMir), hl
 .skip:
 

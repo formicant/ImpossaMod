@@ -53,10 +53,11 @@
 ; Substitutions for constructing a word value from its high and low part
 ; ```
 ;   ld bc, _HIGH 16 _LOW 136
+;   ld de, _LOW (label + 2) _HIGH (1<<flag | mask)
 ; ```
-    DEFINE _HIGH #100 *
+    DEFINE _HIGH + #100 *
     DEFINE _LOW +
-    
+
 ; Same as _HIGH and _LOW but for print coordinates
 ; ```
 ;   ld hl, _ROW 12 _COL 7

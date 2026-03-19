@@ -61,10 +61,10 @@ moveAyCode:
         or c
         jr NZ, .l_0
 
-        ; add a `call` instruction to interrupt routine
-        ld a, #CD  ; `call` instruction
+        ; add `call Sound.callAySoundFrame` instruction to the interrupt routine
+        ld a, Asm.call
         ld (Interrupt.routine.callAySound), a
-        ld hl, #BDF4            ; TODO: use label
+        ld hl, Sound.callAySoundFrame
         ld (Interrupt.routine.callAySound + 1), hl
         ret
 

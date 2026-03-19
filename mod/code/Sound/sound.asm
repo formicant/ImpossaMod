@@ -7,18 +7,52 @@ playSound:
         or a
         ld a, c
         jp NZ, playBeeperSound
-        
+
         ret
         ; TODO:
         ; jp playAySound
 
 
 callPlayMenuMusic:
-        ; TODO !
-        ret
+        ld c, a
+        ld a, (State.is48k)
+        or a
+        ret NZ
+        ld a, (State.loadedLevel)
+        cp -1
+        ret NZ
+        ld a, c
+        jp AY.playMenuMusic
 
 callAySoundFrame:
-        ; TODO !
+        push bc, de, ix, iy
+        call AY.aySoundFrame
+        pop iy, ix, de, bc
+        ret
+
+
+; Add AY sound frame call to the interrupt routine
+; (Interrupts should be disabled!)
+addAySoundFrame:
+        ld hl, Interrupt.routine.aySoundCall
+        ; `call callAySoundFrame`
+        ld (hl), Asm.call
+        inc hl
+        ld (hl), low(callAySoundFrame)
+        inc hl
+        ld (hl), high(callAySoundFrame)
+        ret
+
+; Remove AY sound frame call from the interrupt routine
+; (Interrupts should be disabled!)
+removeAySoundFrame:
+        ld hl, Interrupt.routine.aySoundCall
+        ; 3 `nop`s
+        ld (hl), a
+        inc hl
+        ld (hl), a
+        inc hl
+        ld (hl), a
         ret
 
 
